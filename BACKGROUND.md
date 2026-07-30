@@ -42,6 +42,20 @@ errors.
 build tooling. Do not restyle away from the ADB look. Do not touch the separate
 Email Records Declaration stream.
 
+**Follow-up changes since the first integration:**
+
+1. The "Total Documents in EDRMS Compliant Sites" panel gained a date range and
+   Reset filter, matching the one on "Total Declared Records" in position, style,
+   and behaviour. This required a new `mdocs` monthly distribution on each
+   department, since only `mrec` and `mphys` had one. Reset clears the dates and
+   the drill path together, same as the records panel.
+2. The always-on note under "Total Declared Records" ("Showing all declared
+   records: 21,646. No date range applied.") was removed. The subtotal line now
+   appears **only while a date range is actually applied**, on both panels, and
+   is hidden entirely otherwise so it leaves no blank gap. The unfiltered total
+   is already on the KPI card above, so the note was redundant; the filtered
+   total is not shown anywhere else, so that variant was kept.
+
 **Known deviation, deliberately left alone:** both source prototypes emit em
 dashes in visible text, which breaks the hard rule in section 8. They appear in
 the department dropdown options (`ITD — Information Technology`) and as KPI

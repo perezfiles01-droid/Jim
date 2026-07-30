@@ -456,7 +456,7 @@ DASHBOARDS.rm=(function(){
    {c:"OAS",n:"Administrative Services",rec:620,phys:130,docs:105000},
    {c:"ERCD",n:"Economic Research",rec:540,phys:70,docs:60000},
   ];
-  DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.c.length+i+1);d.mphys=monthly(d.phys,d.c.length+i+2);});
+  DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.c.length+i+1);d.mphys=monthly(d.phys,d.c.length+i+2);d.mdocs=monthly(d.docs,d.c.length+i+3);});
   const ANNUAL_REC=DEPTS.reduce((a,d)=>a+d.rec,0);
   const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
 
@@ -526,18 +526,42 @@ DASHBOARDS.rm=(function(){
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Total Documents in EDRMS Compliant Sites</div>
         <div class="psub">Total documents held in each department's EDRMS compliant sites. Click a bar to drill down from department to division to site to library.</div>
-        <div class="drill" id="docs-crumb"></div>
+        <div class="daterow">
+          <div class="drill" id="docs-crumb" style="margin:0"></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="drange">Date range
+              <input type="date" id="docs-s"> to
+              <input type="date" id="docs-e"></div>
+            <button id="docs-reset" class="resetbtn">↺ Reset filter</button>
+          </div>
+        </div>
+        <div class="subtotal" id="docs-subtotal" style="margin-bottom:12px"></div>
         <div id="docs-bars"></div><div id="docs-pager"></div></div>`;
+      document.getElementById("docs-s").onchange=()=>{pageDocs=1;drawDocs();};
+      document.getElementById("docs-e").onchange=()=>{pageDocs=1;drawDocs();};
+      document.getElementById("docs-reset").onclick=()=>{
+        document.getElementById("docs-s").value="";
+        document.getElementById("docs-e").value="";
+        pathDocs=[];pageDocs=1;drawDocs();
+      };
       drawDocs();
     }
   }
-  function rangeMonths(){
-    const sEl=document.getElementById("rec-s"),eEl=document.getElementById("rec-e");
+  function rangeMonthsFor(sId,eId){
+    const sEl=document.getElementById(sId),eEl=document.getElementById(eId);
     if(!sEl||!eEl)return [0,11];
     const s=new Date(sEl.value+"T00:00:00"),e=new Date(eEl.value+"T00:00:00");
     let sM=isNaN(s)?0:(s.getFullYear()<2026?0:s.getFullYear()>2026?12:s.getMonth());
     let eM=isNaN(e)?11:(e.getFullYear()>2026?11:e.getFullYear()<2026?-1:e.getMonth());
     return [sM,eM];
+  }
+  function rangeMonths(){return rangeMonthsFor("rec-s","rec-e");}
+  /* the range summary line shows only while a date range is actually applied */
+  function paintSubtotal(id,blank,full,text){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(blank||full){el.innerHTML="";el.style.display="none";}
+    else{el.innerHTML=text;el.style.display="";}
   }
   function sumMonths(arr,sM,eM){let t=0;for(let m=Math.max(0,sM);m<=Math.min(11,eM);m++)t+=arr[m];return t;}
   function drawRec(){
@@ -559,9 +583,8 @@ DASHBOARDS.rm=(function(){
     const sVal=(document.getElementById("rec-s")||{}).value||"";
     const eVal=(document.getElementById("rec-e")||{}).value||"";
     const blank=(sVal===""&&eVal==="");
-    document.getElementById("rec-subtotal").innerHTML= (blank||full)
-      ? `Showing all declared records: <b>${F(rangeTotal)}</b>. No date range applied.`
-      : `Declared in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_REC)} total.`;
+    paintSubtotal("rec-subtotal",blank,full,
+      `Declared in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_REC)} total.`);
     const mx=Math.max(...rows.map(r=>r.rec),1);
     const pages=Math.max(1,Math.ceil(rows.length/10));if(pageRec>pages)pageRec=pages;
     const pg=rows.slice((pageRec-1)*10,pageRec*10);
@@ -576,10 +599,26 @@ DASHBOARDS.rm=(function(){
     wirePager("#rec-pager",v=>{pageRec=v==="prev"?Math.max(1,pageRec-1):v==="next"?Math.min(pages,pageRec+1):+v;drawRec();});
   }
   function drawDocs(){
+    const [sM,eM]=rangeMonthsFor("docs-s","docs-e");
     const canDrill=pathDocs.length<3,atLib=pathDocs.length===3;
     document.getElementById("docs-crumb").innerHTML=crumbHTML(pathDocs);
     document.querySelectorAll("#docs-crumb a").forEach(a=>a.onclick=()=>{const i=+a.dataset.i;pathDocs=i<0?[]:pathDocs.slice(0,i+1);pageDocs=1;drawDocs();});
-    const rows=listAt(pathDocs).map((r,i)=>({...r,i})).sort((a,b)=>b.docs-a.docs);
+    let rows;
+    if(pathDocs.length===0){
+      rows=DEPTS.map((d,i)=>({label:d.c,sub:d.n,i,docs:sumMonths(d.mdocs,sM,eM)}));
+    }else{
+      const dd=DEPTS[pathDocs[0]];
+      const docsF=dd.docs?sumMonths(dd.mdocs,sM,eM)/dd.docs:0;
+      rows=listAt(pathDocs).map((r,i)=>({...r,i,docs:Math.round(r.docs*docsF)}));
+    }
+    rows.sort((a,b)=>b.docs-a.docs);
+    const rangeTotal=DEPTS.reduce((a,d)=>a+sumMonths(d.mdocs,sM,eM),0);
+    const full=(sM<=0&&eM>=11);
+    const sVal=(document.getElementById("docs-s")||{}).value||"";
+    const eVal=(document.getElementById("docs-e")||{}).value||"";
+    const blank=(sVal===""&&eVal==="");
+    paintSubtotal("docs-subtotal",blank,full,
+      `Documents in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_DOCS)} total.`);
     const mx=Math.max(...rows.map(r=>r.docs),1);
     const pages=Math.max(1,Math.ceil(rows.length/10));if(pageDocs>pages)pageDocs=pages;
     const pg=rows.slice((pageDocs-1)*10,pageDocs*10);
