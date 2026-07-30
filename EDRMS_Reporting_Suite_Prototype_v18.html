@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDRMS Utilization Report — Prototype</title>
+<style>
+  :root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--blue-d:#005A96;--teal:#00A5A8;--green:#5CA943;--green-d:#3E8E2F;--amber:#E8A317;--red:#CC4B4B;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--nav-hi:#16304F;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif;--shadow:0 1px 2px rgba(16,36,62,.06),0 4px 14px rgba(16,36,62,.06)}
+  *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;display:flex}
+  /* sidebar */
+  #side{width:230px;min-width:230px;background:var(--nav);color:#C7D3E0;display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+  #side .brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  #side .t1{font-family:var(--serif);font-size:19px;color:#fff}
+  #side .t2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7FA8CC;margin-top:3px}
+  nav{flex:1;padding:10px 0}
+  .grp{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5E748C;padding:12px 18px 6px}
+  nav a{display:flex;align-items:center;gap:10px;padding:8px 18px;color:#C7D3E0;font-size:13.5px;border-left:3px solid transparent;cursor:pointer;text-decoration:none}
+  nav a .ic{width:18px;text-align:center;opacity:.85}
+  nav a.on{background:var(--nav-hi);color:#fff;border-left-color:var(--green);font-weight:600}
+  /* main */
+  #main{flex:1;min-width:0;display:flex;flex-direction:column}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  .crumb{font-size:12px;color:var(--mut)}.crumb b{color:var(--ink);font-size:15px;font-family:var(--serif);display:block}
+  .spacer{flex:1}
+  .ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
+  .ctl select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#fff}
+  .btn{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:6px;padding:6px 12px;cursor:pointer}
+  .btn:hover{background:var(--blue);color:#fff}
+  #asof{font-size:11.5px;color:var(--mut)}
+  section{padding:20px 22px 40px}
+  h1{font-family:var(--serif);font-size:22px;margin-bottom:16px}
+  /* KPI */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  @media(max-width:880px){.kpis{grid-template-columns:1fr}}
+  #page-rec .kpis{grid-template-columns:repeat(3,1fr)}
+  #page-ov .kpis{grid-template-columns:repeat(5,1fr)}
+  #page-mig .kpis, #page-cont .kpis{grid-template-columns:repeat(2,1fr);max-width:660px}
+  @media(max-width:1100px){#page-ov .kpis{grid-template-columns:repeat(3,1fr)}#page-rec .kpis{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:600px){#page-ov .kpis, #page-rec .kpis, #page-mig .kpis, #page-cont .kpis{grid-template-columns:1fr}}
+  /* page header row with export */
+  .pagehead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .pagehead h1{margin:0}
+  .filters{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  /* export button */
+  .exportbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:7px;padding:6px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .exportbtn:hover{background:var(--blue);color:#fff}
+  .exportbtn.solid{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .exportbtn.solid:hover{background:#005a96;border-color:#005a96}
+  .pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px}
+  .pager .pinfo{font-size:12px;color:var(--mut)}
+  .pager .pbtns{display:flex;align-items:center;gap:6px}
+  .pager button{font:inherit;font-size:12px;font-weight:600;border:1px solid #cfd8e3;background:#fff;color:var(--ink2);border-radius:6px;padding:5px 10px;cursor:pointer}
+  .pager button:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+  .pager button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .pager button:disabled{opacity:.45;cursor:default}
+  .drng{display:inline-flex;align-items:center;gap:6px}
+  .drng input[type=date]{font:inherit;font-size:12px;border:1px solid #cfd8e3;border-radius:6px;padding:4px 8px;color:var(--ink)}
+  .drng span.sep{color:var(--mut);font-size:12px}
+  .exportbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 2px}
+
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:15px 16px;box-shadow:var(--shadow);cursor:pointer;position:relative;transition:transform .1s,box-shadow .1s;border-top:3px solid transparent;display:flex;flex-direction:column}
+  .kpi:hover{transform:translateY(-2px)}
+  .kpi.on{border-top-color:var(--blue);box-shadow:0 0 0 2px rgba(0,114,188,.25),var(--shadow)}
+  .kpi .lab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;align-items:flex-start;gap:6px;min-height:27px;line-height:1.25}
+  .kpi .lab .pill{flex:none}
+  .kpi .val{font-size:28px;font-weight:700;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.15}
+  .kpi .hint{font-size:11px;color:var(--blue);margin-top:8px;font-weight:600}
+  .kpi .subline{font-size:11.5px;color:var(--ink2);margin-top:6px;font-weight:600}
+  .pill{font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:20px;height:16px}
+  .pill.batch{background:#FDF2DA;color:#96690A}.pill.spo{background:#E3EEF9;color:#12558D}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:18px}
+  .ptitle{font-size:15px;font-weight:700;font-family:var(--serif);margin-bottom:12px}
+  /* chips */
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .chip{border:1.5px solid var(--line);border-radius:9px;padding:8px 15px;cursor:pointer;background:#fff;min-width:120px;transition:transform .1s}
+  .chip:hover{transform:translateY(-2px)}.chip.on{border-color:var(--blue);outline:2px solid rgba(0,114,188,.22)}
+  .chip .cl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+  .chip .cn{font-size:20px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);text-align:left;padding:9px;border-bottom:1.5px solid var(--line)}
+  td{padding:10px 9px;border-bottom:1px solid #ECF1F6;font-variant-numeric:tabular-nums}
+  tr:hover td{background:#F6F9FC}.num{text-align:right}
+  .tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+  .tag.live{background:#E4F3E2;color:#2F7A25}.tag.not{background:#EDEDED;color:#5A6672}
+  .tag.comp{background:#E4F3E2;color:#2F7A25}.tag.noncomp{background:#FDECEC;color:#A33B3B}
+  .dayf{display:flex;gap:6px;margin-bottom:6px}
+  .dayf button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;color:var(--ink2)}
+  .dayf button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .muted{color:var(--mut);font-style:italic;font-size:12px}
+  /* bars */
+  .bar{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:12px;margin-bottom:11px}
+  .bar .bl{font-size:13px;color:var(--ink2);text-align:right}
+  .bar .bt{height:34px;border-radius:6px;display:flex;align-items:center;color:#fff;font-weight:700;font-size:13px;padding-left:14px;font-variant-numeric:tabular-nums;transition:width .8s ease}
+  /* trend */
+  .trendhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .trends{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:880px){.trends{grid-template-columns:1fr}}
+  svg .axis{stroke:#E3EAF2;stroke-width:1}
+  svg .lbl{font-size:10px;fill:var(--mut)}
+
+  .controls{display:flex;gap:14px;flex-wrap:wrap}
+  .controls .ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
+  .controls select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:6px 9px;background:#fff;color:var(--ink)}
+  .phead{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .toggle button{font:inherit;font-size:12px;border:none;background:#fff;padding:6px 14px;cursor:pointer;color:var(--ink2)}
+  .toggle button.on{background:var(--blue);color:#fff;font-weight:600}
+  .dbar{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:12px;margin-bottom:9px}
+  .dbar .dl b{font-size:13px}.dbar .dl small{display:block;color:var(--mut);font-size:11px}
+  .dbar .dt{background:#EEF3F8;border-radius:6px;overflow:hidden}
+  .dbar .df{height:26px;border-radius:6px;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-variant-numeric:tabular-nums;transition:width .7s ease}
+  .cbar{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:12px;margin-bottom:9px}
+  .cbar .cl b{font-size:13px}.cbar .cl small{display:block;color:var(--mut);font-size:11px}
+  .cbar .ct{background:#EEF3F8;border-radius:6px;overflow:hidden}
+  .cbar .cf{height:28px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:34px;font-variant-numeric:tabular-nums;transition:width .7s ease}
+  .lbar{display:grid;grid-template-columns:230px 1fr;align-items:center;gap:12px;margin-bottom:9px}
+  .lbar .ll b{font-size:13px}.lbar .ll small{display:block;color:var(--mut);font-size:11px}
+  .lbar .lt{background:#EEF3F8;border-radius:6px;overflow:hidden}
+  .lbar .lf{height:28px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-variant-numeric:tabular-nums;transition:width .8s ease}
+  .tmap{position:relative;width:100%;height:340px;margin-top:6px;border-radius:8px;overflow:hidden}
+  .tm{position:absolute;display:flex;flex-direction:column;justify-content:flex-end;padding:9px;color:#fff;border:2px solid #fff;border-radius:6px}
+  .tm .tl{font-size:12px;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .tm .tv{font-size:10.5px;opacity:.92;font-variant-numeric:tabular-nums}
+  .kpi .go{font-size:11px;color:var(--blue);margin-top:auto;padding-top:10px;font-weight:600}
+  .kpi .hint{margin-top:auto;padding-top:8px}
+  .page{display:none}.page.on{display:block}
+  svg circle{transition:r .1s}svg circle:hover{r:5.5}
+</style></head>
+<body>
+<aside id="side">
+  <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div></div>
+  <nav>
+<div class="grp">Executive</div>
+    <a data-page="ov"><span class="ic">◈</span>Overview</a>
+    <div class="grp">Operations</div>
+    <a data-page="rec"><span class="ic">▤</span>Records Management</a>
+    <a data-page="mig"><span class="ic">⇄</span>Migration</a>
+    <a data-page="cont"><span class="ic">◫</span>Content Volume</a>
+  </nav>
+</aside>
+<div id="main">
+  <header>
+    <div class="crumb">EDRMS Reporting Suite<b id="crumbTitle">Overview</b></div>
+    <div class="spacer"></div>
+    <span id="asof">Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00</span>
+  </header>
+  <section class="page" id="page-ov" data-page="ov">
+
+    <h1>Overview</h1>
+
+    <div class="kpis" id="ov-kpis">
+      <div class="kpi on" data-k="sites">
+        <div class="lab"><span>Total Created Sites</span><span class="pill batch">BATCH</span></div>
+        <div class="val">4,120</div><div class="hint">▾ Click to view created sites</div>
+      </div>
+      <div class="kpi" data-k="users">
+        <div class="lab"><span>Total Active Users</span><span class="pill spo">SPO</span></div>
+        <div class="val">1,982</div><div class="hint">▾ Click to view by site &amp; period</div>
+      </div>
+      <div class="kpi" data-go="Records Management">
+        <div class="lab"><span>Total Declared Records</span><span class="pill live">LIVE</span></div>
+        <div class="val">14,406</div><div class="go">→ Open Records Management</div>
+      </div>
+      <div class="kpi" data-go="Migration">
+        <div class="lab"><span>Documents Migrated</span><span class="pill batch">BATCH</span></div>
+        <div class="val">37.0M</div><div class="go">→ Open Migration</div>
+      </div>
+      <div class="kpi" data-go="Content Volume">
+        <div class="lab"><span>Total Documents</span><span class="pill batch">BATCH</span></div>
+        <div class="val">68.4M</div><div class="go">→ Open Content Volume</div>
+      </div>
+    </div>
+
+    <div class="panel" id="ov-panel"></div>
+
+    <div class="panel">
+      <div class="phead">
+        <div class="ptitle">Compare</div>
+        <div class="controls">
+          <div class="ctl">Compare by<select id="ov-level"><option>Department</option><option>Division</option><option>Library</option></select></div>
+          <div class="toggle" id="ov-measure">
+            <button class="on" data-m="records">Declared records</button>
+            <button data-m="docs">Total documents</button>
+          </div>
+        </div>
+      </div>
+      <div id="ov-compare"></div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Site rollout</div>
+      <div id="ov-pipeline"></div>
+    </div>
+
+</section>
+<section class="page" id="page-rec" data-page="rec">
+
+    <div class="pagehead">
+      <h1>Records Management Dashboard</h1>
+      <button class="exportbtn solid" id="rec-exp-page">⬇ Export all</button>
+    </div>
+
+    <div class="kpis" id="rec-kpis">
+      <div class="kpi on" data-k="dept">
+        <div class="lab"><span>Total Declared Records</span><span class="pill live">LIVE</span></div>
+        <div class="val">16,906</div><div class="hint">▾ Click to view by site</div>
+      </div>
+      <div class="kpi" data-k="dept2">
+        <div class="lab"><span>Total Declared Record Size</span><span class="pill live">LIVE</span></div>
+        <div class="val">29,704 MB</div><div class="hint">≈ 29.0 GB · click to view by site</div>
+      </div>
+      <div class="kpi" data-k="sites">
+        <div class="lab"><span>Sites With Records</span><span class="pill live">LIVE</span></div>
+        <div class="val">2,575</div>
+        <div class="hint">▾ Click to view by site</div>
+      </div>
+    </div>
+
+    <div class="panel" id="rec-panel"></div>
+
+    <div class="panel">
+      <div class="trendhead"><div class="ptitle" style="margin:0">Record declaration trend</div>
+        <div class="ctl">Date range <span class="drng"><input type="date" id="rec-yrs" value="2026-01-01"><span class="sep">to</span><input type="date" id="rec-yre" value="2026-12-31"></span></div></div>
+      <div id="rec-trend"></div>
+    </div>
+
+</section>
+<section class="page" id="page-mig" data-page="mig">
+
+    <div class="pagehead">
+      <h1>Migration Dashboard</h1>
+      <button class="exportbtn solid" id="mig-exp-page">⬇ Export all</button>
+    </div>
+
+    <div class="kpis" id="mig-kpis">
+      <div class="kpi on" data-k="docs">
+        <div class="lab"><span>Documents Migrated</span><span class="pill batch">BATCH</span></div>
+        <div class="val">37.0M</div>
+        <div class="hint">▾ Click to view migrated documents</div>
+      </div>
+      <div class="kpi" data-k="sites">
+        <div class="lab"><span>Sites Migrated</span><span class="pill batch">BATCH</span></div>
+        <div class="val">2,712</div>
+        <div class="hint">▾ Click to view migrated sites</div>
+      </div>
+    </div>
+
+    <div class="panel" id="mig-panel"></div>
+
+    <div class="panel">
+      <div class="phead">
+        <div class="ptitle" style="margin:0">Migrated documents — compare</div>
+        <div class="controls">
+          <div class="ctl">Compare by<select id="mig-cmplevel">
+            <option>Department</option><option>Division</option><option>Site</option><option>Library</option>
+          </select></div>
+        </div>
+      </div>
+      <div id="mig-cmpbars"></div>
+    </div>
+  
+</section>
+<section class="page" id="page-cont" data-page="cont">
+
+    <div class="pagehead">
+      <h1>Content Volume Dashboard</h1>
+      <button class="exportbtn solid" id="cont-exp-page">⬇ Export all</button>
+    </div>
+
+    <div class="kpis" id="cont-kpis">
+      <div class="kpi on" data-k="docs">
+        <div class="lab"><span>Total Documents</span><span class="pill batch">BATCH</span></div>
+        <div class="val">68.4M</div><div class="hint">▾ Click to view across EDRMS sites</div>
+      </div>
+      <div class="kpi" data-k="storage">
+        <div class="lab"><span>Storage Growth</span><span class="pill batch">BATCH</span></div>
+        <div class="val">22.9 TB</div><div class="hint">▾ Click to view by site</div>
+      </div>
+    </div>
+
+    <div class="panel" id="cont-panel"></div>
+
+    <div class="panel">
+      <div class="trendhead"><div class="ptitle" style="margin:0">Documents per site</div>
+        <div class="ctl">Date range <span class="drng"><input type="date" id="cont-pss" value="2026-04-22"><span class="sep">to</span><input type="date" id="cont-pse" value="2026-07-21"></span></div></div>
+      <div id="cont-sitebars"></div>
+    </div>
+
+    <div class="panel">
+      <div class="trendhead"><div class="ptitle" style="margin:0">Storage growth</div>
+        <div class="ctl">Date range <span class="drng"><input type="date" id="cont-yrs" value="2026-01-01"><span class="sep">to</span><input type="date" id="cont-yre" value="2026-12-31"></span></div></div>
+      <div id="cont-trend"></div>
+    </div>
+  
+</section>
+
+</div>
+<script>
+
+function _csvCell(v){v=(v==null?"":String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function exportCSV(filename, headers, rows){
+  const lines=[headers.map(_csvCell).join(",")].concat(rows.map(r=>r.map(_csvCell).join(",")));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+
+function init_ov(){
+
+/* ============ COMPARE (Department / Division / Library) ============ */
+const DATA=[
+ ["ITD",2611,9.8],["SARD",2240,7.5],["OSFG",2168,6.9],["FIN",2150,6.5],["PARD",1892,4.2],
+ ["HRD",1462,3.0],["SERD",1320,2.6],["EARD",1180,1.7],["OGC",1074,1.2],["BRM",809,0.9],
+];
+const DIV=[
+ ["Digital Services","ITD",1600,5.0],["Infrastructure & Operations","ITD",1011,4.8],
+ ["South Asia Operations","SARD",1450,4.6],["South Asia Programs","SARD",790,2.9],
+ ["Country Operations","OSFG",2168,6.9],["Treasury","FIN",1300,3.6],
+ ["Financial Control","FIN",850,2.9],["Procurement","PARD",1892,4.2],
+ ["People Operations","HRD",1462,3.0],["Southeast Asia Operations","SERD",1320,2.6],
+ ["East Asia Operations","EARD",1180,1.7],["Legal Advisory","OGC",1074,1.2],
+ ["Budget Operations","BRM",809,0.9],
+];
+const LIB=[
+ ["Final Documents","SARD","SARD Site",1120,3.2],["Board Papers","ITD","ITD Workspace",1040,2.1],
+ ["Project Completion","SARD","SARD Site",870,2.4],["Final Documents","ITD","ITD Workspace",760,1.6],
+ ["Procurement","PARD","PARD Procurement Site",738,4.2],["Loan Agreements","FIN","FIN Records Site",690,3.6],
+ ["Country Reports","OSFG","OSFG Country Site",640,4.8],["Final Documents","FIN","FIN Records Site",520,2.0],
+ ["Legal Case Files","OGC","OGC Advisory Site",462,1.2],["Policies","HRD","HRD Policies Site",405,3.0],
+];
+let level="Department", measure="records";
+function rowsFor(){
+  if(level==="Department")return DATA.map(d=>({label:d[0],sub:"",rec:d[1],doc:d[2]}));
+  if(level==="Division")return DIV.map(d=>({label:d[0],sub:d[1],rec:d[2],doc:d[3]}));
+  return LIB.map(l=>({label:l[0],sub:l[2]+" · "+l[1],rec:l[3],doc:l[4]}));
+}
+function drawCompare(){
+  const rows=rowsFor().map(r=>({...r,v:measure==="records"?r.rec:r.doc}))
+    .sort((a,b)=>b.v-a.v).slice(0,10);
+  const mx=Math.max(...rows.map(r=>r.v)),color=measure==="records"?"#0072BC":"#00A5A8";
+  const fmt=v=>measure==="records"?v.toLocaleString():v.toFixed(1)+"M";
+  document.getElementById("ov-compare").innerHTML=rows.map(r=>`
+    <div class="cbar"><div class="cl"><b>${r.label}</b>${r.sub?`<small>${r.sub}</small>`:""}</div>
+    <div class="ct"><div class="cf" style="width:${100*r.v/mx}%;background:${color}" title="${r.label}: ${fmt(r.v)}">${fmt(r.v)}</div></div></div>`).join("");
+}
+document.getElementById("ov-level").onchange=e=>{level=e.target.value;drawCompare();};
+document.querySelectorAll("#ov-measure button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#ov-measure button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");measure=b.dataset.m;drawCompare();
+});
+drawCompare();
+
+/* ============ INLINE PANEL: Total Created Sites (site-level) + Active users ============ */
+const panel=document.getElementById("ov-panel");
+
+/* [site, deptCode, deptName, created, createdInCloudGovernance(1/0), documents] */
+const SITES=[
+ ["ITD Workspace","ITD","Information Technology","12 May 2026",1,1240000],
+ ["ITD Sandbox Site","ITD","Information Technology","03 Mar 2026",1,96000],
+ ["ITD Digital Hub","ITD","Information Technology","21 Jan 2026",1,318000],
+ ["ITD Systems Records","ITD","Information Technology","09 Apr 2026",1,204000],
+ ["ITD Ops Portal","ITD","Information Technology","17 Feb 2026",1,142000],
+ ["ITD Shared Drive (legacy)","ITD","Information Technology","06 Aug 2020",0,610000],
+ ["SARD Site","SARD","South Asia Regional","03 Apr 2026",1,1080000],
+ ["SARD Programs Annex","SARD","South Asia Regional","28 Apr 2026",1,88000],
+ ["SARD Country Portal","SARD","South Asia Regional","14 Mar 2026",1,265000],
+ ["SARD Legacy Archive","SARD","South Asia Regional","11 Nov 2019",0,540000],
+ ["SARD Field Office","SARD","South Asia Regional","22 May 2026",1,73000],
+ ["OSFG Country Site","OSFG","Sovereign Operations","18 Mar 2026",1,940000],
+ ["OSFG Country Site 22","OSFG","Sovereign Operations","02 May 2026",1,180000],
+ ["OSFG Safeguards Site","OSFG","Sovereign Operations","09 Feb 2026",1,126000],
+ ["OSFG Reports Hub","OSFG","Sovereign Operations","25 Apr 2026",1,98000],
+ ["FIN Records Site","FIN","Finance","22 Mar 2026",1,820000],
+ ["FIN Audit Workspace","FIN","Finance","30 Apr 2026",1,64000],
+ ["FIN Treasury Portal","FIN","Finance","15 Feb 2026",1,151000],
+ ["FIN Old Finance Portal (legacy)","FIN","Finance","19 Jul 2018",0,430000],
+ ["PARD Procurement Site","PARD","Procurement & Admin","20 Apr 2026",1,690000],
+ ["PARD Vendor Portal","PARD","Procurement & Admin","06 May 2026",1,112000],
+ ["PARD Admin Hub","PARD","Procurement & Admin","28 Feb 2026",1,83000],
+ ["HRD Policies Site","HRD","Human Resources","09 Apr 2026",1,540000],
+ ["HRD Training Site","HRD","Human Resources","24 Apr 2026",1,71000],
+ ["HRD Shared Drive (legacy)","HRD","Human Resources","03 Sep 2021",0,205000],
+ ["SERD Regional Site","SERD","Southeast Asia","30 Mar 2026",1,430000],
+ ["SERD Field Office 3","SERD","Southeast Asia","12 May 2026",1,58000],
+ ["EARD Regional Site","EARD","East Asia Regional","28 Apr 2026",1,310000],
+ ["EARD Regional Annex","EARD","East Asia Regional","16 May 2026",1,49000],
+ ["OGC Advisory Site","OGC","General Counsel","15 May 2026",1,270000],
+ ["OGC Legal Records","OGC","General Counsel","07 Apr 2026",1,61000],
+ ["BRM Budget Site","BRM","Budget & Mgmt Services","22 May 2026",1,38000],
+];
+/* additional sample sites so the list spans several pages */
+(function(){
+  const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul"];
+  const base=[["ITD","Information Technology"],["SARD","South Asia Regional"],["OSFG","Sovereign Operations"],
+    ["FIN","Finance"],["PARD","Procurement & Admin"],["HRD","Human Resources"],["SERD","Southeast Asia"],
+    ["EARD","East Asia Regional"],["OGC","General Counsel"],["BRM","Budget & Mgmt Services"]];
+  const kinds=["Project Site","Team Site","Records Site","Archive Site","Programs Site","Reports Site","Ops Site"];
+  let n=0;
+  base.forEach((d,di)=>{
+    kinds.forEach((k,ki)=>{
+      n++;
+      const day=String(((n*3)%27)+1).padStart(2,"0");
+      const mon=MONTHS[(n+di)%MONTHS.length];
+      const cg=(n%9===0)?0:1;
+      const docs=((n*7919)%480000)+12000;
+      SITES.push([`${d[0]} ${k} ${String(ki+1).padStart(2,"0")}`,d[0],d[1],`${day} ${mon} 2026`,cg,docs]);
+    });
+  });
+})();
+const CREATED_ALL="4,120", CREATED_CG="3,940";
+const DEPTCODES=[...new Set(SITES.map(s=>s[1]))];
+let siteScope="all", ovDeptFilter="all";
+
+function ovDeptOptions(sel){
+  return `<option value="all">All departments</option>`+DEPTCODES.map(c=>{
+    const nm=(SITES.find(s=>s[1]===c)||[])[2]||c;
+    return `<option value="${c}" ${sel===c?"selected":""}>${c} — ${nm}</option>`;}).join("");
+}
+const PAGE_SIZE=20;
+let ovPage=1;
+function pagerHTML(total,page,pages,from,to){
+  if(pages<=1) return "";
+  let nums="";
+  const win=[];
+  for(let p=1;p<=pages;p++){ if(p===1||p===pages||Math.abs(p-page)<=1) win.push(p); }
+  let last=0;
+  win.forEach(p=>{ if(last && p-last>1) nums+=`<span style="color:var(--mut);font-size:12px">…</span>`;
+    nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`; last=p; });
+  return `<div class="pager">
+    <div class="pinfo">Showing ${from}–${to} of ${total.toLocaleString()} sites</div>
+    <div class="pbtns">
+      <button data-pg="prev" ${page===1?"disabled":""}>‹ Prev</button>
+      ${nums}
+      <button data-pg="next" ${page===pages?"disabled":""}>Next ›</button>
+    </div></div>`;
+}
+function renderCreatedSites(){
+  let rows=SITES.filter(s=> siteScope==="cg" ? s[4]===1 : true);
+  if(ovDeptFilter!=="all") rows=rows.filter(s=>s[1]===ovDeptFilter);
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(ovPage>pages) ovPage=pages;
+  if(ovPage<1) ovPage=1;
+  const start=(ovPage-1)*PAGE_SIZE, pageRows=rows.slice(start,start+PAGE_SIZE);
+  const from=total?start+1:0, to=start+pageRows.length;
+  const deptName=ovDeptFilter==="all"?"":((SITES.find(s=>s[1]===ovDeptFilter)||[])[2]||ovDeptFilter);
+  const scopeLabel = siteScope==="cg" ? "created in Cloud Governance" : "created";
+  const note = ovDeptFilter==="all" ? ""
+    : `<div class="muted" style="margin-top:8px">${deptName} has ${total} site${total===1?"":"s"} ${scopeLabel} (sample).</div>`;
+  panel.innerHTML=`
+    <div class="ptitle">Total Created Sites</div>
+    <div class="toggle" id="ov-scope" style="margin-bottom:10px">
+      <button class="${siteScope==='all'?'on':''}" data-scope="all">All created · ${CREATED_ALL}</button>
+      <button class="${siteScope==='cg'?'on':''}" data-scope="cg">Sites Created in Cloud Governance · ${CREATED_CG}</button>
+    </div>
+    <div class="filters">
+      <div class="ctl">Department<select id="ov-dept">${ovDeptOptions(ovDeptFilter)}</select></div>
+    </div>
+    <table><thead><tr><th>Site</th><th>Department</th><th>Created</th><th class="num">Documents</th></tr></thead>
+    <tbody>${pageRows.map(s=>`<tr>
+      <td><b>${s[0]}</b></td>
+      <td>${s[1]} <span style="color:var(--mut);font-size:11.5px">${s[2]}</span></td>
+      <td>${s[3]}</td>
+      <td class="num">${s[5].toLocaleString()}</td></tr>`).join("")}</tbody></table>
+    ${pagerHTML(total,ovPage,pages,from,to)}
+    ${note}`;
+  panel.querySelectorAll("#ov-scope button").forEach(b=>b.onclick=()=>{siteScope=b.dataset.scope;ovPage=1;renderCreatedSites();});
+  panel.querySelector("#ov-dept").onchange=e=>{ovDeptFilter=e.target.value;ovPage=1;renderCreatedSites();};
+  panel.querySelectorAll(".pager button[data-pg]").forEach(b=>b.onclick=()=>{
+    const v=b.dataset.pg;
+    if(v==="prev") ovPage=Math.max(1,ovPage-1);
+    else if(v==="next") ovPage=Math.min(pages,ovPage+1);
+    else ovPage=+v;
+    renderCreatedSites();
+  });
+}
+
+/* ---- date-range helpers (shared in this dashboard) ---- */
+const TODAY="2026-07-21";
+function daySpan(s,e){const d=Math.round((new Date(e)-new Date(s))/86400000);return d>0?d:0;}
+function daysAgo(n){const d=new Date(TODAY);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10);}
+function drng(id,s,e){return `<span class="drng">Start<input type="date" id="${id}s" value="${s}"><span class="sep">to</span>End<input type="date" id="${id}e" value="${e}"></span>`;}
+
+const USAGE=[
+ ["EDRMS Hub",210,1840,640,6200,18400],
+ ["SARD Site",150,1210,404,4100,12100],
+ ["Final Documents",120,980,331,3300,9800],
+ ["ITD Workspace",118,940,318,3150,9200],
+ ["Board Library",96,720,254,2400,7400],
+];
+const TOTAL_UV={7:694,30:1982,90:"—"}, TOTAL_SV={7:5690,30:19150,90:56900};
+let dayFilter=30;
+function renderUsers(){
+  const uvKey=dayFilter===7?1:dayFilter===30?3:null;
+  const svKey=dayFilter===7?2:dayFilter===30?4:5;
+  panel.innerHTML=`
+    <div class="ptitle">Active Users by Site</div>
+    <div class="dayf">
+      ${[7,30,90].map(d=>`<button class="${dayFilter===d?'on':''}" data-day="${d}">Last ${d} days</button>`).join("")}
+    </div>
+    <div style="font-size:12.5px;color:var(--ink2);margin:6px 0 2px">
+      Total unique viewers: <b>${TOTAL_UV[dayFilter]==="—"?"Not supported at 90 days":TOTAL_UV[dayFilter].toLocaleString()}</b>
+      &nbsp;·&nbsp; Total site visits: <b>${TOTAL_SV[dayFilter].toLocaleString()}</b>
+    </div>
+    <table><thead><tr><th>Site</th><th class="num">Unique viewers</th><th class="num">Site visits</th></tr></thead>
+    <tbody>${USAGE.map(u=>`<tr>
+      <td><b>${u[0]}</b></td>
+      <td class="num">${uvKey?u[uvKey].toLocaleString():'<span class="muted">Not supported</span>'}</td>
+      <td class="num">${u[svKey].toLocaleString()}</td></tr>`).join("")}</tbody></table>
+    ${dayFilter===90?`<div class="muted" style="margin-top:8px">SharePoint does not provide a 90-day unique-viewer figure; site visits are available for 90 days.</div>`:""}`;
+  panel.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>{dayFilter=+b.dataset.day;renderUsers();});
+}
+
+const RENDER={sites:renderCreatedSites,users:renderUsers};
+document.querySelectorAll("#page-ov .kpi").forEach(k=>{ if(!k.dataset.k) return; k.onclick=()=>{
+  k.closest(".kpis").querySelectorAll(".kpi").forEach(x=>x.classList.remove("on"));
+  k.classList.add("on"); if(RENDER[k.dataset.k]) RENDER[k.dataset.k]();
+};});
+
+/* ============ SITE ROLLOUT (3 bars) ============ */
+const PIPE=[["Sites created",4120,"#0072BC"],["Sites live",2860,"#00A5A8"],["Legacy read-only",1410,"#5CA943"]];
+const pmax=4120;
+document.getElementById("ov-pipeline").innerHTML=PIPE.map(p=>`
+  <div class="bar"><div class="bl">${p[0]}</div>
+  <div class="bt" style="width:${100*p[1]/pmax}%;background:${p[2]}">${p[1].toLocaleString()}</div></div>`).join("");
+
+/* init */
+renderCreatedSites();
+}
+
+function init_rec(){
+/* department display names */
+const DNAME={ITD:"Information Technology",SARD:"South Asia Regional",OSFG:"Sovereign Operations",FIN:"Finance",PARD:"Procurement & Admin",HRD:"Human Resources",SERD:"Southeast Asia",EARD:"East Asia Regional",OGC:"General Counsel",BRM:"Budget & Mgmt Services"};
+
+/* site-level records: [site, deptCode, declaredRecords, librariesWithRecords] */
+const SITEREC=[
+ ["ITD Workspace","ITD",1800,5],
+ ["ITD Sandbox Site","ITD",811,3],
+ ["SARD Site","SARD",1990,6],
+ ["SARD Programs Annex","SARD",250,1],
+ ["OSFG Country Site","OSFG",2168,9],
+ ["FIN Records Site","FIN",1700,5],
+ ["FIN Audit Workspace","FIN",450,1],
+ ["PARD Procurement Site","PARD",1892,6],
+ ["HRD Policies Site","HRD",1462,5],
+ ["SERD Regional Site","SERD",1320,5],
+ ["EARD Regional Site","EARD",1180,4],
+ ["OGC Advisory Site","OGC",1074,4],
+ ["BRM Budget Site","BRM",809,3],
+];
+/* additional sample sites so the list spans several pages */
+(function(){
+  const kinds=["Project Site","Team Site","Records Site","Archive Site","Programs Site","Reports Site","Ops Site"];
+  const codes=["ITD","SARD","OSFG","FIN","PARD","HRD","SERD","EARD","OGC","BRM"];
+  let n=0;
+  codes.forEach(c=>{
+    kinds.forEach((k,ki)=>{
+      n++;
+      const rec=((n*3187)%1750)+45;
+      const libs=(n%7)+1;
+      SITEREC.push([`${c} ${k} ${String(ki+1).padStart(2,"0")}`,c,rec,libs]);
+    });
+  });
+})();
+const MBPER=1.757;
+const TODAY="2026-07-21";
+function daySpan(s,e){const d=Math.round((new Date(e)-new Date(s))/86400000);return d>0?d:0;}
+function daysAgo(n){const d=new Date(TODAY);d.setDate(d.getDate()-n);return d.toISOString().slice(0,10);}
+function drng(id,s,e){return `<span class="drng"><input type="date" id="${id}s" value="${s}"><span class="sep">to</span><input type="date" id="${id}e" value="${e}"></span>`;}
+const fmt=n=>Math.round(n).toLocaleString();
+const panel=document.getElementById("rec-panel");
+let deptSel="all", perStart=daysAgo(90), perEnd=TODAY;
+
+const DEPTCODES=[...new Set(SITEREC.map(s=>s[1]))];
+function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTCODES.map(d=>`<option value="${d}" ${sel===d?"selected":""}>${d} — ${DNAME[d]||d}</option>`).join("");}
+
+const REC_PAGE_SIZE=20;
+let recPage=1;
+function recPagerHTML(total,page,pages,from,to){
+  if(pages<=1) return "";
+  let nums=""; const win=[];
+  for(let p=1;p<=pages;p++){ if(p===1||p===pages||Math.abs(p-page)<=1) win.push(p); }
+  let last=0;
+  win.forEach(p=>{ if(last && p-last>1) nums+=`<span style="color:var(--mut);font-size:12px">…</span>`;
+    nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`; last=p; });
+  return `<div class="pager">
+    <div class="pinfo">Showing ${from}–${to} of ${total.toLocaleString()} sites</div>
+    <div class="pbtns">
+      <button data-pg="prev" ${page===1?"disabled":""}>‹ Prev</button>
+      ${nums}
+      <button data-pg="next" ${page===pages?"disabled":""}>Next ›</button>
+    </div></div>`;
+}
+function renderBySite(){
+  const f=Math.max(0.02,Math.min(1,daySpan(perStart,perEnd)/365));
+  const rows=SITEREC.filter(s=>deptSel==="all"?true:s[1]===deptSel).slice().sort((a,b)=>b[2]-a[2]);
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/REC_PAGE_SIZE));
+  if(recPage>pages) recPage=pages;
+  if(recPage<1) recPage=1;
+  const start=(recPage-1)*REC_PAGE_SIZE, pageRows=rows.slice(start,start+REC_PAGE_SIZE);
+  const from=total?start+1:0, to=start+pageRows.length;
+  const deptNote = deptSel==="all" ? "" :
+    `<div class="muted" style="margin-top:8px">${DNAME[deptSel]||deptSel} has ${total} site${total===1?"":"s"} with records.</div>`;
+  panel.innerHTML=`
+    <div class="ptitle">Declared records by site</div>
+    <div class="filters">
+      <div class="ctl">Department<select id="fdept">${deptOptions(deptSel)}</select></div>
+      <div class="ctl">Date range ${drng("fp",perStart,perEnd)}</div>
+    </div>
+    <table><thead><tr><th>Site</th><th>Department</th><th class="num">Declared records</th><th class="num">Libraries with records</th><th class="num">Total size (MB)</th></tr></thead>
+    <tbody>${pageRows.map(s=>{const rec=s[2]*f;return `<tr>
+      <td><b>${s[0]}</b></td>
+      <td>${s[1]} <span style="color:var(--mut);font-size:11.5px">${DNAME[s[1]]||""}</span></td>
+      <td class="num">${fmt(rec)}</td><td class="num">${s[3]}</td><td class="num">${fmt(rec*MBPER)}</td></tr>`;}).join("")}</tbody></table>
+    ${recPagerHTML(total,recPage,pages,from,to)}
+    ${deptNote}`;
+  panel.querySelector("#fdept").onchange=e=>{deptSel=e.target.value;recPage=1;renderBySite();};
+  panel.querySelector("#fps").onchange=e=>{perStart=e.target.value;recPage=1;renderBySite();};
+  panel.querySelector("#fpe").onchange=e=>{perEnd=e.target.value;recPage=1;renderBySite();};
+  panel.querySelectorAll(".pager button[data-pg]").forEach(b=>b.onclick=()=>{
+    const v=b.dataset.pg;
+    if(v==="prev") recPage=Math.max(1,recPage-1);
+    else if(v==="next") recPage=Math.min(pages,recPage+1);
+    else recPage=+v;
+    renderBySite();
+  });
+}
+const RENDER={dept:renderBySite,dept2:renderBySite,sites:renderBySite};
+document.querySelectorAll("#page-rec .kpi").forEach(k=>{ if(!k.dataset.k) return; k.onclick=()=>{
+  k.closest(".kpis").querySelectorAll(".kpi").forEach(x=>x.classList.remove("on"));
+  k.classList.add("on"); if(RENDER[k.dataset.k]) RENDER[k.dataset.k]();
+};});
+
+/* page-level export */
+const pe=document.getElementById("rec-exp-page");
+if(pe)pe.onclick=()=>exportCSV("EDRMS_Records_Management_All.csv",
+  ["Site","Department","Department name","Declared records","Libraries with records","Total size (MB)"],
+  SITEREC.map(s=>[s[0],s[1],DNAME[s[1]]||"",s[2],s[3],Math.round(s[2]*MBPER)]));
+
+/* ---------- GROWTH TREND ---------- */
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const RECS={2026:[2400,4800,7400,10100,12600,14900,16906,18800,20400,22100,23600,25000],
+            2025:[150,360,640,980,1360,1760,2160,2560,2960,3400,3850,4300],
+            2024:[0,0,0,0,0,30,90,180,300,460,660,900]};
+function lineSVG(data,color,labels){
+  const W=1120,H=250,pl=52,pr=16,pt=16,pb=28,mx=Math.max(...data,1),plotW=W-pl-pr,plotH=H-pt-pb;
+  const n=Math.max(1,data.length-1);
+  const xs=i=>pl+plotW*i/n,ys=v=>pt+plotH*(1-v/mx);
+  const pts=data.map((v,i)=>`${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(" ");
+  const area=`${pl},${pt+plotH} ${pts} ${pl+plotW},${pt+plotH}`;
+  let ticks="";for(let t=0;t<=4;t++){const val=Math.round(mx*t/4),y=ys(val);
+    ticks+=`<line class="axis" x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}"/><text class="lbl" x="${pl-6}" y="${y+3}" text-anchor="end">${val>=1000?(val/1000)+'k':val}</text>`;}
+  const xl=labels.map((m,i)=>`<text class="lbl" x="${xs(i)}" y="${H-8}" text-anchor="middle">${m}</text>`).join("");
+  const dots=data.map((v,i)=>`<circle cx="${xs(i)}" cy="${ys(v)}" r="3.2" fill="${color}"><title>${labels[i]}: ${v.toLocaleString()}</title></circle>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:260px">${ticks}<polygon points="${area}" fill="${color}22"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5"/>${dots}${xl}</svg>`;
+}
+function clipTrend(dataByYear,sIso,eIso){
+  const sy=new Date(sIso).getFullYear(), ey=new Date(eIso).getFullYear();
+  const year=(dataByYear[sy]?sy:(dataByYear[ey]?ey:2026));
+  const full=dataByYear[year]||dataByYear[2026];
+  let m0=(sy===year)?new Date(sIso).getMonth():0, m1=(ey===year)?new Date(eIso).getMonth():11;
+  m0=Math.max(0,Math.min(11,m0)); m1=Math.max(m0,Math.min(11,m1));
+  return {data:full.slice(m0,m1+1),labels:MON.slice(m0,m1+1)};
+}
+function drawTrend(){
+  const s=document.getElementById("rec-yrs").value||"2026-01-01";
+  const e=document.getElementById("rec-yre").value||"2026-12-31";
+  const c=clipTrend(RECS,s,e);
+  document.getElementById("rec-trend").innerHTML=lineSVG(c.data,"#0E4B6E",c.labels);
+}
+document.getElementById("rec-yrs").onchange=drawTrend;
+document.getElementById("rec-yre").onchange=drawTrend;
+
+renderBySite(); drawTrend();
+}
+
+function init_mig(){
+/* ---------- MIGRATED DOCUMENTS (creation date < site go-live = migrated) ---------- */
+const DOCS=[
+ ["Loan_Agreement_4821-IND.pdf","SARD Site › Final Documents","SARD","South Asia Operations","12 Jan 2024","03 Apr 2026"],
+ ["Board_Paper_Q3_2023.docx","ITD Workspace › Board Papers","ITD","Digital Services","08 Sep 2023","12 Feb 2026"],
+ ["Country_Report_PHI_2023.pdf","OSFG Country Site › Country Reports","OSFG","Country Operations","21 Nov 2023","18 Mar 2026"],
+ ["Disbursement_Schedule_Q1.xlsx","FIN Records Site › Loan Agreements","FIN","Treasury","03 Feb 2024","22 Mar 2026"],
+ ["Procurement_Contract_882.pdf","PARD Procurement Site › Procurement","PARD","Procurement","17 Jun 2023","20 Apr 2026"],
+ ["HR_Policy_Manual_v4.docx","HRD Policies Site › Policies","HRD","People Operations","29 Mar 2024","01 Mar 2026"],
+ ["Legal_Opinion_2201.pdf","OGC Advisory Site › Legal Case Files","OGC","Legal Advisory","14 Oct 2023","15 May 2026"],
+ ["Regional_Brief_EARD.docx","EARD Regional Site › Country Reports","EARD","East Asia Operations","06 Dec 2023","28 Apr 2026"],
+];
+/* ---------- MIGRATED SITES: [site, deptCode, division, siteCreated, cgCreatedTime] ---------- */
+const SITES=[
+ ["SARD Site","SARD","South Asia Operations","15 Mar 2026","16 Mar 2026"],
+ ["ITD Workspace","ITD","Digital Services","02 Feb 2026","03 Feb 2026"],
+ ["OSFG Country Site","OSFG","Country Operations","10 Mar 2026","11 Mar 2026"],
+ ["FIN Records Site","FIN","Treasury","18 Mar 2026","19 Mar 2026"],
+ ["PARD Procurement Site","PARD","Procurement","14 Apr 2026","15 Apr 2026"],
+ ["HRD Policies Site","HRD","People Operations","24 Feb 2026","25 Feb 2026"],
+ ["OGC Advisory Site","OGC","Legal Advisory","08 May 2026","09 May 2026"],
+ ["EARD Regional Site","EARD","East Asia Operations","20 Apr 2026","21 Apr 2026"],
+];
+/* ---------- MIGRATED DOCS BY DEPARTMENT (millions) ---------- */
+const DEPTMIG=[["ITD","Information Technology",8.2],["SARD","South Asia Regional",6.1],["OSFG","Sovereign Operations",5.4],
+ ["FIN","Finance",4.8],["PARD","Procurement & Admin",3.9],["HRD","Human Resources",3.1],
+ ["SERD","Southeast Asia",2.3],["EARD","East Asia Regional",1.6],["OGC","General Counsel",1.0],["BRM","Budget & Mgmt",0.6]];
+
+const DEPTS=["ITD","SARD","OSFG","FIN","PARD","HRD","SERD","EARD","OGC","BRM"];
+let docDept="all", siteDept="all", migView="docs";
+const panel=document.getElementById("mig-panel");
+function deptOpts(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option ${sel===d?"selected":""}>${d}</option>`).join("");}
+
+function renderDocs(){
+  migView="docs";
+  const rows=DOCS.filter(r=>docDept==="all"?true:r[2]===docDept);
+  panel.innerHTML=`
+    <div class="ptitle">Migrated documents</div>
+    <div class="filters"><div class="ctl">Department<select id="dd">${deptOpts(docDept)}</select></div></div>
+    <table><thead><tr><th>Document</th><th>Site</th><th>Department</th><th>Division</th><th>Created</th><th>Site go-live</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td><b>${r[0]}</b></td><td>${r[1].split(" › ")[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join("")}</tbody></table>`;
+  panel.querySelector("#dd").onchange=e=>{docDept=e.target.value;renderDocs();};
+}
+function renderSites(){
+  migView="sites";
+  const rows=SITES.filter(r=>siteDept==="all"?true:r[1]===siteDept);
+  panel.innerHTML=`
+    <div class="ptitle">Migrated sites</div>
+    <div class="filters"><div class="ctl">Department<select id="sd">${deptOpts(siteDept)}</select></div></div>
+    <table><thead><tr><th>Site</th><th>Department</th><th>Division</th><th>Site created</th><th>CG created-time</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join("")}</tbody></table>`;
+  panel.querySelector("#sd").onchange=e=>{siteDept=e.target.value;renderSites();};
+}
+const RENDER={docs:renderDocs,sites:renderSites};
+document.querySelectorAll("#page-mig .kpi").forEach(k=>{ if(!k.dataset.k) return; k.onclick=()=>{
+  k.closest(".kpis").querySelectorAll(".kpi").forEach(x=>x.classList.remove("on"));
+  k.classList.add("on"); if(RENDER[k.dataset.k]) RENDER[k.dataset.k]();
+};});
+
+/* ---------- MIGRATED DOCS BY DIVISION (millions) ---------- */
+const DIVMIG=[["South Asia Operations","SARD",6.1],["Country Operations","OSFG",5.4],["Digital Services","ITD",5.0],
+ ["Treasury","FIN",4.8],["Procurement","PARD",3.9],["Infrastructure & Operations","ITD",3.2],
+ ["People Operations","HRD",3.1],["Southeast Asia Operations","SERD",2.3],["East Asia Operations","EARD",1.6],
+ ["Legal Advisory","OGC",1.0],["Budget Operations","BRM",0.6]];
+/* ---------- MIGRATED DOCS BY SITE (millions) ---------- */
+const SITEMIG=[["ITD Workspace","ITD",1.24],["SARD Site","SARD",1.08],["OSFG Country Site","OSFG",0.94],
+ ["FIN Records Site","FIN",0.82],["PARD Procurement Site","PARD",0.69],["HRD Policies Site","HRD",0.54],
+ ["EARD Regional Site","EARD",0.43],["OGC Advisory Site","OGC",0.31]];
+
+function bars(id,rows,color){
+  const data=[...rows].sort((a,b)=>b[2]-a[2]),mx=Math.max(...data.map(r=>r[2]));
+  document.getElementById(id).innerHTML=data.map(r=>`
+    <div class="dbar"><div class="dl"><b>${r[0]}</b><small>${r[1]}</small></div>
+    <div class="dt"><div class="df" style="width:${100*r[2]/mx}%;background:${color}">${r[2]}M</div></div></div>`).join("");
+}
+const LIBMIG=[["Final Documents","SARD Site · SARD",1.9],["Country Reports","OSFG Country Site · OSFG",1.7],
+ ["Procurement","PARD Procurement Site · PARD",1.5],["Board Papers","ITD Workspace · ITD",1.4],
+ ["Loan Agreements","FIN Records Site · FIN",1.3],["Final Documents","ITD Workspace · ITD",1.1],
+ ["Systems Records","ITD Workspace · ITD",1.0],["Policies","HRD Policies Site · HRD",0.9],
+ ["Final Documents","FIN Records Site · FIN",0.8],["Legal Case Files","OGC Advisory Site · OGC",0.6]];
+const CMP={Department:DEPTMIG,Division:DIVMIG,Site:SITEMIG,Library:LIBMIG};
+const CMPCOL={Department:"#0072BC",Division:"#00A5A8",Site:"#0E4B6E",Library:"#5CA943"};
+function drawCompare(){
+  const lvl=document.getElementById("mig-cmplevel").value;
+  const rows=[...CMP[lvl]].sort((a,b)=>b[2]-a[2]).slice(0,10),mx=rows[0][2],col=CMPCOL[lvl];
+  document.getElementById("mig-cmpbars").innerHTML=rows.map(r=>`
+    <div class="dbar"><div class="dl"><b>${r[0]}</b><small>${r[1]}</small></div>
+    <div class="dt"><div class="df" style="width:${100*r[2]/mx}%;background:${col}" title="${r[0]}: ${r[2]}M">${r[2]}M</div></div></div>`).join("");
+}
+document.getElementById("mig-cmplevel").onchange=drawCompare;
+drawCompare();
+
+/* page-level export follows whichever grid is open */
+const pe=document.getElementById("mig-exp-page");
+if(pe)pe.onclick=()=>{
+  if(migView==="sites"){
+    exportCSV("EDRMS_Migrated_Sites.csv",
+      ["Site","Department","Division","Site created","CG created-time"],
+      SITES.map(r=>[r[0],r[1],r[2],r[3],r[4]]));
+  } else {
+    exportCSV("EDRMS_Migrated_Documents.csv",
+      ["Document","Site","Department","Division","Created","Site go-live"],
+      DOCS.map(r=>[r[0],r[1].split(" › ")[0],r[2],r[3],r[4],r[5]]));
+  }
+};
+
+renderDocs();
+}
+
+function init_cont(){
+/* ---------- SOURCE DATA (per site › library, with dept/division) ---------- */
+/* [site, library, department, division, documents(M), sizeTB] */
+const ROWS=[
+ ["ITD Workspace","Board Papers","ITD","Digital Services",2.1,3.0],
+ ["ITD Workspace","Final Documents","ITD","Digital Services",1.6,2.3],
+ ["ITD Workspace","Systems Records","ITD","Infrastructure & Operations",6.1,8.9],
+ ["SARD Site","Final Documents","SARD","South Asia Operations",3.2,4.6],
+ ["SARD Site","Project Completion","SARD","South Asia Operations",2.4,3.5],
+ ["SARD Site","Country Reports","SARD","South Asia Programs",1.9,2.7],
+ ["OSFG Country Site","Country Reports","OSFG","Country Operations",4.8,7.0],
+ ["OSFG Country Site","Safeguards","OSFG","Country Operations",2.1,3.1],
+ ["FIN Records Site","Loan Agreements","FIN","Treasury",3.6,5.3],
+ ["FIN Records Site","Final Documents","FIN","Financial Control",2.0,2.9],
+ ["PARD Procurement Site","Procurement","PARD","Procurement",4.2,6.1],
+ ["HRD Policies Site","Policies","HRD","People Operations",3.0,4.4],
+ ["SERD Regional Site","Country Reports","SERD","Southeast Asia Operations",2.6,3.8],
+ ["EARD Regional Site","Country Reports","EARD","East Asia Operations",1.7,2.5],
+ ["OGC Advisory Site","Legal Case Files","OGC","Legal Advisory",1.2,1.7],
+ ["BRM Budget Site","Budget Files","BRM","Budget Operations",0.9,1.3],
+];
+/* additional sample rows so Division and Library groupings span several pages */
+(function(){
+  const libs=["Board Papers","Final Documents","Project Completion","Country Reports","Correspondence","Contracts","Reports Archive"];
+  const deptDiv={ITD:["Digital Services","Infrastructure & Operations","Applications"],
+   SARD:["South Asia Operations","South Asia Programs","South Asia Support"],
+   OSFG:["Country Operations","Safeguards Review","Sovereign Support"],
+   FIN:["Treasury","Financial Control","Accounting Services"],
+   PARD:["Procurement","Vendor Management","Admin Services"],
+   HRD:["People Operations","Learning & Development","HR Services"],
+   SERD:["Southeast Asia Operations","Southeast Asia Programs"],
+   EARD:["East Asia Operations","East Asia Programs"],
+   OGC:["Legal Advisory","Legal Operations"],
+   BRM:["Budget Operations","Management Services"]};
+  let n=0;
+  Object.keys(deptDiv).forEach(dc=>{
+    deptDiv[dc].forEach((dv,di)=>{
+      libs.forEach((lb,li)=>{
+        n++;
+        if(n%3===0) return;
+        const site=`${dc} ${["Project","Team","Records","Archive"][li%4]} Site ${String(di+1).padStart(2,"0")}`;
+        const docs=Math.round((((n*37)%42)+3)/10*10)/10;
+        ROWS.push([site,lb,dc,dv,docs,Math.round(docs*1.45*10)/10]);
+      });
+    });
+  });
+})();
+const DEPTS=[...new Set(ROWS.map(r=>r[2]))];
+
+/* ---------- TABLE PANEL (grouped count grid) ---------- */
+let groupBy="Department", deptSel="all";
+const panel=document.getElementById("cont-panel");
+const fmtM=v=>v.toFixed(1)+"M", fmtTB=v=>v.toFixed(1)+" TB";
+
+function aggregate(level,dept){
+  const src=ROWS.filter(r=>dept==="all"?true:r[2]===dept);
+  const map={};
+  src.forEach(r=>{
+    let key,label,site,parent;
+    if(level==="Department"){key=r[2];label=r[2];}
+    else if(level==="Division"){key=r[3];label=r[3];parent=r[2];}
+    else{key=r[0]+"|"+r[1];label=r[1];site=r[0];parent=r[2];}
+    if(!map[key])map[key]={label,site,parent,docs:0,size:0};
+    map[key].docs+=r[4];map[key].size+=r[5];
+  });
+  return Object.values(map).sort((a,b)=>b.docs-a.docs);
+}
+const CONT_PAGE_SIZE=20;
+let contPage=1;
+function contPagerHTML(total,page,pages,from,to,unit){
+  if(pages<=1) return "";
+  let nums=""; const win=[];
+  for(let p=1;p<=pages;p++){ if(p===1||p===pages||Math.abs(p-page)<=1) win.push(p); }
+  let last=0;
+  win.forEach(p=>{ if(last && p-last>1) nums+=`<span style="color:var(--mut);font-size:12px">…</span>`;
+    nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`; last=p; });
+  return `<div class="pager">
+    <div class="pinfo">Showing ${from}–${to} of ${total.toLocaleString()} ${unit}</div>
+    <div class="pbtns">
+      <button data-pg="prev" ${page===1?"disabled":""}>‹ Prev</button>
+      ${nums}
+      <button data-pg="next" ${page===pages?"disabled":""}>Next ›</button>
+    </div></div>`;
+}
+function renderDocs(){
+  const rows=aggregate(groupBy,deptSel);
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/CONT_PAGE_SIZE));
+  if(contPage>pages) contPage=pages;
+  if(contPage<1) contPage=1;
+  const start=(contPage-1)*CONT_PAGE_SIZE, pageRows=rows.slice(start,start+CONT_PAGE_SIZE);
+  const from=total?start+1:0, to=start+pageRows.length;
+  const unit = groupBy==="Department" ? "departments" : groupBy==="Division" ? "divisions" : "libraries";
+  let head,body;
+  if(groupBy==="Department"){
+    head=`<th>Department</th><th class="num">Documents</th><th class="num">Total size</th>`;
+    body=pageRows.map(r=>`<tr><td><b>${r.label}</b></td><td class="num">${fmtM(r.docs)}</td><td class="num">${fmtTB(r.size)}</td></tr>`).join("");
+  }else if(groupBy==="Division"){
+    head=`<th>Division</th><th>Department</th><th class="num">Documents</th><th class="num">Total size</th>`;
+    body=pageRows.map(r=>`<tr><td><b>${r.label}</b></td><td>${r.parent}</td><td class="num">${fmtM(r.docs)}</td><td class="num">${fmtTB(r.size)}</td></tr>`).join("");
+  }else{
+    head=`<th>Library</th><th>Site</th><th>Department</th><th class="num">Documents</th><th class="num">Total size</th>`;
+    body=pageRows.map(r=>`<tr><td><b>${r.label}</b></td><td>${r.site}</td><td>${r.parent}</td><td class="num">${fmtM(r.docs)}</td><td class="num">${fmtTB(r.size)}</td></tr>`).join("");
+  }
+  panel.innerHTML=`
+    <div class="ptitle">Documents across EDRMS sites</div>
+    <div class="filters">
+      <div class="ctl">Group by<select id="gb">
+        ${["Department","Division","Library"].map(g=>`<option ${groupBy===g?"selected":""}>${g}</option>`).join("")}</select></div>
+      <div class="ctl">Department<select id="dp">
+        <option value="all">All departments</option>${DEPTS.map(d=>`<option ${deptSel===d?"selected":""}>${d}</option>`).join("")}</select></div>
+    </div>
+    <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
+    ${contPagerHTML(total,contPage,pages,from,to,unit)}`;
+  panel.querySelector("#gb").onchange=e=>{groupBy=e.target.value;contPage=1;renderDocs();};
+  panel.querySelector("#dp").onchange=e=>{deptSel=e.target.value;contPage=1;renderDocs();};
+  panel.querySelectorAll(".pager button[data-pg]").forEach(b=>b.onclick=()=>{
+    const v=b.dataset.pg;
+    if(v==="prev") contPage=Math.max(1,contPage-1);
+    else if(v==="next") contPage=Math.min(pages,contPage+1);
+    else contPage=+v;
+    renderDocs();
+  });
+}
+let storPage=1;
+function renderStorage(){
+  const map={};
+  ROWS.forEach(r=>{if(!map[r[0]])map[r[0]]={site:r[0],dept:r[2],size:0};map[r[0]].size+=r[5];});
+  const rows=Object.values(map).sort((a,b)=>b.size-a.size);
+  const total=rows.length;
+  const pages=Math.max(1,Math.ceil(total/CONT_PAGE_SIZE));
+  if(storPage>pages) storPage=pages;
+  if(storPage<1) storPage=1;
+  const start=(storPage-1)*CONT_PAGE_SIZE, pageRows=rows.slice(start,start+CONT_PAGE_SIZE);
+  const from=total?start+1:0, to=start+pageRows.length;
+  panel.innerHTML=`
+    <div class="ptitle">Storage by site</div>
+    <table><thead><tr><th>Site</th><th>Department</th><th class="num">Storage</th></tr></thead>
+    <tbody>${pageRows.map(r=>`<tr><td><b>${r.site}</b></td><td>${r.dept}</td><td class="num">${fmtTB(r.size)}</td></tr>`).join("")}</tbody></table>
+    ${contPagerHTML(total,storPage,pages,from,to,"sites")}`;
+  panel.querySelectorAll(".pager button[data-pg]").forEach(b=>b.onclick=()=>{
+    const v=b.dataset.pg;
+    if(v==="prev") storPage=Math.max(1,storPage-1);
+    else if(v==="next") storPage=Math.min(pages,storPage+1);
+    else storPage=+v;
+    renderStorage();
+  });
+}
+const RENDER={docs:renderDocs,storage:renderStorage};
+document.querySelectorAll("#page-cont .kpi").forEach(k=>{ if(!k.dataset.k) return; k.onclick=()=>{
+  k.closest(".kpis").querySelectorAll(".kpi").forEach(x=>x.classList.remove("on"));
+  k.classList.add("on"); if(RENDER[k.dataset.k]) RENDER[k.dataset.k]();
+};});
+
+/* ---------- DOCUMENTS PER SITE (top 10, period filter) ---------- */
+/* per-site new documents by period */
+const SITEDOCS={
+ "This week":[["ITD Workspace",412],["SARD Site",388],["OSFG Country Site",341],["FIN Records Site",262],["PARD Procurement Site",198],["HRD Policies Site",120],["SERD Regional Site",96],["EARD Regional Site",72],["OGC Advisory Site",54],["BRM Budget Site",38]],
+ "This month":[["ITD Workspace",1720],["SARD Site",1610],["OSFG Country Site",1440],["FIN Records Site",1120],["PARD Procurement Site",860],["HRD Policies Site",540],["SERD Regional Site",420],["EARD Regional Site",320],["OGC Advisory Site",240],["BRM Budget Site",160]],
+ "Last 3 months":[["ITD Workspace",5100],["SARD Site",4820],["OSFG Country Site",4300],["FIN Records Site",3350],["PARD Procurement Site",2570],["HRD Policies Site",1610],["SERD Regional Site",1260],["EARD Regional Site",960],["OGC Advisory Site",720],["BRM Budget Site",480]],
+};
+const TODAY="2026-07-21";
+function daySpan(s,e){const d=Math.round((new Date(e)-new Date(s))/86400000);return d>0?d:0;}
+function drawSiteBars(){
+  const s=document.getElementById("cont-pss").value||"2026-04-22";
+  const e=document.getElementById("cont-pse").value||TODAY;
+  const f=Math.max(0.05,Math.min(1.4,daySpan(s,e)/90));
+  const base=SITEDOCS["Last 3 months"];
+  const data=base.map(d=>[d[0],Math.round(d[1]*f)]).sort((a,b)=>b[1]-a[1]).slice(0,10),mx=data[0][1]||1;
+  document.getElementById("cont-sitebars").innerHTML=data.map(d=>`
+    <div class="cbar"><div class="cl"><b>${d[0]}</b></div>
+    <div class="ct"><div class="cf" style="width:${100*d[1]/mx}%" title="${d[0]}: ${d[1].toLocaleString()} documents">${d[1].toLocaleString()}</div></div></div>`).join("");
+}
+document.getElementById("cont-pss").onchange=drawSiteBars;
+document.getElementById("cont-pse").onchange=drawSiteBars;
+
+/* ---------- STORAGE GROWTH (date range) ---------- */
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const STORAGE={2026:[10.0,12.1,14.0,16.0,18.1,20.4,22.9,25.1,27.0,29.2,31.1,33.0],
+               2025:[3.0,3.6,4.3,5.1,5.9,6.8,7.6,8.4,9.1,9.9,10.6,11.4],
+               2024:[0.4,0.6,0.9,1.2,1.5,1.8,2.1,2.4,2.7,3.0,3.3,3.6]};
+function lineSVG(data,color,labels){
+  const W=1120,H=250,pl=44,pr=16,pt=16,pb=28,mx=Math.max(...data,1),plotW=W-pl-pr,plotH=H-pt-pb;
+  const n=Math.max(1,data.length-1);
+  const xs=i=>pl+plotW*i/n,ys=v=>pt+plotH*(1-v/mx);
+  const pts=data.map((v,i)=>`${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(" ");
+  const area=`${pl},${pt+plotH} ${pts} ${pl+plotW},${pt+plotH}`;
+  let ticks="";for(let t=0;t<=4;t++){const val=(mx*t/4),y=ys(val);
+    ticks+=`<line class="axis" x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}"/><text class="lbl" x="${pl-6}" y="${y+3}" text-anchor="end">${val.toFixed(0)}</text>`;}
+  const xl=labels.map((m,i)=>`<text class="lbl" x="${xs(i)}" y="${H-8}" text-anchor="middle">${m}</text>`).join("");
+  const dots=data.map((v,i)=>`<circle cx="${xs(i)}" cy="${ys(v)}" r="3.2" fill="${color}"><title>${labels[i]}: ${v} TB</title></circle>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:260px">${ticks}<polygon points="${area}" fill="${color}22"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5"/>${dots}${xl}</svg>`;
+}
+function clipTrend(dataByYear,sIso,eIso){
+  const sy=new Date(sIso).getFullYear(), ey=new Date(eIso).getFullYear();
+  const year=(dataByYear[sy]?sy:(dataByYear[ey]?ey:2026));
+  const full=dataByYear[year]||dataByYear[2026];
+  let m0=(sy===year)?new Date(sIso).getMonth():0, m1=(ey===year)?new Date(eIso).getMonth():11;
+  m0=Math.max(0,Math.min(11,m0)); m1=Math.max(m0,Math.min(11,m1));
+  return {data:full.slice(m0,m1+1),labels:MON.slice(m0,m1+1)};
+}
+function drawTrend(){
+  const s=document.getElementById("cont-yrs").value||"2026-01-01";
+  const e=document.getElementById("cont-yre").value||"2026-12-31";
+  const c=clipTrend(STORAGE,s,e);
+  document.getElementById("cont-trend").innerHTML=lineSVG(c.data,"#0072BC",c.labels);
+}
+document.getElementById("cont-yrs").onchange=drawTrend;
+document.getElementById("cont-yre").onchange=drawTrend;
+
+/* page-level export */
+const pe=document.getElementById("cont-exp-page");
+if(pe)pe.onclick=()=>{
+  const data=aggregate("Department","all").map(r=>[r.label,r.docs.toFixed(1),r.size.toFixed(1)]);
+  exportCSV("EDRMS_Content_Volume_All.csv",["Department","Documents (M)","Total size (TB)"],data);
+};
+
+renderDocs(); drawSiteBars(); drawTrend();
+}
+
+
+const INITIALIZED={};
+function showPage(p){
+  document.querySelectorAll(".page").forEach(s=>s.classList.toggle("on",s.dataset.page===p));
+  document.querySelectorAll("nav a[data-page]").forEach(a=>a.classList.toggle("on",a.dataset.page===p));
+  const crumb=document.querySelector("#crumbTitle");
+  const label={ov:"Overview",rec:"Records Management Dashboard",mig:"Migration Dashboard",cont:"Content Volume Dashboard"}[p];
+  if(crumb)crumb.textContent=label;
+  if(!INITIALIZED[p]){ try{ window["init_"+p](); }catch(e){ console.error("init "+p,e);} INITIALIZED[p]=true; }
+  try{window.scrollTo(0,0);}catch(e){}
+}
+document.querySelectorAll("nav a[data-page]").forEach(a=>a.onclick=()=>showPage(a.dataset.page));
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-go]");
+  if(el){const map={"Records Management":"rec","Migration":"mig","Content Volume":"cont"};
+    const p=map[el.dataset.go]; if(p)showPage(p);}
+});
+showPage("ov");
+
+</script>
+</body></html>
