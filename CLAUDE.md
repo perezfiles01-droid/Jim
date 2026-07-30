@@ -23,11 +23,14 @@ connection has been built yet.
 
 ## 2. What to build first
 
-**Task:** Consolidate the standalone dashboard prototypes (Overview, Records
-Management, Sites and Libraries) into one navigable single-page Reporting Suite
-prototype: shared left-nav, shared header, and shared reusable components (KPI
-cards, stacked bars, treemap, sortable paginated tables,
-date-range-with-reset), all driven from one sample-data module.
+**Status: done.** Delivered as `EDRMS_Reporting_Suite_Integrated_v1.html`.
+
+**Task (as narrowed by the requester):** Integrate **two** dashboards, Sites and
+Libraries plus Records Management, into one navigable prototype. Overview was
+explicitly dropped from this pass. Everything was to stay exactly as it was in
+the source prototypes except one change: in Sites and Libraries, the date range
+filter on the "Sites created by department" panel moves to the right side of the
+panel.
 
 **Acceptance:** Opening one HTML file shows a working left-nav that switches
 between the dashboards; every KPI card, drill-down, sort control, date range,
@@ -38,6 +41,13 @@ errors.
 **Out of scope:** No backend, no real data connection, no Power BI file, no
 build tooling. Do not restyle away from the ADB look. Do not touch the separate
 Email Records Declaration stream.
+
+**Known deviation, deliberately left alone:** both source prototypes emit em
+dashes in visible text, which breaks the hard rule in section 8. They appear in
+the department dropdown options (`ITD — Information Technology`) and as KPI
+placeholder glyphs. These were inherited verbatim rather than fixed, because the
+requester asked for exactly one change. Worth fixing in a later pass: the fix is
+to change the separator in each `deptOptions` builder.
 
 ## 3. Tech stack
 
@@ -57,25 +67,41 @@ runtime): Node.js with pptxgenjs (PPTX), Python 3 with openpyxl (XLSX), docx-js
 **Repo:** `perezfiles01-droid/Jim` (the repo attached to this session, and the
 only one currently available). Confirm if a different owner/repo is intended.
 
-**Directory layout** (proposed for the consolidated prototype):
+**Layout: single file. The `index.html` + `assets/` + `dashboards/` split
+originally proposed here was dropped.** The requester's goal was that the
+prototype stop being a hassle to open, and a split folder means keeping several
+files together and serving them over a local HTTP server. One self-contained
+file just opens by double-click. The internals are still organized (see below),
+just concatenated into one deliverable.
 
-```
-/
-├── index.html                    # entry point, shell + nav, loads the rest
-├── assets/
-│   ├── styles.css                # ADB tokens + shared component styles
-│   ├── data.js                   # single sample-data module (departments, sites, libraries, records)
-│   └── components.js             # shared render helpers (kpiCard, stackedBar, treemap, table, pager, dateRange)
-└── dashboards/
-    ├── overview.js
-    ├── records-management.js
-    └── sites-and-libraries.js
-```
+**Entry point:** `EDRMS_Reporting_Suite_Integrated_v1.html`
 
-**Entry point:** `index.html`
+**How that file is structured internally:**
 
-**Note:** the current prototypes are each a single self-contained `.html` file.
-The task in section 2 is to refactor them into the layout above.
+- Shared shell CSS (tokens, sidebar, header, `.band`, `.kpi`, `.panel`,
+  `.pager`) is global.
+- Each dashboard's own CSS is **scoped** under a container class, `.dash-sl` for
+  Sites and Libraries and `.dash-rm` for Records Management. This is required,
+  not cosmetic: the two source prototypes use the same class names with
+  different values. `.sbar` is `200px 1fr 210px` in one and `210px 1fr 72px` in
+  the other, and the `.seg.e` / `.seg.p` segment colours are **inverted**
+  between them. `.kpis`, `.drange`, `.resetbtn`, `.legend`, and `select` also
+  differ.
+- Each dashboard's JS lives in its own IIFE in `DASHBOARDS.sl` / `DASHBOARDS.rm`,
+  exposing `{ver, crumb, asof, html, init}`. Only `F()` and `wirePager()` are
+  shared, because only those two were byte identical. `pager()` and
+  `deptOptions()` differ per dashboard and stay private: the Sites and Libraries
+  `pager()` prints a row count on a single page, the Records Management one
+  returns an empty string.
+- **Only one dashboard is mounted in the DOM at a time.** `switchTo(key)`
+  replaces `#view`, so both dashboards keep their original element ids
+  (`s1-detail`, `s2-kpis`, and so on) with no renaming and therefore no risk of
+  a missed reference. Nav switching also swaps the sidebar subtitle, breadcrumb,
+  and the per-dashboard "data as of" line.
+- Per-dashboard state (drill path, page, sort field, direction, which KPI is
+  open) persists across nav switches via the IIFE closure. Date input values do
+  not, since they are DOM state and the markup is replaced. Blank dates mean all
+  time, so the numbers stay correct either way.
 
 ## 5. Data model / core entities
 
@@ -181,16 +207,35 @@ plain ES2020, no external libraries.
 - **Optional deliverable scripts** (if present): `node build-deck.js`,
   `python3 build-workbook.py`.
 
-## 10. Existing code to work against
+## 10. Code in this repo
 
-The current standalone prototypes to refactor (latest versions):
+**Deliverable:**
+
+- `EDRMS_Reporting_Suite_Integrated_v1.html` - Sites and Libraries + Records
+  Management in one navigable file. See section 4 for its internal structure.
+
+**Source prototypes** (kept for reference, superseded by the integrated file):
 
 - `EDRMS_Sites_and_Libraries_Dashboard_v1.html`
 - `EDRMS_Records_Management_Dashboard_v3.html`
-- `EDRMS_Overview_Prototype_v20.html`
+- `EDRMS_Reporting_Suite_Prototype_v18.html`
+- `EDRMS_Reporting_Suite_Prototype_v19.html`
 
 Each is a self-contained HTML file with inline CSS and a single `<script>`
-holding both sample data and render logic.
+holding both sample data and render logic. Note that the Overview prototype
+referenced elsewhere as `v20` is **not** in this repo; the highest Overview
+versions available are v18 and v19.
 
-**Status: these files have not yet been added to this repo.** They need to be
-provided (committed here, or pasted in) before the section 2 refactor can begin.
+## 11. Verification
+
+The integrated prototype was checked in headless Chromium (Playwright driving
+`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`) across 100 assertions
+covering: nav switching and header swaps, KPI totals, the four-level drill down,
+date range filtering and reset, pagers, sort field and direction toggles,
+department filters, the 90-day unique-viewer fallback note, treemap
+reconciliation (in-range tile equals the sum of its blocks), the scoped CSS
+values that differ between the two dashboards, absence of duplicate element ids,
+and no horizontal overflow. Result: 100 of 100 passing, no console errors.
+
+There is no automated test committed. Re-verify manually against the acceptance
+checklist in section 2 after changes.
