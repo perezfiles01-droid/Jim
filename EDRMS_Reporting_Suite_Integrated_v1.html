@@ -130,6 +130,40 @@
   .dash-rm .stat .sl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
   .dash-rm .stat .sv{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
   .dash-rm .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
+
+  /* ===== Format and Storage, scoped ===== */
+  .dash-fs .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,320px));gap:16px;margin-bottom:16px}
+  @media(max-width:740px){.dash-fs .kpis{grid-template-columns:1fr}}
+  .dash-fs .sortrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-fs .sortrow .lbl{font-size:12px;color:var(--mut)}
+  .dash-fs .segctl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .dash-fs .segctl button{font:inherit;font-size:12px;border:none;padding:6px 12px;cursor:pointer;color:var(--ink2);background:#fff;border-left:1px solid var(--line)}
+  .dash-fs .segctl button:first-child{border-left:none}
+  .dash-fs .segctl button.on{background:var(--blue);color:#fff;font-weight:600}
+  .dash-fs .dirbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .dash-fs .dirbtn:hover{border-color:var(--blue)}
+  /* format table: one shared column template across head, rows, and total */
+  .dash-fs .ftab{--fc:190px 1fr 1fr 1fr}
+  .dash-fs .fhead,.dash-fs .frow,.dash-fs .ftot{display:grid;grid-template-columns:var(--fc);gap:14px;align-items:center}
+  .dash-fs .fhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .dash-fs .fhead .num{text-align:right;padding-right:9px}
+  .dash-fs .fhead .num.on{color:var(--blue);font-weight:700}
+  .dash-fs .frow{margin-bottom:8px}
+  .dash-fs .frow .fname{font-size:13px;font-weight:600}
+  .dash-fs .fcell{position:relative;height:26px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;overflow:hidden}
+  .dash-fs .fcell .fbar{position:absolute;left:0;top:0;height:26px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
+  .dash-fs .fcell b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-fs .ftot{border-top:1px solid var(--line);margin-top:4px;padding-top:11px;font-weight:700}
+  .dash-fs .ftot .fname{font-size:13px}
+  .dash-fs .ftot .tv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;padding-right:9px}
+  /* declared records by format */
+  .dash-fs .rbar{display:grid;grid-template-columns:190px 1fr 132px;align-items:center;gap:14px;margin-bottom:9px}
+  .dash-fs .rbar .rl{font-size:13px;font-weight:600}
+  .dash-fs .rbar .rt{background:#F3F7FB;border-radius:6px;height:26px;overflow:hidden}
+  .dash-fs .rbar .rf{height:26px;background:var(--blue);border-radius:6px;transition:width .6s ease}
+  .dash-fs .rbar .rv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .dash-fs .rbar .rv b{font-weight:700;color:var(--ink)}
+  .dash-fs .rbar .rv span{color:var(--mut)}
 </style></head>
 <body>
 <aside id="side">
@@ -140,7 +174,7 @@
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
-    <a class="dis"><span class="ic">◫</span>Format &amp; Storage</a>
+    <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
     <a class="dis"><span class="ic">⏳</span>Retention</a>
   </nav>
 </aside>
@@ -765,6 +799,110 @@ DASHBOARDS.rm=(function(){
     ver:"Records Management Dashboard",
     crumb:"Records Management Dashboard",
     asof:"Data as of Mon 20 Jul 2026 23:59 · refreshed Tue 21 Jul 06:00",
+    /* exposed so Format and Storage can assert its format counts still add up
+       to the same declared records total */
+    annualRec:ANNUAL_REC,
+    html,init
+  };
+})();
+
+/* ===================================================================
+   Format and Storage
+   Built from the approved mockup. Must be defined after DASHBOARDS.rm,
+   because it asserts against that dashboard's declared records total.
+   =================================================================== */
+DASHBOARDS.fs=(function(){
+  /* Average file size is DERIVED, never stored: storageGB * 1024 / files. */
+  const FORMATS=[
+    {label:"PDF",                files:8200, gb:9.6},
+    {label:"Word",               files:5100, gb:3.0},
+    {label:"Excel",              files:3050, gb:2.7},
+    {label:"Email (.msg / .eml)",files:2100, gb:0.6},
+    {label:"PowerPoint",         files:1350, gb:5.9},
+    {label:"Image files",        files:980,  gb:3.6},
+    {label:"Video files",        files:466,  gb:20.5},
+    {label:"All other formats",  files:400,  gb:0.8},
+  ];
+  const avgOf=f=>f.files?f.gb*1024/f.files:0;
+  const TOT_FILES=FORMATS.reduce((a,f)=>a+f.files,0);
+  const TOT_GB=FORMATS.reduce((a,f)=>a+f.gb,0);
+  const TOT_AVG=TOT_FILES?TOT_GB*1024/TOT_FILES:0;
+
+  /* The format file counts are a decomposition of Total Declared Records on the
+     Records Management dashboard. If the department data over there ever
+     changes, this fires so the two dashboards cannot silently drift apart. */
+  console.assert(TOT_FILES===DASHBOARDS.rm.annualRec,
+    `Format and Storage total files (${TOT_FILES}) does not match Records Management declared records (${DASHBOARDS.rm.annualRec})`);
+
+  const COLS=[{k:"files",label:"Number of files"},{k:"gb",label:"Storage (GB)"},{k:"avg",label:"Avg file size (MB)"}];
+  const valOf={files:f=>f.files, gb:f=>f.gb, avg:f=>avgOf(f)};
+  const fmtOf={files:f=>F(f.files), gb:f=>f.gb.toFixed(1)+" GB", avg:f=>avgOf(f).toFixed(1)};
+
+  let field="files",dir="desc";
+
+  function drawTable(){
+    document.querySelectorAll("#fs-field button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));
+    document.getElementById("fs-dir").innerHTML=(dir==="desc"?'▼ Highest first':'▲ Lowest first');
+    const rows=[...FORMATS].sort((a,b)=>dir==="desc"?valOf[field](b)-valOf[field](a):valOf[field](a)-valOf[field](b));
+    const mx={};COLS.forEach(c=>{mx[c.k]=Math.max(...FORMATS.map(f=>valOf[c.k](f)),0.0001);});
+    let h=`<div class="fhead"><span>Format</span>`+
+      COLS.map(c=>`<span class="num ${c.k===field?'on':''}" data-col="${c.k}">${c.label}</span>`).join("")+`</div>`;
+    h+=rows.map(f=>`<div class="frow"><span class="fname">${f.label}</span>`+
+      COLS.map(c=>{const w=Math.max(2,100*valOf[c.k](f)/mx[c.k]);
+        return `<span class="fcell"><i class="fbar" style="width:${w}%"></i><b>${fmtOf[c.k](f)}</b></span>`;}).join("")+
+      `</div>`).join("");
+    h+=`<div class="ftot"><span class="fname">Total</span><span class="tv">${F(TOT_FILES)}</span><span class="tv">${TOT_GB.toFixed(1)} GB</span><span class="tv">${TOT_AVG.toFixed(1)}</span></div>`;
+    document.getElementById("fs-table").innerHTML=h;
+  }
+  function drawRecords(){
+    const rows=[...FORMATS].sort((a,b)=>b.files-a.files);
+    const mx=Math.max(...rows.map(r=>r.files),1);
+    document.getElementById("fs-records").innerHTML=rows.map(r=>{
+      const pct=TOT_FILES?r.files/TOT_FILES*100:0;
+      return `<div class="rbar"><div class="rl">${r.label}</div>
+        <div class="rt"><div class="rf" style="width:${Math.max(2,100*r.files/mx)}%"></div></div>
+        <div class="rv"><b>${F(r.files)}</b><span> · ${pct.toFixed(1)}%</span></div></div>`;}).join("");
+  }
+
+  const html=`<section class="dash-fs">
+    <div class="band">
+      <h2>Storage footprint by file format</h2>
+      <div class="bd">Which file formats consume the most storage across EDRMS compliant sites, and how declared records break down by format.</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi on"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Storage consumed by format</div>
+      <div class="psub">File formats ranked by number of files, storage consumed, and average file size. Bars are scaled within each column, so the longest bar in a column is that column's largest value.</div>
+      <div class="sortrow"><span class="lbl">Sort by</span>
+        <div class="segctl" id="fs-field"><button data-f="files">Files</button><button data-f="gb">Storage</button><button data-f="avg">Avg file size</button></div>
+        <button class="dirbtn" id="fs-dir"></button></div>
+      <div class="ftab" id="fs-table"></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi on"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by format</div>
+      <div class="psub">Declared records broken down by file format, as a count and as a share of all declared records.</div>
+      <div id="fs-records"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-fsgb").textContent=TOT_GB.toFixed(1)+" GB";
+    document.getElementById("kpi-fstop").textContent=FORMATS.reduce((a,b)=>b.files>a.files?b:a).label;
+    document.querySelectorAll("#fs-field button").forEach(b=>b.onclick=()=>{field=b.dataset.f;drawTable();});
+    document.getElementById("fs-dir").onclick=()=>{dir=dir==="desc"?"asc":"desc";drawTable();};
+    drawTable();drawRecords();
+  }
+
+  return {
+    ver:"Format and Storage Dashboard",
+    crumb:"Format and Storage Dashboard",
+    asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
     html,init
   };
 })();

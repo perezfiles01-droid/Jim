@@ -56,6 +56,26 @@ Email Records Declaration stream.
    is already on the KPI card above, so the note was redundant; the filtered
    total is not shown anywhere else, so that variant was kept.
 
+3. **Format and Storage added as a third dashboard**, built from an approved
+   mockup. Structure follows the Sites and Libraries section-1 pattern: one
+   band, then two KPI cards that are always open with their panel beneath, no
+   click-to-toggle. Panel 1 is a four-column table (format, number of files,
+   storage GB, avg file size MB) with in-cell bars scaled per column, a sort
+   picker (Files, Storage, Avg file size) with a highest/lowest toggle, the
+   active sort column highlighted in blue, and a totals row. Panel 2 is a
+   horizontal bar chart of declared records by format with count and share.
+   Decisions taken with the requester: KPI 1 shows total storage `46.7 GB`,
+   KPI 2 shows the format name `PDF` (a deliberate exception to the
+   title-and-number-only rule, since the value is categorical), default sort is
+   Files highest first, and **no data dependency note is rendered** because it
+   is covered verbally in the presentation.
+
+   Average file size is **derived, never stored**: `storageGB * 1024 / files`.
+   The eight format file counts are a decomposition of Total Declared Records,
+   so they must sum to `ANNUAL_REC`. The Records Management module exposes
+   `annualRec` for this, and Format and Storage runs a `console.assert` at load
+   so the two dashboards cannot silently drift apart if department data changes.
+
 **Known deviation, deliberately left alone:** both source prototypes emit em
 dashes in visible text, which breaks the hard rule in section 8. They appear in
 the department dropdown options (`ITD — Information Technology`) and as KPI
