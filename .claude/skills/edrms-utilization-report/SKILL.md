@@ -154,9 +154,13 @@ made, so the next session does not re-ask.
 
 ## Verification, before you deliver
 
-Claims about this file need to be earned, not assumed. Chromium and Playwright
-are available; `scripts/verify.js` bundles the generic checks so you do not have
-to rebuild the harness each time:
+Claims about this file need to be earned, not assumed.
+
+`scripts/verify.js` bundles the generic checks so you do not have to rebuild the
+harness each time. It needs Node plus a Chromium binary, which the Claude Code
+remote environment has at `/opt/pw-browsers`. In an environment without them
+(claude.ai chat, for instance) you cannot run it, so say plainly that the change
+is unverified rather than implying it was checked.
 
 ```bash
 cd /tmp && npm i playwright-core   # once per session
