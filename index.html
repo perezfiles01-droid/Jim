@@ -4,17 +4,240 @@
 <!-- Inline favicon, so a served copy does not 404 on /favicon.ico. A data URI
      keeps it a zero request asset and avoids a binary file in the repo. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230E1F35'/><rect x='7' y='17' width='4' height='8' fill='%239DB8D2'/><rect x='14' y='12' width='4' height='13' fill='%2300A5A8'/><rect x='21' y='7' width='4' height='18' fill='%230072BC'/></svg>">
-<!-- Shared shell first, then one stylesheet per dashboard. -->
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="sitesandlibraries.css">
-<link rel="stylesheet" href="recordsmanagement.css">
-<link rel="stylesheet" href="formatandstorage.css">
-</head>
+<style>
+
+/* ================= styles.css ================= */
+/* Shared shell styles for the EDRMS Reporting Suite.
+   Tokens, sidebar, header, band, KPI card, panel, pager.
+   Anything that differs between dashboards lives in that dashboard's
+   own folder instead, because the source prototypes reuse class names
+   with different values and inverted series colours. */
+  /* ===== shared shell tokens (union of both dashboards) ===== */
+  :root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--blue-d:#005A96;--teal:#00A5A8;--green:#5CA943;--orange:#E8763C;--greyblue:#9DB8D2;--deepblue:#1B5E82;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--nav-hi:#16304F;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif;--shadow:0 1px 2px rgba(16,36,62,.06),0 4px 14px rgba(16,36,62,.06)}
+  *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;display:flex}
+  #side{width:236px;min-width:236px;background:var(--nav);color:#C7D3E0;display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+  #side .brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+  #side .t1{font-family:var(--serif);font-size:18px;color:#fff;line-height:1.25}
+  #side .t2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7FA8CC;margin-top:4px}
+  #side .ver{font-size:10px;color:#5E748C;margin-top:6px}
+  nav{flex:1;padding:8px 0}
+  .grp{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5E748C;padding:12px 18px 6px}
+  nav a{display:flex;align-items:center;gap:10px;padding:8px 18px;color:#C7D3E0;font-size:13.5px;border-left:3px solid transparent;text-decoration:none}
+  nav a[data-d]{cursor:pointer}
+  nav a[data-d]:hover{background:var(--nav-hi);color:#fff}
+  nav a .ic{width:18px;text-align:center;opacity:.85}
+  nav a.on{background:var(--nav-hi);color:#fff;border-left-color:var(--green);font-weight:600}
+  nav a.dis{color:#4C6079;cursor:default}nav a.dis .ic{opacity:.5}
+  #main{flex:1;min-width:0;display:flex;flex-direction:column}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  .crumb{font-size:12px;color:var(--mut)}.crumb b{color:var(--ink);font-size:15px;font-family:var(--serif);display:block}
+  .spacer{flex:1}
+  #asof{font-size:11.5px;color:var(--mut)}
+  section{padding:20px 22px 46px}
+  .band{background:#E9F0F7;border:1px solid #DAE5F0;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .band h2{font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.3}
+  .band .bd{font-size:12.5px;color:var(--ink2);margin-top:6px;max-width:900px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;border-left:4px solid transparent}
+  .kpi:hover{transform:translateY(-2px)}
+  .kpi.on{border-left-color:var(--blue);box-shadow:0 0 0 2px rgba(0,114,188,.22),var(--shadow)}
+  .kpi .lab{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
+  .kpi .val{font-size:30px;font-weight:700;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi .tap{font-size:11px;color:var(--blue);margin-top:8px;font-weight:600}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:26px}
+  .ptitle{font-size:16px;font-weight:700;font-family:var(--serif);margin-bottom:3px}
+  .psub{font-size:12px;color:var(--mut);margin-bottom:14px;max-width:900px}
+  .muted{color:var(--mut);font-style:italic;font-size:12px}
+  .pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .pager .pinfo{font-size:12px;color:var(--mut)}
+  .pager .pbtns{display:flex;align-items:center;gap:6px}
+  .pager button{font:inherit;font-size:12px;font-weight:600;border:1px solid #cfd8e3;background:#fff;color:var(--ink2);border-radius:6px;padding:5px 10px;cursor:pointer}
+  .pager button:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+  .pager button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .pager button:disabled{opacity:.45;cursor:default}
+
+
+/* ================= overview.css ================= */
+/* Overview: scoped styles. Only loaded shapes under .dash-ov. */
+  .dash-ov .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+  .dash-ov .kpi .tap{display:flex;align-items:center;gap:4px}
+
+  /* panel header carries the link through to the detailed dashboard */
+  .dash-ov .phead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .dash-ov .phead .ptitle{margin-bottom:3px}
+  .dash-ov .phead .psub{margin-bottom:0}
+  .dash-ov .golink{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:7px 13px;cursor:pointer;white-space:nowrap}
+  .dash-ov .golink:hover{background:var(--blue);color:#fff}
+
+  /* a row of chart cards, wrapping on narrow screens */
+  .dash-ov .crow{display:flex;gap:18px;flex-wrap:wrap;align-items:stretch}
+  .dash-ov .chart{flex:1 1 285px;min-width:285px;background:#F8FAFC;border:1px solid #E4EBF3;border-radius:10px;padding:14px 16px}
+  .dash-ov .chart.wide{flex:2 1 380px}
+  .dash-ov .ctitle{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+  .dash-ov .cwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+
+  /* donut legend */
+  .dash-ov .dleg{flex:1 1 175px;min-width:175px}
+  .dash-ov .dlrow{display:grid;grid-template-columns:12px 1fr auto auto;align-items:start;gap:8px;font-size:11.5px;margin-bottom:8px}
+  .dash-ov .dlrow .sw{width:12px;height:12px;border-radius:3px;margin-top:2px}
+  .dash-ov .dlrow .dlab{color:var(--ink2);line-height:1.35}
+  .dash-ov .dlrow .dval{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-ov .dlrow .dpct{color:var(--mut);font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
+
+  /* top N horizontal bars */
+  .dash-ov .tbar{display:grid;grid-template-columns:150px 1fr 74px;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-ov .tbar .tl b{font-size:12.5px;font-weight:700}
+  .dash-ov .tbar .tl small{display:block;color:var(--mut);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dash-ov .tbar .tt{background:#E9EFF6;border-radius:6px;height:24px;overflow:hidden}
+  .dash-ov .tbar .tf{height:24px;background:var(--blue);border-radius:6px;transition:width .6s ease}
+  .dash-ov .tbar .tv{text-align:right;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* two magnitudes compared on a shared scale */
+  .dash-ov .gap{margin-bottom:11px}
+  .dash-ov .gap .gl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink2);margin-bottom:5px}
+  .dash-ov .gap .gl b{font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-ov .gap .gt{background:#E9EFF6;border-radius:6px;height:22px;overflow:hidden}
+  .dash-ov .gap .gf{height:22px;border-radius:6px;transition:width .6s ease}
+  .dash-ov .callout{background:#EEF5FC;border:1px solid #CFE0F2;border-left:3px solid var(--blue);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.55;margin-top:12px}
+  .dash-ov .callout b{color:var(--ink)}
+
+  /* small stat strip inside a chart card */
+  .dash-ov .mini{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+  .dash-ov .mini div{font-size:11.5px;color:var(--mut)}
+  .dash-ov .mini b{display:block;font-size:17px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+
+/* ================= sitesandlibraries.css ================= */
+/* Sites and Libraries: scoped styles. Only loaded shapes under .dash-sl. */
+  /* ===== Sites and Libraries, scoped ===== */
+  .dash-sl .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,320px));gap:16px;margin-bottom:16px}
+  @media(max-width:740px){.dash-sl .kpis{grid-template-columns:1fr}}
+  .dash-sl .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;font-size:12.5px;color:var(--mut)}
+  .dash-sl .drange{display:inline-flex;align-items:center;gap:6px;border:1px solid #EAD9C8;background:#FDF7F0;border-radius:8px;padding:5px 9px;color:var(--mut)}
+  .dash-sl .drange input[type=date]{font:inherit;font-size:12px;border:1px solid #cfd8e3;border-radius:6px;padding:3px 7px;color:var(--ink);background:#fff;height:28px;width:120px}
+  .dash-sl .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .dash-sl .resetbtn:hover{background:var(--blue);color:#fff}
+  .dash-sl select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:#fff;color:var(--ink)}
+  .dash-sl .tiles{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-sl .tile{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:180px}
+  .dash-sl .tile.hi{border-color:#CFE0F2;background:#EEF5FC}
+  .dash-sl .tile .tl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+  .dash-sl .tile .tv{font-size:24px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  /* date range moved to the right of the tiles row */
+  .dash-sl .tilesrow{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-sl .tilesrow .tiles{margin-bottom:0}
+  .dash-sl .stfilter{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .dash-sl .tmlegend{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--mut)}
+  .dash-sl .tmlegend .sw{width:22px;height:11px;border-radius:3px}
+  .dash-sl .legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink2)}
+  .dash-sl .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .dash-sl .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .dash-sl .sortwrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-sl .sortctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dash-sl .sortctl .lbl{font-size:12px;color:var(--mut)}
+  .dash-sl .segctl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .dash-sl .segctl button{font:inherit;font-size:12px;border:none;padding:6px 12px;cursor:pointer;color:var(--ink2);background:#fff;border-left:1px solid var(--line)}
+  .dash-sl .segctl button:first-child{border-left:none}
+  .dash-sl .segctl button.on{background:var(--blue);color:#fff;font-weight:600}
+  .dash-sl .dirbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .dash-sl .dirbtn:hover{border-color:var(--blue)}
+  .dash-sl .sbar{display:grid;grid-template-columns:200px 1fr 210px;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-sl .sbar .sl b{font-size:13px;font-weight:600}.dash-sl .sbar .sl small{display:block;color:var(--mut);font-size:11px}
+  .dash-sl .sbar .st{background:#EEF3F8;border-radius:6px;overflow:hidden;display:flex;height:26px}
+  .dash-sl .sbar .seg{height:26px;transition:width .5s ease}
+  .dash-sl .sbar .seg.e{background:var(--teal)}.dash-sl .sbar .seg.p{background:var(--greyblue)}
+  .dash-sl .sbar .single{height:26px;background:var(--blue);border-radius:6px;transition:width .5s ease}
+  .dash-sl .sbar .vv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .dash-sl .sbar .vv b{color:var(--ink);font-weight:600}.dash-sl .sbar .vv span{color:var(--mut)}
+
+
+/* ================= recordsmanagement.css ================= */
+/* Records Management: scoped styles. Only loaded shapes under .dash-rm. */
+  /* ===== Records Management, scoped ===== */
+  .dash-rm .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,300px));gap:16px;margin-bottom:16px}
+  @media(max-width:700px){.dash-rm .kpis{grid-template-columns:1fr}}
+  .dash-rm .drill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);margin-bottom:14px;flex-wrap:wrap;font-weight:600;letter-spacing:.03em}
+  .dash-rm .drill a{color:var(--blue);cursor:pointer;text-transform:uppercase}
+  .dash-rm .drill .cur{text-transform:uppercase;color:var(--mut)}
+  .dash-rm .drill .arw{opacity:.55;font-weight:400}
+  .dash-rm .daterow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .dash-rm .drange{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);border:1px solid #EAD9C8;background:#FDF7F0;border-radius:8px;padding:7px 10px}
+  .dash-rm .drange input[type=date]{font:inherit;font-size:12px;border:1px solid #cfd8e3;border-radius:6px;padding:4px 8px;color:var(--ink);background:#fff}
+  .dash-rm .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+  .dash-rm .resetbtn:hover{background:var(--blue);color:#fff}
+  .dash-rm .subtotal{font-size:12px;color:var(--ink2)}
+  .dash-rm .subtotal b{color:var(--ink)}
+  .dash-rm .legend{display:flex;gap:18px;align-items:center;font-size:11.5px;color:var(--ink2);margin:2px 0 14px}
+  .dash-rm .legend .lg{display:inline-flex;align-items:center;gap:6px}
+  .dash-rm .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .dash-rm .sbar{display:grid;grid-template-columns:210px 1fr 72px;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-rm .sbar.click .sl b{color:var(--blue);cursor:pointer}
+  .dash-rm .sbar .sl b{font-size:13px}.dash-rm .sbar .sl small{display:block;color:var(--mut);font-size:11px}
+  .dash-rm .sbar .st{background:#EEF3F8;border-radius:6px;overflow:hidden;display:flex;height:26px}
+  .dash-rm .sbar .seg{height:26px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;overflow:hidden;transition:width .6s ease}
+  .dash-rm .sbar .seg.e{background:var(--greyblue)}.dash-rm .sbar .seg.p{background:var(--teal)}
+  .dash-rm .sbar .sv{text-align:right;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .dash-rm .cbar{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-rm .cbar.act{grid-template-columns:210px 1fr 92px}
+  .dash-rm .cbar .cl b{font-size:13px}.dash-rm .cbar .cl small{display:block;color:var(--mut);font-size:11px}
+  .dash-rm .cbar .ct{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
+  .dash-rm .cbar .cf{height:26px;border-radius:6px;color:#fff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:32px;font-variant-numeric:tabular-nums;transition:width .6s ease}
+  .dash-rm .cbar .la{font-size:12px;color:var(--ink2);text-align:right;font-weight:600}
+  .dash-rm .colhead{display:grid;grid-template-columns:210px 1fr 92px;gap:12px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;padding-top:4px}
+  .dash-rm .colhead .c2{text-align:center}.dash-rm .colhead .c3{text-align:right}
+  .dash-rm .toolbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .dash-rm .dayf{display:flex;gap:6px;flex-wrap:wrap}
+  .dash-rm .dayf button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 14px;cursor:pointer;color:var(--ink2)}
+  .dash-rm .dayf button.on{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600}
+  .dash-rm .ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
+  .dash-rm select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff;color:var(--ink)}
+  .dash-rm .statrow{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
+  .dash-rm .stat{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:150px}
+  .dash-rm .stat .sl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+  .dash-rm .stat .sv{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+  .dash-rm .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
+
+
+/* ================= formatandstorage.css ================= */
+/* Format and Storage: scoped styles. Only loaded shapes under .dash-fs. */
+  /* ===== Format and Storage, scoped ===== */
+  .dash-fs .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,320px));gap:16px;margin-bottom:16px}
+  @media(max-width:740px){.dash-fs .kpis{grid-template-columns:1fr}}
+  .dash-fs .sortrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-fs .sortrow .lbl{font-size:12px;color:var(--mut)}
+  .dash-fs .segctl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .dash-fs .segctl button{font:inherit;font-size:12px;border:none;padding:6px 12px;cursor:pointer;color:var(--ink2);background:#fff;border-left:1px solid var(--line)}
+  .dash-fs .segctl button:first-child{border-left:none}
+  .dash-fs .segctl button.on{background:var(--blue);color:#fff;font-weight:600}
+  .dash-fs .dirbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .dash-fs .dirbtn:hover{border-color:var(--blue)}
+  /* format table: one shared column template across head, rows, and total */
+  .dash-fs .ftab{--fc:190px 1fr 1fr 1fr}
+  .dash-fs .fhead,.dash-fs .frow,.dash-fs .ftot{display:grid;grid-template-columns:var(--fc);gap:14px;align-items:center}
+  .dash-fs .fhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .dash-fs .fhead .num{text-align:right;padding-right:9px}
+  .dash-fs .fhead .num.on{color:var(--blue);font-weight:700}
+  .dash-fs .frow{margin-bottom:8px}
+  .dash-fs .frow .fname{font-size:13px;font-weight:600}
+  .dash-fs .fcell{position:relative;height:26px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;overflow:hidden}
+  .dash-fs .fcell .fbar{position:absolute;left:0;top:0;height:26px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
+  .dash-fs .fcell b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-fs .ftot{border-top:1px solid var(--line);margin-top:4px;padding-top:11px;font-weight:700}
+  .dash-fs .ftot .fname{font-size:13px}
+  .dash-fs .ftot .tv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;padding-right:9px}
+  /* declared records by format */
+  .dash-fs .rbar{display:grid;grid-template-columns:190px 1fr 132px;align-items:center;gap:14px;margin-bottom:9px}
+  .dash-fs .rbar .rl{font-size:13px;font-weight:600}
+  .dash-fs .rbar .rt{background:#F3F7FB;border-radius:6px;height:26px;overflow:hidden}
+  .dash-fs .rbar .rf{height:26px;background:var(--blue);border-radius:6px;transition:width .6s ease}
+  .dash-fs .rbar .rv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .dash-fs .rbar .rv b{font-weight:700;color:var(--ink)}
+  .dash-fs .rbar .rv span{color:var(--mut)}
+</style></head>
 <body>
 <aside id="side">
   <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div><div class="ver" id="side-ver"></div></div>
   <nav id="nav">
-    <div class="grp">Executive</div><a class="dis"><span class="ic">◈</span>Overview</a>
+    <div class="grp">Executive</div><a data-d="ov"><span class="ic">◈</span>Overview</a>
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
@@ -32,15 +255,1066 @@
   <div id="view"></div>
 </div>
 
-<!-- Load order matters in two places. core.js creates the DASHBOARDS registry,
-     so it runs first. format-and-storage asserts its file total against
-     records-management, so it runs after it. app.js wires the nav and mounts
-     the first dashboard, so it runs last.
-     These are classic scripts, not modules, which is deliberate: it keeps
-     index.html working when opened directly from disk as well as over http. -->
-<script src="core.js"></script>
-<script src="sitesandlibraries.js"></script>
-<script src="recordsmanagement.js"></script>
-<script src="formatandstorage.js"></script>
-<script src="app.js"></script>
+<script>
+/* Load order below matters in two places. The DASHBOARDS registry is created
+   first, format and storage asserts its file total against records management
+   so it follows it, and the nav wiring runs last.
+   Each dashboard occupies one clearly banner marked block. Editing a dashboard
+   means editing inside its block and nothing else, which is what keeps a change
+   to one dashboard from disturbing another. */
+
+/* =================================================================
+   core.js
+   ================================================================= */
+/* ===================================================================
+   Shared helpers. Only the helpers that were byte identical in both
+   source prototypes live here. Anything that differed (pager, the
+   deptOptions builders, the date range readers) stays inside its own
+   dashboard closure so each keeps its original behaviour.
+   =================================================================== */
+const F=n=>Number(Math.round(n)).toLocaleString();
+function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
+
+const DASHBOARDS={};
+
+
+/* =================================================================
+   sitesandlibraries.js
+   ================================================================= */
+/* ===================================================================
+   Sites and Libraries
+   Source: EDRMS_Sites_and_Libraries_Dashboard_v1.html
+   =================================================================== */
+DASHBOARDS.sl=(function(){
+  /* --- pager: this variant prints the row count even on a single page --- */
+  function pager(total,page,pages,noun){
+    if(pages<=1)return `<div class="pager"><div class="pinfo">Showing 1 to ${F(total)} of ${F(total)} ${noun}</div><div></div></div>`;
+    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
+    let nums="",last=0;win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
+    const from=(page-1)*10+1,to=Math.min(total,page*10);
+    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
+      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>‹ Prev</button>${nums}<button data-pg="next" ${page===pages?'disabled':''}>Next ›</button></div></div>`;
+  }
+  function rangeFactor(sId,eId){
+    const s=(document.getElementById(sId)||{}).value||"",e=(document.getElementById(eId)||{}).value||"";
+    if(s===""&&e==="")return 1;
+    const sd=s?new Date(s+"T00:00:00"):null, ed=e?new Date(e+"T00:00:00"):null;
+    let sM=(sd&&!isNaN(sd))?(sd.getFullYear()<2026?0:sd.getFullYear()>2026?12:sd.getMonth()):0;
+    let eM=(ed&&!isNaN(ed))?(ed.getFullYear()>2026?11:ed.getFullYear()<2026?-1:ed.getMonth()):11;
+    const months=Math.min(11,eM)-Math.max(0,sM)+1;
+    return Math.max(0,Math.min(1,months/12));
+  }
+
+  /* ===== data ===== */
+  const SITEDEPTS=[
+   ["ITD","Information Technology",40],["SARD","South Asia Regional",36],["OSFG","Sovereign Operations",32],
+   ["FIN","Finance",28],["PARD","Procurement and Admin",26],["HRD","Human Resources",24],
+   ["SERD","Southeast Asia",22],["OGC","General Counsel",21],["EARD","East Asia Regional",20],
+   ["BRM","Budget and Mgmt Services",19],["CWRD","Central and West Asia",17],["PSOD","Private Sector Operations",15],
+   ["SPD","Strategy and Policy",12],["SDCC","Sustainable Dev and Climate",10],["OAS","Administrative Services",8],
+  ];
+  const DNAME={};SITEDEPTS.forEach(d=>DNAME[d[0]]=d[1]);
+  const ALLTIME_SITES=1057;
+
+  /* [lib, site, dept, docs, records, storageGB] */
+  const LIBS=[
+   ["Final Documents","ITD Records Site","ITD",3200,640,4.2],
+   ["Loan Agreements","FIN Treasury Site","FIN",2400,384,6.8],
+   ["Correspondence","PARD Procurement Site","PARD",2100,210,1.9],
+   ["Board Papers","OGC Legal Site","OGC",1800,540,5.4],
+   ["Country Reports","SARD Ops Site","SARD",1500,450,3.1],
+   ["Field Reports","SERD Ops Site","SERD",1300,286,7.2],
+   ["Project Completion","OSFG Country Site","OSFG",1200,300,8.9],
+   ["Case Files","OGC Compliance Site","OGC",1000,280,2.4],
+   ["Policies","HRD People Site","HRD",900,315,0.8],
+   ["Minutes","BRM Budget Site","BRM",700,245,0.5],
+   ["Legal Opinions","OGC Advisory Site","OGC",640,150,0.45],
+   ["Audit Reports","CWRD Ops Site","CWRD",580,120,0.42],
+   ["Investment Memos","PSOD Investments Site","PSOD",520,180,0.38],
+   ["Climate Briefs","SDCC Climate Site","SDCC",460,95,0.35],
+   ["Admin Records","OAS Facilities Site","OAS",400,88,0.30],
+  ];
+  const TOTAL_RECORDS=LIBS.reduce((a,l)=>a+l[4],0);
+  const TOTAL_GB=LIBS.reduce((a,l)=>a+l[5],0);
+
+  /* ===== treemap ===== */
+  function squarify(items,x,y,w,h){
+    const area=w*h,sum=items.reduce((a,b)=>a+b.v,0)||1;
+    let rem=items.map(it=>({...it,area:it.v/sum*area})),R=[],rx=x,ry=y,rw=w,rh=h;
+    function worst(a,side){const s=a.reduce((p,q)=>p+q,0),mx=Math.max(...a),mn=Math.min(...a);return Math.max(side*side*mx/(s*s),(s*s)/(side*side*mn));}
+    while(rem.length){const side=Math.min(rw,rh);let row=[rem[0]],wr=worst(row.map(z=>z.area),side);
+      while(row.length<rem.length){const t=row.concat([rem[row.length]]);const w3=worst(t.map(z=>z.area),side);if(w3>wr)break;row=t;wr=w3;}
+      const ra=row.reduce((a,b)=>a+b.area,0);
+      if(rw>=rh){const cw=ra/rh;let cy=ry;row.forEach(z=>{const ch=z.area/cw;R.push({...z,x:rx,y:cy,w:cw,h:ch});cy+=ch;});rx+=cw;rw-=cw;}
+      else{const rhh=ra/rw;let cx=rx;row.forEach(z=>{const cwd=z.area/rhh;R.push({...z,x:cx,y:ry,w:cwd,h:rhh});cx+=cwd;});ry+=rhh;rh-=rhh;}
+      rem=rem.slice(row.length);}
+    return R;
+  }
+  function shade(v,mn,mx){const t=mx>mn?(v-mn)/(mx-mn):0.6;const L=[156,195,236],D=[8,52,90];const c=i=>Math.round(L[i]+(D[i]-L[i])*t);return `rgb(${c(0)},${c(1)},${c(2)})`;}
+  function darkText(v,mn,mx){const t=mx>mn?(v-mn)/(mx-mn):0.6;return t<0.42;}
+
+  let sitePage=1;
+  function renderS1(){
+    document.getElementById("s1-detail").innerHTML=`<div class="panel">
+      <div class="ptitle">Sites created by department</div>
+      <div class="psub">Each block is a department, sized by the number of compliant sites created. Darker means more sites.</div>
+      <div class="tilesrow">
+        <div class="tiles">
+          <div class="tile"><div class="tl">Total sites created</div><div class="tv">${F(ALLTIME_SITES)}</div></div>
+          <div class="tile hi"><div class="tl">Total sites created by date range</div><div class="tv" id="st-tile2">—</div></div>
+        </div>
+        <div class="stfilter">
+          <div class="drange">Date range <input type="date" id="st-s"> to <input type="date" id="st-e"></div>
+          <button class="resetbtn" id="st-reset"><i>↺</i> Reset filter</button>
+        </div>
+      </div>
+      <div id="st-treemap"></div>
+      <div class="tmlegend"><span>Fewer sites</span><span class="sw" style="background:rgb(156,195,236)"></span><span class="sw" style="background:rgb(120,163,201)"></span><span class="sw" style="background:rgb(84,120,152)"></span><span class="sw" style="background:rgb(8,52,90)"></span><span>More sites</span></div>
+      <div id="st-pager"></div></div>`;
+    document.getElementById("st-s").onchange=()=>{sitePage=1;drawTreemap();};
+    document.getElementById("st-e").onchange=()=>{sitePage=1;drawTreemap();};
+    document.getElementById("st-reset").onclick=()=>{document.getElementById("st-s").value="";document.getElementById("st-e").value="";sitePage=1;drawTreemap();};
+    drawTreemap();
+  }
+  function drawTreemap(){
+    const factor=rangeFactor("st-s","st-e");
+    const depts=SITEDEPTS.map(d=>({label:d[0],name:d[1],v:Math.max(1,Math.round(d[2]*factor))})).sort((a,b)=>b.v-a.v);
+    document.getElementById("st-tile2").textContent=F(depts.reduce((a,b)=>a+b.v,0));
+    const pages=Math.ceil(depts.length/10);if(sitePage>pages)sitePage=pages;
+    const page=depts.slice((sitePage-1)*10,sitePage*10);
+    const mn=Math.min(...page.map(d=>d.v)),mx=Math.max(...page.map(d=>d.v));
+    const rects=squarify(page,0,0,900,400);
+    let svg="";
+    rects.forEach(r=>{const x=r.x+3,y=r.y+3,w=r.w-6,h=r.h-6;const t=darkText(r.v,mn,mx),tc=t?"#082F4E":"#FFFFFF",sc=t?"#2C567A":"#DCEBFA";
+      svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="7" fill="${shade(r.v,mn,mx)}"><title>${r.name}: ${r.v} sites</title></rect>`;
+      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+27).toFixed(1)}" font-size="15" font-weight="700" fill="${tc}">${r.label}</text>`;
+      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+44).toFixed(1)}" font-size="11" fill="${sc}">${r.name}</text>`;
+      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+h-15).toFixed(1)}" font-size="26" font-weight="700" fill="${tc}" style="font-variant-numeric:tabular-nums">${r.v}</text></g>`;
+    });
+    document.getElementById("st-treemap").innerHTML=`<svg viewBox="0 0 900 400" width="100%" style="display:block;max-height:430px">${svg}</svg>`;
+    document.getElementById("st-pager").innerHTML=pager(depts.length,sitePage,pages,"departments");
+    wirePager("#st-pager",v=>{sitePage=v==="prev"?Math.max(1,sitePage-1):v==="next"?Math.min(pages,sitePage+1):+v;drawTreemap();});
+  }
+
+  /* ===== libraries ===== */
+  function deptOptions(sel){const codes=[...new Set(LIBS.map(l=>l[2]))];return `<option value="all">All departments</option>`+codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} — ${DNAME[c]||c}</option>`).join("");}
+  let deptDecl="all",fieldDecl="docs",dirDecl="desc",pageDecl=1;
+  let deptStor="all",fieldStor="gb",dirStor="desc",pageStor=1;
+  let curS2="decl";
+
+  function renderS2(which){
+    curS2=which;
+    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
+    const box=document.getElementById("s2-detail");
+    if(which==="decl"){
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Libraries declaration rate</div>
+        <div class="psub">How much of each library's content has been declared as records. Bars stack the declared portion over the not yet declared portion, sized to total documents.</div>
+        <div class="toolbar">
+          <span>Department <select id="decl-dept">${deptOptions(deptDecl)}</select></span>
+          <div class="drange">Date range <input type="date" id="decl-s"> to <input type="date" id="decl-e"></div>
+          <button class="resetbtn" id="decl-reset"><i>↺</i> Reset filter</button>
+        </div>
+        <div class="sortwrap">
+          <div class="legend"><span class="lg"><span class="sw" style="background:var(--teal)"></span>Declared as records</span><span class="lg"><span class="sw" style="background:var(--greyblue)"></span>Not yet declared</span></div>
+          <div class="sortctl"><span class="lbl">Sort by</span>
+            <div class="segctl" id="decl-field"><button data-f="docs">Documents</button><button data-f="rec">Records</button><button data-f="rate">Rate</button></div>
+            <button class="dirbtn" id="decl-dir"></button></div>
+        </div>
+        <div id="decl-rows"></div><div id="decl-pager"></div></div>`;
+      document.getElementById("decl-dept").onchange=e=>{deptDecl=e.target.value;pageDecl=1;drawDecl();};
+      document.getElementById("decl-s").onchange=()=>{pageDecl=1;drawDecl();};
+      document.getElementById("decl-e").onchange=()=>{pageDecl=1;drawDecl();};
+      document.getElementById("decl-reset").onclick=()=>{deptDecl="all";fieldDecl="docs";dirDecl="desc";pageDecl=1;document.getElementById("decl-dept").value="all";document.getElementById("decl-s").value="";document.getElementById("decl-e").value="";drawDecl();};
+      document.querySelectorAll("#decl-field button").forEach(b=>b.onclick=()=>{fieldDecl=b.dataset.f;pageDecl=1;drawDecl();});
+      document.getElementById("decl-dir").onclick=()=>{dirDecl=dirDecl==="desc"?"asc":"desc";drawDecl();};
+      drawDecl();
+    }else{
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Largest libraries by storage</div>
+        <div class="psub">Libraries ranked by total storage consumed. Storage per library is the sum of its file sizes.</div>
+        <div class="toolbar">
+          <span>Department <select id="stor-dept">${deptOptions(deptStor)}</select></span>
+          <div class="drange">Date range <input type="date" id="stor-s"> to <input type="date" id="stor-e"></div>
+          <button class="resetbtn" id="stor-reset"><i>↺</i> Reset filter</button>
+        </div>
+        <div class="sortwrap"><span></span>
+          <div class="sortctl"><span class="lbl">Sort by</span>
+            <div class="segctl" id="stor-field"><button data-f="gb">Storage</button><button data-f="docs">Documents</button><button data-f="avg">Avg file size</button></div>
+            <button class="dirbtn" id="stor-dir"></button></div>
+        </div>
+        <div id="stor-rows"></div><div id="stor-pager"></div></div>`;
+      document.getElementById("stor-dept").onchange=e=>{deptStor=e.target.value;pageStor=1;drawStor();};
+      document.getElementById("stor-s").onchange=()=>{pageStor=1;drawStor();};
+      document.getElementById("stor-e").onchange=()=>{pageStor=1;drawStor();};
+      document.getElementById("stor-reset").onclick=()=>{deptStor="all";fieldStor="gb";dirStor="desc";pageStor=1;document.getElementById("stor-dept").value="all";document.getElementById("stor-s").value="";document.getElementById("stor-e").value="";drawStor();};
+      document.querySelectorAll("#stor-field button").forEach(b=>b.onclick=()=>{fieldStor=b.dataset.f;pageStor=1;drawStor();});
+      document.getElementById("stor-dir").onclick=()=>{dirStor=dirStor==="desc"?"asc":"desc";drawStor();};
+      drawStor();
+    }
+  }
+  function paintSeg(scope,field){document.querySelectorAll(scope+" button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));}
+  function drawDecl(){
+    const f=rangeFactor("decl-s","decl-e");
+    let rows=LIBS.filter(l=>deptDecl==="all"||l[2]===deptDecl).map(l=>({lib:l[0],site:l[1],docs:Math.round(l[3]*f),rec:Math.round(l[4]*f)}));
+    const val={docs:r=>r.docs,rec:r=>r.rec,rate:r=>r.docs?r.rec/r.docs:0};
+    rows.sort((a,b)=>dirDecl==="desc"?val[fieldDecl](b)-val[fieldDecl](a):val[fieldDecl](a)-val[fieldDecl](b));
+    paintSeg("#decl-field",fieldDecl);
+    document.getElementById("decl-dir").innerHTML=(dirDecl==="desc"?'▼ Highest first':'▲ Lowest first');
+    const mx=Math.max(...rows.map(r=>r.docs),1);
+    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageDecl>pages)pageDecl=pages;
+    const pg=rows.slice((pageDecl-1)*10,pageDecl*10);
+    document.getElementById("decl-rows").innerHTML=pg.map(r=>{
+      const tot=100*r.docs/mx, tealW=r.docs?100*r.rec/mx:0, greyW=r.docs?100*(r.docs-r.rec)/mx:0, rate=r.docs?Math.round(r.rec/r.docs*100):0;
+      return `<div class="sbar"><div class="sl"><b>${r.lib}</b><small>${r.site}</small></div>
+        <div class="st"><div class="seg e" style="width:${tealW}%"></div><div class="seg p" style="width:${greyW}%"></div></div>
+        <div class="vv"><b>${F(r.docs)}</b><span> docs · ${F(r.rec)} rec · ${rate}%</span></div></div>`;}).join("");
+    document.getElementById("decl-pager").innerHTML=pager(rows.length,pageDecl,pages,"libraries");
+    wirePager("#decl-pager",v=>{pageDecl=v==="prev"?Math.max(1,pageDecl-1):v==="next"?Math.min(pages,pageDecl+1):+v;drawDecl();});
+  }
+  function drawStor(){
+    const f=rangeFactor("stor-s","stor-e");
+    let rows=LIBS.filter(l=>deptStor==="all"||l[2]===deptStor).map(l=>({lib:l[0],site:l[1],docs:Math.round(l[3]*f),gb:l[5]*f}));
+    const val={gb:r=>r.gb,docs:r=>r.docs,avg:r=>r.docs?r.gb*1024/r.docs:0};
+    rows.sort((a,b)=>dirStor==="desc"?val[fieldStor](b)-val[fieldStor](a):val[fieldStor](a)-val[fieldStor](b));
+    paintSeg("#stor-field",fieldStor);
+    document.getElementById("stor-dir").innerHTML=(dirStor==="desc"?'▼ Highest first':'▲ Lowest first');
+    const mx=Math.max(...rows.map(r=>r.gb),0.1);
+    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageStor>pages)pageStor=pages;
+    const pg=rows.slice((pageStor-1)*10,pageStor*10);
+    document.getElementById("stor-rows").innerHTML=pg.map(r=>{
+      const w=100*r.gb/mx, avg=r.docs?(r.gb*1024/r.docs).toFixed(1):"0.0";
+      return `<div class="sbar"><div class="sl"><b>${r.lib}</b><small>${r.site}</small></div>
+        <div class="st" style="background:#EEF3F8"><div class="single" style="width:${Math.max(4,w)}%"></div></div>
+        <div class="vv"><b>${r.gb.toFixed(1)} GB</b><span> · ${F(r.docs)} files · ${avg} MB avg</span></div></div>`;}).join("");
+    document.getElementById("stor-pager").innerHTML=pager(rows.length,pageStor,pages,"libraries");
+    wirePager("#stor-pager",v=>{pageStor=v==="prev"?Math.max(1,pageStor-1):v==="next"?Math.min(pages,pageStor+1):+v;drawStor();});
+  }
+
+  const html=`<section class="dash-sl">
+    <div class="band">
+      <h2>Compliant site rollout</h2>
+      <div class="bd">How many EDRMS compliant sites have been created, and how new site creation is spread across departments.</div>
+    </div>
+    <div class="kpis" id="s1-kpis">
+      <div class="kpi on"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div id="s1-detail"></div>
+
+    <div class="band">
+      <h2>Library adoption and volume</h2>
+      <div class="bd">How thoroughly libraries are declaring records, and which libraries hold the most content.</div>
+    </div>
+    <div class="kpis" id="s2-kpis">
+      <div class="kpi on" data-k="decl"><div class="lab">Libraries Declaration Rate</div><div class="val" id="kpi-decl">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="stor"><div class="lab">Largest Libraries</div><div class="val" id="kpi-stor">—</div><div class="tap">▾ Click to open</div></div>
+    </div>
+    <div id="s2-detail"></div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-decl").textContent=F(TOTAL_RECORDS);
+    document.getElementById("kpi-stor").textContent=TOTAL_GB.toFixed(1)+" GB";
+    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
+    renderS1();
+    renderS2(curS2);
+  }
+
+  return {
+    ver:"Sites and Libraries Dashboard",
+    crumb:"Sites and Libraries Dashboard",
+    asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
+    /* Read by the Overview dashboard. Derived from the same arrays this
+       dashboard renders, so a summary figure can never drift from the detail. */
+    summary:{
+      sitesCreated:ALLTIME_SITES,
+      sitesInSample:SITEDEPTS.reduce((a,d)=>a+d[2],0),
+      libraryCount:LIBS.length,
+      libraryDocuments:LIBS.reduce((a,l)=>a+l[3],0),
+      libraryRecords:TOTAL_RECORDS,
+      get libraryUndeclared(){return this.libraryDocuments-this.libraryRecords;},
+      storageGB:TOTAL_GB,
+      topDepartments:[...SITEDEPTS].sort((a,b)=>b[2]-a[2]).slice(0,5).map(d=>({label:d[0],name:d[1],value:d[2]})),
+      departmentCount:SITEDEPTS.length
+    },
+    html,init
+  };
+})();
+
+/* =================================================================
+   recordsmanagement.js
+   ================================================================= */
+/* ===================================================================
+   Records Management
+   Source: EDRMS_Records_Management_Dashboard_v3.html
+   =================================================================== */
+DASHBOARDS.rm=(function(){
+  function split(total,k,seed){
+    const w=[];let s=0;for(let i=0;i<k;i++){const x=((seed*(i+3)*7919)%100)/100*0.6+0.55;w.push(x);s+=x;}
+    const out=w.map(x=>Math.max(1,Math.round(total*x/s)));
+    out[0]+=total-out.reduce((a,b)=>a+b,0);if(out[0]<1)out[0]=1;return out;
+  }
+  function monthly(total,seed){
+    const w=[];for(let m=0;m<12;m++)w.push(0.6+m*0.08+((seed*(m+1))%5)*0.05);
+    const s=w.reduce((a,b)=>a+b,0);const out=w.map(x=>Math.round(total*x/s));
+    out[11]+=total-out.reduce((a,b)=>a+b,0);return out;
+  }
+  /* --- pager: this variant hides itself entirely on a single page --- */
+  function pager(total,page,pages,noun){
+    if(pages<=1)return "";
+    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
+    let nums="",last=0;win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
+    const from=(page-1)*10+1,to=Math.min(total,page*10);
+    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
+      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>‹ Prev</button>${nums}<button data-pg="next" ${page===pages?'disabled':''}>Next ›</button></div></div>`;
+  }
+
+  /* ===== departments (16) ===== */
+  const DEPTS=[
+   {c:"ITD",n:"Information Technology",rec:2611,phys:470,docs:640000},
+   {c:"SARD",n:"South Asia Regional",rec:2240,phys:360,docs:520000},
+   {c:"OSFG",n:"Sovereign Operations",rec:2168,phys:300,docs:410000},
+   {c:"FIN",n:"Finance",rec:2150,phys:520,docs:300000},
+   {c:"PARD",n:"Procurement & Admin",rec:1892,phys:410,docs:290000},
+   {c:"HRD",n:"Human Resources",rec:1462,phys:240,docs:205000},
+   {c:"SERD",n:"Southeast Asia",rec:1320,phys:180,docs:150000},
+   {c:"EARD",n:"East Asia Regional",rec:1180,phys:150,docs:120000},
+   {c:"OGC",n:"General Counsel",rec:1074,phys:210,docs:100000},
+   {c:"CWRD",n:"Central & West Asia",rec:1150,phys:210,docs:180000},
+   {c:"PSOD",n:"Private Sector Operations",rec:980,phys:260,docs:140000},
+   {c:"BRM",n:"Budget & Mgmt Services",rec:809,phys:90,docs:70000},
+   {c:"SPD",n:"Strategy & Policy",rec:760,phys:120,docs:95000},
+   {c:"SDCC",n:"Sustainable Dev & Climate",rec:690,phys:110,docs:88000},
+   {c:"OAS",n:"Administrative Services",rec:620,phys:130,docs:105000},
+   {c:"ERCD",n:"Economic Research",rec:540,phys:70,docs:60000},
+  ];
+  DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.c.length+i+1);d.mphys=monthly(d.phys,d.c.length+i+2);d.mdocs=monthly(d.docs,d.c.length+i+3);});
+  const ANNUAL_REC=DEPTS.reduce((a,d)=>a+d.rec,0);
+  const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
+
+  const DIVNAMES={ITD:["Digital Services","Infrastructure & Operations"],SARD:["South Asia Operations","South Asia Programs"],
+   OSFG:["Country Operations","Safeguards"],FIN:["Treasury","Financial Control"],PARD:["Procurement","Administration"],
+   HRD:["People Operations","Talent & Learning"],SERD:["Southeast Asia Operations"],EARD:["East Asia Operations"],
+   OGC:["Legal Advisory","Compliance"],CWRD:["Central Asia Operations","West Asia Operations"],PSOD:["Investments","Portfolio Management"],
+   BRM:["Budget Operations"],SPD:["Strategy","Partnerships"],SDCC:["Climate Change","Sustainable Development"],
+   OAS:["Facilities","Administration"],ERCD:["Macroeconomics","Statistics"]};
+  const LIBPOOL=["Final Documents","Board Papers","Loan Agreements","Country Reports","Policies","Correspondence","Minutes","Project Completion"];
+
+  const TREE=DEPTS.map(d=>{
+    const divs=DIVNAMES[d.c];
+    const dr=split(d.rec,divs.length,d.c.length+1),dp=split(d.phys,divs.length,d.c.length+2),dd=split(d.docs,divs.length,d.c.length+3);
+    const children=divs.map((dv,i)=>{
+      const short=dv.split(" ")[0];
+      const siteNames=[`${d.c} ${short} Site`,`${d.c} ${short} Annex`];
+      const sr=split(dr[i],2,i+3),sp=split(dp[i],2,i+4),sd=split(dd[i],2,i+5);
+      const sites=siteNames.map((sn,j)=>{
+        const libNames=[LIBPOOL[(i+j)%LIBPOOL.length],LIBPOOL[(i+j+3)%LIBPOOL.length]];
+        const lr=split(sr[j],2,j+6),lp=split(sp[j],2,j+7),ld=split(sd[j],2,j+8);
+        const libs=libNames.map((ln,k)=>({label:ln,site:sn,rec:lr[k],phys:lp[k],docs:ld[k]}));
+        return {label:sn,sub:`${d.c} · ${dv}`,rec:sr[j],phys:sp[j],docs:sd[j],children:libs};
+      });
+      return {label:dv,sub:d.c,rec:dr[i],phys:dp[i],docs:dd[i],children:sites};
+    });
+    return {label:d.c,sub:d.n,rec:d.rec,phys:d.phys,docs:d.docs,children};
+  });
+  const LEVELS=["Department","Division","Site","Library"];
+  function listAt(path){let lvl=TREE;for(const idx of path)lvl=lvl[idx].children;return lvl;}
+  function crumbHTML(path){let lvl=TREE,html=`<a data-i="-1">All departments</a>`;
+    path.forEach((idx,i)=>{html+=`<span class="arw">›</span><a data-i="${i}">${lvl[idx].label}</a>`;lvl=lvl[idx].children;});
+    html+=`<span class="arw">·</span><span class="cur">${LEVELS[path.length]} level</span>`;return html;}
+
+  /* ===== section 1 ===== */
+  let pathRec=[],pageRec=1,pathDocs=[],pageDocs=1;
+  let curS1="rec";
+  function renderS1(which){
+    curS1=which;
+    document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
+    const box=document.getElementById("s1-detail");
+    if(which==="rec"){
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Total Declared Records</div>
+        <div class="psub">Declared records per department, split into those with and without a physical counterpart. Click a bar to drill down from department to division to site to library.</div>
+        <div class="daterow">
+          <div class="drill" id="rec-crumb" style="margin:0"></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="drange">Date range
+              <input type="date" id="rec-s"> to
+              <input type="date" id="rec-e"></div>
+            <button id="rec-reset" class="resetbtn">↺ Reset filter</button>
+          </div>
+        </div>
+        <div class="subtotal" id="rec-subtotal" style="margin-bottom:12px"></div>
+        <div class="legend"><span class="lg"><span class="sw" style="background:var(--greyblue)"></span>Without physical counterpart</span><span class="lg"><span class="sw" style="background:var(--teal)"></span>With physical counterpart</span></div>
+        <div id="rec-bars"></div><div id="rec-pager"></div></div>`;
+      document.getElementById("rec-s").onchange=()=>{pageRec=1;drawRec();};
+      document.getElementById("rec-e").onchange=()=>{pageRec=1;drawRec();};
+      document.getElementById("rec-reset").onclick=()=>{
+        document.getElementById("rec-s").value="";
+        document.getElementById("rec-e").value="";
+        pathRec=[];pageRec=1;drawRec();
+      };
+      drawRec();
+    }else{
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Total Documents in EDRMS Compliant Sites</div>
+        <div class="psub">Total documents held in each department's EDRMS compliant sites. Click a bar to drill down from department to division to site to library.</div>
+        <div class="daterow">
+          <div class="drill" id="docs-crumb" style="margin:0"></div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <div class="drange">Date range
+              <input type="date" id="docs-s"> to
+              <input type="date" id="docs-e"></div>
+            <button id="docs-reset" class="resetbtn">↺ Reset filter</button>
+          </div>
+        </div>
+        <div class="subtotal" id="docs-subtotal" style="margin-bottom:12px"></div>
+        <div id="docs-bars"></div><div id="docs-pager"></div></div>`;
+      document.getElementById("docs-s").onchange=()=>{pageDocs=1;drawDocs();};
+      document.getElementById("docs-e").onchange=()=>{pageDocs=1;drawDocs();};
+      document.getElementById("docs-reset").onclick=()=>{
+        document.getElementById("docs-s").value="";
+        document.getElementById("docs-e").value="";
+        pathDocs=[];pageDocs=1;drawDocs();
+      };
+      drawDocs();
+    }
+  }
+  function rangeMonthsFor(sId,eId){
+    const sEl=document.getElementById(sId),eEl=document.getElementById(eId);
+    if(!sEl||!eEl)return [0,11];
+    const s=new Date(sEl.value+"T00:00:00"),e=new Date(eEl.value+"T00:00:00");
+    let sM=isNaN(s)?0:(s.getFullYear()<2026?0:s.getFullYear()>2026?12:s.getMonth());
+    let eM=isNaN(e)?11:(e.getFullYear()>2026?11:e.getFullYear()<2026?-1:e.getMonth());
+    return [sM,eM];
+  }
+  function rangeMonths(){return rangeMonthsFor("rec-s","rec-e");}
+  /* the range summary line shows only while a date range is actually applied */
+  function paintSubtotal(id,blank,full,text){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(blank||full){el.innerHTML="";el.style.display="none";}
+    else{el.innerHTML=text;el.style.display="";}
+  }
+  function sumMonths(arr,sM,eM){let t=0;for(let m=Math.max(0,sM);m<=Math.min(11,eM);m++)t+=arr[m];return t;}
+  function drawRec(){
+    const [sM,eM]=rangeMonths();
+    const canDrill=pathRec.length<3,atLib=pathRec.length===3;
+    document.getElementById("rec-crumb").innerHTML=crumbHTML(pathRec);
+    document.querySelectorAll("#rec-crumb a").forEach(a=>a.onclick=()=>{const i=+a.dataset.i;pathRec=i<0?[]:pathRec.slice(0,i+1);pageRec=1;drawRec();});
+    let rows;
+    if(pathRec.length===0){
+      rows=DEPTS.map((d,i)=>({label:d.c,sub:d.n,i,rec:sumMonths(d.mrec,sM,eM),phys:sumMonths(d.mphys,sM,eM)}));
+    }else{
+      const dd=DEPTS[pathRec[0]];
+      const recF=dd.rec?sumMonths(dd.mrec,sM,eM)/dd.rec:0, physF=dd.phys?sumMonths(dd.mphys,sM,eM)/dd.phys:0;
+      rows=listAt(pathRec).map((r,i)=>({...r,i,rec:Math.round(r.rec*recF),phys:Math.round(r.phys*physF)}));
+    }
+    rows=rows.map(r=>({...r,elec:r.rec-r.phys})).sort((a,b)=>b.rec-a.rec);
+    const rangeTotal=DEPTS.reduce((a,d)=>a+sumMonths(d.mrec,sM,eM),0);
+    const full=(sM<=0&&eM>=11);
+    const sVal=(document.getElementById("rec-s")||{}).value||"";
+    const eVal=(document.getElementById("rec-e")||{}).value||"";
+    const blank=(sVal===""&&eVal==="");
+    paintSubtotal("rec-subtotal",blank,full,
+      `Declared in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_REC)} total.`);
+    const mx=Math.max(...rows.map(r=>r.rec),1);
+    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageRec>pages)pageRec=pages;
+    const pg=rows.slice((pageRec-1)*10,pageRec*10);
+    document.getElementById("rec-bars").innerHTML=pg.map(r=>{
+      const w=100*r.rec/mx,we=r.rec?r.elec/r.rec*w:0,wp=r.rec?r.phys/r.rec*w:0;
+      const sub=atLib?`in ${r.site}`:(r.sub||"");
+      return `<div class="sbar ${canDrill?'click':''}" data-i="${r.i}"><div class="sl"><b>${r.label}</b>${sub?`<small>${sub}</small>`:""}</div>
+        <div class="st"><div class="seg e" style="width:${we}%" title="Without physical: ${F(r.elec)}">${r.elec>110?F(r.elec):""}</div><div class="seg p" style="width:${wp}%" title="With physical: ${F(r.phys)}">${r.phys>70?F(r.phys):""}</div></div>
+        <div class="sv">${F(r.rec)}</div></div>`;}).join("");
+    if(canDrill)document.querySelectorAll("#rec-bars .sbar.click").forEach(b=>b.onclick=()=>{pathRec=[...pathRec,+b.dataset.i];pageRec=1;drawRec();});
+    document.getElementById("rec-pager").innerHTML=pager(rows.length,pageRec,pages,LEVELS[pathRec.length].toLowerCase()+"s");
+    wirePager("#rec-pager",v=>{pageRec=v==="prev"?Math.max(1,pageRec-1):v==="next"?Math.min(pages,pageRec+1):+v;drawRec();});
+  }
+  function drawDocs(){
+    const [sM,eM]=rangeMonthsFor("docs-s","docs-e");
+    const canDrill=pathDocs.length<3,atLib=pathDocs.length===3;
+    document.getElementById("docs-crumb").innerHTML=crumbHTML(pathDocs);
+    document.querySelectorAll("#docs-crumb a").forEach(a=>a.onclick=()=>{const i=+a.dataset.i;pathDocs=i<0?[]:pathDocs.slice(0,i+1);pageDocs=1;drawDocs();});
+    let rows;
+    if(pathDocs.length===0){
+      rows=DEPTS.map((d,i)=>({label:d.c,sub:d.n,i,docs:sumMonths(d.mdocs,sM,eM)}));
+    }else{
+      const dd=DEPTS[pathDocs[0]];
+      const docsF=dd.docs?sumMonths(dd.mdocs,sM,eM)/dd.docs:0;
+      rows=listAt(pathDocs).map((r,i)=>({...r,i,docs:Math.round(r.docs*docsF)}));
+    }
+    rows.sort((a,b)=>b.docs-a.docs);
+    const rangeTotal=DEPTS.reduce((a,d)=>a+sumMonths(d.mdocs,sM,eM),0);
+    const full=(sM<=0&&eM>=11);
+    const sVal=(document.getElementById("docs-s")||{}).value||"";
+    const eVal=(document.getElementById("docs-e")||{}).value||"";
+    const blank=(sVal===""&&eVal==="");
+    paintSubtotal("docs-subtotal",blank,full,
+      `Documents in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_DOCS)} total.`);
+    const mx=Math.max(...rows.map(r=>r.docs),1);
+    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageDocs>pages)pageDocs=pages;
+    const pg=rows.slice((pageDocs-1)*10,pageDocs*10);
+    document.getElementById("docs-bars").innerHTML=pg.map(r=>{
+      const sub=atLib?`in ${r.site}`:(r.sub||"");
+      return `<div class="cbar" data-i="${r.i}" style="${canDrill?'cursor:pointer':''}"><div class="cl"><b>${r.label}</b>${sub?`<small>${sub}</small>`:""}</div>
+        <div class="ct"><div class="cf" style="width:${Math.max(6,100*r.docs/mx)}%;background:var(--orange)">${F(r.docs)}</div></div></div>`;}).join("");
+    if(canDrill)document.querySelectorAll("#docs-bars .cbar").forEach(b=>b.onclick=()=>{pathDocs=[...pathDocs,+b.dataset.i];pageDocs=1;drawDocs();});
+    document.getElementById("docs-pager").innerHTML=pager(rows.length,pageDocs,pages,LEVELS[pathDocs.length].toLowerCase()+"s");
+    wirePager("#docs-pager",v=>{pageDocs=v==="prev"?Math.max(1,pageDocs-1):v==="next"?Math.min(pages,pageDocs+1):+v;drawDocs();});
+  }
+
+  /* ===== sites / users usage ===== */
+  const SITES=[];
+  DEPTS.forEach((d,i)=>{
+    const seed=d.c.length*7+i*13;
+    const prim=(i%2===0)?"Records Site":"Workspace";
+    SITES.push({dept:d.c,site:`${d.c} ${prim}`,base:Math.round(d.rec*0.95),last:(seed%7)+1});
+    SITES.push({dept:d.c,site:`${d.c} Team Site`,base:Math.round(d.rec*0.5),last:(seed%22)+2});
+    if(d.rec>1000)SITES.push({dept:d.c,site:`${d.c} Programs Hub`,base:Math.round(d.rec*0.35),last:(seed%60)+8});
+    if(i%3===0)SITES.push({dept:d.c,site:`${d.c} Shared Drive (legacy)`,base:Math.round(d.rec*0.4),last:110+(seed%80)});
+  });
+  SITES.forEach(s=>{
+    s.uv7=s.last<=7?Math.round(s.base*0.42):0;
+    s.uv30=s.last<=30?s.base:0;
+    s.v7=s.last<=7?Math.round(s.base*0.42*1.5):0;
+    s.v30=s.last<=30?Math.round(s.base*1.5):0;
+    s.v90=s.last<=90?Math.round(s.base*1.5*2.2):0;
+  });
+
+  let winSites=7,deptSites="all",pageSites=1,winUsers=7,deptUsers="all",pageUsers=1;
+  let curS2="sites";
+  function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} — ${d.n}</option>`).join("");}
+
+  function renderS2(which){
+    curS2=which;
+    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
+    const box=document.getElementById("s2-detail");
+    if(which==="sites"){
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Active Departmental Sites</div>
+        <div class="psub">Departmental sites with activity in the selected window, ranked by site visits, with each site's most recent activity.</div>
+        <div class="toolbar">
+          <div class="dayf" id="sites-win">${[7,30,90].map(dd=>`<button class="${winSites===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
+          <div class="ctl">Department<select id="sites-dept">${deptOptions(deptSites)}</select></div></div>
+        <div class="statrow" id="sites-stats"></div>
+        <div class="colhead"><span>Site</span><span class="c2">Site visits</span><span class="c3">Last activity</span></div>
+        <div id="sites-bars"></div><div id="sites-pager"></div></div>`;
+      document.querySelectorAll("#sites-win button").forEach(b=>b.onclick=()=>{winSites=+b.dataset.d;pageSites=1;renderS2("sites");});
+      document.getElementById("sites-dept").onchange=e=>{deptSites=e.target.value;pageSites=1;drawSites();};
+      drawSites();
+    }else{
+      box.innerHTML=`<div class="panel">
+        <div class="ptitle">Active Users</div>
+        <div class="psub">Unique viewers per site in the selected window, with each site's most recent activity.</div>
+        <div class="toolbar">
+          <div class="dayf" id="users-win">${[7,30,90].map(dd=>`<button class="${winUsers===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
+          <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
+        <div class="statrow" id="users-stats"></div>
+        <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
+        <div id="users-bars"></div><div id="users-note"></div><div id="users-pager"></div></div>`;
+      document.querySelectorAll("#users-win button").forEach(b=>b.onclick=()=>{winUsers=+b.dataset.d;pageUsers=1;renderS2("users");});
+      document.getElementById("users-dept").onchange=e=>{deptUsers=e.target.value;pageUsers=1;drawUsers();};
+      drawUsers();
+    }
+  }
+  function drawSites(){
+    const vKey=s=>winSites===7?s.v7:winSites===30?s.v30:s.v90;
+    let list=SITES.filter(s=>s.last<=winSites);
+    if(deptSites!=="all")list=list.filter(s=>s.dept===deptSites);
+    list=list.map(s=>({...s,v:vKey(s)})).sort((a,b)=>b.v-a.v);
+    const visits=list.reduce((a,b)=>a+b.v,0);
+    document.getElementById("sites-stats").innerHTML=`
+      <div class="stat"><div class="sl">Active sites</div><div class="sv">${F(list.length)}</div></div>
+      <div class="stat"><div class="sl">Total site visits</div><div class="sv">${F(visits)}</div></div>`;
+    const mx=Math.max(...list.map(s=>s.v),1);
+    const pages=Math.max(1,Math.ceil(list.length/10));if(pageSites>pages)pageSites=pages;
+    const pg=list.slice((pageSites-1)*10,pageSites*10);
+    document.getElementById("sites-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
+      <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.v/mx)}%;background:var(--green)">${F(s.v)}</div></div>
+      <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
+    document.getElementById("sites-pager").innerHTML=pager(list.length,pageSites,pages,"sites");
+    wirePager("#sites-pager",v=>{pageSites=v==="prev"?Math.max(1,pageSites-1):v==="next"?Math.min(pages,pageSites+1):+v;drawSites();});
+  }
+  function drawUsers(){
+    const at90=winUsers===90;
+    const uvKey=s=>winUsers===7?s.uv7:winUsers===30?s.uv30:null;
+    let list=SITES.filter(s=>s.last<=winUsers);
+    if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
+    const metric=s=>at90?s.v90:uvKey(s);
+    list=list.map(s=>({...s,m:metric(s)})).sort((a,b)=>b.m-a.m);
+    document.getElementById("users-metric-h").textContent=at90?"Site visits":"Unique viewers";
+    const totUV=list.reduce((a,b)=>a+(uvKey(b)||0),0);
+    const totV=list.reduce((a,b)=>a+s90(b),0);
+    function s90(x){return x.v90;}
+    document.getElementById("users-stats").innerHTML= at90
+      ? `<div class="stat"><div class="sl">Total site visits</div><div class="sv">${F(totV)}</div></div>`
+      : `<div class="stat"><div class="sl">Total unique viewers</div><div class="sv">${F(totUV)}</div></div>`;
+    const mx=Math.max(...list.map(s=>s.m),1);
+    const pages=Math.max(1,Math.ceil(list.length/10));if(pageUsers>pages)pageUsers=pages;
+    const pg=list.slice((pageUsers-1)*10,pageUsers*10);
+    document.getElementById("users-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
+      <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.m/mx)}%;background:var(--deepblue)">${F(s.m)}</div></div>
+      <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
+    document.getElementById("users-note").innerHTML=at90
+      ? `<div class="note">At 90 days SharePoint does not return a unique viewer total, so site visits are shown here. Switch to 7 or 30 days to see unique viewers.</div>`:"";
+    document.getElementById("users-pager").innerHTML=pager(list.length,pageUsers,pages,"sites");
+    wirePager("#users-pager",v=>{pageUsers=v==="prev"?Math.max(1,pageUsers-1):v==="next"?Math.min(pages,pageUsers+1):+v;drawUsers();});
+  }
+
+  const html=`<section class="dash-rm">
+    <div class="band">
+      <h2>Total Declared Records vs Total Documents in EDRMS Compliant Sites</h2>
+      <div class="bd">See how much of the content stored in EDRMS compliant sites has been formally declared as an official record, and how that breaks down by department, division, site, and library.</div>
+    </div>
+    <div class="kpis" id="s1-kpis">
+      <div class="kpi on" data-k="rec"><div class="lab">Total Declared Records</div><div class="val" id="kpi-rec">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="docs"><div class="lab">Total Documents in EDRMS Compliant Sites</div><div class="val" id="kpi-docs">—</div><div class="tap">▾ Click to open</div></div>
+    </div>
+    <div id="s1-detail"></div>
+
+    <div class="band">
+      <h2>SharePoint Sites and Users Governance</h2>
+      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage over the last 7, 30, or 90 days.</div>
+    </div>
+    <div class="kpis" id="s2-kpis">
+      <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="users"><div class="lab">Active Users</div><div class="val" id="kpi-users">—</div><div class="tap">▾ Click to open</div></div>
+    </div>
+    <div id="s2-detail"></div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-rec").textContent=F(ANNUAL_REC);
+    document.getElementById("kpi-docs").textContent=(ANNUAL_DOCS/1e6).toFixed(2)+"M";
+    document.getElementById("kpi-sites").textContent=F(SITES.filter(s=>s.last<=7).length);
+    document.getElementById("kpi-users").textContent=F(SITES.filter(s=>s.last<=7).reduce((a,b)=>a+b.uv7,0));
+    document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.onclick=()=>renderS1(k.dataset.k));
+    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
+    renderS1(curS1);renderS2(curS2);
+  }
+
+  return {
+    ver:"Records Management Dashboard",
+    crumb:"Records Management Dashboard",
+    asof:"Data as of Mon 20 Jul 2026 23:59 · refreshed Tue 21 Jul 06:00",
+    /* exposed so Format and Storage can assert its format counts still add up
+       to the same declared records total */
+    annualRec:ANNUAL_REC,
+    /* Read by the Overview dashboard. Derived here, from the same arrays this
+       dashboard renders, so a summary figure can never drift from the detail
+       figure it is summarising. */
+    summary:{
+      declared:ANNUAL_REC,
+      documents:ANNUAL_DOCS,
+      withPhysical:DEPTS.reduce((a,d)=>a+d.phys,0),
+      get withoutPhysical(){return this.declared-this.withPhysical;},
+      activeSites7:SITES.filter(s=>s.last<=7).length,
+      totalSitesTracked:SITES.length,
+      activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
+      topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
+      departmentCount:DEPTS.length
+    },
+    html,init
+  };
+})();
+
+/* =================================================================
+   formatandstorage.js
+   ================================================================= */
+/* ===================================================================
+   Format and Storage
+   Built from the approved mockup. Must be defined after DASHBOARDS.rm,
+   because it asserts against that dashboard's declared records total.
+   =================================================================== */
+DASHBOARDS.fs=(function(){
+  /* Average file size is DERIVED, never stored: storageGB * 1024 / files. */
+  const FORMATS=[
+    {label:"PDF",                files:8200, gb:9.6},
+    {label:"Word",               files:5100, gb:3.0},
+    {label:"Excel",              files:3050, gb:2.7},
+    {label:"Email (.msg / .eml)",files:2100, gb:0.6},
+    {label:"PowerPoint",         files:1350, gb:5.9},
+    {label:"Image files",        files:980,  gb:3.6},
+    {label:"Video files",        files:466,  gb:20.5},
+    {label:"All other formats",  files:400,  gb:0.8},
+  ];
+  const avgOf=f=>f.files?f.gb*1024/f.files:0;
+  const TOT_FILES=FORMATS.reduce((a,f)=>a+f.files,0);
+  const TOT_GB=FORMATS.reduce((a,f)=>a+f.gb,0);
+  const TOT_AVG=TOT_FILES?TOT_GB*1024/TOT_FILES:0;
+
+  /* The format file counts are a decomposition of Total Declared Records on the
+     Records Management dashboard. If the department data over there ever
+     changes, this fires so the two dashboards cannot silently drift apart. */
+  console.assert(TOT_FILES===DASHBOARDS.rm.annualRec,
+    `Format and Storage total files (${TOT_FILES}) does not match Records Management declared records (${DASHBOARDS.rm.annualRec})`);
+
+  const COLS=[{k:"files",label:"Number of files"},{k:"gb",label:"Storage (GB)"},{k:"avg",label:"Avg file size (MB)"}];
+  const valOf={files:f=>f.files, gb:f=>f.gb, avg:f=>avgOf(f)};
+  const fmtOf={files:f=>F(f.files), gb:f=>f.gb.toFixed(1)+" GB", avg:f=>avgOf(f).toFixed(1)};
+
+  let field="files",dir="desc";
+
+  function drawTable(){
+    document.querySelectorAll("#fs-field button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));
+    document.getElementById("fs-dir").innerHTML=(dir==="desc"?'▼ Highest first':'▲ Lowest first');
+    const rows=[...FORMATS].sort((a,b)=>dir==="desc"?valOf[field](b)-valOf[field](a):valOf[field](a)-valOf[field](b));
+    const mx={};COLS.forEach(c=>{mx[c.k]=Math.max(...FORMATS.map(f=>valOf[c.k](f)),0.0001);});
+    let h=`<div class="fhead"><span>Format</span>`+
+      COLS.map(c=>`<span class="num ${c.k===field?'on':''}" data-col="${c.k}">${c.label}</span>`).join("")+`</div>`;
+    h+=rows.map(f=>`<div class="frow"><span class="fname">${f.label}</span>`+
+      COLS.map(c=>{const w=Math.max(2,100*valOf[c.k](f)/mx[c.k]);
+        return `<span class="fcell"><i class="fbar" style="width:${w}%"></i><b>${fmtOf[c.k](f)}</b></span>`;}).join("")+
+      `</div>`).join("");
+    h+=`<div class="ftot"><span class="fname">Total</span><span class="tv">${F(TOT_FILES)}</span><span class="tv">${TOT_GB.toFixed(1)} GB</span><span class="tv">${TOT_AVG.toFixed(1)}</span></div>`;
+    document.getElementById("fs-table").innerHTML=h;
+  }
+  function drawRecords(){
+    const rows=[...FORMATS].sort((a,b)=>b.files-a.files);
+    const mx=Math.max(...rows.map(r=>r.files),1);
+    document.getElementById("fs-records").innerHTML=rows.map(r=>{
+      const pct=TOT_FILES?r.files/TOT_FILES*100:0;
+      return `<div class="rbar"><div class="rl">${r.label}</div>
+        <div class="rt"><div class="rf" style="width:${Math.max(2,100*r.files/mx)}%"></div></div>
+        <div class="rv"><b>${F(r.files)}</b><span> · ${pct.toFixed(1)}%</span></div></div>`;}).join("");
+  }
+
+  const html=`<section class="dash-fs">
+    <div class="band">
+      <h2>Storage footprint by file format</h2>
+      <div class="bd">Which file formats consume the most storage across EDRMS compliant sites, and how declared records break down by format.</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi on"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Storage consumed by format</div>
+      <div class="psub">File formats ranked by number of files, storage consumed, and average file size. Bars are scaled within each column, so the longest bar in a column is that column's largest value.</div>
+      <div class="sortrow"><span class="lbl">Sort by</span>
+        <div class="segctl" id="fs-field"><button data-f="files">Files</button><button data-f="gb">Storage</button><button data-f="avg">Avg file size</button></div>
+        <button class="dirbtn" id="fs-dir"></button></div>
+      <div class="ftab" id="fs-table"></div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi on"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by format</div>
+      <div class="psub">Declared records broken down by file format, as a count and as a share of all declared records.</div>
+      <div id="fs-records"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-fsgb").textContent=TOT_GB.toFixed(1)+" GB";
+    document.getElementById("kpi-fstop").textContent=FORMATS.reduce((a,b)=>b.files>a.files?b:a).label;
+    document.querySelectorAll("#fs-field button").forEach(b=>b.onclick=()=>{field=b.dataset.f;drawTable();});
+    document.getElementById("fs-dir").onclick=()=>{dir=dir==="desc"?"asc":"desc";drawTable();};
+    drawTable();drawRecords();
+  }
+
+  return {
+    ver:"Format and Storage Dashboard",
+    crumb:"Format and Storage Dashboard",
+    asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
+    /* Read by the Overview dashboard. Derived from the same array this
+       dashboard renders, so a summary figure can never drift from the detail. */
+    summary:{
+      totalFiles:TOT_FILES,
+      totalGB:TOT_GB,
+      avgFileSizeMB:TOT_AVG,
+      formatCount:FORMATS.length,
+      formats:FORMATS.map(f=>({label:f.label,files:f.files,gb:f.gb}))
+    },
+    html,init
+  };
+})();
+
+/* =================================================================
+   overview.js
+   ================================================================= */
+/* ===================================================================
+   Overview
+   An executive summary of the other dashboards. Must be defined after
+   them, because every figure it shows is read from their exported
+   `summary` objects rather than restated here. That is deliberate: a
+   summary that keeps its own copy of the numbers drifts away from the
+   detail it claims to summarise the first time either side is edited.
+   =================================================================== */
+DASHBOARDS.ov=(function(){
+  const RM=DASHBOARDS.rm.summary;
+  const SL=DASHBOARDS.sl.summary;
+  const FS=DASHBOARDS.fs.summary;
+
+  /* Cross dashboard checks. These fire in the console rather than on the page,
+     so a broken figure is caught during verification instead of by a reader. */
+  console.assert(RM.declared===FS.totalFiles,
+    `Overview: declared records (${RM.declared}) and format file total (${FS.totalFiles}) disagree`);
+  console.assert(RM.withPhysical+RM.withoutPhysical===RM.declared,
+    "Overview: physical counterpart split does not sum to declared records");
+  console.assert(SL.libraryRecords+SL.libraryUndeclared===SL.libraryDocuments,
+    "Overview: library declaration split does not sum to library documents");
+  console.assert(Math.abs(FS.formats.reduce((a,f)=>a+f.gb,0)-FS.totalGB)<0.05,
+    "Overview: format storage does not sum to the storage total");
+
+  const GB=n=>n.toFixed(1)+" GB";
+  const PCT=(v,t)=>t?(v/t*100):0;
+
+  /* ===== chart primitives, all mapped to native Power BI visuals ===== */
+
+  /* Donut chart. Power BI equivalent: Donut chart. */
+  function arcSeg(cx,cy,rO,rI,a0,a1,fill,title){
+    const large=(a1-a0)>Math.PI?1:0;
+    const pt=(r,a)=>[(cx+r*Math.cos(a)).toFixed(2),(cy+r*Math.sin(a)).toFixed(2)];
+    const [x0,y0]=pt(rO,a0),[x1,y1]=pt(rO,a1),[x2,y2]=pt(rI,a1),[x3,y3]=pt(rI,a0);
+    return `<path d="M${x0} ${y0}A${rO} ${rO} 0 ${large} 1 ${x1} ${y1}L${x2} ${y2}A${rI} ${rI} 0 ${large} 0 ${x3} ${y3}Z" fill="${fill}"><title>${title}</title></path>`;
+  }
+  function donut(items,o){
+    o=o||{};
+    const size=o.size||168, th=o.thickness||32, cx=size/2, cy=size/2, rO=size/2, rI=size/2-th;
+    const total=items.reduce((a,i)=>a+i.value,0)||1;
+    let a=-Math.PI/2, out="";
+    items.forEach(i=>{
+      const frac=i.value/total;
+      if(frac<=0)return;
+      const a1=a+frac*Math.PI*2;
+      if(frac>0.9995){
+        /* a single full slice would collapse the arc endpoints onto each other,
+           so draw it as a stroked circle instead */
+        out+=`<circle cx="${cx}" cy="${cy}" r="${(rO+rI)/2}" fill="none" stroke="${i.color}" stroke-width="${th}"><title>${i.label}</title></circle>`;
+      }else{
+        out+=arcSeg(cx,cy,rO,rI,a,a1,i.color,`${i.label}: ${o.fmt?o.fmt(i.value):F(i.value)}`);
+      }
+      a=a1;
+    });
+    const centre=o.centreValue
+      ? `<text x="${cx}" y="${cy-1}" text-anchor="middle" font-size="20" font-weight="700" fill="#10243E" style="font-variant-numeric:tabular-nums">${o.centreValue}</text>
+         <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10" fill="#6B7A8C">${o.centreLabel||""}</text>`
+      : "";
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="display:block;flex:0 0 auto">${out}${centre}</svg>`;
+  }
+  function legend(items,fmt){
+    const total=items.reduce((a,i)=>a+i.value,0)||1;
+    return `<div class="dleg">`+items.map(i=>
+      `<div class="dlrow"><span class="sw" style="background:${i.color}"></span>
+        <span class="dlab" title="${i.label}">${i.label}</span>
+        <span class="dval">${fmt(i.value)}</span>
+        <span class="dpct">${PCT(i.value,total).toFixed(1)}%</span></div>`).join("")+`</div>`;
+  }
+  function donutCard(items,o,fmt){
+    return `<div class="cwrap">${donut(items,o)}${legend(items,fmt)}</div>`;
+  }
+
+  /* Ranked horizontal bars. Power BI equivalent: Clustered bar chart. */
+  function topBars(items,fmt){
+    const mx=Math.max(...items.map(i=>i.value),1);
+    return items.map(i=>`<div class="tbar">
+      <div class="tl"><b>${i.label}</b>${i.name?`<small>${i.name}</small>`:""}</div>
+      <div class="tt"><div class="tf" style="width:${Math.max(3,100*i.value/mx)}%"></div></div>
+      <div class="tv">${fmt(i.value)}</div></div>`).join("");
+  }
+
+  /* Two magnitudes on one shared scale, so the gap between them is the message.
+     Power BI equivalent: Clustered bar chart. */
+  function gapBars(rows,fmt){
+    const mx=Math.max(...rows.map(r=>r.value),1);
+    return rows.map(r=>`<div class="gap">
+      <div class="gl"><span>${r.label}</span><b>${fmt(r.value)}</b></div>
+      <div class="gt"><div class="gf" style="width:${Math.max(0.4,100*r.value/mx)}%;background:${r.color}"></div></div>
+    </div>`).join("");
+  }
+
+  /* ===== palette, taken from the ADB tokens only ===== */
+  const C={blue:"#0072BC",teal:"#00A5A8",deep:"#1B5E82",green:"#5CA943",grey:"#9DB8D2",faint:"#C7D3E0",orange:"#E8763C"};
+
+  /* The same five formats appear in both format donuts, with the same colours,
+     so the two can be read against each other. Grouping the tail into one slice
+     also keeps each donut readable, which eight slices would not be. */
+  const FMT_TOP=[...FS.formats].sort((a,b)=>b.gb-a.gb).slice(0,5);
+  const FMT_REST=FS.formats.filter(f=>!FMT_TOP.includes(f));
+  const FMT_COLORS=[C.blue,C.teal,C.deep,C.green,C.grey];
+  const storageSlices=FMT_TOP.map((f,i)=>({label:f.label,value:f.gb,color:FMT_COLORS[i]}))
+    .concat([{label:"All other formats",value:FMT_REST.reduce((a,f)=>a+f.gb,0),color:C.faint}]);
+  const fileSlices=FMT_TOP.map((f,i)=>({label:f.label,value:f.files,color:FMT_COLORS[i]}))
+    .concat([{label:"All other formats",value:FMT_REST.reduce((a,f)=>a+f.files,0),color:C.faint}]);
+
+  console.assert(Math.abs(storageSlices.reduce((a,s)=>a+s.value,0)-FS.totalGB)<0.05,
+    "Overview: storage donut does not sum to the storage total");
+  console.assert(fileSlices.reduce((a,s)=>a+s.value,0)===FS.totalFiles,
+    "Overview: file donut does not sum to the file total");
+
+  /* The single most useful comparison in the data: the format that dominates
+     storage is not the format that dominates the file count. */
+  const bigStorage=storageSlices[0];
+  const bigStorageFiles=fileSlices[0];
+  const bigFiles=[...fileSlices].sort((a,b)=>b.value-a.value)[0];
+
+  const html=`<section class="dash-ov">
+    <div class="band">
+      <h2>Executive summary</h2>
+      <div class="bd">One view of how the EDRMS is being adopted across the bank. Each section below summarises a dashboard: open that dashboard for the full detail, filters, and drill down.</div>
+    </div>
+
+    <div class="kpis" id="ov-kpis"></div>
+
+    <div class="panel">
+      <div class="phead">
+        <div>
+          <div class="ptitle">Records Management</div>
+          <div class="psub">How much of the content held in EDRMS compliant sites has been formally declared as a record, and which departments are declaring it.</div>
+        </div>
+        <button class="golink" data-go="rm">Open Records Management &rsaquo;</button>
+      </div>
+      <div class="crow">
+        <div class="chart">
+          <div class="ctitle">Declared records by physical counterpart</div>
+          <div id="ov-rm-donut"></div>
+        </div>
+        <div class="chart">
+          <div class="ctitle">Declared against everything held</div>
+          <div id="ov-rm-gap"></div>
+        </div>
+        <div class="chart wide">
+          <div class="ctitle">Top 5 departments by declared records</div>
+          <div id="ov-rm-top"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="phead">
+        <div>
+          <div class="ptitle">Sites and Libraries</div>
+          <div class="psub">How far the compliant site rollout has reached, and how thoroughly the libraries inside those sites are declaring their content.</div>
+        </div>
+        <button class="golink" data-go="sl">Open Sites and Libraries &rsaquo;</button>
+      </div>
+      <div class="crow">
+        <div class="chart">
+          <div class="ctitle">Library content declared as records</div>
+          <div id="ov-sl-donut"></div>
+        </div>
+        <div class="chart wide">
+          <div class="ctitle">Top 5 departments by compliant sites created</div>
+          <div id="ov-sl-top"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="phead">
+        <div>
+          <div class="ptitle">Format and Storage</div>
+          <div class="psub">Which file formats the declared records are held in, and which of them are actually consuming the storage.</div>
+        </div>
+        <button class="golink" data-go="fs">Open Format and Storage &rsaquo;</button>
+      </div>
+      <div class="crow">
+        <div class="chart">
+          <div class="ctitle">Share of storage consumed</div>
+          <div id="ov-fs-gb"></div>
+        </div>
+        <div class="chart">
+          <div class="ctitle">Share of files held</div>
+          <div id="ov-fs-files"></div>
+        </div>
+      </div>
+      <div id="ov-fs-callout"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    /* headline cards, each one a route into the dashboard it came from */
+    const cards=[
+      {lab:"Total Declared Records", val:F(RM.declared),                 go:"rm", to:"Records Management"},
+      {lab:"Documents in Compliant Sites", val:(RM.documents/1e6).toFixed(2)+"M", go:"rm", to:"Records Management"},
+      {lab:"Compliant Sites Created", val:F(SL.sitesCreated),            go:"sl", to:"Sites and Libraries"},
+      {lab:"Storage Consumed", val:GB(FS.totalGB),                       go:"fs", to:"Format and Storage"},
+      {lab:"Active Sites, Last 7 Days", val:F(RM.activeSites7),          go:"rm", to:"Records Management"},
+    ];
+    document.getElementById("ov-kpis").innerHTML=cards.map(c=>
+      `<div class="kpi" data-go="${c.go}"><div class="lab">${c.lab}</div><div class="val">${c.val}</div>
+       <div class="tap">View in ${c.to} &rsaquo;</div></div>`).join("");
+
+    /* Records Management */
+    const physSlices=[
+      {label:"Without physical counterpart",value:RM.withoutPhysical,color:C.grey},
+      {label:"With physical counterpart",value:RM.withPhysical,color:C.teal},
+    ];
+    document.getElementById("ov-rm-donut").innerHTML=
+      donutCard(physSlices,{centreValue:F(RM.declared),centreLabel:"declared records"},F);
+
+    const rate=PCT(RM.declared,RM.documents);
+    document.getElementById("ov-rm-gap").innerHTML=
+      gapBars([
+        {label:"Documents in compliant sites",value:RM.documents,color:C.orange},
+        {label:"Declared as records",value:RM.declared,color:C.blue},
+      ],F)+
+      `<div class="callout"><b>${rate.toFixed(2)}%</b> of the documents held in EDRMS compliant sites have been declared as records. The remaining <b>${F(RM.documents-RM.declared)}</b> documents sit in compliant sites without record status.</div>`;
+
+    document.getElementById("ov-rm-top").innerHTML=topBars(RM.topDepartments,F)+
+      `<div class="mini"><div>Departments reporting<b>${F(RM.departmentCount)}</b></div>
+        <div>Active users, last 7 days<b>${F(RM.activeUsers7)}</b></div></div>`;
+
+    /* Sites and Libraries */
+    const libSlices=[
+      {label:"Declared as records",value:SL.libraryRecords,color:C.teal},
+      {label:"Not yet declared",value:SL.libraryUndeclared,color:C.grey},
+    ];
+    document.getElementById("ov-sl-donut").innerHTML=
+      donutCard(libSlices,{centreValue:PCT(SL.libraryRecords,SL.libraryDocuments).toFixed(1)+"%",centreLabel:"declared"},F);
+
+    document.getElementById("ov-sl-top").innerHTML=topBars(SL.topDepartments,F)+
+      `<div class="mini"><div>Compliant sites created<b>${F(SL.sitesCreated)}</b></div>
+        <div>Libraries tracked<b>${F(SL.libraryCount)}</b></div>
+        <div>Library storage<b>${GB(SL.storageGB)}</b></div></div>`;
+
+    /* Format and Storage, two donuts sharing one colour scheme so they can be
+       read against each other */
+    document.getElementById("ov-fs-gb").innerHTML=
+      donutCard(storageSlices,{centreValue:GB(FS.totalGB),centreLabel:"total storage"},GB);
+    document.getElementById("ov-fs-files").innerHTML=
+      donutCard(fileSlices,{centreValue:F(FS.totalFiles),centreLabel:"total files"},F);
+
+    const gbShare=PCT(bigStorage.value,FS.totalGB), fileShare=PCT(bigStorageFiles.value,FS.totalFiles);
+    document.getElementById("ov-fs-callout").innerHTML=
+      `<div class="callout">The two charts do not agree, and that is the point. <b>${bigStorage.label}</b> account for <b>${gbShare.toFixed(1)}%</b> of storage but only <b>${fileShare.toFixed(1)}%</b> of files, while <b>${bigFiles.label}</b> are the most numerous at <b>${PCT(bigFiles.value,FS.totalFiles).toFixed(1)}%</b> of files. Storage pressure comes from a small number of large files, not from the formats people create most often.</div>`;
+
+    /* every card and button routes to the dashboard the figure came from */
+    document.querySelectorAll(".dash-ov [data-go]").forEach(el=>
+      el.onclick=()=>switchTo(el.dataset.go));
+  }
+
+  return {
+    ver:"Overview Dashboard",
+    crumb:"Overview",
+    /* A summary is only as current as its stalest input, so this quotes the
+       oldest refresh across the dashboards it draws from rather than the newest. */
+    asof:"Data as of Sun 05 Jul 2026 23:59, the oldest refresh across the dashboards summarised here",
+    html,init
+  };
+})();
+
+/* =================================================================
+   app.js
+   ================================================================= */
+/* ===================================================================
+   Shell: left nav switches which dashboard is mounted. Only one
+   dashboard is in the DOM at a time, which is why both can keep their
+   original element ids untouched.
+   =================================================================== */
+function switchTo(key){
+  const d=DASHBOARDS[key];
+  if(!d)return;
+  document.getElementById("view").innerHTML=d.html;
+  document.getElementById("side-ver").textContent=d.ver;
+  document.getElementById("crumb-b").textContent=d.crumb;
+  document.getElementById("asof").textContent=d.asof;
+  document.querySelectorAll("#nav a[data-d]").forEach(a=>a.classList.toggle("on",a.dataset.d===key));
+  d.init();
+}
+document.querySelectorAll("#nav a[data-d]").forEach(a=>a.onclick=()=>switchTo(a.dataset.d));
+switchTo("ov");
+</script>
 </body></html>
