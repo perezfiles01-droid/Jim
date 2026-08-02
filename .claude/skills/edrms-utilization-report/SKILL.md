@@ -32,7 +32,13 @@ core.js                       F(), wirePager(), the DASHBOARDS registry
 app.js                        switchTo() and nav wiring
 <name>.css                    one scoped stylesheet per dashboard
 <name>.js                     one module per dashboard
+                              (hyphen free names, see below)
 ```
+
+**Use hyphen free filenames.** The delivery path to the requester silently
+strips hyphens, which turned `records-management.js` into `recordsmanagement.js`
+and broke every reference in `index.html`. Name new files like
+`departmentperformance.js`, not `department-performance.js`.
 
 Everything sits at the repository root, deliberately. Nested folders were tried
 and reverted: the only write path available is the GitHub web uploader, which

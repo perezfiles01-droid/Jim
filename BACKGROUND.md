@@ -111,10 +111,16 @@ index.html                    shell markup, stylesheet and script tags
 styles.css                    shared shell styles
 core.js                       F(), wirePager(), the DASHBOARDS registry
 app.js                        switchTo() and nav wiring
-records-management.css / .js  one pair per dashboard
-sites-and-libraries.css / .js
-format-and-storage.css / .js
+recordsmanagement.css / .js   one pair per dashboard
+sitesandlibraries.css / .js
+formatandstorage.css / .js
 ```
+
+**Filenames carry no hyphens.** The delivery path to the requester strips
+hyphens out of filenames, so `records-management.js` arrived as
+`recordsmanagement.js` and every reference in `index.html` broke. Names are now
+hyphen free so that cannot happen again. Keep new dashboard files hyphen free
+too.
 
 **Why flat rather than nested folders.** Nested folders were tried first and
 reverted. The only write path available to the requester is the GitHub web

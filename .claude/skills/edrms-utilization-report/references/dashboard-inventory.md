@@ -8,10 +8,10 @@ opening another.
 | Nav entry | Key | Files | Status |
 | --- | --- | --- | --- |
 | Overview | - | - | Not integrated. Standalone prototypes v18 and v19 are in the repo |
-| Records Management | `rm` | `records-management.css` / `.js` | Built |
+| Records Management | `rm` | `recordsmanagement.css` / `.js` | Built |
 | Department Performance | - | - | Placeholder, `class="dis"` |
-| Sites and Libraries | `sl` | `sites-and-libraries.css` / `.js` | Built |
-| Format and Storage | `fs` | `format-and-storage.css` / `.js` | Built |
+| Sites and Libraries | `sl` | `sitesandlibraries.css` / `.js` | Built |
+| Format and Storage | `fs` | `formatandstorage.css` / `.js` | Built |
 | Retention | - | - | Placeholder, `class="dis"` |
 
 Default on load is Records Management, the first live entry.
