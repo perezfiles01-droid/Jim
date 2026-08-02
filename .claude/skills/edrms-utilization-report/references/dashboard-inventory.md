@@ -1,16 +1,17 @@
 # Dashboard inventory
 
-What exists today in `EDRMS_Reporting_Suite_Integrated_v1.html`, and what is
-still a placeholder. Nav order is fixed; keep it.
+What exists today in the site, and what is still a placeholder. Nav order is
+fixed; keep it. Each built dashboard owns `dashboards/<name>/` containing its
+own `.css` and `.js`; a change to one should never require opening another.
 
-| Nav entry | Key | Status |
-| --- | --- | --- |
-| Overview | - | Not integrated. Standalone prototypes v18 and v19 are in the repo |
-| Records Management | `rm` | Built |
-| Department Performance | - | Placeholder, `class="dis"` |
-| Sites and Libraries | `sl` | Built |
-| Format and Storage | `fs` | Built |
-| Retention | - | Placeholder, `class="dis"` |
+| Nav entry | Key | Folder | Status |
+| --- | --- | --- | --- |
+| Overview | - | - | Not integrated. Standalone prototypes v18 and v19 are in the repo |
+| Records Management | `rm` | `dashboards/records-management/` | Built |
+| Department Performance | - | - | Placeholder, `class="dis"` |
+| Sites and Libraries | `sl` | `dashboards/sites-and-libraries/` | Built |
+| Format and Storage | `fs` | `dashboards/format-and-storage/` | Built |
+| Retention | - | - | Placeholder, `class="dis"` |
 
 Default on load is Records Management, the first live entry.
 

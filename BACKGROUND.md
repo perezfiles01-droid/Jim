@@ -23,7 +23,7 @@ connection has been built yet.
 
 ## 2. What to build first
 
-**Status: done.** Delivered as `EDRMS_Reporting_Suite_Integrated_v1.html`.
+**Status: done.** Delivered as the static site described in section 4.
 
 **Task (as narrowed by the requester):** Integrate **two** dashboards, Sites and
 Libraries plus Records Management, into one navigable prototype. Overview was
@@ -88,7 +88,7 @@ to change the separator in each `deptOptions` builder.
 | Concern | Choice |
 | --- | --- |
 | Language | HTML5 + CSS3 + vanilla JavaScript (ES2020), no transpiler |
-| Frameworks | None. Single-file prototypes, no framework, no bundler, no build step. Production target is Power BI Desktop / Service, not a JS framework. |
+| Frameworks | None. Static site, no framework, no bundler, no build step. Classic scripts, not ES modules, so index.html also opens from disk. Production target is Power BI Desktop / Service, not a JS framework. |
 | Database | None in the prototype (sample data lives in in-file JS arrays). Production target: PostgreSQL 16 as the EDRMS reporting store, read by Power BI. |
 | Package manager | None for the prototypes (zero dependencies). npm is used only for optional Node deliverable scripts. |
 
@@ -101,32 +101,52 @@ runtime): Node.js with pptxgenjs (PPTX), Python 3 with openpyxl (XLSX), docx-js
 **Repo:** `perezfiles01-droid/Jim` (the repo attached to this session, and the
 only one currently available). Confirm if a different owner/repo is intended.
 
-**Layout: single file. The `index.html` + `assets/` + `dashboards/` split
-originally proposed here was dropped.** The requester's goal was that the
-prototype stop being a hassle to open, and a split folder means keeping several
-files together and serving them over a local HTTP server. One self-contained
-file just opens by double-click. The internals are still organized (see below),
-just concatenated into one deliverable.
+**Layout: a static site, one folder per dashboard.** Published with GitHub
+Pages. The earlier single-file build was replaced so that a change to one
+dashboard touches only that dashboard's folder.
 
-**Entry point:** `EDRMS_Reporting_Suite_Integrated_v1.html`
+```
+index.html                             shell markup, stylesheet and script tags
+.nojekyll                              stops Pages running files through Jekyll
+assets/styles.css                      shared shell styles
+assets/core.js                         F(), wirePager(), the DASHBOARDS registry
+assets/app.js                          switchTo() and nav wiring
+dashboards/records-management/         records-management.css + .js
+dashboards/sites-and-libraries/        sites-and-libraries.css + .js
+dashboards/format-and-storage/         format-and-storage.css + .js
+```
 
-**How that file is structured internally:**
+**Entry point:** `index.html`
+
+Still no build step, no bundler, no dependencies. The scripts are deliberately
+classic scripts rather than ES modules, which is what keeps `index.html` working
+when opened straight from disk as well as over http; ES modules are blocked by
+CORS on `file://` and would force a local server. Load order matters twice:
+`core.js` creates the registry so it runs first, `format-and-storage` asserts
+against `records-management` so it runs after it, and `app.js` mounts the first
+dashboard so it runs last.
+
+The previous single file, `EDRMS_Reporting_Suite_Integrated_v1.html`, was
+removed so there is only one source of truth. It remains in git history at
+commit `571b97a` and can be recovered with
+`git show 571b97a:EDRMS_Reporting_Suite_Integrated_v1.html > out.html`.
+
+**How the code is organised inside that structure:**
 
 - Shared shell CSS (tokens, sidebar, header, `.band`, `.kpi`, `.panel`,
-  `.pager`) is global.
-- Each dashboard's own CSS is **scoped** under a container class, `.dash-sl` for
-  Sites and Libraries and `.dash-rm` for Records Management. This is required,
-  not cosmetic: the two source prototypes use the same class names with
-  different values. `.sbar` is `200px 1fr 210px` in one and `210px 1fr 72px` in
-  the other, and the `.seg.e` / `.seg.p` segment colours are **inverted**
-  between them. `.kpis`, `.drange`, `.resetbtn`, `.legend`, and `select` also
-  differ.
-- Each dashboard's JS lives in its own IIFE in `DASHBOARDS.sl` / `DASHBOARDS.rm`,
-  exposing `{ver, crumb, asof, html, init}`. Only `F()` and `wirePager()` are
-  shared, because only those two were byte identical. `pager()` and
-  `deptOptions()` differ per dashboard and stay private: the Sites and Libraries
-  `pager()` prints a row count on a single page, the Records Management one
-  returns an empty string.
+  `.pager`) lives in `assets/styles.css`.
+- Each dashboard's CSS is **scoped** under a container class, `.dash-sl`,
+  `.dash-rm`, `.dash-fs`. This is required, not cosmetic: the two source
+  prototypes use the same class names with different values. `.sbar` is
+  `200px 1fr 210px` in one and `210px 1fr 72px` in the other, and the
+  `.seg.e` / `.seg.p` segment colours are **inverted** between them. `.kpis`,
+  `.drange`, `.resetbtn`, `.legend`, and `select` also differ.
+- Each dashboard's JS is an IIFE in its own file registering into
+  `DASHBOARDS.sl` / `.rm` / `.fs`, exposing `{ver, crumb, asof, html, init}`.
+  Only `F()` and `wirePager()` are shared, because only those two were byte
+  identical. `pager()` and `deptOptions()` differ per dashboard and stay
+  private: the Sites and Libraries `pager()` prints a row count on a single
+  page, the Records Management one returns an empty string.
 - **Only one dashboard is mounted in the DOM at a time.** `switchTo(key)`
   replaces `#view`, so both dashboards keep their original element ids
   (`s1-detail`, `s2-kpis`, and so on) with no renaming and therefore no risk of
@@ -234,7 +254,11 @@ plain ES2020, no external libraries.
 
 - **Install:** none (no dependencies).
 - **Run locally:** open `index.html` in a browser, or serve the folder with
-  `python3 -m http.server 8000` and open `http://localhost:8000`.
+  `python3 -m http.server 8000` and open `http://localhost:8000`. Check both,
+  since only the served run catches a broken asset path or a 404.
+- **Live site:** published with GitHub Pages from `main` at the repository root.
+  Enable under Settings, Pages, Source "Deploy from a branch", branch `main`,
+  folder `/ (root)`.
 - **Tests:** none automated yet. Verify manually against the acceptance
   checklist in section 2.
 - **Lint/typecheck:** none configured.

@@ -1,6 +1,6 @@
 ---
 name: edrms-utilization-report
-description: Build, extend, and verify the ADB EDRMS Utilization Report prototype (the "Reporting Suite"), a single self-contained HTML file that specifies a future Power BI report. Use this skill whenever the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite, or any of its dashboards (Overview, Records Management, Department Performance, Sites and Libraries, Format and Storage, Retention), and whenever they ask to add, copy, clone, restyle, fix, or check a dashboard, KPI card, treemap, stacked bar, drill-down, sortable table, or date range filter in EDRMS_Reporting_Suite_Integrated_v1.html. Use it even when the request sounds like a one-line tweak, because this deliverable carries hard rules (no em dashes in visible text, a fixed ADB palette, figures that must reconcile across dashboards, and visuals restricted to what Power BI can reproduce natively) that are very easy to break by accident and expensive to catch later.
+description: Build, extend, and verify the ADB EDRMS Utilization Report prototype (the "Reporting Suite"), a dependency-free static site published on GitHub Pages that specifies a future Power BI report, laid out with one folder per dashboard. Use this skill whenever the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite, the live site, or any of its dashboards (Overview, Records Management, Department Performance, Sites and Libraries, Format and Storage, Retention), and whenever they ask to add, copy, clone, restyle, fix, publish, or check a dashboard, KPI card, treemap, stacked bar, drill-down, sortable table, or date range filter in it. Use it even when the request sounds like a one-line tweak, because this deliverable carries hard rules (no em dashes in visible text, a fixed ADB palette, figures that must reconcile across dashboards, and visuals restricted to what Power BI can reproduce natively) that are very easy to break by accident and expensive to catch later.
 ---
 
 # ADB EDRMS Utilization Report
@@ -20,10 +20,30 @@ and behaviour before anyone opens Power BI Desktop. That framing drives most of
 the rules below: if a visual cannot be reproduced with a native Power BI visual,
 it does not belong in the prototype, however good it looks in a browser.
 
-**Deliverable:** `EDRMS_Reporting_Suite_Integrated_v1.html`, one self-contained
-file with no dependencies, no build step, and no server. It is opened by
-double-clicking. Keep it that way; the requester's stated goal is that it stops
-being a hassle to open.
+**Deliverable:** a static site served by GitHub Pages, laid out so each
+dashboard owns a folder and a change to one dashboard touches only that folder.
+
+```
+index.html                                 shell markup, stylesheet and script tags
+.nojekyll                                  stops Pages running the files through Jekyll
+assets/styles.css                          shared shell styles
+assets/core.js                             F(), wirePager(), the DASHBOARDS registry
+assets/app.js                              switchTo() and nav wiring
+dashboards/<name>/<name>.css               that dashboard's scoped styles
+dashboards/<name>/<name>.js                that dashboard's module
+```
+
+There is still no build step, no bundler, and no dependencies. The scripts are
+deliberately **classic scripts, not ES modules**, which is what keeps
+`index.html` working when opened straight from disk as well as over http. ES
+modules are blocked by CORS on `file://`, so switching to them would force a
+local server and take away the double-click that the requester asked for. Do not
+convert them.
+
+Load order in `index.html` matters in two places: `core.js` creates the
+`DASHBOARDS` registry so it runs first, `format-and-storage` asserts against
+`records-management` so it runs after it, and `app.js` mounts the first
+dashboard so it runs last.
 
 Read `BACKGROUND.md` at the repo root for project context that changes over
 time (current status, decisions taken, open items). This skill covers how to
@@ -67,9 +87,9 @@ dependencies** rather than presenting them as ready, unless the requester
 explicitly says they will cover it verbally. See `references/data-and-sources.md`
 for what is and is not actually available today.
 
-## How the file is put together, and why
+## How the site is put together, and why
 
-One shell hosts a registry of dashboard modules. Understanding this is what lets
+`index.html` hosts a registry of dashboard modules. Understanding this is what lets
 you add a dashboard without breaking the others.
 
 ```
@@ -111,14 +131,23 @@ the mockup and verify it reconciles before writing anything. Confirm derived
 columns really are derivable (for example average file size = storage GB * 1024
 / files). If the numbers do not add up, raise it then, not after building.
 
-**2. Claim a nav slot.** The sidebar already lists every planned dashboard, with
-unbuilt ones marked `class="dis"`. Enable one by swapping `class="dis"` for
-`data-d="<key>"`. Keep the existing nav order. Use a short key: `rm`, `sl`, `fs`.
+**2. Claim a nav slot.** The sidebar in `index.html` already lists every planned
+dashboard, with unbuilt ones marked `class="dis"`. Enable one by swapping
+`class="dis"` for `data-d="<key>"`. Keep the existing nav order. Use a short
+key: `rm`, `sl`, `fs`.
 
-**3. Add a scoped CSS block.** Put `.dash-<key>` rules next to the others. Only
-add rules that differ from the shared shell. Check the collision list above.
+**3. Create the folder.** Add `dashboards/<name>/<name>.css` and
+`dashboards/<name>/<name>.js`, then add one `<link>` and one `<script>` for them
+in `index.html`. That is the whole wiring. Everything else about the dashboard
+stays inside its folder, which is the point of the layout: a later change to one
+dashboard should never require opening another dashboard's files.
 
-**4. Add the module** after any module it depends on:
+**4. Write the scoped CSS.** All rules go under `.dash-<key>`. Only add rules
+that differ from the shared shell in `assets/styles.css`. Check the collision
+list above.
+
+**5. Add the module** in that folder's `.js`, loaded after any module it depends
+on:
 
 ```js
 DASHBOARDS.xx=(function(){
@@ -141,15 +170,15 @@ DASHBOARDS.xx=(function(){
 Anything that touches the DOM belongs in `init()`, not at module level, because
 the markup does not exist until `switchTo()` injects it.
 
-**5. Mirror the house patterns** rather than inventing new ones. Pagination at
+**6. Mirror the house patterns** rather than inventing new ones. Pagination at
 10 rows. Date ranges blank by default, blank meaning all, with a Reset that
 clears filters and returns to page 1. Sort controls offer a field picker plus a
 highest/lowest toggle. Click-to-open KPI panels, first one open by default. A
 range summary line appears only while a range is applied.
 
-**6. Verify.** See below. Do not skip this.
+**7. Verify.** See below. Do not skip this.
 
-**7. Update `BACKGROUND.md`** with what you built and any decision the requester
+**8. Update `BACKGROUND.md`** with what you built and any decision the requester
 made, so the next session does not re-ask.
 
 ## Verification, before you deliver
@@ -164,8 +193,14 @@ is unverified rather than implying it was checked.
 
 ```bash
 cd /tmp && npm i playwright-core   # once per session
-node <skill>/scripts/verify.js /home/user/Jim/EDRMS_Reporting_Suite_Integrated_v1.html
+node <skill>/scripts/verify.js /home/user/Jim/index.html                 # opened from disk
+python3 -m http.server 8899 &                       # and served
+node <skill>/scripts/verify.js http://localhost:8899/index.html
 ```
+
+Check both entry points. The site is served by Pages but must also survive being
+opened directly, and only the served run catches things like a missing asset
+path or a 404, because `file://` resolves paths differently.
 
 It checks every dashboard mounts, no console errors (which is also how a failed
 reconciliation assert surfaces), no duplicate element ids, no em dashes per

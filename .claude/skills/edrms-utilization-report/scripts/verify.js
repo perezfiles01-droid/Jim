@@ -14,20 +14,29 @@
  * floor, not a substitute for checking the numbers a stakeholder would notice.
  *
  *   cd /tmp && npm i playwright-core
- *   node verify.js /home/user/Jim/EDRMS_Reporting_Suite_Integrated_v1.html
+ *   node verify.js /home/user/Jim/index.html          # or http://localhost:8899/index.html
  */
 const fs = require('fs');
 const path = require('path');
 
+// Accepts either a local path or an http(s) URL. Since the suite is now also
+// served as a site, both entry points need checking: the folder version must
+// keep working when opened straight from disk as well as over http.
 const target = process.argv[2];
 if (!target) {
-  console.error('usage: node verify.js <path-to-html>');
+  console.error('usage: node verify.js <path-to-html | http://...>');
   process.exit(2);
 }
-const abs = path.resolve(target);
-if (!fs.existsSync(abs)) {
-  console.error('not found: ' + abs);
-  process.exit(2);
+let url;
+if (/^https?:\/\//.test(target)) {
+  url = target;
+} else {
+  const abs = path.resolve(target);
+  if (!fs.existsSync(abs)) {
+    console.error('not found: ' + abs);
+    process.exit(2);
+  }
+  url = 'file://' + abs;
 }
 
 // playwright-core is installed ad hoc; resolve it from wherever npm put it.
@@ -78,10 +87,10 @@ function check(name, ok, detail) {
   });
   page.on('pageerror', e => consoleErrors.push('[pageerror] ' + e.message));
 
-  await page.goto('file://' + abs);
+  await page.goto(url);
   await page.waitForTimeout(500);
 
-  console.log('\nShell');
+  console.log('\nTarget: ' + url + '\n\nShell');
   const keys = await page.locator('#nav a[data-d]').evaluateAll(as => as.map(a => a.dataset.d));
   check('at least one dashboard in the nav', keys.length > 0, String(keys.length));
   console.log('  dashboards found: ' + keys.join(', '));
