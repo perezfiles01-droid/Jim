@@ -1,16 +1,17 @@
 # Dashboard inventory
 
 What exists today in the site, and what is still a placeholder. Nav order is
-fixed; keep it. Each built dashboard owns `dashboards/<name>/` containing its
-own `.css` and `.js`; a change to one should never require opening another.
+fixed; keep it. Each built dashboard owns one `<name>.css` and one
+`<name>.js` at the repository root; a change to one should never require
+opening another.
 
-| Nav entry | Key | Folder | Status |
+| Nav entry | Key | Files | Status |
 | --- | --- | --- | --- |
 | Overview | - | - | Not integrated. Standalone prototypes v18 and v19 are in the repo |
-| Records Management | `rm` | `dashboards/records-management/` | Built |
+| Records Management | `rm` | `records-management.css` / `.js` | Built |
 | Department Performance | - | - | Placeholder, `class="dis"` |
-| Sites and Libraries | `sl` | `dashboards/sites-and-libraries/` | Built |
-| Format and Storage | `fs` | `dashboards/format-and-storage/` | Built |
+| Sites and Libraries | `sl` | `sites-and-libraries.css` / `.js` | Built |
+| Format and Storage | `fs` | `format-and-storage.css` / `.js` | Built |
 | Retention | - | - | Placeholder, `class="dis"` |
 
 Default on load is Records Management, the first live entry.

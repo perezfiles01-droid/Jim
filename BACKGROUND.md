@@ -101,20 +101,29 @@ runtime): Node.js with pptxgenjs (PPTX), Python 3 with openpyxl (XLSX), docx-js
 **Repo:** `perezfiles01-droid/Jim` (the repo attached to this session, and the
 only one currently available). Confirm if a different owner/repo is intended.
 
-**Layout: a static site, one folder per dashboard.** Published with GitHub
-Pages. The earlier single-file build was replaced so that a change to one
-dashboard touches only that dashboard's folder.
+**Layout: a static site, one file pair per dashboard, all at the repository
+root.** Published with GitHub Pages. The earlier single-file build was replaced
+so that a change to one dashboard touches only that dashboard's files.
 
 ```
-index.html                             shell markup, stylesheet and script tags
-.nojekyll                              stops Pages running files through Jekyll
-assets/styles.css                      shared shell styles
-assets/core.js                         F(), wirePager(), the DASHBOARDS registry
-assets/app.js                          switchTo() and nav wiring
-dashboards/records-management/         records-management.css + .js
-dashboards/sites-and-libraries/        sites-and-libraries.css + .js
-dashboards/format-and-storage/         format-and-storage.css + .js
+index.html                    shell markup, stylesheet and script tags
+.nojekyll                     stops Pages running files through Jekyll
+styles.css                    shared shell styles
+core.js                       F(), wirePager(), the DASHBOARDS registry
+app.js                        switchTo() and nav wiring
+records-management.css / .js  one pair per dashboard
+sites-and-libraries.css / .js
+format-and-storage.css / .js
 ```
+
+**Why flat rather than nested folders.** Nested folders were tried first and
+reverted. The only write path available to the requester is the GitHub web
+uploader, which flattened the directories and silently dropped five of the
+eleven files, leaving a site where every asset returned 404. Since the goal was
+that a change to one dashboard touches only that dashboard's code, and one
+`.css` plus one `.js` per dashboard already delivers that, the folders were
+costing a broken deploy for no functional gain. Do not reintroduce them unless
+the push path changes.
 
 **Entry point:** `index.html`
 
@@ -134,7 +143,7 @@ commit `571b97a` and can be recovered with
 **How the code is organised inside that structure:**
 
 - Shared shell CSS (tokens, sidebar, header, `.band`, `.kpi`, `.panel`,
-  `.pager`) lives in `assets/styles.css`.
+  `.pager`) lives in `styles.css`.
 - Each dashboard's CSS is **scoped** under a container class, `.dash-sl`,
   `.dash-rm`, `.dash-fs`. This is required, not cosmetic: the two source
   prototypes use the same class names with different values. `.sbar` is
