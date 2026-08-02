@@ -226,6 +226,60 @@ would notice, not just that elements exist.
 
 Report the real result. If something fails, say so and show the output.
 
+## Change review and sign off
+
+The requester has asked, explicitly, that nothing be treated as final until they
+have looked at it and said so. Honour that. The reason is not ceremony: this
+deliverable goes in front of a bank committee, and a wrong number that reaches
+the published site is far more expensive than a round of review. Their upload
+step is the last gate, so the review has to happen before it.
+
+**Never present work as done.** Present it as ready for review, and be explicit
+that nothing reaches the site until they upload.
+
+After building and verifying, and **before** handing over any files, post a
+review table that lets them check your work against what they actually asked
+for. One row per request, in their words, not yours:
+
+```
+## Review, build 4
+
+| # | You asked for | Status | Evidence |
+|---|---------------|--------|----------|
+| 1 | Move the date filter to the right | Done | screenshot, 9 assertions |
+| 2 | Remove the "Showing all records" note | Done, with a judgement call | hidden only when unfiltered, see below |
+| 3 | Add a Retention dashboard | Not done | blocked, no disposition data, see below |
+
+Files to upload: index.html, retention.js
+Unchanged: everything else
+Verified: 178 of 178 assertions, no console errors
+```
+
+Then state, in plain sentences under the table:
+
+- **Every judgement call you made**, with the reasoning, so they can overrule it.
+- **Anything you could not do**, and why. Never quietly drop a request.
+- **Anything you changed that they did not ask for**, however small.
+
+Close by offering three routes, not two: approve and upload, adjust something
+first, or roll back to the last approved state. Offering rollback explicitly
+matters, because otherwise a half-satisfied requester tends to accept work they
+are not happy with rather than ask for a retreat.
+
+**After they upload, always verify what actually landed.** Fetch `origin/main`,
+compare the blob hash of every file against your local copy, and confirm the
+paths `index.html` requests all exist. This is not paranoia. It has already
+caught the GitHub uploader flattening directories and dropping five files, and
+the delivery path silently stripping hyphens out of filenames. Both produced a
+site that looked broken for reasons invisible from the code alone. Report what
+you find before they discover it.
+
+**Rolling back is always possible, so say so plainly.** `origin/main` is exactly
+what is live, and every delivered state is a local commit on the working branch,
+tagged `approved/<date>` once the requester signs it off. Any file at any point
+can be reproduced with `git show <ref>:<file>`, so a rollback means handing back
+the previous version of the affected files for upload. Nothing is ever stranded.
+
 ## Delivering
 
 Pushing from this environment currently fails with 403 (the session's git
