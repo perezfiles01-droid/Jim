@@ -1,11 +1,17 @@
 /* ===================================================================
-   Shared helpers. Only the helpers that were byte identical in both
-   source prototypes live here. Anything that differed (pager, the
-   deptOptions builders, the date range readers) stays inside its own
-   dashboard closure so each keeps its original behaviour.
+   Shell: left nav switches which dashboard is mounted. Only one
+   dashboard is in the DOM at a time, which is why both can keep their
+   original element ids untouched.
    =================================================================== */
-const F=n=>Number(Math.round(n)).toLocaleString();
-function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
-
-const DASHBOARDS={};
-
+function switchTo(key){
+  const d=DASHBOARDS[key];
+  if(!d)return;
+  document.getElementById("view").innerHTML=d.html;
+  document.getElementById("side-ver").textContent=d.ver;
+  document.getElementById("crumb-b").textContent=d.crumb;
+  document.getElementById("asof").textContent=d.asof;
+  document.querySelectorAll("#nav a[data-d]").forEach(a=>a.classList.toggle("on",a.dataset.d===key));
+  d.init();
+}
+document.querySelectorAll("#nav a[data-d]").forEach(a=>a.onclick=()=>switchTo(a.dataset.d));
+switchTo("rm");
