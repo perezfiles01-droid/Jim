@@ -354,6 +354,20 @@ DASHBOARDS.rm=(function(){
     /* exposed so Format and Storage can assert its format counts still add up
        to the same declared records total */
     annualRec:ANNUAL_REC,
+    /* Read by the Overview dashboard. Derived here, from the same arrays this
+       dashboard renders, so a summary figure can never drift from the detail
+       figure it is summarising. */
+    summary:{
+      declared:ANNUAL_REC,
+      documents:ANNUAL_DOCS,
+      withPhysical:DEPTS.reduce((a,d)=>a+d.phys,0),
+      get withoutPhysical(){return this.declared-this.withPhysical;},
+      activeSites7:SITES.filter(s=>s.last<=7).length,
+      totalSitesTracked:SITES.length,
+      activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
+      topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
+      departmentCount:DEPTS.length
+    },
     html,init
   };
 })();

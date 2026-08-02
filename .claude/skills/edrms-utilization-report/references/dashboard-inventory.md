@@ -7,16 +7,46 @@ opening another.
 
 | Nav entry | Key | Files | Status |
 | --- | --- | --- | --- |
-| Overview | - | - | Not integrated. Standalone prototypes v18 and v19 are in the repo |
+| Overview | `ov` | `overview.css` / `.js` | Built, the default on load |
 | Records Management | `rm` | `recordsmanagement.css` / `.js` | Built |
 | Department Performance | - | - | Placeholder, `class="dis"` |
 | Sites and Libraries | `sl` | `sitesandlibraries.css` / `.js` | Built |
 | Format and Storage | `fs` | `formatandstorage.css` / `.js` | Built |
 | Retention | - | - | Placeholder, `class="dis"` |
 
-Default on load is Records Management, the first live entry.
+Default on load is Overview, the first live entry.
 
 ---
+
+## Overview (`ov`)
+
+An executive summary of the other dashboards, and the landing page.
+
+**Every figure is read from the other modules' exported `summary` objects, never
+restated here.** That is the whole design: a summary holding its own copy of the
+numbers drifts from the detail it claims to summarise the first time either side
+is edited. Adding a dashboard means adding a `summary` to it and a section here.
+
+- Five headline KPI cards. Each is clickable and routes to the dashboard the
+  figure came from.
+- Records Management section: a donut of the physical counterpart split, a
+  shared-scale comparison of documents held against records declared with the
+  declaration rate called out, and the top 5 departments by declared records.
+- Sites and Libraries section: a donut of library content declared against not
+  yet declared, and the top 5 departments by compliant sites created.
+- Format and Storage section: two donuts, share of storage and share of files,
+  **using the same five formats in the same colours** so they can be read
+  against each other. The callout underneath states the finding, that the format
+  dominating storage is not the format dominating the file count.
+- Every panel header carries a button through to the detailed dashboard.
+
+Its "data as of" line quotes the **oldest** refresh across the dashboards it
+summarises, not the newest, because a summary is only as current as its stalest
+input.
+
+Cross dashboard `console.assert` checks run at load: declared records against
+the format file total, both donut splits against their parents, and each donut's
+slices against the total it is drawn from.
 
 ## Records Management (`rm`)
 
@@ -109,8 +139,8 @@ a known dependency.
 
 ## Known open items
 
-- Overview is not integrated. v18 and v19 exist as standalone files; there is no
-  v20 in the repo despite older notes referencing one.
+- Overview is built. The older standalone prototypes v18 and v19 remain in the
+  repo as reference only; there is no v20 despite older notes referencing one.
 - Department Performance and Retention are placeholders with no design yet.
 - Records Management and Sites and Libraries still contain em dashes in their
   department dropdowns (`ITD — Information Technology`), inherited from the

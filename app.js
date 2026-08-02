@@ -14,4 +14,4 @@ function switchTo(key){
   d.init();
 }
 document.querySelectorAll("#nav a[data-d]").forEach(a=>a.onclick=()=>switchTo(a.dataset.d));
-switchTo("rm");
+switchTo("ov");

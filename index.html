@@ -6,6 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230E1F35'/><rect x='7' y='17' width='4' height='8' fill='%239DB8D2'/><rect x='14' y='12' width='4' height='13' fill='%2300A5A8'/><rect x='21' y='7' width='4' height='18' fill='%230072BC'/></svg>">
 <!-- Shared shell first, then one stylesheet per dashboard. -->
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="overview.css">
 <link rel="stylesheet" href="sitesandlibraries.css">
 <link rel="stylesheet" href="recordsmanagement.css">
 <link rel="stylesheet" href="formatandstorage.css">
@@ -14,7 +15,7 @@
 <aside id="side">
   <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div><div class="ver" id="side-ver"></div></div>
   <nav id="nav">
-    <div class="grp">Executive</div><a class="dis"><span class="ic">◈</span>Overview</a>
+    <div class="grp">Executive</div><a data-d="ov"><span class="ic">◈</span>Overview</a>
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
@@ -42,5 +43,6 @@
 <script src="sitesandlibraries.js"></script>
 <script src="recordsmanagement.js"></script>
 <script src="formatandstorage.js"></script>
+<script src="overview.js"></script>
 <script src="app.js"></script>
 </body></html>

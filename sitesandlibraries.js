@@ -241,6 +241,19 @@ DASHBOARDS.sl=(function(){
     ver:"Sites and Libraries Dashboard",
     crumb:"Sites and Libraries Dashboard",
     asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
+    /* Read by the Overview dashboard. Derived from the same arrays this
+       dashboard renders, so a summary figure can never drift from the detail. */
+    summary:{
+      sitesCreated:ALLTIME_SITES,
+      sitesInSample:SITEDEPTS.reduce((a,d)=>a+d[2],0),
+      libraryCount:LIBS.length,
+      libraryDocuments:LIBS.reduce((a,l)=>a+l[3],0),
+      libraryRecords:TOTAL_RECORDS,
+      get libraryUndeclared(){return this.libraryDocuments-this.libraryRecords;},
+      storageGB:TOTAL_GB,
+      topDepartments:[...SITEDEPTS].sort((a,b)=>b[2]-a[2]).slice(0,5).map(d=>({label:d[0],name:d[1],value:d[2]})),
+      departmentCount:SITEDEPTS.length
+    },
     html,init
   };
 })();

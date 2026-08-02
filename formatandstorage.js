@@ -95,6 +95,15 @@ DASHBOARDS.fs=(function(){
     ver:"Format and Storage Dashboard",
     crumb:"Format and Storage Dashboard",
     asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
+    /* Read by the Overview dashboard. Derived from the same array this
+       dashboard renders, so a summary figure can never drift from the detail. */
+    summary:{
+      totalFiles:TOT_FILES,
+      totalGB:TOT_GB,
+      avgFileSizeMB:TOT_AVG,
+      formatCount:FORMATS.length,
+      formats:FORMATS.map(f=>({label:f.label,files:f.files,gb:f.gb}))
+    },
     html,init
   };
 })();
