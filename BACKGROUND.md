@@ -101,62 +101,36 @@ runtime): Node.js with pptxgenjs (PPTX), Python 3 with openpyxl (XLSX), docx-js
 **Repo:** `perezfiles01-droid/Jim` (the repo attached to this session, and the
 only one currently available). Confirm if a different owner/repo is intended.
 
-**Layout: a static site, one file pair per dashboard, all at the repository
-root.** Published with GitHub Pages. The earlier single-file build was replaced
-so that a change to one dashboard touches only that dashboard's files.
+**Layout: one self-contained `index.html`.** Published with GitHub Pages, and
+it also opens by double click. No other files, no build step, no dependencies.
 
-```
-index.html                    shell markup, stylesheet and script tags
-.nojekyll                     stops Pages running files through Jekyll
-styles.css                    shared shell styles
-core.js                       F(), wirePager(), the DASHBOARDS registry
-app.js                        switchTo() and nav wiring
-recordsmanagement.css / .js   one pair per dashboard
-sitesandlibraries.css / .js
-formatandstorage.css / .js
-```
+**Why one file, after trying the alternatives.** This went single file, then per
+dashboard folders, then flat per dashboard files, and back to single file. The
+deciding constraint is that the only write path available is the GitHub web
+uploader, driven by hand. Folders were flattened and files were silently
+dropped. Flat files worked, but a change touching four of them meant four
+downloads and a seven file upload, every time, and each of those is a chance to
+miss one. One file means one download and one upload, always.
 
-**Filenames carry no hyphens.** The delivery path to the requester strips
-hyphens out of filenames, so `records-management.js` arrived as
-`recordsmanagement.js` and every reference in `index.html` broke. Names are now
-hyphen free so that cannot happen again. Keep new dashboard files hyphen free
-too.
+The isolation that motivated splitting is preserved inside the file rather than
+by the filesystem. Each dashboard is a banner marked block holding its own
+scoped CSS and its own closure, so editing one still means editing inside its
+block and nothing else, and the diff still shows only that block changed. That
+is what actually protects the other dashboards, not the file boundary.
 
-**Why flat rather than nested folders.** Nested folders were tried first and
-reverted. The only write path available to the requester is the GitHub web
-uploader, which flattened the directories and silently dropped five of the
-eleven files, leaving a site where every asset returned 404. Since the goal was
-that a change to one dashboard touches only that dashboard's code, and one
-`.css` plus one `.js` per dashboard already delivers that, the folders were
-costing a broken deploy for no functional gain. Do not reintroduce them unless
-the push path changes.
-
-**Entry point:** `index.html`
-
-Still no build step, no bundler, no dependencies. The scripts are deliberately
-classic scripts rather than ES modules, which is what keeps `index.html` working
-when opened straight from disk as well as over http; ES modules are blocked by
-CORS on `file://` and would force a local server. Load order matters twice:
-`core.js` creates the registry so it runs first, `format-and-storage` asserts
-against `records-management` so it runs after it, and `app.js` mounts the first
-dashboard so it runs last.
-
-The previous single file, `EDRMS_Reporting_Suite_Integrated_v1.html`, was
-removed so there is only one source of truth. It remains in git history at
-commit `571b97a` and can be recovered with
-`git show 571b97a:EDRMS_Reporting_Suite_Integrated_v1.html > out.html`.
+Do not split this up again unless the write path changes to real git pushes.
 
 **How the code is organised inside that structure:**
 
 - Shared shell CSS (tokens, sidebar, header, `.band`, `.kpi`, `.panel`,
-  `.pager`) lives in `styles.css`.
+  `.pager`) sits in the first block of the `<style>` element.
 - Each dashboard's CSS is **scoped** under a container class, `.dash-sl`,
   `.dash-rm`, `.dash-fs`. This is required, not cosmetic: the two source
   prototypes use the same class names with different values. `.sbar` is
   `200px 1fr 210px` in one and `210px 1fr 72px` in the other, and the
   `.seg.e` / `.seg.p` segment colours are **inverted** between them. `.kpis`,
   `.drange`, `.resetbtn`, `.legend`, and `select` also differ.
-- Each dashboard's JS is an IIFE in its own file registering into
+- Each dashboard's JS is an IIFE in its own banner marked block registering into
   `DASHBOARDS.sl` / `.rm` / `.fs`, exposing `{ver, crumb, asof, html, init}`.
   Only `F()` and `wirePager()` are shared, because only those two were byte
   identical. `pager()` and `deptOptions()` differ per dashboard and stay

@@ -1,6 +1,6 @@
 ---
 name: edrms-utilization-report
-description: Build, extend, and verify the ADB EDRMS Utilization Report prototype (the "Reporting Suite"), a dependency-free static site published on GitHub Pages that specifies a future Power BI report, laid out with one stylesheet and one module per dashboard. Use this skill whenever the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite, the live site, or any of its dashboards (Overview, Records Management, Department Performance, Sites and Libraries, Format and Storage, Retention), and whenever they ask to add, copy, clone, restyle, fix, publish, or check a dashboard, KPI card, treemap, stacked bar, drill-down, sortable table, or date range filter in it. Use it even when the request sounds like a one-line tweak, because this deliverable carries hard rules (no em dashes in visible text, a fixed ADB palette, figures that must reconcile across dashboards, and visuals restricted to what Power BI can reproduce natively) that are very easy to break by accident and expensive to catch later.
+description: Build, extend, and verify the ADB EDRMS Utilization Report prototype (the "Reporting Suite"), a single self-contained HTML file published on GitHub Pages that specifies a future Power BI report, with one banner marked block per dashboard. Use this skill whenever the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite, the live site, or any of its dashboards (Overview, Records Management, Department Performance, Sites and Libraries, Format and Storage, Retention), and whenever they ask to add, copy, clone, restyle, fix, publish, or check a dashboard, KPI card, treemap, stacked bar, drill-down, sortable table, or date range filter in it. Use it even when the request sounds like a one-line tweak, because this deliverable carries hard rules (no em dashes in visible text, a fixed ADB palette, figures that must reconcile across dashboards, and visuals restricted to what Power BI can reproduce natively) that are very easy to break by accident and expensive to catch later.
 ---
 
 # ADB EDRMS Utilization Report
@@ -20,43 +20,37 @@ and behaviour before anyone opens Power BI Desktop. That framing drives most of
 the rules below: if a visual cannot be reproduced with a native Power BI visual,
 it does not belong in the prototype, however good it looks in a browser.
 
-**Deliverable:** a static site served by GitHub Pages, laid out so each
-dashboard owns one stylesheet and one module, and a change to one dashboard
-touches only those two files.
+**Deliverable:** one self-contained `index.html`, published with GitHub Pages
+and also openable by double click. No other files, no build step, no
+dependencies.
+
+**Keep it one file.** This has been split into folders and into flat per
+dashboard files and reverted both times. The reason is the write path: the
+requester uploads by hand through the GitHub web interface, which flattened the
+folders and dropped files, and which turns a four file change into a seven file
+upload where missing one leaves the site broken in a way that is invisible from
+the code. One file means one upload.
+
+The isolation that splitting was meant to give is preserved inside the file.
+Each dashboard is a banner marked block carrying its own scoped CSS and its own
+closure:
 
 ```
-index.html                    shell markup, stylesheet and script tags
-.nojekyll                     stops Pages running the files through Jekyll
-styles.css                    shared shell styles
-core.js                       F(), wirePager(), the DASHBOARDS registry
-app.js                        switchTo() and nav wiring
-<name>.css                    one scoped stylesheet per dashboard
-<name>.js                     one module per dashboard
-                              (hyphen free names, see below)
+<style>   styles.css block      shared shell
+          <name>.css block      one per dashboard, all rules under .dash-<key>
+<script>  core.js block         F(), wirePager(), the DASHBOARDS registry
+          <name>.js block       one per dashboard
+          app.js block          switchTo() and nav wiring, runs last
 ```
 
-**Use hyphen free filenames.** The delivery path to the requester silently
-strips hyphens, which turned `records-management.js` into `recordsmanagement.js`
-and broke every reference in `index.html`. Name new files like
-`departmentperformance.js`, not `department-performance.js`.
+Editing a dashboard means editing inside its block and nothing else, so the diff
+still shows only that dashboard changed. That is what protects the others, not
+the file boundary. Do not split this up again unless the write path becomes a
+real git push.
 
-Everything sits at the repository root, deliberately. Nested folders were tried
-and reverted: the only write path available is the GitHub web uploader, which
-flattened the directories and dropped files, producing a site where every asset
-404ed. One `.css` plus one `.js` per dashboard already gives the isolation that
-matters, so do not reintroduce folders unless the push path changes.
-
-There is still no build step, no bundler, and no dependencies. The scripts are
-deliberately **classic scripts, not ES modules**, which is what keeps
-`index.html` working when opened straight from disk as well as over http. ES
-modules are blocked by CORS on `file://`, so switching to them would force a
-local server and take away the double-click that the requester asked for. Do not
-convert them.
-
-Load order in `index.html` matters in two places: `core.js` creates the
-`DASHBOARDS` registry so it runs first, `format-and-storage` asserts against
-`records-management` so it runs after it, and `app.js` mounts the first
-dashboard so it runs last.
+Load order matters in two places: the registry is created before any dashboard
+uses it, and format and storage asserts against records management so it follows
+it. Overview reads every other dashboard's `summary`, so it comes after them all.
 
 Read `BACKGROUND.md` at the repo root for project context that changes over
 time (current status, decisions taken, open items). This skill covers how to
@@ -149,17 +143,17 @@ dashboard, with unbuilt ones marked `class="dis"`. Enable one by swapping
 `class="dis"` for `data-d="<key>"`. Keep the existing nav order. Use a short
 key: `rm`, `sl`, `fs`.
 
-**3. Create the two files.** Add `<name>.css` and `<name>.js` at the root, then
-add one `<link>` and one `<script>` for them in `index.html`. That is the whole
-wiring. Everything else about the dashboard stays in those two files, which is
-the point of the layout: a later change to one dashboard should never require
-opening another dashboard's files.
+**3. Add two blocks to `index.html`.** A banner marked CSS block at the end of
+the `<style>` element, and a banner marked JS block in the `<script>` element,
+placed after anything it depends on. That is the whole wiring. Everything else
+about the dashboard stays inside those two blocks, which is the point: a later
+change to one dashboard should never require touching another dashboard's block.
 
 **4. Write the scoped CSS.** All rules go under `.dash-<key>`. Only add rules
-that differ from the shared shell in `styles.css`. Check the collision
+that differ from the shared shell block. Check the collision
 list above.
 
-**5. Add the module** in that `.js`, loaded after any module it depends on:
+**5. Add the module** in its JS block, after anything it depends on:
 
 ```js
 DASHBOARDS.xx=(function(){
@@ -205,14 +199,13 @@ is unverified rather than implying it was checked.
 
 ```bash
 cd /tmp && npm i playwright-core   # once per session
-node <skill>/scripts/verify.js /home/user/Jim/index.html                 # opened from disk
-python3 -m http.server 8899 &                       # and served
+node <skill>/scripts/verify.js /home/user/Jim/index.html      # opened from disk
+python3 -m http.server 8899 &                                # and served
 node <skill>/scripts/verify.js http://localhost:8899/index.html
 ```
 
-Check both entry points. The site is served by Pages but must also survive being
-opened directly, and only the served run catches things like a missing asset
-path or a 404, because `file://` resolves paths differently.
+Check both entry points. The file is served by Pages but must also survive being
+opened directly from disk, since that is how it gets shared outside the browser.
 
 It checks every dashboard mounts, no console errors (which is also how a failed
 reconciliation assert surfaces), no duplicate element ids, no em dashes per

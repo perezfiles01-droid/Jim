@@ -1,17 +1,17 @@
 # Dashboard inventory
 
 What exists today in the site, and what is still a placeholder. Nav order is
-fixed; keep it. Each built dashboard owns one `<name>.css` and one
-`<name>.js` at the repository root; a change to one should never require
-opening another.
+fixed; keep it. Each built dashboard owns one banner marked CSS block and one
+banner marked JS block inside `index.html`; a change to one should never require
+touching another's blocks.
 
-| Nav entry | Key | Files | Status |
+| Nav entry | Key | Blocks | Status |
 | --- | --- | --- | --- |
-| Overview | `ov` | `overview.css` / `.js` | Built, the default on load |
-| Records Management | `rm` | `recordsmanagement.css` / `.js` | Built |
+| Overview | `ov` | `overview` blocks | Built, the default on load |
+| Records Management | `rm` | `recordsmanagement` blocks | Built |
 | Department Performance | - | - | Placeholder, `class="dis"` |
-| Sites and Libraries | `sl` | `sitesandlibraries.css` / `.js` | Built |
-| Format and Storage | `fs` | `formatandstorage.css` / `.js` | Built |
+| Sites and Libraries | `sl` | `sitesandlibraries` blocks | Built |
+| Format and Storage | `fs` | `formatandstorage` blocks | Built |
 | Retention | - | - | Placeholder, `class="dis"` |
 
 Default on load is Overview, the first live entry.
@@ -125,7 +125,7 @@ a known dependency.
 
 ## Format data
 
-| Format | Files | Storage GB |
+| Format | Blocks | Storage GB |
 | --- | --- | --- |
 | PDF | 8,200 | 9.6 |
 | Word | 5,100 | 3.0 |
