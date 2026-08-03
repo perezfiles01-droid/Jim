@@ -182,7 +182,21 @@ and division grouping as blocked without saying what exactly was missing.
 - The **`Division` term set is hierarchical**: each department code is a parent
   that expands to the divisions within it. So the department to division
   relationship is already modelled in the term store, and the drill down in
-  Records Management is achievable without inventing a mapping.
+  Records Management is achievable without inventing a mapping. Verified by
+  expanding CWRD, which contains AFRM, ARRM, AZRM, CWEC, CWOC, CWOD and more.
+  These are genuine ADB codes, so the hierarchy is populated rather than
+  half built. Note that for regional departments the second level mixes
+  functional divisions with **resident missions**, so AFRM is the Afghanistan
+  Resident Mission rather than a division in the usual sense. Worth explaining
+  before a stakeholder asks why a country appears as a division.
+- The division terms have no children, so `Division` stops at two levels. A
+  `Record Unit Owner` column exists, so a separate `Unit` term set presumably
+  holds the third level. Not yet checked.
+- **Scale.** CWRD alone shows six divisions with more below the fold. Across
+  thirty plus departments that implies several hundred divisions. The sample
+  data gives each department one or two, so the division level of the drill down
+  will span many pages against real data, and the Sites and Libraries treemap
+  paging needs rechecking once real counts are known.
 - **Both column pairs share vocabularies.** `Department Owner` and `Record
   Department Owner` both bind to `Department`; `Division` and `Record Division
   Owner` both bind to `Division`. Choosing between the pairs is a question of
