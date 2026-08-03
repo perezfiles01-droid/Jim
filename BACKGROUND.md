@@ -210,49 +210,50 @@ and division grouping as blocked without saying what exactly was missing.
 - Nothing is populated. No library default is set and no document carries a
   value, which is why every record shows an empty field.
 
-**Declaration date, still open. Read this before using any date filter.**
+**Declaration date, resolved. Use the native SharePoint fields.**
 
-There is no dedicated "declared date" column. Version history records the
-declaration, as a promotion to major version 1.0 carrying a "Declared By <name>"
-comment, and that version's Modified timestamp is the declaration moment.
+Earlier notes proposed `Retention Label Applied For Calculated` as a proxy, then
+retracted it because a user can apply a label without declaring. Both are
+superseded. Three **native** SharePoint columns exist and were simply not
+noticed, visible in the library's view editor:
 
-`Retention Label Applied For Calculated` was proposed as a queryable proxy,
-since in the governed flow the label is applied in the same second as the
-declaration. **That proxy is not safe.** A user can apply a retention label
-without declaring a record, so the two events are separable. The failure mode is
-not miscounting, which pairing with `EDRMS Declaration Status` prevents, but
-**misdating**: a document labelled in January and declared in August carries
-January, so it lands in the wrong period. Totals still reconcile, which is what
-makes it dangerous.
+- **`Item is a Record`** - definitive true or false record flag
+- **`Retention label Applied`** - the date the label was applied
+- **`Label applied by`** - who applied it
 
-Three routes, in the order they should be tried.
+**Filter on `Item is a Record` = Yes, and take the date from `Retention label
+Applied`.** Both are ordinary queryable columns, readable by Search and Power BI
+in one query. No new column, no backfill, no version history crawl, no
+restriction on users. Ignore `Retention Label Applied For Calculated` entirely;
+it is a custom column and was a red herring.
 
-1. **Check for `_vti_ItemDeclaredRecord` first.** If declaration uses
-   SharePoint in-place records management, which the promotion to 1.0 by an app
-   suggests, SharePoint already stores the declaration timestamp in this hidden
-   field. It is readable via PnP, CSOM or REST. If populated, the problem
-   disappears entirely: real date, full history, no backfill.
-2. **Otherwise add a `Declared Date` column.** The declaration automation
-   already writes several fields at that moment, so stamping one more is a small
-   change. Then **backfill history once** from version 1.0's timestamp. Reading
-   version history is unworkable as a recurring source, one call per document on
-   every refresh, but perfectly reasonable as a one off over roughly 21,646
-   records. After that every query is cheap and the date is exact.
-3. **Measure the divergence before relying on the proxy.** Compare the retention
-   date against the version history timestamp across twenty or thirty declared
-   records. Matching every time means the proxy is safe enough to ship with while
-   the real column is built. Frequent divergence means the date filters should
-   not go live at all.
+`Item is a Record` is what makes this robust against the original objection. If
+somebody applies a retention label that does not mark the item as a record, the
+flag stays false and the document is correctly excluded, so record status is
+read rather than inferred from the presence of a label.
 
-Until one of these is settled, treat the date range filters on both Records
-Management panels as unverified.
+Classic in place records management is **not** enabled on this site collection,
+confirmed by the absence of a "Record declaration settings" link in library
+settings, so `_vti_ItemDeclaredRecord` will be empty. Do not chase it. The
+record lock comes from a Purview retention label marked as a record.
 
-**Declarations cannot be attributed to a user.** The declaration is performed by
-an automation, so `Modified By` reads "SharePoint App", and the person's name
-exists only inside the free text version comment. Reporting by department,
-division, site, library and date is all fine. Any "declarations by user" or most
-active declarer view would require parsing version history comments one document
-at a time, and should be scoped out rather than agreed to.
+The library's own **`Undeclared Documents`** view filters on `Retention label is
+equal to (blank)`, so the system's working definition is that an unlabelled
+document is undeclared. That is a simplification which `Item is a Record` makes
+precise, and reporting should use the flag rather than copy the view's filter.
+
+**Declarations can be attributed to a user after all.** An earlier note said
+this should be scoped out because the declarer's name existed only in a free
+text version comment. `Label applied by` is a proper queryable column, so a
+declarations by user or most active declarers view is feasible. Confirm it is
+populated on real records before promising it.
+
+**Also spotted, and it may cheapen the storage problem.** `File Size` is
+available as a list column, and `Size` is a SharePoint Search managed property.
+Storage per library and per format was assessed as hard on the assumption it
+required opening every file. It may only require enumerating list items, which
+is needed for counts anyway. Worth re-estimating before committing to a crawl,
+and before assuming an AvePoint report is required.
 
 **So the remaining work is a backfill, not a vocabulary build.** Two separate
 tracks, and neither substitutes for the other: set column defaults per library or
