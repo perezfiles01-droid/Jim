@@ -266,6 +266,35 @@ decision rather than a technical one. Worth checking whether AvePoint Cloud
 Governance already captured the owning department when each site was
 provisioned, in which case the mapping may already exist.
 
+**Risks that would produce plausible but wrong numbers.** These matter more
+than the outright blockers, because a report that fails gets fixed and a report
+that is quietly wrong gets presented.
+
+- **Search is security trimmed.** Results are limited to what the querying
+  identity can see, with no error and no warning. If the refresh account lacks
+  read access across all sites, every count comes back low and looks reasonable.
+  Settle which identity runs the refresh and confirm tenant wide read early; it
+  is usually a longer approval than expected and it gates everything.
+- **Storage will not reconcile, by design.** Site storage in Microsoft 365
+  includes version history, recycle bin and metadata overhead, so it can be two
+  to five times the sum of current file sizes. Decide which definition the report
+  means, label it on the dashboard, and never place both figures on one page
+  unlabelled.
+- **Check whether the managed metadata columns are multi value.** If
+  `Department Owner` permits more than one term, a document tagged to two
+  departments counts in both and the department bars exceed the total. The
+  reconciliation rules would catch it, but only after the work was done.
+- **The 5,000 item list view threshold.** SharePoint will not filter or sort a
+  list on a non indexed column past 5,000 items, and these libraries are far
+  past it. Any column the report queries on, `Item is a Record`,
+  `Department Owner`, `Retention label Applied`, needs an index. Small
+  administrative task, blocks everything, invisible until a large library is hit.
+  Include it in the same ask as the backfill.
+- **Define disposal and deletion now.** Retention runs to 50 years so it is not
+  imminent, but if disposed records leave the counts then historical trends
+  change retrospectively, and a chart showing one figure for 2026 will show a
+  different one in 2027. Same question for deleted items and the recycle bin.
+
 **Site inventory** comes from SharePoint admin centre, Sites, Active sites,
 which exports to CSV with site name, url, storage, created date and last
 activity. That export feeds the mapping exercise and several Sites and Libraries
