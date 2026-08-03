@@ -210,6 +210,35 @@ and division grouping as blocked without saying what exactly was missing.
 - Nothing is populated. No library default is set and no document carries a
   value, which is why every record shows an empty field.
 
+**Declaration date, resolved.** There is no dedicated "declared date" column,
+which briefly looked like it would invalidate the date filters on both Records
+Management panels. It does not.
+
+Version history records the declaration: the item is promoted to major version
+1.0 with the comment "Declared By <name>", and that version's Modified timestamp
+is the declaration moment. **Do not source the date from there.** Version history
+is not exposed to Search or Power BI and cannot be queried in bulk, so reading it
+means one API call per document, which is unworkable at 21,646 records and
+impossible at 3.47 million.
+
+Use **`Retention Label Applied For Calculated`** instead. It is an ordinary
+column, so it is indexable, filterable, and readable by Search and Power BI in a
+single query. In the sample checked it carries the same date as the declaration
+(both 8/3/2026), because the retention label is applied at the moment of
+declaration.
+
+Three things to confirm before relying on it: that the dates match across several
+more documents, that the column is never populated without a declaration (pair it
+with `EDRMS Declaration Status` in any filter regardless), and that it does not
+move if a label is later reapplied.
+
+**Declarations cannot be attributed to a user.** The declaration is performed by
+an automation, so `Modified By` reads "SharePoint App", and the person's name
+exists only inside the free text version comment. Reporting by department,
+division, site, library and date is all fine. Any "declarations by user" or most
+active declarer view would require parsing version history comments one document
+at a time, and should be scoped out rather than agreed to.
+
 **So the remaining work is a backfill, not a vocabulary build.** Two separate
 tracks, and neither substitutes for the other: set column defaults per library or
 folder so new documents inherit a value, and stamp existing documents through
