@@ -125,7 +125,7 @@ a known dependency.
 
 ## Format data
 
-| Format | Blocks | Storage GB |
+| Format | Files | Storage GB |
 | --- | --- | --- |
 | PDF | 8,200 | 9.6 |
 | Word | 5,100 | 3.0 |
