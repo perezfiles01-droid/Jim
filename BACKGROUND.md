@@ -169,6 +169,54 @@ From the EDRMS database design and the prototype sample data:
 - **Storage:** measured per site today (M365), not per file. Per-library and
   per-format storage are data dependencies (need file size captured per file).
 
+**Term store findings, verified in the tenant (Aug 2026).** These were checked
+directly rather than assumed, because the project notes had recorded department
+and division grouping as blocked without saying what exactly was missing.
+
+- `Department Owner`, `Division`, `Record Department Owner`, `Record Division
+  Owner` and `Record Unit Owner` are all **Managed Metadata** columns on the
+  `ADB Baseline Document` content type, so the structure was never the problem.
+- The **`Department` term set exists and is populated** with real ADB codes
+  (ADBI, BIOC, BOD, BPMSD, CCSD, CRPN, CSD, CTL, CWRD and more beyond the first
+  visible page). It is flat.
+- The **`Division` term set is hierarchical**: each department code is a parent
+  that expands to the divisions within it. So the department to division
+  relationship is already modelled in the term store, and the drill down in
+  Records Management is achievable without inventing a mapping.
+- **Both column pairs share vocabularies.** `Department Owner` and `Record
+  Department Owner` both bind to `Department`; `Division` and `Record Division
+  Owner` both bind to `Division`. Choosing between the pairs is a question of
+  which one is authoritative and gets populated, not of different value sets.
+  Still open with the client.
+- The real department codes **do not match the prototype's sample data** (ITD,
+  SARD, OSFG and so on are invented; only CWRD happens to coincide), and there
+  are likely far more than the fifteen or sixteen the dashboards assume. Sample
+  data will need replacing wholesale, and pagination and treemap paging should be
+  rechecked against the real count.
+- Nothing is populated. No library default is set and no document carries a
+  value, which is why every record shows an empty field.
+
+**So the remaining work is a backfill, not a vocabulary build.** Two separate
+tracks, and neither substitutes for the other: set column defaults per library or
+folder so new documents inherit a value, and stamp existing documents through
+Edit in grid view for small volumes or PnP PowerShell or Power Automate for
+large ones. Defaults never apply retrospectively.
+
+**The real blocker is the site to department mapping**, which is a records
+decision rather than a technical one. Worth checking whether AvePoint Cloud
+Governance already captured the owning department when each site was
+provisioned, in which case the mapping may already exist.
+
+**Site inventory** comes from SharePoint admin centre, Sites, Active sites,
+which exports to CSV with site name, url, storage, created date and last
+activity. That export feeds the mapping exercise and several Sites and Libraries
+figures directly. It lists every site in the tenant though, not just EDRMS
+compliant ones, so identifying the compliant subset is still open: candidates
+are a naming convention, the `EDRMS Site Type` term set, or AvePoint's records.
+
+**Access note.** The term store showed "view-only access to this term group",
+so changes there need whoever holds Term Store Admin, usually ITD.
+
 **Data-source tiers** used across the suite:
 
 - **LIVE:** cheap in-EDRMS counts read on demand.
