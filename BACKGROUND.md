@@ -210,27 +210,42 @@ and division grouping as blocked without saying what exactly was missing.
 - Nothing is populated. No library default is set and no document carries a
   value, which is why every record shows an empty field.
 
-**Declaration date, resolved.** There is no dedicated "declared date" column,
-which briefly looked like it would invalidate the date filters on both Records
-Management panels. It does not.
+**Declaration date, still open. Read this before using any date filter.**
 
-Version history records the declaration: the item is promoted to major version
-1.0 with the comment "Declared By <name>", and that version's Modified timestamp
-is the declaration moment. **Do not source the date from there.** Version history
-is not exposed to Search or Power BI and cannot be queried in bulk, so reading it
-means one API call per document, which is unworkable at 21,646 records and
-impossible at 3.47 million.
+There is no dedicated "declared date" column. Version history records the
+declaration, as a promotion to major version 1.0 carrying a "Declared By <name>"
+comment, and that version's Modified timestamp is the declaration moment.
 
-Use **`Retention Label Applied For Calculated`** instead. It is an ordinary
-column, so it is indexable, filterable, and readable by Search and Power BI in a
-single query. In the sample checked it carries the same date as the declaration
-(both 8/3/2026), because the retention label is applied at the moment of
-declaration.
+`Retention Label Applied For Calculated` was proposed as a queryable proxy,
+since in the governed flow the label is applied in the same second as the
+declaration. **That proxy is not safe.** A user can apply a retention label
+without declaring a record, so the two events are separable. The failure mode is
+not miscounting, which pairing with `EDRMS Declaration Status` prevents, but
+**misdating**: a document labelled in January and declared in August carries
+January, so it lands in the wrong period. Totals still reconcile, which is what
+makes it dangerous.
 
-Three things to confirm before relying on it: that the dates match across several
-more documents, that the column is never populated without a declaration (pair it
-with `EDRMS Declaration Status` in any filter regardless), and that it does not
-move if a label is later reapplied.
+Three routes, in the order they should be tried.
+
+1. **Check for `_vti_ItemDeclaredRecord` first.** If declaration uses
+   SharePoint in-place records management, which the promotion to 1.0 by an app
+   suggests, SharePoint already stores the declaration timestamp in this hidden
+   field. It is readable via PnP, CSOM or REST. If populated, the problem
+   disappears entirely: real date, full history, no backfill.
+2. **Otherwise add a `Declared Date` column.** The declaration automation
+   already writes several fields at that moment, so stamping one more is a small
+   change. Then **backfill history once** from version 1.0's timestamp. Reading
+   version history is unworkable as a recurring source, one call per document on
+   every refresh, but perfectly reasonable as a one off over roughly 21,646
+   records. After that every query is cheap and the date is exact.
+3. **Measure the divergence before relying on the proxy.** Compare the retention
+   date against the version history timestamp across twenty or thirty declared
+   records. Matching every time means the proxy is safe enough to ship with while
+   the real column is built. Frequent divergence means the date filters should
+   not go live at all.
+
+Until one of these is settled, treat the date range filters on both Records
+Management panels as unverified.
 
 **Declarations cannot be attributed to a user.** The declaration is performed by
 an automation, so `Modified By` reads "SharePoint App", and the person's name
