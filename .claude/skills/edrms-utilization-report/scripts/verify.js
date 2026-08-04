@@ -137,8 +137,19 @@ function check(name, ok, detail) {
       document.documentElement.scrollWidth <= window.innerWidth + 1);
     check('no horizontal page overflow', noOverflow);
 
+    // A dashboard must carry KPI cards. A page that declares kind:"reference"
+    // is documentation rather than a dashboard, so it is exempt: requiring a
+    // KPI on it would only teach us to ignore a failing check.
+    // DASHBOARDS is a const, so it is not a window property. Reach it the way
+    // the page itself does, through the scope chain.
+    const isRef = await page.evaluate(k =>
+      (DASHBOARDS[k] || {}).kind === 'reference', key);
     const kpis = await page.locator('#view .kpi').count();
-    check('has at least one KPI card', kpis > 0, String(kpis));
+    if (isRef) {
+      check('reference page, KPI check not applicable', true);
+    } else {
+      check('has at least one KPI card', kpis > 0, String(kpis));
+    }
     const emptyKpis = await page.locator('#view .kpi .val').evaluateAll(
       els => els.filter(e => !e.textContent.trim()).length);
     check('every KPI card has a value', emptyKpis === 0, emptyKpis + ' empty');

@@ -232,6 +232,38 @@
   .dash-fs .rbar .rv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
   .dash-fs .rbar .rv b{font-weight:700;color:var(--ink)}
   .dash-fs .rbar .rv span{color:var(--mut)}
+
+/* ================= datadesign.css ================= */
+  .dash-dd .lead{font-size:13px;color:var(--ink2);max-width:900px;margin-bottom:14px}
+  .dash-dd .panel p{font-size:13px;color:var(--ink2);margin-bottom:10px}
+  .dash-dd .panel p:last-child{margin-bottom:0}
+  .dash-dd h3{font-size:13.5px;margin:0 0 10px}
+  .dash-dd table{width:100%;border-collapse:collapse;font-size:12px}
+  .dash-dd th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line);padding:0 10px 8px 0;vertical-align:bottom}
+  .dash-dd td{padding:8px 10px 8px 0;border-bottom:1px solid #EEF2F6;vertical-align:top}
+  .dash-dd tr:last-child td{border-bottom:none}
+  .dash-dd code{font-family:"Cascadia Mono",Consolas,"Courier New",monospace;font-size:11px;background:#F3F7FB;border:1px solid #E4EBF3;border-radius:4px;padding:1px 5px;color:var(--deepblue);white-space:nowrap}
+  .dash-dd .dtag{display:inline-block;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;border-radius:4px;padding:2px 6px;white-space:nowrap}
+  .dash-dd .g-ok{background:#E7F4E2;color:#33691E;border:1px solid #C6E3BB}
+  .dash-dd .g-gap{background:#FBE9E9;color:#9B1C1C;border:1px solid #F2C9C9}
+  .dash-dd .g-part{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
+  /* Columns rather than a grid: the cards differ wildly in height, 41 rows
+     against 8, and a grid row stretches every card to its tallest sibling.
+     Columns let each card end where its content ends. */
+  .dash-dd .tcards{column-count:3;column-gap:16px}
+  .dash-dd .tc{background:#F8FAFC;border:1px solid #E4EBF3;border-radius:10px;overflow:hidden;break-inside:avoid;margin:0 0 16px}
+  @media(max-width:1280px){.dash-dd .tcards{column-count:2}}
+  @media(max-width:860px){.dash-dd .tcards{column-count:1}}
+  .dash-dd .tc .th{padding:11px 14px;background:#fff;border-bottom:1px solid #E4EBF3}
+  .dash-dd .tc .th b{font-family:"Cascadia Mono",Consolas,monospace;font-size:12.5px}
+  .dash-dd .tc .th small{display:block;color:var(--mut);font-size:10.5px;margin-top:3px}
+  .dash-dd .tc ul{list-style:none;padding:10px 14px 12px;margin:0}
+  .dash-dd .tc li{font-size:11px;padding:2px 0;display:flex;gap:7px;align-items:baseline}
+  .dash-dd .tc li b{font-family:"Cascadia Mono",Consolas,monospace;font-weight:400;color:var(--ink)}
+  .dash-dd .tc li.key b{font-weight:700;color:var(--deepblue)}
+  .dash-dd .tc li.gap b{font-weight:700;color:#9C4A16}
+  .dash-dd .tc li span{color:var(--mut);font-size:10px}
+  .dash-dd .cnt{font-size:10.5px;color:var(--mut);padding:8px 14px;border-top:1px solid #E4EBF3;background:#fff}
 </style></head>
 <body>
 <aside id="side">
@@ -244,6 +276,8 @@
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
     <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
     <a class="dis"><span class="ic">⏳</span>Retention</a>
+    <div class="grp">Reference</div>
+    <a data-d="dd"><span class="ic">▤</span>Data Design</a>
   </nav>
 </aside>
 <div id="main">
@@ -1292,6 +1326,147 @@ DASHBOARDS.ov=(function(){
     /* A summary is only as current as its stalest input, so this quotes the
        oldest refresh across the dashboards it draws from rather than the newest. */
     asof:"Data as of Sun 05 Jul 2026 23:59, the oldest refresh across the dashboards summarised here",
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   datadesign.js
+   The reporting database design, rendered as a reference page rather
+   than a dashboard. It has no sample data and no filters: it exists so
+   the figures on the other dashboards can be traced to the table and
+   column that will supply them. Full detail lives in utilizationdb.md.
+   ================================================================= */
+DASHBOARDS.dd=(function(){
+  const TABLES=[
+    {n:"rpt_org_unit", g:"one department, division or unit",
+     c:[["OrgUnitKey","key"],["TermId","term store GUID"],["OrgLevel","1 dept, 2 division, 3 unit"],
+        ["OrgCode","CWRD"],["OrgName",""],["ParentTermId","GAP, flat in ADBMaster"],["ParentCode",""],
+        ["OrgUnitType","Division or Resident Mission"],["IsActive",""],["RowLoadedDate",""]],
+     s:"Term store. Serves every department and division filter."},
+    {n:"rpt_site", g:"one SharePoint site",
+     c:[["SiteKey","key"],["SiteUrl","natural key"],["SiteName",""],["SiteCreatedDate","GAP, admin centre"],
+        ["IsEdrmsCompliant","GAP, needs a rule"],["ComplianceSource",""],["DepartmentCode","GAP, the mapping"],
+        ["DepartmentName",""],["DivisionCode",""],["SiteTemplate",""],["StorageBytes","includes versions"],
+        ["StorageQuotaBytes",""],["LastActivityDate",""],["ProjectEndDate","exists in ADBSites"],
+        ["PrimaryAdminUpn",""],["IsActive",""],["RowLoadedDate",""]],
+     s:"Admin centre export plus AvePoint. Serves sites created and the treemap."},
+    {n:"rpt_record", g:"one declared record, about 21,646",
+     c:[["RecordKey","key"],["SourceRecordId","Records.Id"],["DocumentId",""],["ItemId",""],["ListId","the safe library key"],
+        ["Title",""],["DeclaredDate","Records.CreatedDate"],["DeclaredDateOnly",""],["DeclaredByUpn","Records.CreatedBy"],
+        ["DeclaredByName",""],["DeclarationType",""],["JobTriggerId",""],["SiteUrl",""],["SiteName",""],
+        ["LibraryName",""],["LibraryUrl",""],["FolderPath",""],["DepartmentCode","GAP, ADBMeta empty"],
+        ["DepartmentName",""],["DivisionCode","GAP, ADBMeta empty"],["DivisionName",""],["UnitCode","GAP"],
+        ["UnitName",""],["LibraryCategory","GAP"],["FileExtension","FileMeta.FileType"],["FormatGroup",""],
+        ["FileSizeBytes","GAP, not captured"],["FileCreatedDate",""],["SensitivityLabelName",""],
+        ["SensitivityLabelId",""],["HasPhysicalCounterpart","EDRMSMeta"],["PhysicalRecordJustification",""],
+        ["RetentionLabel",""],["RetentionLabelApplied",""],["RetentionDurationYears",""],["DueDateForDisposal",""],
+        ["RetentionStatus",""],["DisposalStatus","for Retention"],["IsDeleted",""],["DeletedDate",""],["RowLoadedDate",""]],
+     s:"public.Records. Serves Records Management, Retention, records by format."},
+    {n:"rpt_library_snapshot", g:"snapshot date, library, file format",
+     c:[["SnapshotDate","key"],["ListId","key"],["FileExtension","key"],["FormatGroup",""],["SiteUrl",""],
+        ["SiteName",""],["LibraryName",""],["LibraryUrl",""],["DepartmentCode",""],["DepartmentName",""],
+        ["DocumentCount","THE denominator"],["DeclaredCount",""],["StorageBytes","Graph returns size"],
+        ["IsEdrmsCompliant",""],["RowLoadedDate",""]],
+     s:"New weekly SharePoint scan. The only source of undeclared documents."},
+    {n:"rpt_site_usage", g:"snapshot date, site",
+     c:[["SnapshotDate","key"],["SiteUrl","key"],["SiteName",""],["DepartmentCode",""],["SiteVisits7",""],
+        ["SiteVisits30",""],["SiteVisits90",""],["UniqueViewers7",""],["UniqueViewers30",""],
+        ["UniqueViewers90","M365 does not return this"],["LastActivityDate",""],["RowLoadedDate",""]],
+     s:"Microsoft 365 usage reports. Serves active sites and active users."},
+    {n:"rpt_declaration_attempt", g:"one declaration attempt",
+     c:[["AttemptKey","key"],["SourceTrackingId",""],["AttemptedDate",""],["AttemptedDateOnly",""],
+        ["AttemptedByUpn",""],["JobTriggerId",""],["DeclarationType",""],["RecordType",""],["Result","0 ok, 1 skip, 2 fail"],
+        ["ResultName",""],["ErrorType","why declarations fail"],["ErrorLog",""],["SiteUrl",""],["SiteName",""],
+        ["LibraryName",""],["DepartmentCode",""],["ResultingDocumentId",""],["RowLoadedDate",""]],
+     s:"public.TrackingRecords, which already exists and nothing uses yet."},
+    {n:"rpt_refresh_log", g:"source system, per run",
+     c:[["RefreshKey","key"],["SourceSystem",""],["DataAsOf","what the dashboards print"],["StartedAt",""],
+        ["CompletedAt",""],["RowsLoaded",""],["Status",""],["Message",""]],
+     s:"Powers the data as of line. Overview quotes the oldest, not the newest."}
+  ];
+
+  const TRACE=[
+    ["Total Declared Records","rpt_record","count where IsDeleted is false","ok"],
+    ["Declared by department, physical split","rpt_record","DepartmentCode, HasPhysicalCounterpart","gap"],
+    ["Drill to division, site, library","rpt_record","DivisionCode, SiteName, LibraryName","gap"],
+    ["Date range on declarations","rpt_record","DeclaredDateOnly","ok"],
+    ["Declarations by user","rpt_record","DeclaredByUpn","ok"],
+    ["Total Documents in compliant sites","rpt_library_snapshot","DocumentCount","part"],
+    ["Declaration rate","rpt_library_snapshot","DeclaredCount over DocumentCount","part"],
+    ["Libraries declaration rate","rpt_library_snapshot","LibraryName, SiteName, counts","part"],
+    ["Largest libraries by storage","rpt_library_snapshot","StorageBytes","part"],
+    ["Files by format","rpt_library_snapshot","FormatGroup, DocumentCount","part"],
+    ["Storage by format, average file size","rpt_library_snapshot","FormatGroup, StorageBytes","part"],
+    ["Declared records by format","rpt_record","FormatGroup","ok"],
+    ["Compliant sites created","rpt_site","SiteCreatedDate, IsEdrmsCompliant","gap"],
+    ["Sites created by department, treemap","rpt_site","DepartmentCode, SiteCreatedDate","gap"],
+    ["Active sites, site visits","rpt_site_usage","SiteVisits7 / 30 / 90","part"],
+    ["Active users, unique viewers","rpt_site_usage","UniqueViewers7 / 30","part"],
+    ["Retention dashboard, not yet built","rpt_record","RetentionStatus, DueDateForDisposal","ok"],
+    ["Declaration success rate, not yet built","rpt_declaration_attempt","Result, ErrorType","ok"],
+    ["Data as of, every dashboard","rpt_refresh_log","DataAsOf, Status","part"]
+  ];
+  const BADGE={ok:['g-ok','Sourced today'],part:['g-part','Needs the scan'],gap:['g-gap','Blocked']};
+
+  const html=`<section class="dash-dd">
+    <div class="band">
+      <h2>Reporting database design</h2>
+      <div class="bd">The seven tables the Utilization Report needs, and where every figure on the other dashboards will come from. This is a reference page, not a dashboard: it carries no sample data and no filters. Full column detail, including field types and samples, is in utilizationdb.md in the repository.</div>
+    </div>
+
+    <div class="panel">
+      <h3>Why a separate rpt schema</h3>
+      <p>The existing tables in <code>public</code> are owned by <code>ADBWebServiceMI1</code> and managed by Entity Framework migrations, so a column added by hand can be dropped by the next vendor release. A separate schema is never touched by those migrations, lets Power BI be granted reporting access without read on live declaration data, and can be rebuilt without any possibility of affecting production.</p>
+      <p>Two grains are unavoidable. Declared records are held one row per record because the report drills into individual retention and physical counterpart detail. Everything else is held as periodic aggregates, because 3.47 million documents at row grain would be expensive to refresh weekly and no figure needs that detail.</p>
+    </div>
+
+    <div class="panel">
+      <h3>The seven tables</h3>
+      <div class="tcards" id="dd-tables"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Where every figure comes from</h3>
+      <div class="lead">If a figure on any dashboard cannot be traced to a row here, it has no source.</div>
+      <table id="dd-trace"></table>
+    </div>
+
+    <div class="panel">
+      <h3>The three gaps that block figures</h3>
+      <p><b>ADBMeta is empty and out of scope for release 2026.1.</b> It supplies department, division and unit on every record. Until it is populated, every department and division figure in the report is impossible. This is a release scoping decision rather than a technical gap, and it is the largest open item.</p>
+      <p><b>File size is not captured.</b> One additional key inside the existing FileMeta jsonb column, so no migration is needed. It blocks per record storage only: Microsoft Graph returns file size on every item, so storage by library and by format can come from the scan without it.</p>
+      <p><b>There is no site created date, compliance rule, or site to department mapping.</b> ADBSites carries site url, name and project end date and none of the three. AvePoint Cloud Governance may already hold the department from when each site was provisioned, which would make this much smaller than it looks.</p>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("dd-tables").innerHTML=TABLES.map(t=>
+      `<div class="tc">
+        <div class="th"><b>${t.n}</b><small>one row per ${t.g}</small></div>
+        <ul>${t.c.map(([col,note],i)=>{
+          const gap=/GAP|THE denominator|does not return/.test(note);
+          const key=i===0||note==="key";
+          return `<li class="${gap?'gap':key?'key':''}"><b>${col}</b>${note?`<span>${note}</span>`:""}</li>`;
+        }).join("")}</ul>
+        <div class="cnt">${t.c.length} columns. ${t.s}</div>
+      </div>`).join("");
+
+    document.getElementById("dd-trace").innerHTML=
+      `<tr><th style="width:32%">Figure</th><th style="width:24%">Table</th><th style="width:28%">Columns</th><th>Status</th></tr>`+
+      TRACE.map(([fig,tbl,cols,st])=>
+        `<tr><td>${fig}</td><td><code>${tbl}</code></td><td>${cols}</td>
+         <td><span class="dtag ${BADGE[st][0]}">${BADGE[st][1]}</span></td></tr>`).join("");
+  }
+
+  return {
+    ver:"Reporting Database Design",
+    crumb:"Data Design",
+    /* Documentation, not a dashboard. verify.js reads this so it does not
+       demand a KPI card from a page that correctly has none. */
+    kind:"reference",
+    asof:"Design reference. Full column detail in utilizationdb.md",
     html,init
   };
 })();
