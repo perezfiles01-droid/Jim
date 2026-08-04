@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EDRMS Utilization Report: Reporting Data Design</title>
+<title>EDRMS Utilization Report: Reporting Database Design</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230E1F35'/><rect x='7' y='17' width='4' height='8' fill='%239DB8D2'/><rect x='14' y='12' width='4' height='13' fill='%2300A5A8'/><rect x='21' y='7' width='4' height='18' fill='%230072BC'/></svg>">
 <style>
   :root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--teal:#00A5A8;--green:#5CA943;--orange:#E8763C;--greyblue:#9DB8D2;--deepblue:#1B5E82;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif;--shadow:0 1px 2px rgba(16,36,62,.06),0 4px 14px rgba(16,36,62,.06);--mono:"Cascadia Mono",Consolas,"Courier New",monospace}
@@ -9,476 +9,639 @@
   header{background:var(--nav);color:#fff;padding:26px 30px}
   header .t1{font-family:var(--serif);font-size:23px}
   header .t2{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#7FA8CC;margin-top:5px}
-  header .t3{font-size:12.5px;color:#C7D3E0;margin-top:10px;max-width:900px}
+  header .t3{font-size:12.5px;color:#C7D3E0;margin-top:10px;max-width:920px}
+  nav.toc{background:#16304F;padding:11px 30px;display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px}
+  nav.toc a{color:#9DC4E4;text-decoration:none}
+  nav.toc a:hover{color:#fff;text-decoration:underline}
   main{max-width:1180px;margin:0 auto;padding:24px 22px 60px}
-  section{margin-bottom:30px}
+  section{margin-bottom:34px;scroll-margin-top:12px}
   h2{font-family:var(--serif);font-size:19px;margin-bottom:5px}
   h2 .n{color:var(--blue);font-size:14px;margin-right:8px;font-family:var(--sans);font-weight:700}
-  .lead{font-size:13px;color:var(--ink2);max-width:880px;margin-bottom:16px}
+  h3{font-size:13.5px;margin:18px 0 8px;color:var(--ink)}
+  .lead{font-size:13px;color:var(--ink2);max-width:900px;margin-bottom:16px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+  .panel p{font-size:13px;color:var(--ink2);margin-bottom:10px}
+  .panel p:last-child{margin-bottom:0}
   table{width:100%;border-collapse:collapse;font-size:12.5px}
   th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line);padding:0 10px 8px 0;vertical-align:bottom}
   td{padding:9px 10px 9px 0;border-bottom:1px solid #EEF2F6;vertical-align:top}
   tr:last-child td{border-bottom:none}
   code{font-family:var(--mono);font-size:11.5px;background:#F3F7FB;border:1px solid #E4EBF3;border-radius:4px;padding:1px 5px;color:var(--deepblue);white-space:nowrap}
+  pre{background:#0E1F35;color:#D6E4F0;border-radius:9px;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:11.5px;line-height:1.62;margin:10px 0 4px}
+  pre .k{color:#7FB2E5;font-weight:600}
+  pre .s{color:#8FD3A0}
+  pre .c{color:#7A93AD;font-style:italic}
+  pre .w{color:#F0A868;font-weight:600}
+  .cap{font-size:11px;color:var(--mut);margin-bottom:14px}
   .tag{display:inline-block;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;border-radius:4px;padding:2px 6px;white-space:nowrap}
   .t-new{background:#E7F4E2;color:#33691E;border:1px solid #C6E3BB}
   .t-exist{background:#EAF2FA;color:#1B5E82;border:1px solid #CFE0F2}
   .t-change{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
   .t-crit{background:#FBE9E9;color:#9B1C1C;border:1px solid #F2C9C9}
-  .t-high{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
   .t-med{background:#FDF9EF;color:#8A6100;border:1px solid #EFE0BD}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
-  .tbl{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
-  .tbl .hd{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .tbl .hd b{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
-  .tbl .gr{font-size:11px;color:var(--mut);padding:9px 15px;background:#F8FAFC;border-bottom:1px solid #EEF2F6}
-  .tbl .gr b{color:var(--ink2)}
-  .tbl ul{list-style:none;padding:10px 15px 13px}
-  .tbl li{font-size:11.5px;padding:2.5px 0;display:flex;gap:7px;align-items:baseline}
-  .tbl li .c{font-family:var(--mono);color:var(--ink);white-space:nowrap}
-  .tbl li .d{color:var(--mut);font-size:10.5px}
-  .tbl li.pk .c{font-weight:700;color:var(--deepblue)}
-  .tbl li.fk .c{color:var(--teal)}
-  .tbl li.gap .c{color:#9C4A16;font-weight:700}
   .arch{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px;overflow-x:auto}
   .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:12px 15px;font-size:12.5px;color:var(--ink2);margin-top:14px}
+  .note.blue{background:#EEF5FC;border-color:#CFE0F2;border-left-color:var(--blue)}
   .note b{color:var(--ink)}
-  .keyrow{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin-bottom:14px;align-items:center}
-  .keyrow span{display:inline-flex;align-items:center;gap:6px}
+  .fig{border:1px solid var(--line);border-radius:10px;margin-bottom:14px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+  .fig .fh{padding:11px 16px;background:#F8FAFC;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .fig .fh b{font-size:13px}
+  .fig .fh span{font-size:11px;color:var(--mut)}
+  .fig .fb{padding:2px 16px 14px}
   ol.steps{padding-left:20px;font-size:13px;color:var(--ink2)}
   ol.steps li{margin-bottom:9px}
   ol.steps b{color:var(--ink)}
-  @media(max-width:700px){.cards{grid-template-columns:1fr}}
+  ul.plain{list-style:none;font-size:13px;color:var(--ink2)}
+  ul.plain li{padding:5px 0 5px 18px;position:relative}
+  ul.plain li::before{content:"";position:absolute;left:0;top:12px;width:6px;height:6px;border-radius:50%;background:var(--greyblue)}
 </style></head>
 <body>
 <header>
   <div class="t1">EDRMS Utilization Report</div>
-  <div class="t2">Asian Development Bank &middot; Reporting Data Design</div>
-  <div class="t3">A proposed reporting layer for the Utilization Report, mapped against the existing EDRMS declaration database (Database Design 12.03). It sets out what the current design already supplies, what is missing, and the tables needed to serve every figure the dashboards show.</div>
+  <div class="t2">Asian Development Bank &middot; Reporting Database Design</div>
+  <div class="t3">A reporting layer for the Utilization Report, designed against the live <code style="background:#1B3557;color:#D6E4F0;border-color:#2C4A6E">drm-npr</code> PostgreSQL database. Every figure the dashboards show is traced to the table, column and query that produces it.</div>
 </header>
+<nav class="toc">
+  <a href="#s1">1. Should this have its own tables</a>
+  <a href="#s2">2. What exists today</a>
+  <a href="#s3">3. Changes needed in the app</a>
+  <a href="#s4">4. The rpt schema</a>
+  <a href="#s5">5. Loading from Records</a>
+  <a href="#s6">6. The inventory scan</a>
+  <a href="#s7">7. Every figure, its query</a>
+  <a href="#s8">8. Volumes and refresh</a>
+  <a href="#s9">9. Decisions</a>
+</nav>
 <main>
 
-<section>
-  <h2><span class="n">1</span>The core problem this design solves</h2>
-  <div class="lead">The existing database is an <b>operational</b> system. It records declarations: jobs, queues, attempts, and the resulting records. It is well suited to that, and the Utilization Report should reuse it rather than duplicate it.</div>
+<section id="s1">
+  <h2><span class="n">1</span>Should the Utilization Report have its own tables</h2>
+  <div class="lead">Yes. Specifically a separate <b>schema</b>, <code>rpt</code>, in the same <code>drm-npr</code> database, rather than new tables mixed into <code>public</code> or extra columns bolted onto the existing ones.</div>
   <div class="panel">
-    <p style="font-size:13px;color:var(--ink2);margin-bottom:12px">But most of the report is about the <b>denominator</b>, not the numerator. Total documents held (3.47M in the prototype), declaration rate per library, storage consumed by format, sites created by department. A declaration log never sees any of that, because a document that was never declared produces no row anywhere in it.</p>
-    <p style="font-size:13px;color:var(--ink2)">So the reporting layer needs a second source: a periodic scan of SharePoint that counts and measures <b>everything</b>, declared or not. That scan is the single most important addition proposed here, and it is what makes the declaration rate, the storage figures, and the library adoption panels possible at all.</p>
-    <div class="note"><b>Design consequence.</b> Two grains, deliberately. Declared records are stored one row per record, because there are only tens of thousands of them and the report drills into individual retention and physical counterpart detail. Everything else is stored as bounded periodic aggregates, because 3.47M documents at row grain would be expensive to refresh weekly and no dashboard figure needs that detail.</div>
+    <h3>Four reasons this is the right shape</h3>
+    <ul class="plain">
+      <li><b>The operational tables are not yours to change.</b> <code>public."Records"</code> is owned by <code>ADBWebServiceMI1</code> and managed by Entity Framework migrations, visible as <code>__EFMigrationsHistory</code>. Any column added by hand risks being dropped or renamed by the next vendor release. A separate schema is never touched by those migrations.</li>
+      <li><b>Reporting wants a different shape.</b> The dashboards need pre joined dimensions, periodic snapshots and aggregates. Those are wrong things to put in a transactional table that the declaration app writes to on every job.</li>
+      <li><b>Permissions separate cleanly.</b> Power BI gets <code>USAGE</code> on <code>rpt</code> and <code>SELECT</code> on its tables, and nothing at all on <code>public</code>. Today a reporting connection would need read access to the live declaration tables, which is a wider grant than anyone needs.</li>
+      <li><b>Refreshes become safe.</b> The reporting tables can be truncated and rebuilt, or reloaded incrementally, without any possibility of touching production declaration data. A failed refresh degrades the report and nothing else.</li>
+    </ul>
+    <div class="note"><b>Two deliberate exceptions.</b> Two things genuinely must change inside the application's own tables, because they can only be captured at declaration time and cannot be derived afterwards. Both are in section 3, and both are small.</div>
   </div>
 </section>
 
-<section>
-  <h2><span class="n">2</span>How the layers fit together</h2>
-  <div class="lead">Four layers. The middle one is what exists today. The third is what this design proposes.</div>
-  <div class="arch">
-    <svg viewBox="0 0 1130 400" width="100%" style="min-width:880px;display:block">
-      <defs>
-        <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-          <path d="M0 0 L9 4.5 L0 9 z" fill="#9DB8D2"/>
-        </marker>
-        <marker id="aro" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
-          <path d="M0 0 L9 4.5 L0 9 z" fill="#E8763C"/>
-        </marker>
-      </defs>
+<section id="s2">
+  <h2><span class="n">2</span>What is actually in the database today</h2>
+  <div class="lead">Read from the live <code>drm-npr</code> schema rather than the design workbook, because the two differ in ways that matter.</div>
 
-      <!-- layer captions live in a left gutter so no arrow crosses them -->
-      <g font-size="10" font-weight="700" fill="#6B7A8C" letter-spacing="0.8" text-anchor="end">
-        <text x="142" y="62">SOURCE</text><text x="142" y="75">SYSTEMS</text>
-        <text x="142" y="167">OPERATIONAL</text><text x="142" y="180">EXISTS TODAY</text>
-        <text x="142" y="273">REPORTING LAYER</text><text x="142" y="286">PROPOSED</text>
-        <text x="142" y="381">PRESENTATION</text>
-      </g>
+  <div class="panel">
+    <h3>Application tables that exist</h3>
+    <table>
+      <tr><th style="width:24%">Table</th><th style="width:22%">Serves the report</th><th>Notes</th></tr>
+      <tr><td><code>public."Records"</code></td><td><span class="tag t-exist">Core source</span></td><td>Declared records. The single most important input.</td></tr>
+      <tr><td><code>public."TrackingRecords"</code></td><td><span class="tag t-exist">Unused today</span></td><td>Every attempt including failures. Supports declaration success rate.</td></tr>
+      <tr><td><code>public."JobTriggers"</code></td><td><span class="tag t-exist">Context</span></td><td>699 rows live. One per request, gives batch behaviour and job type.</td></tr>
+      <tr><td><code>public."QueueRecords"</code></td><td><span class="tag t-med">Low value</span></td><td>Processing queue. Operational rather than analytical.</td></tr>
+      <tr><td><code>public."ADBSites"</code></td><td><span class="tag t-change">Needs columns</span></td><td>Exists. Contents to confirm, but this is where site level attributes belong.</td></tr>
+      <tr><td><code>public."EDRMSMasters"</code></td><td><span class="tag t-exist">Term mirror</span></td><td>Id, TermTitle, TermValue for EDRMS fields.</td></tr>
+    </table>
 
-      <!-- source systems -->
-      <g font-size="11.5" fill="#fff">
-        <rect x="160" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="244" y="70" text-anchor="middle">SharePoint / M365</text>
-        <rect x="340" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="424" y="70" text-anchor="middle">M365 Usage</text>
-        <rect x="520" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="604" y="70" text-anchor="middle">Term Store</text>
-        <rect x="700" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="784" y="70" text-anchor="middle">AvePoint Cloud Gov</text>
-        <rect x="880" y="44" width="168" height="42" rx="7" fill="#9DB8D2"/><text x="964" y="65" text-anchor="middle" fill="#10243E">Opus</text><text x="964" y="79" text-anchor="middle" fill="#33475F" font-size="9.5">physical, later</text>
-      </g>
+    <h3>In the workbook, not in the database</h3>
+    <table>
+      <tr><th style="width:24%">Table</th><th>Consequence for the report</th></tr>
+      <tr><td><code>ADBMaster</code></td><td>No department, division or unit vocabulary is mirrored into PostgreSQL at all. The term store holds it, nothing here does.</td></tr>
+      <tr><td><code>Library</code></td><td>No library master. Library attributes exist only as free text on each record.</td></tr>
+      <tr><td><code>PhysicalRecords</code></td><td>Not built. Physical counterpart lives in <code>EDRMSMeta</code> instead, which is preferable anyway.</td></tr>
+    </table>
 
-      <!-- operational, exists today -->
-      <g font-size="11.5">
-        <rect x="160" y="150" width="256" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
-        <text x="288" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Declaration DB</text>
-        <text x="288" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">JobTriggers, QueueRecords, TrackingRecords</text>
-        <rect x="428" y="150" width="228" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
-        <text x="542" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Records, Physical Records</text>
-        <text x="542" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">declared records only</text>
-        <rect x="668" y="150" width="222" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
-        <text x="779" y="170" text-anchor="middle" fill="#10243E" font-weight="600">ADBMaster, EDRMSMasters</text>
-        <text x="779" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">term mirrors, flat today</text>
-        <rect x="902" y="150" width="146" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
-        <text x="975" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Site, Library</text>
-        <text x="975" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">thin, see gaps</text>
-      </g>
-
-      <!-- reporting layer -->
-      <g font-size="11.5">
-        <rect x="160" y="256" width="206" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
-        <text x="263" y="276" text-anchor="middle" fill="#10243E" font-weight="600">Dimensions</text>
-        <text x="263" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">dept, division, site, library, format</text>
-        <rect x="378" y="256" width="206" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
-        <text x="481" y="276" text-anchor="middle" fill="#10243E" font-weight="600">fact_record</text>
-        <text x="481" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">one row per declared record</text>
-        <rect x="596" y="256" width="232" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
-        <text x="712" y="276" text-anchor="middle" fill="#10243E" font-weight="600">fact_library_snapshot</text>
-        <text x="712" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">the inventory scan, the denominator</text>
-        <rect x="840" y="256" width="208" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
-        <text x="944" y="276" text-anchor="middle" fill="#10243E" font-weight="600">usage, attempts</text>
-        <text x="944" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">and the refresh log</text>
-      </g>
-
-      <!-- presentation -->
-      <rect x="160" y="362" width="888" height="30" rx="7" fill="#0072BC"/>
-      <text x="604" y="382" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="600">Power BI, and the HTML prototype that specifies it</text>
-
-      <g stroke="#9DB8D2" stroke-width="1.6" marker-end="url(#ar)" fill="none">
-        <path d="M244 88 L244 146"/><path d="M424 88 L424 146"/><path d="M604 88 L604 146"/><path d="M784 88 L784 146"/>
-        <path d="M288 198 L288 252"/><path d="M542 198 L542 252"/><path d="M779 198 L779 252"/><path d="M975 198 L975 252"/>
-        <path d="M263 304 L263 358"/><path d="M481 304 L481 358"/><path d="M712 304 L712 358"/><path d="M944 304 L944 358"/>
-      </g>
-
-      <!-- the scan bypasses the declaration database entirely -->
-      <path d="M1052 65 C1098 65 1098 279 1054 279" stroke="#E8763C" stroke-width="2" fill="none" marker-end="url(#aro)" stroke-dasharray="5 4"/>
-      <text x="1090" y="168" font-size="9" fill="#E8763C" font-weight="700" text-anchor="middle" transform="rotate(-90 1090 168)">weekly inventory scan</text>
-    </svg>
+    <h3>The live Records table</h3>
+    <div class="cap">Read from the editor pane. Three columns are <code>jsonb</code>, which is where most report relevant metadata sits.</div>
+<pre><span class="k">CREATE TABLE IF NOT EXISTS</span> public."Records"
+(
+    "Id"                          <span class="k">uuid</span> <span class="k">NOT NULL</span>,
+    "CreatedBy"                   <span class="k">text</span> <span class="k">NOT NULL</span>,      <span class="c">-- declarer, populated</span>
+    "CreatedDate"                 <span class="k">timestamptz</span>,            <span class="c">-- THE declaration date</span>
+    "ModifiedBy"                  <span class="k">text</span>,
+    "ModifiedDate"                <span class="k">timestamptz</span>,
+    "DeletedBy"                   <span class="k">text</span>,
+    "DeletedDate"                 <span class="k">timestamptz</span>,
+    "IsDeleted"                   <span class="k">boolean</span> <span class="k">NOT NULL</span>,   <span class="c">-- soft delete</span>
+    "ListId"                      <span class="k">uuid</span> <span class="k">NOT NULL</span>,      <span class="c">-- the safe library key</span>
+    "ItemId"                      <span class="k">integer</span> <span class="k">NOT NULL</span>,
+    "DocumentId"                  <span class="k">text</span>,
+    "SiteUrl"                     <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "SiteName"                    <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "Title"                       <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "LibraryName"                 <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "FolderPath"                  <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "LibraryUrl"                  <span class="k">text</span> <span class="k">NOT NULL</span>,
+    "JobTriggerId"                <span class="k">text</span>,
+    "EDRMSRetentionLabel"         <span class="k">text</span>,
+    "EDRMSDuration"               <span class="k">text</span>,
+    "EDRMSRetentionLabelApplied"  <span class="k">timestamptz</span>,
+    "EDRMSDueDateForDisposal"     <span class="k">timestamptz</span>,
+    "EDRMSMeta"                   <span class="k">jsonb</span> <span class="k">NOT NULL</span>,     <span class="c">-- HasPhysical, justification, status</span>
+    "FileMeta"                    <span class="k">jsonb</span> <span class="k">NOT NULL</span>,     <span class="w">-- no file size, see section 3</span>
+    "ADBMeta"                     <span class="k">jsonb</span> <span class="k">NOT NULL</span>,     <span class="w">-- empty today, see section 3</span>
+    "RecordId"                    <span class="k">text</span>,
+    "DeclarationType"             <span class="k">integer</span>,
+    <span class="k">CONSTRAINT</span> "PK_Records" <span class="k">PRIMARY KEY</span> ("Id")
+);</pre>
+    <div class="note blue"><b>The good news is substantial.</b> <code>CreatedDate</code> is the declaration date in a proper timestamp column, <code>CreatedBy</code> is the declarer, <code>ListId</code> is a real uuid library key, and the full retention set is present. The Retention dashboard, which is still a placeholder in the prototype, is already sourced by this table alone.</div>
   </div>
-  <div class="note"><b>Note the orange path.</b> The inventory scan goes straight from SharePoint into the reporting layer, bypassing the declaration database entirely. It has to, because it measures things the declaration system has no knowledge of.</div>
 </section>
 
-<section>
-  <h2><span class="n">3</span>What the current design already gives us</h2>
-  <div class="lead">More than expected. Several things assumed missing during the tenant investigation turn out to be designed in already.</div>
+<section id="s3">
+  <h2><span class="n">3</span>The two changes needed inside the application</h2>
+  <div class="lead">Everything else can be solved in the reporting layer. These two cannot, because they can only be captured at the moment of declaration.</div>
+
+  <div class="panel">
+    <h3><span class="tag t-crit">Critical</span> &nbsp;File size is not captured</h3>
+    <p><code>FileMeta</code> currently carries file type, created date and sensitivity label. It does not carry size, and size cannot be recovered later for a document that has since changed or been deleted.</p>
+    <p>Without it: storage by format, largest libraries by storage, and average file size have no source. That is the entire left half of the Format and Storage dashboard.</p>
+<pre><span class="c">-- what FileMeta holds today</span>
+{ <span class="s">"FileType"</span>: <span class="s">"docx"</span>, <span class="s">"FileCreatedDate"</span>: <span class="s">"2026-03-11T05:01:03Z"</span>,
+  <span class="s">"SensitivityLabelName"</span>: <span class="s">"Internal"</span>, <span class="s">"SensitivityLabelID"</span>: <span class="s">"817d4574-..."</span> }
+
+<span class="c">-- what it needs</span>
+{ <span class="s">"FileType"</span>: <span class="s">"docx"</span>, <span class="s">"FileCreatedDate"</span>: <span class="s">"2026-03-11T05:01:03Z"</span>,
+  <span class="s">"SensitivityLabelName"</span>: <span class="s">"Internal"</span>, <span class="s">"SensitivityLabelID"</span>: <span class="s">"817d4574-..."</span>,
+  <span class="w">"FileSizeBytes"</span>: 51224 }</pre>
+    <p style="margin-top:10px">One integer, captured from SharePoint at declaration time. No schema migration is required because <code>FileMeta</code> is already <code>jsonb</code>.</p>
+
+    <h3 style="margin-top:22px"><span class="tag t-crit">Critical</span> &nbsp;ADBMeta is empty and out of scope</h3>
+    <p>The workbook marks <code>ADBMeta</code> as out of scope for release 2026.1, and <code>ADB Document Owner</code> is blank across the sample tracking data. It is the department, division and unit of every record.</p>
+    <p>Without it, <b>every department and division figure in the report is impossible</b>. That is the treemap, the top five departments, the drill down, and the department filters on three dashboards. This is a release scoping decision rather than a technical gap, and it is the single largest open item.</p>
+<pre><span class="c">-- ADBMeta, once populated</span>
+{ <span class="w">"ADBDepartmentOwner"</span>: <span class="s">"CWRD"</span>,
+  <span class="w">"ADBDivisionOwner"</span>:   <span class="s">"AFRM"</span>,
+  <span class="w">"ADBUnitOwner"</span>:       <span class="s">"AFRM-PA"</span>,
+  <span class="s">"ADBLibraryCategory"</span>: <span class="s">"Project Records"</span> }</pre>
+    <div class="note">Values must be the term store codes, and ideally the term GUIDs alongside them, so the reporting layer can join to the hierarchy rather than match on text. The Division term set already nests divisions under departments, so the parent relationship does not need to be invented.</div>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>The rpt schema</h2>
+  <div class="lead">Runnable PostgreSQL. Nine dimensions, four facts, one audit table. Nothing here touches <code>public</code>.</div>
+
+  <div class="panel">
+<pre><span class="k">CREATE SCHEMA IF NOT EXISTS</span> rpt;
+
+<span class="c">-- ============ DIMENSIONS ============</span>
+
+<span class="k">CREATE TABLE</span> rpt.dim_date (
+  date_key        <span class="k">integer</span> <span class="k">PRIMARY KEY</span>,        <span class="c">-- 20260311</span>
+  full_date       <span class="k">date</span> <span class="k">NOT NULL</span>,
+  year            <span class="k">smallint</span> <span class="k">NOT NULL</span>,
+  quarter         <span class="k">smallint</span> <span class="k">NOT NULL</span>,
+  month           <span class="k">smallint</span> <span class="k">NOT NULL</span>,
+  month_name      <span class="k">text</span> <span class="k">NOT NULL</span>,
+  week_of_year    <span class="k">smallint</span> <span class="k">NOT NULL</span>,
+  is_month_end    <span class="k">boolean</span> <span class="k">NOT NULL</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_department (
+  department_key  <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  term_id         <span class="k">uuid</span> <span class="k">UNIQUE</span>,               <span class="c">-- term store GUID</span>
+  code            <span class="k">text</span> <span class="k">NOT NULL</span> <span class="k">UNIQUE</span>,        <span class="c">-- CWRD</span>
+  name            <span class="k">text</span> <span class="k">NOT NULL</span>,
+  is_active       <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_division (
+  division_key    <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  term_id         <span class="k">uuid</span> <span class="k">UNIQUE</span>,
+  department_key  <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_department,
+  code            <span class="k">text</span> <span class="k">NOT NULL</span>,                <span class="c">-- AFRM</span>
+  name            <span class="k">text</span> <span class="k">NOT NULL</span>,
+  org_unit_type   <span class="k">text</span>,                          <span class="c">-- Division | Resident Mission</span>
+  is_active       <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>,
+  <span class="k">UNIQUE</span> (department_key, code)
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_unit (
+  unit_key        <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  term_id         <span class="k">uuid</span> <span class="k">UNIQUE</span>,
+  division_key    <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_division,
+  code            <span class="k">text</span> <span class="k">NOT NULL</span>,
+  name            <span class="k">text</span> <span class="k">NOT NULL</span>,
+  is_active       <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_site (
+  site_key            <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  site_url            <span class="k">text</span> <span class="k">NOT NULL UNIQUE</span>,
+  site_name           <span class="k">text</span> <span class="k">NOT NULL</span>,
+  <span class="w">site_created_date</span>   <span class="k">date</span>,                     <span class="c">-- from admin centre export</span>
+  <span class="w">is_edrms_compliant</span>  <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT false</span>,
+  <span class="w">compliance_source</span>   <span class="k">text</span>,                     <span class="c">-- how it was decided</span>
+  <span class="w">department_key</span>      <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_department,
+  <span class="w">storage_bytes</span>       <span class="k">bigint</span>,                   <span class="c">-- site level, includes versions</span>
+  <span class="w">last_activity_date</span>  <span class="k">date</span>,
+  project_end_date    <span class="k">date</span>,
+  template            <span class="k">text</span>,
+  is_active           <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_library (
+  library_key     <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  list_id         <span class="k">uuid</span> <span class="k">NOT NULL UNIQUE</span>,        <span class="c">-- names repeat, this does not</span>
+  site_key        <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_site,
+  library_name    <span class="k">text</span> <span class="k">NOT NULL</span>,
+  library_url     <span class="k">text</span>,
+  library_category <span class="k">text</span>,
+  division_key    <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_division,
+  unit_key        <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_unit,
+  is_active       <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_file_format (
+  format_key      <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  extension       <span class="k">text</span> <span class="k">NOT NULL UNIQUE</span>,        <span class="c">-- docx, pdf, msg</span>
+  format_group    <span class="k">text</span> <span class="k">NOT NULL</span>,               <span class="c">-- Word, PDF, All other formats</span>
+  is_email        <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT false</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_retention_label (
+  label_key       <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  label_name      <span class="k">text</span> <span class="k">NOT NULL UNIQUE</span>,        <span class="c">-- 10 years after declaration</span>
+  duration_years  <span class="k">smallint</span>,
+  marks_as_record <span class="k">boolean</span>,                     <span class="c">-- not all labels declare</span>
+  is_active       <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT true</span>
+);
+
+<span class="k">CREATE TABLE</span> rpt.dim_user (
+  user_key        <span class="k">serial</span> <span class="k">PRIMARY KEY</span>,
+  upn             <span class="k">text</span> <span class="k">NOT NULL UNIQUE</span>,        <span class="c">-- rkyadav.contractor@adb.org</span>
+  display_name    <span class="k">text</span>,
+  department_key  <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_department
+);
+
+<span class="c">-- ============ FACTS ============</span>
+
+<span class="c">-- one row per declared record, roughly 21,646 today</span>
+<span class="k">CREATE TABLE</span> rpt.fact_record (
+  record_key            <span class="k">bigserial</span> <span class="k">PRIMARY KEY</span>,
+  source_id             <span class="k">uuid</span> <span class="k">NOT NULL UNIQUE</span>,   <span class="c">-- public."Records"."Id"</span>
+  document_id           <span class="k">text</span>,
+  item_id               <span class="k">integer</span>,
+  site_key              <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_site,
+  library_key           <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_library,
+  department_key        <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_department,
+  division_key          <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_division,
+  unit_key              <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_unit,
+  declared_date_key     <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_date,
+  declared_at           <span class="k">timestamptz</span> <span class="k">NOT NULL</span>,
+  declared_by_user_key  <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_user,
+  format_key            <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_file_format,
+  <span class="w">file_size_bytes</span>       <span class="k">bigint</span>,                 <span class="c">-- needs section 3</span>
+  file_created_date     <span class="k">date</span>,
+  has_physical          <span class="k">boolean</span>,
+  physical_justification <span class="k">text</span>,
+  retention_label_key   <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_retention_label,
+  retention_applied_at  <span class="k">timestamptz</span>,
+  retention_duration_years <span class="k">smallint</span>,
+  due_date_for_disposal <span class="k">date</span>,
+  retention_status      <span class="k">text</span>,
+  sensitivity_label     <span class="k">text</span>,
+  declaration_type      <span class="k">integer</span>,               <span class="c">-- 0 regular, 1 centralized</span>
+  is_deleted            <span class="k">boolean</span> <span class="k">NOT NULL DEFAULT false</span>,
+  deleted_at            <span class="k">timestamptz</span>,
+  disposal_status       <span class="k">text</span>
+);
+<span class="k">CREATE INDEX</span> ON rpt.fact_record (declared_date_key);
+<span class="k">CREATE INDEX</span> ON rpt.fact_record (department_key, division_key);
+<span class="k">CREATE INDEX</span> ON rpt.fact_record (library_key);
+
+<span class="c">-- THE key new table. Grain: snapshot date x library x format.</span>
+<span class="c">-- This is the denominator the declaration database cannot provide.</span>
+<span class="k">CREATE TABLE</span> rpt.fact_library_snapshot (
+  snapshot_date_key <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_date,
+  library_key       <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_library,
+  format_key        <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_file_format,
+  document_count    <span class="k">integer</span> <span class="k">NOT NULL</span>,
+  declared_count    <span class="k">integer</span> <span class="k">NOT NULL</span>,
+  storage_bytes     <span class="k">bigint</span> <span class="k">NOT NULL</span>,
+  <span class="k">PRIMARY KEY</span> (snapshot_date_key, library_key, format_key)
+);
+
+<span class="k">CREATE TABLE</span> rpt.fact_site_usage_snapshot (
+  snapshot_date_key <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_date,
+  site_key          <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_site,
+  site_visits_7     <span class="k">integer</span>,
+  site_visits_30    <span class="k">integer</span>,
+  site_visits_90    <span class="k">integer</span>,
+  unique_viewers_7  <span class="k">integer</span>,
+  unique_viewers_30 <span class="k">integer</span>,   <span class="c">-- no 90, M365 does not return it</span>
+  last_activity_date <span class="k">date</span>,
+  storage_bytes     <span class="k">bigint</span>,
+  <span class="k">PRIMARY KEY</span> (snapshot_date_key, site_key)
+);
+
+<span class="c">-- from public."TrackingRecords", including failures</span>
+<span class="k">CREATE TABLE</span> rpt.fact_declaration_attempt (
+  attempt_key       <span class="k">bigserial</span> <span class="k">PRIMARY KEY</span>,
+  source_id         <span class="k">uuid</span> <span class="k">NOT NULL UNIQUE</span>,
+  attempt_date_key  <span class="k">integer</span> <span class="k">NOT NULL REFERENCES</span> rpt.dim_date,
+  attempted_at      <span class="k">timestamptz</span> <span class="k">NOT NULL</span>,
+  user_key          <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_user,
+  site_key          <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_site,
+  library_key       <span class="k">integer</span> <span class="k">REFERENCES</span> rpt.dim_library,
+  declaration_type  <span class="k">integer</span>,
+  result            <span class="k">smallint</span>,       <span class="c">-- 0 success, 1 skipped, 2 failed</span>
+  error_type        <span class="k">text</span>,
+  record_key        <span class="k">bigint</span> <span class="k">REFERENCES</span> rpt.fact_record
+);
+
+<span class="c">-- powers the "data as of" line on every dashboard</span>
+<span class="k">CREATE TABLE</span> rpt.etl_refresh_log (
+  refresh_key   <span class="k">bigserial</span> <span class="k">PRIMARY KEY</span>,
+  source_system <span class="k">text</span> <span class="k">NOT NULL</span>,   <span class="c">-- spo_inventory | m365_usage | declaration_db</span>
+  data_as_of    <span class="k">timestamptz</span> <span class="k">NOT NULL</span>,
+  started_at    <span class="k">timestamptz</span> <span class="k">NOT NULL</span>,
+  completed_at  <span class="k">timestamptz</span>,
+  rows_loaded   <span class="k">bigint</span>,
+  status        <span class="k">text</span> <span class="k">NOT NULL</span>,   <span class="c">-- running | success | failed</span>
+  message       <span class="k">text</span>
+);
+
+<span class="c">-- Power BI reads rpt only, never public</span>
+<span class="k">CREATE ROLE</span> rpt_reader;
+<span class="k">GRANT USAGE</span> <span class="k">ON SCHEMA</span> rpt <span class="k">TO</span> rpt_reader;
+<span class="k">GRANT SELECT</span> <span class="k">ON ALL TABLES IN SCHEMA</span> rpt <span class="k">TO</span> rpt_reader;</pre>
+  </div>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>Loading fact_record from the live Records table</h2>
+  <div class="lead">This is the query that turns declarations into report data. The two gaps from section 3 are visible in it directly.</div>
+  <div class="panel">
+<pre><span class="k">INSERT INTO</span> rpt.fact_record (
+  source_id, document_id, item_id, site_key, library_key,
+  department_key, division_key, unit_key,
+  declared_date_key, declared_at, declared_by_user_key,
+  format_key, file_size_bytes, file_created_date,
+  has_physical, physical_justification,
+  retention_label_key, retention_applied_at, retention_duration_years,
+  due_date_for_disposal, retention_status, sensitivity_label,
+  declaration_type, is_deleted, deleted_at)
+<span class="k">SELECT</span>
+  r."Id",
+  r."DocumentId",
+  r."ItemId",
+  s.site_key,
+  l.library_key,
+  dep.department_key,                                  <span class="w">-- null until ADBMeta is populated</span>
+  div.division_key,                                    <span class="w">-- null until ADBMeta is populated</span>
+  u.unit_key,
+  <span class="k">to_char</span>(r."CreatedDate", <span class="s">'YYYYMMDD'</span>)::<span class="k">int</span>,       <span class="c">-- CreatedDate IS the declaration date</span>
+  r."CreatedDate",
+  usr.user_key,
+  fmt.format_key,
+  (r."FileMeta"-&gt;&gt;<span class="s">'FileSizeBytes'</span>)::<span class="k">bigint</span>,       <span class="w">-- null until section 3 lands</span>
+  (r."FileMeta"-&gt;&gt;<span class="s">'FileCreatedDate'</span>)::<span class="k">date</span>,
+  (r."EDRMSMeta"-&gt;&gt;<span class="s">'HasPhysical'</span>) <span class="k">IN</span> (<span class="s">'Yes'</span>,<span class="s">'true'</span>,<span class="s">'True'</span>),
+  r."EDRMSMeta"-&gt;&gt;<span class="s">'PhysicalRecordJustification'</span>,
+  lbl.label_key,
+  r."EDRMSRetentionLabelApplied",
+  <span class="k">nullif</span>(<span class="k">regexp_replace</span>(r."EDRMSDuration", <span class="s">'\D'</span>, <span class="s">''</span>, <span class="s">'g'</span>), <span class="s">''</span>)::<span class="k">smallint</span>,
+  r."EDRMSDueDateForDisposal"::<span class="k">date</span>,
+  r."EDRMSMeta"-&gt;&gt;<span class="s">'RetentionStatus'</span>,
+  r."FileMeta"-&gt;&gt;<span class="s">'SensitivityLabelName'</span>,
+  r."DeclarationType",
+  r."IsDeleted",
+  r."DeletedDate"
+<span class="k">FROM</span> public."Records" r
+<span class="k">JOIN</span> rpt.dim_site    s   <span class="k">ON</span> s.site_url = r."SiteUrl"
+<span class="k">JOIN</span> rpt.dim_library l   <span class="k">ON</span> l.list_id  = r."ListId"        <span class="c">-- uuid, never the name</span>
+<span class="k">LEFT JOIN</span> rpt.dim_department dep <span class="k">ON</span> dep.code = r."ADBMeta"-&gt;&gt;<span class="s">'ADBDepartmentOwner'</span>
+<span class="k">LEFT JOIN</span> rpt.dim_division   div <span class="k">ON</span> div.code = r."ADBMeta"-&gt;&gt;<span class="s">'ADBDivisionOwner'</span>
+                                    <span class="k">AND</span> div.department_key = dep.department_key
+<span class="k">LEFT JOIN</span> rpt.dim_unit       u   <span class="k">ON</span> u.code   = r."ADBMeta"-&gt;&gt;<span class="s">'ADBUnitOwner'</span>
+<span class="k">LEFT JOIN</span> rpt.dim_user       usr <span class="k">ON</span> usr.upn = <span class="k">lower</span>(r."CreatedBy")
+<span class="k">LEFT JOIN</span> rpt.dim_file_format fmt <span class="k">ON</span> fmt.extension = <span class="k">lower</span>(r."FileMeta"-&gt;&gt;<span class="s">'FileType'</span>)
+<span class="k">LEFT JOIN</span> rpt.dim_retention_label lbl <span class="k">ON</span> lbl.label_name = r."EDRMSRetentionLabel"
+<span class="k">ON CONFLICT</span> (source_id) <span class="k">DO UPDATE SET</span>
+  is_deleted = <span class="k">EXCLUDED</span>.is_deleted,
+  deleted_at = <span class="k">EXCLUDED</span>.deleted_at;</pre>
+    <div class="note"><b>Read the three amber lines.</b> They are the whole gap analysis in one place. Department and division resolve to null until <code>ADBMeta</code> is populated, and file size is null until it is captured. Everything else in this query works against the database as it stands today.</div>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>The inventory scan, the one genuinely new pipeline</h2>
+  <div class="lead">Nothing in PostgreSQL knows how many documents exist, only how many were declared. This closes that.</div>
+  <div class="panel">
+    <p>A scheduled job walks every EDRMS compliant site through Microsoft Graph, enumerates list items, and writes one aggregated row per library per format. It never stores individual undeclared documents, so the volume stays bounded.</p>
+<pre><span class="c">-- pseudocode for the weekly job</span>
+<span class="k">for each</span> site <span class="k">in</span> dim_site <span class="k">where</span> is_edrms_compliant:
+    <span class="k">for each</span> library <span class="k">in</span> site:
+        counts = {}
+        <span class="k">for each</span> item <span class="k">in</span> graph.enumerate(library):      <span class="c">-- delta query</span>
+            ext = extension_of(item.name)
+            counts[ext].documents  += 1
+            counts[ext].bytes      += item.size            <span class="c">-- available from Graph</span>
+            counts[ext].declared   += 1 <span class="k">if</span> item.isRecord
+        <span class="k">upsert into</span> rpt.fact_library_snapshot
+
+<span class="c">-- then record what the dashboards will print as "data as of"</span>
+<span class="k">INSERT INTO</span> rpt.etl_refresh_log (source_system, data_as_of, started_at, completed_at, rows_loaded, status)
+<span class="k">VALUES</span> (<span class="s">'spo_inventory'</span>, <span class="k">now</span>(), :started, <span class="k">now</span>(), :rows, <span class="s">'success'</span>);</pre>
+    <div class="note blue"><b>Note that file size is available here even though it is missing from Records.</b> Graph returns size on every item. So storage by library and by format can be delivered from the scan alone, and the <code>FileMeta.FileSizeBytes</code> change in section 3 is only needed for per record storage detail. That splits one critical gap into a large half that is already solvable and a small half that needs the app change.</div>
+  </div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Every figure, and the query behind it</h2>
+  <div class="lead">If a number on a dashboard has no query here, it has no source. This is the completeness check.</div>
+
+  <div class="fig">
+    <div class="fh"><b>Total Declared Records</b><span>Overview KPI, Records Management KPI</span></div>
+    <div class="fb"><pre><span class="k">SELECT count</span>(*) <span class="k">FROM</span> rpt.fact_record <span class="k">WHERE NOT</span> is_deleted;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Declared records by department, split by physical counterpart</b><span>Records Management, stacked bars</span></div>
+    <div class="fb"><pre><span class="k">SELECT</span> d.code, d.name,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE NOT</span> f.has_physical) <span class="k">AS</span> without_physical,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span>     f.has_physical) <span class="k">AS</span> with_physical,
+       <span class="k">count</span>(*) <span class="k">AS</span> total
+<span class="k">FROM</span> rpt.fact_record f
+<span class="k">JOIN</span> rpt.dim_department d <span class="k">ON</span> d.department_key = f.department_key
+<span class="k">WHERE NOT</span> f.is_deleted
+  <span class="k">AND</span> f.declared_at &gt;= :date_from
+  <span class="k">AND</span> f.declared_at &lt;  :date_to + <span class="k">interval</span> <span class="s">'1 day'</span>
+<span class="k">GROUP BY</span> d.code, d.name
+<span class="k">ORDER BY</span> total <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Drill down to division, site, library</b><span>Records Management, four levels</span></div>
+    <div class="fb"><pre><span class="c">-- level 2, divisions inside one department</span>
+<span class="k">SELECT</span> dv.code, dv.name, <span class="k">count</span>(*) <span class="k">AS</span> total
+<span class="k">FROM</span> rpt.fact_record f
+<span class="k">JOIN</span> rpt.dim_division dv <span class="k">ON</span> dv.division_key = f.division_key
+<span class="k">WHERE NOT</span> f.is_deleted <span class="k">AND</span> f.department_key = :department_key
+<span class="k">GROUP BY</span> dv.code, dv.name <span class="k">ORDER BY</span> total <span class="k">DESC</span>;
+
+<span class="c">-- level 4, libraries always shown with their parent site</span>
+<span class="k">SELECT</span> l.library_name, s.site_name, <span class="k">count</span>(*) <span class="k">AS</span> total
+<span class="k">FROM</span> rpt.fact_record f
+<span class="k">JOIN</span> rpt.dim_library l <span class="k">ON</span> l.library_key = f.library_key
+<span class="k">JOIN</span> rpt.dim_site    s <span class="k">ON</span> s.site_key   = l.site_key
+<span class="k">WHERE NOT</span> f.is_deleted <span class="k">AND</span> s.site_key = :site_key
+<span class="k">GROUP BY</span> l.library_name, s.site_name <span class="k">ORDER BY</span> total <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Total Documents in EDRMS Compliant Sites, and the declaration rate</b><span>Overview KPI, Records Management</span></div>
+    <div class="fb"><pre><span class="k">WITH</span> latest <span class="k">AS</span> (<span class="k">SELECT max</span>(snapshot_date_key) k <span class="k">FROM</span> rpt.fact_library_snapshot)
+<span class="k">SELECT sum</span>(fs.document_count)                                    <span class="k">AS</span> documents,
+       <span class="k">sum</span>(fs.declared_count)                                    <span class="k">AS</span> declared,
+       <span class="k">round</span>(100.0 * <span class="k">sum</span>(fs.declared_count)
+             / <span class="k">nullif</span>(<span class="k">sum</span>(fs.document_count),0), 2)               <span class="k">AS</span> rate_pct
+<span class="k">FROM</span> rpt.fact_library_snapshot fs
+<span class="k">JOIN</span> latest <span class="k">ON</span> fs.snapshot_date_key = latest.k
+<span class="k">JOIN</span> rpt.dim_library l <span class="k">ON</span> l.library_key = fs.library_key
+<span class="k">JOIN</span> rpt.dim_site    s <span class="k">ON</span> s.site_key   = l.site_key
+<span class="k">WHERE</span> s.is_edrms_compliant;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Compliant sites created, and the treemap by department</b><span>Sites and Libraries</span></div>
+    <div class="fb"><pre><span class="k">SELECT</span> d.code, d.name, <span class="k">count</span>(*) <span class="k">AS</span> sites_created
+<span class="k">FROM</span> rpt.dim_site s
+<span class="k">JOIN</span> rpt.dim_department d <span class="k">ON</span> d.department_key = s.department_key
+<span class="k">WHERE</span> s.is_edrms_compliant
+  <span class="k">AND</span> s.site_created_date <span class="k">BETWEEN</span> :date_from <span class="k">AND</span> :date_to
+<span class="k">GROUP BY</span> d.code, d.name
+<span class="k">ORDER BY</span> sites_created <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Libraries declaration rate, and largest libraries by storage</b><span>Sites and Libraries, both panels</span></div>
+    <div class="fb"><pre><span class="k">WITH</span> latest <span class="k">AS</span> (<span class="k">SELECT max</span>(snapshot_date_key) k <span class="k">FROM</span> rpt.fact_library_snapshot)
+<span class="k">SELECT</span> l.library_name,
+       s.site_name,                                     <span class="c">-- never show a library alone</span>
+       <span class="k">sum</span>(fs.document_count)                    <span class="k">AS</span> documents,
+       <span class="k">sum</span>(fs.declared_count)                    <span class="k">AS</span> records,
+       <span class="k">round</span>(100.0*<span class="k">sum</span>(fs.declared_count)
+             /<span class="k">nullif</span>(<span class="k">sum</span>(fs.document_count),0),1)  <span class="k">AS</span> rate_pct,
+       <span class="k">round</span>(<span class="k">sum</span>(fs.storage_bytes)/1024.0^3, 1) <span class="k">AS</span> storage_gb,
+       <span class="k">round</span>(<span class="k">sum</span>(fs.storage_bytes)/1024.0^2
+             /<span class="k">nullif</span>(<span class="k">sum</span>(fs.document_count),0),1)  <span class="k">AS</span> avg_file_mb
+<span class="k">FROM</span> rpt.fact_library_snapshot fs
+<span class="k">JOIN</span> latest <span class="k">ON</span> fs.snapshot_date_key = latest.k
+<span class="k">JOIN</span> rpt.dim_library l <span class="k">ON</span> l.library_key = fs.library_key
+<span class="k">JOIN</span> rpt.dim_site    s <span class="k">ON</span> s.site_key   = l.site_key
+<span class="k">GROUP BY</span> l.library_name, s.site_name
+<span class="k">ORDER BY</span> documents <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Storage and files by format, and average file size</b><span>Format and Storage, the four column table</span></div>
+    <div class="fb"><pre><span class="k">WITH</span> latest <span class="k">AS</span> (<span class="k">SELECT max</span>(snapshot_date_key) k <span class="k">FROM</span> rpt.fact_library_snapshot)
+<span class="k">SELECT</span> ff.format_group,
+       <span class="k">sum</span>(fs.document_count)                    <span class="k">AS</span> files,
+       <span class="k">round</span>(<span class="k">sum</span>(fs.storage_bytes)/1024.0^3, 1) <span class="k">AS</span> storage_gb,
+       <span class="k">round</span>(<span class="k">sum</span>(fs.storage_bytes)/1024.0^2
+             /<span class="k">nullif</span>(<span class="k">sum</span>(fs.document_count),0),1)  <span class="k">AS</span> avg_file_mb
+<span class="k">FROM</span> rpt.fact_library_snapshot fs
+<span class="k">JOIN</span> latest <span class="k">ON</span> fs.snapshot_date_key = latest.k
+<span class="k">JOIN</span> rpt.dim_file_format ff <span class="k">ON</span> ff.format_key = fs.format_key
+<span class="k">GROUP BY</span> ff.format_group
+<span class="k">ORDER BY</span> storage_gb <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Declared records by format, with share</b><span>Format and Storage, bar chart. Must sum to 100.0</span></div>
+    <div class="fb"><pre><span class="k">SELECT</span> ff.format_group,
+       <span class="k">count</span>(*) <span class="k">AS</span> records,
+       <span class="k">round</span>(100.0*<span class="k">count</span>(*)/<span class="k">sum</span>(<span class="k">count</span>(*)) <span class="k">OVER</span> (), 1) <span class="k">AS</span> share_pct
+<span class="k">FROM</span> rpt.fact_record f
+<span class="k">JOIN</span> rpt.dim_file_format ff <span class="k">ON</span> ff.format_key = f.format_key
+<span class="k">WHERE NOT</span> f.is_deleted
+<span class="k">GROUP BY</span> ff.format_group
+<span class="k">ORDER BY</span> records <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Active sites and active users, 7 / 30 / 90 day windows</b><span>Records Management, section 2</span></div>
+    <div class="fb"><pre><span class="k">WITH</span> latest <span class="k">AS</span> (<span class="k">SELECT max</span>(snapshot_date_key) k <span class="k">FROM</span> rpt.fact_site_usage_snapshot)
+<span class="k">SELECT</span> s.site_name, d.code <span class="k">AS</span> department,
+       u.site_visits_7, u.site_visits_30, u.site_visits_90,
+       u.unique_viewers_7, u.unique_viewers_30,   <span class="c">-- no 90 day equivalent exists</span>
+       u.last_activity_date
+<span class="k">FROM</span> rpt.fact_site_usage_snapshot u
+<span class="k">JOIN</span> latest <span class="k">ON</span> u.snapshot_date_key = latest.k
+<span class="k">JOIN</span> rpt.dim_site s <span class="k">ON</span> s.site_key = u.site_key
+<span class="k">LEFT JOIN</span> rpt.dim_department d <span class="k">ON</span> d.department_key = s.department_key
+<span class="k">WHERE</span> u.site_visits_7 &gt; 0
+<span class="k">ORDER BY</span> u.site_visits_7 <span class="k">DESC</span>;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Data as of, printed on every dashboard</b><span>Overview quotes the oldest, not the newest</span></div>
+    <div class="fb"><pre><span class="k">SELECT min</span>(data_as_of) <span class="k">AS</span> overview_as_of
+<span class="k">FROM</span> (
+  <span class="k">SELECT DISTINCT ON</span> (source_system) source_system, data_as_of
+  <span class="k">FROM</span> rpt.etl_refresh_log
+  <span class="k">WHERE</span> status = <span class="s">'success'</span>
+  <span class="k">ORDER BY</span> source_system, completed_at <span class="k">DESC</span>
+) t;</pre></div>
+  </div>
+
+  <div class="fig">
+    <div class="fh"><b>Not yet on any dashboard, but already sourced</b><span>Retention, and declaration success rate</span></div>
+    <div class="fb"><pre><span class="c">-- Retention dashboard: fully served by data that exists today</span>
+<span class="k">SELECT</span> f.retention_status,
+       <span class="k">count</span>(*) <span class="k">AS</span> records,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> f.due_date_for_disposal &lt; <span class="k">current_date</span>) <span class="k">AS</span> overdue
+<span class="k">FROM</span> rpt.fact_record f
+<span class="k">WHERE NOT</span> f.is_deleted
+<span class="k">GROUP BY</span> f.retention_status;
+
+<span class="c">-- Declaration success rate, from TrackingRecords. Arguably the most</span>
+<span class="c">-- actionable adoption metric available, and nothing uses it yet.</span>
+<span class="k">SELECT</span> d.month_name,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> a.result = 0) <span class="k">AS</span> successful,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> a.result = 1) <span class="k">AS</span> skipped,
+       <span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> a.result = 2) <span class="k">AS</span> failed,
+       <span class="k">round</span>(100.0*<span class="k">count</span>(*) <span class="k">FILTER</span> (<span class="k">WHERE</span> a.result = 0)/<span class="k">count</span>(*),1) <span class="k">AS</span> success_pct
+<span class="k">FROM</span> rpt.fact_declaration_attempt a
+<span class="k">JOIN</span> rpt.dim_date d <span class="k">ON</span> d.date_key = a.attempt_date_key
+<span class="k">GROUP BY</span> d.year, d.month, d.month_name
+<span class="k">ORDER BY</span> d.year, d.month;</pre></div>
+  </div>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>Volumes and refresh</h2>
   <div class="panel">
     <table>
-      <tr><th style="width:30%">Existing field</th><th style="width:26%">Table</th><th>What it unblocks in the report</th></tr>
-      <tr><td><code>CreatedDate</code></td><td>Records, TrackingRecords</td><td>Documented as "when the User Declared the file as a Record". This is the <b>declaration date</b>, in a proper column. It settles the question that the tenant investigation left open.</td></tr>
-      <tr><td><code>CreatedBy</code>, <code>CreatedByName</code></td><td>Records</td><td>Declarations by user, most active declarers. Confirmed populated in the R1.2 tracking data.</td></tr>
-      <tr><td><code>ListId</code>, <code>ItemId</code>, <code>DocumentId</code></td><td>Records, Tracking</td><td>Reliable keys. <code>ListId</code> is what lets libraries be keyed properly rather than by name.</td></tr>
-      <tr><td><code>SiteUrl</code>, <code>LibraryName</code>, <code>FolderPath</code></td><td>Records</td><td>Site and library levels of the drill down.</td></tr>
-      <tr><td><code>EDRMSMeta.HasPhysical</code></td><td>Records</td><td>The with and without physical counterpart split.</td></tr>
-      <tr><td><code>EDRMSRetentionLabel</code>, <code>...Applied</code>, <code>...DueDateForDisposal</code></td><td>Records</td><td>The entire Retention dashboard, which is still a placeholder in the prototype.</td></tr>
-      <tr><td><code>Result</code>, <code>ErrorType</code>, <code>ErrorLog</code></td><td>TrackingRecords</td><td>Declaration success rate and failure reasons. The prototype does not use this yet, and it is arguably the most actionable adoption metric available.</td></tr>
-      <tr><td><code>IsDeleted</code>, <code>DeletedDate</code></td><td>all</td><td>Soft delete throughout, which answers the "what happens when records are disposed" question cleanly.</td></tr>
+      <tr><th style="width:30%">Table</th><th style="width:16%">Cadence</th><th style="width:20%">Rows</th><th>Notes</th></tr>
+      <tr><td><code>rpt.fact_record</code></td><td>Daily</td><td>~21,646, growing</td><td>Incremental upsert on <code>source_id</code>. Cheap.</td></tr>
+      <tr><td><code>rpt.fact_library_snapshot</code></td><td>Weekly</td><td>~25,000 per snapshot</td><td>1,057 sites, a few libraries each, formats present. Roughly 1.3M rows a year if kept forever.</td></tr>
+      <tr><td><code>rpt.fact_site_usage_snapshot</code></td><td>Weekly</td><td>~1,057 per snapshot</td><td>Trivial.</td></tr>
+      <tr><td><code>rpt.fact_declaration_attempt</code></td><td>Daily</td><td>Grows with attempts</td><td>Incremental from TrackingRecords.</td></tr>
+      <tr><td>Dimensions</td><td>Daily</td><td>Hundreds</td><td>Departments, divisions, sites, libraries, formats.</td></tr>
     </table>
+    <div class="note"><b>Keep the snapshots bounded.</b> Weekly rows for the last thirteen weeks, then month end rows only, keeps the largest table under a few hundred thousand rows indefinitely while preserving every trend the report needs. Set that policy before the first load rather than after.</div>
   </div>
 </section>
 
-<section>
-  <h2><span class="n">4</span>Gaps, ranked by what they block</h2>
-  <div class="lead">Each of these prevents at least one figure the prototype currently displays.</div>
-  <div class="panel">
-    <table>
-      <tr><th style="width:10%">Severity</th><th style="width:30%">Gap</th><th>Effect and proposed fix</th></tr>
-      <tr>
-        <td><span class="tag t-crit">Critical</span></td>
-        <td><b>File size is captured nowhere.</b> <code>FileMeta</code> holds FileType, FileCreatedDate and sensitivity, but no size.</td>
-        <td>Blocks every storage figure: storage by format, largest libraries by storage, average file size, and the whole left half of Format and Storage. Add <code>FileSizeBytes</code> to <code>FileMeta</code> and capture it in the inventory scan.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-crit">Critical</span></td>
-        <td><b>Undeclared documents are invisible.</b> The database only ever holds declared records.</td>
-        <td>Blocks total documents (3.47M), declaration rate, and the library adoption panel. There is no fix inside the declaration database. It requires the new inventory scan feeding <code>fact_library_snapshot</code>.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-crit">Critical</span></td>
-        <td><b>Site table carries three real columns</b>: SiteUrl, SiteName, ProjectEndDate.</td>
-        <td>Blocks sites created by department, the treemap, and the compliant site count. No site creation date, no department owner, no compliance flag, no storage. See <code>dim_site</code>.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-high">High</span></td>
-        <td><b>Library table has no ListId or URL</b>, only name, category, division and unit owner.</td>
-        <td>Library display names repeat across sites, which the prototype already handles by always showing a library with its parent site. Without <code>ListId</code> the library cannot be keyed at all. Add it, and the site foreign key.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-high">High</span></td>
-        <td><b>ADBMaster is flat.</b> Rows are TermId, TermTitle, TermValue with no parent link.</td>
-        <td>The term store models divisions as children of departments, verified in the tenant. Flattening it loses that, so department to division drill down cannot be derived. Add <code>ParentTermId</code>, or split into <code>dim_department</code> and <code>dim_division</code>.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-high">High</span></td>
-        <td><b>ADBMeta is marked out of scope for Release 2026.1</b>, and <code>ADB Document Owner</code> is empty across the sample tracking data.</td>
-        <td>Every department and division grouping in the report depends on this. It is a release scoping decision rather than a technical gap, and it should be raised as such.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-med">Medium</span></td>
-        <td><b>No usage metrics anywhere.</b></td>
-        <td>Site visits and unique viewers come from M365 rather than this database, but they still need somewhere to land. See <code>fact_site_usage_snapshot</code>.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-med">Medium</span></td>
-        <td><b>Nothing is time sliced except declarations.</b></td>
-        <td>Declaration trends work because each record carries a date. Storage, document counts and adoption cannot be trended at all without periodic snapshots.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-med">Medium</span></td>
-        <td><b>Physical Records duplicates the entire Records schema.</b></td>
-        <td>Two tables with identical columns will drift the first time one is altered. Prefer the existing <code>HasPhysical</code> flag on Records plus a view, unless there is a retention or access reason for the separation.</td>
-      </tr>
-      <tr>
-        <td><span class="tag t-med">Medium</span></td>
-        <td><b>No refresh audit.</b></td>
-        <td>The dashboards print a "data as of" line, and the Overview deliberately quotes the oldest refresh across its sources. Nothing currently records when each source was last loaded. See <code>etl_refresh_log</code>.</td>
-      </tr>
-    </table>
-  </div>
-</section>
-
-<section>
-  <h2><span class="n">5</span>Proposed reporting schema</h2>
-  <div class="lead">Fourteen tables. Read the tags: what is new, what already exists and can be reused, and what needs changing.</div>
-  <div class="keyrow">
-    <span><span class="tag t-new">New</span> build from scratch</span>
-    <span><span class="tag t-exist">Reuse</span> exists today, load as is</span>
-    <span><span class="tag t-change">Extend</span> exists but needs columns added</span>
-    <span><b style="color:var(--deepblue);font-family:var(--mono)">bold</b> primary key</span>
-    <span><b style="color:var(--teal);font-family:var(--mono)">teal</b> foreign key</span>
-    <span><b style="color:#9C4A16;font-family:var(--mono)">amber</b> the gap being filled</span>
-  </div>
-
-  <div class="cards">
-
-    <div class="tbl">
-      <div class="hd"><b>dim_date</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>one row per calendar day</b></div>
-      <ul>
-        <li class="pk"><span class="c">date_key</span></li>
-        <li><span class="c">full_date</span></li>
-        <li><span class="c">year, quarter, month</span></li>
-        <li><span class="c">month_name, week_of_year</span></li>
-        <li><span class="c">is_month_end</span> <span class="d">for snapshot picking</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_department</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">From <b>ADBMaster</b>, filtered to ADBDepartmentOwner</div>
-      <ul>
-        <li class="pk"><span class="c">department_key</span></li>
-        <li><span class="c">term_id</span> <span class="d">uuid, term store</span></li>
-        <li><span class="c">code</span> <span class="d">CWRD, ITD</span></li>
-        <li><span class="c">name</span></li>
-        <li><span class="c">is_active</span> <span class="d">survives reorganisation</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_division</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">From <b>ADBMaster</b>, needs the parent link added</div>
-      <ul>
-        <li class="pk"><span class="c">division_key</span></li>
-        <li><span class="c">term_id</span></li>
-        <li class="fk"><span class="c">department_key</span> <span class="d">to dim_department</span></li>
-        <li class="gap"><span class="c">parent_term_id</span> <span class="d">missing in ADBMaster today</span></li>
-        <li><span class="c">code, name</span></li>
-        <li><span class="c">org_unit_type</span> <span class="d">Division or Resident Mission</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_unit</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">From <b>ADBMaster</b>, third org level</div>
-      <ul>
-        <li class="pk"><span class="c">unit_key</span></li>
-        <li><span class="c">term_id</span></li>
-        <li class="fk"><span class="c">division_key</span></li>
-        <li><span class="c">code, name</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_site</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">Grain: <b>one row per SharePoint site</b></div>
-      <ul>
-        <li class="pk"><span class="c">site_key</span></li>
-        <li><span class="c">site_url</span> <span class="d">natural key</span></li>
-        <li><span class="c">site_name</span></li>
-        <li class="gap"><span class="c">site_created_date</span> <span class="d">drives sites created</span></li>
-        <li class="gap"><span class="c">is_edrms_compliant</span> <span class="d">the 1,057 count</span></li>
-        <li class="gap"><span class="c">compliance_source</span> <span class="d">how it was decided</span></li>
-        <li class="fk gap"><span class="c">department_key</span> <span class="d">the site to department mapping</span></li>
-        <li class="gap"><span class="c">storage_bytes</span> <span class="d">site level, from M365</span></li>
-        <li class="gap"><span class="c">last_activity_date</span></li>
-        <li><span class="c">project_end_date</span> <span class="d">exists today</span></li>
-        <li><span class="c">template, is_active</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_library</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">Grain: <b>one row per document library</b></div>
-      <ul>
-        <li class="pk"><span class="c">library_key</span></li>
-        <li class="gap"><span class="c">list_id</span> <span class="d">uuid, the only safe key</span></li>
-        <li class="fk gap"><span class="c">site_key</span> <span class="d">names repeat across sites</span></li>
-        <li><span class="c">library_name</span></li>
-        <li class="gap"><span class="c">library_url</span></li>
-        <li><span class="c">library_category</span> <span class="d">exists today</span></li>
-        <li class="fk"><span class="c">division_key, unit_key</span></li>
-        <li><span class="c">is_active</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_file_format</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>one row per file extension</b></div>
-      <ul>
-        <li class="pk"><span class="c">format_key</span></li>
-        <li><span class="c">extension</span> <span class="d">docx, pdf</span></li>
-        <li><span class="c">format_group</span> <span class="d">Word, PDF, All other formats</span></li>
-        <li><span class="c">is_email</span></li>
-      </ul>
-      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">Groups the tail into "All other formats" so the donuts stay readable, in one place rather than in every query.</div>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_retention_label</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>one row per retention label</b></div>
-      <ul>
-        <li class="pk"><span class="c">label_key</span></li>
-        <li><span class="c">label_name</span> <span class="d">10 years after declaration</span></li>
-        <li><span class="c">duration_years</span></li>
-        <li><span class="c">marks_as_record</span> <span class="d">critical, see note below</span></li>
-        <li><span class="c">is_active</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl">
-      <div class="hd"><b>dim_user</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>one row per declaring user</b></div>
-      <ul>
-        <li class="pk"><span class="c">user_key</span></li>
-        <li><span class="c">upn</span> <span class="d">name@adb.org</span></li>
-        <li><span class="c">display_name</span></li>
-        <li class="fk"><span class="c">department_key</span> <span class="d">optional, from HR</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl" style="border-color:#C6E3BB">
-      <div class="hd" style="background:#F6FCF4"><b>fact_record</b><span class="tag t-change">Extend</span></div>
-      <div class="gr">Grain: <b>one row per declared record</b>, roughly 21,646 today</div>
-      <ul>
-        <li class="pk"><span class="c">record_key</span></li>
-        <li><span class="c">document_id, item_id</span></li>
-        <li class="fk"><span class="c">site_key, library_key</span></li>
-        <li class="fk"><span class="c">department_key, division_key, unit_key</span></li>
-        <li class="fk"><span class="c">declared_date_key</span> <span class="d">from Records.CreatedDate</span></li>
-        <li class="fk"><span class="c">declared_by_user_key</span></li>
-        <li class="fk"><span class="c">format_key</span></li>
-        <li class="gap"><span class="c">file_size_bytes</span> <span class="d">not captured today</span></li>
-        <li><span class="c">file_created_date</span></li>
-        <li><span class="c">has_physical</span></li>
-        <li><span class="c">physical_justification</span></li>
-        <li class="fk"><span class="c">retention_label_key</span></li>
-        <li><span class="c">retention_applied_date</span></li>
-        <li><span class="c">due_date_for_disposal</span></li>
-        <li><span class="c">retention_status</span></li>
-        <li><span class="c">sensitivity_label</span></li>
-        <li><span class="c">is_deleted, deleted_date</span></li>
-        <li><span class="c">disposal_status</span> <span class="d">for the Retention dashboard</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl" style="border-color:#C6E3BB">
-      <div class="hd" style="background:#F6FCF4"><b>fact_library_snapshot</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>snapshot date, library, file format</b></div>
-      <ul>
-        <li class="fk pk"><span class="c">snapshot_date_key</span></li>
-        <li class="fk pk"><span class="c">library_key</span></li>
-        <li class="fk pk"><span class="c">format_key</span></li>
-        <li class="gap"><span class="c">document_count</span> <span class="d">the denominator</span></li>
-        <li class="gap"><span class="c">declared_count</span></li>
-        <li class="gap"><span class="c">storage_bytes</span></li>
-      </ul>
-      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none"><b>The most important new table.</b> On its own it serves total documents, declaration rate per library, storage and files by format, largest libraries, average file size, and the trend for all of them.</div>
-    </div>
-
-    <div class="tbl" style="border-color:#C6E3BB">
-      <div class="hd" style="background:#F6FCF4"><b>fact_site_usage_snapshot</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>snapshot date, site</b></div>
-      <ul>
-        <li class="fk pk"><span class="c">snapshot_date_key</span></li>
-        <li class="fk pk"><span class="c">site_key</span></li>
-        <li><span class="c">site_visits_7 / _30 / _90</span></li>
-        <li><span class="c">unique_viewers_7 / _30</span> <span class="d">no 90, M365 does not return it</span></li>
-        <li><span class="c">last_activity_date</span></li>
-        <li><span class="c">storage_bytes</span> <span class="d">site level, includes versions</span></li>
-      </ul>
-    </div>
-
-    <div class="tbl" style="border-color:#C6E3BB">
-      <div class="hd" style="background:#F6FCF4"><b>fact_declaration_attempt</b><span class="tag t-exist">Reuse</span></div>
-      <div class="gr">Grain: <b>one row per declaration attempt</b>, from TrackingRecords</div>
-      <ul>
-        <li class="pk"><span class="c">attempt_key</span></li>
-        <li class="fk"><span class="c">attempt_date_key, user_key</span></li>
-        <li class="fk"><span class="c">site_key, library_key</span></li>
-        <li><span class="c">declaration_type</span> <span class="d">SIN, MUL, CEN, EML</span></li>
-        <li><span class="c">result</span> <span class="d">success, skipped, failed</span></li>
-        <li><span class="c">error_type, error_log</span></li>
-        <li class="fk"><span class="c">record_key</span> <span class="d">null when unsuccessful</span></li>
-      </ul>
-      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">Already exists and is not yet used by the report. Declaration success rate and the reasons declarations fail are arguably the most actionable adoption metrics available.</div>
-    </div>
-
-    <div class="tbl" style="border-color:#C6E3BB">
-      <div class="hd" style="background:#F6FCF4"><b>etl_refresh_log</b><span class="tag t-new">New</span></div>
-      <div class="gr">Grain: <b>one row per source per run</b></div>
-      <ul>
-        <li class="pk"><span class="c">refresh_key</span></li>
-        <li><span class="c">source_system</span> <span class="d">SPO scan, usage, declaration DB</span></li>
-        <li><span class="c">data_as_of</span> <span class="d">what the dashboards print</span></li>
-        <li><span class="c">started_at, completed_at</span></li>
-        <li><span class="c">rows_loaded, status, message</span></li>
-      </ul>
-      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">The Overview quotes the <b>oldest</b> refresh across its sources rather than the newest, because a summary is only as current as its stalest input. This table is where that comes from.</div>
-    </div>
-
-  </div>
-</section>
-
-<section>
-  <h2><span class="n">6</span>Every dashboard figure, traced to its source</h2>
-  <div class="lead">If a figure has no source it should not be on a dashboard. This is the check.</div>
-  <div class="panel">
-    <table>
-      <tr><th style="width:34%">Figure</th><th style="width:34%">Source</th><th>Status</th></tr>
-      <tr><td>Total Declared Records</td><td><code>fact_record</code> count</td><td><span class="tag t-exist">Ready</span></td></tr>
-      <tr><td>Declared by department and division</td><td><code>fact_record</code> to <code>dim_department</code>, <code>dim_division</code></td><td><span class="tag t-crit">Needs ADBMeta populated</span></td></tr>
-      <tr><td>With and without physical counterpart</td><td><code>fact_record.has_physical</code></td><td><span class="tag t-exist">Ready</span></td></tr>
-      <tr><td>Declaration date filtering</td><td><code>fact_record.declared_date_key</code></td><td><span class="tag t-exist">Ready</span></td></tr>
-      <tr><td>Total Documents in compliant sites</td><td><code>fact_library_snapshot.document_count</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
-      <tr><td>Declaration rate</td><td>declared over document count, same table</td><td><span class="tag t-new">Needs the scan</span></td></tr>
-      <tr><td>Active sites, visits, unique viewers</td><td><code>fact_site_usage_snapshot</code></td><td><span class="tag t-new">New landing table</span></td></tr>
-      <tr><td>Compliant sites created, treemap by department</td><td><code>dim_site.site_created_date</code>, <code>department_key</code></td><td><span class="tag t-crit">Site table too thin</span></td></tr>
-      <tr><td>Libraries declaration rate</td><td><code>fact_library_snapshot</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
-      <tr><td>Largest libraries by storage</td><td><code>fact_library_snapshot.storage_bytes</code></td><td><span class="tag t-crit">Needs file size</span></td></tr>
-      <tr><td>Files by format</td><td><code>fact_library_snapshot</code> to <code>dim_file_format</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
-      <tr><td>Storage by format, average file size</td><td>same, plus storage_bytes</td><td><span class="tag t-crit">Needs file size</span></td></tr>
-      <tr><td>Retention dashboard, not yet built</td><td><code>fact_record</code> retention fields</td><td><span class="tag t-exist">Data already exists</span></td></tr>
-      <tr><td>Declaration success rate, not yet built</td><td><code>fact_declaration_attempt</code></td><td><span class="tag t-exist">Data already exists</span></td></tr>
-      <tr><td>Data as of line on every dashboard</td><td><code>etl_refresh_log.data_as_of</code></td><td><span class="tag t-new">New</span></td></tr>
-    </table>
-  </div>
-  <div class="note"><b>Two dashboards could be built from data that already exists.</b> Retention is fully served by fields already designed into the Records table, and declaration success rate by TrackingRecords. Both are placeholders in the prototype today. If the department backfill and the inventory scan take time to land, these are the two that could be delivered while waiting.</div>
-</section>
-
-<section>
-  <h2><span class="n">7</span>Decisions needed before building</h2>
+<section id="s9">
+  <h2><span class="n">9</span>Decisions needed before building</h2>
   <div class="panel">
     <ol class="steps">
-      <li><b>Is ADBMeta in scope for a release?</b> It is marked out of scope for 2026.1 and <code>ADB Document Owner</code> is empty across the sample data. Every department and division figure in the report depends on it. This is the single biggest item.</li>
-      <li><b>What identifies an EDRMS compliant site?</b> A naming convention, the EDRMS Site Type term, or an AvePoint provisioning flag. It sets <code>dim_site.is_edrms_compliant</code> and therefore the denominator of most of the report.</li>
-      <li><b>Where does the site to department mapping come from?</b> AvePoint may already hold it from provisioning. If not, it has to be created, and it is a records decision rather than a technical one.</li>
-      <li><b>How often does the inventory scan run, and at what grain?</b> Weekly at library and format grain is proposed. Consider keeping weekly snapshots for thirteen weeks and monthly thereafter, so the table does not grow without bound.</li>
-      <li><b>Do all retention labels mark items as records?</b> If some do not, <code>dim_retention_label.marks_as_record</code> does real work and every count must filter on it. If all do, the model simplifies.</li>
-      <li><b>Should Physical Records stay a separate table?</b> It duplicates the Records schema in full. Unless there is a retention or access control reason, a flag plus a view avoids the drift.</li>
-      <li><b>Which storage definition does the report mean?</b> Site storage from M365 includes version history and the recycle bin, so it will not match the sum of current file sizes, often by a factor of two to five. Both are legitimate, they measure different things, and the dashboard must say which one it shows.</li>
-      <li><b>Index the columns the report queries on.</b> Any SharePoint column used by the scan or by filters needs an index once a library passes 5,000 items, and these libraries are far past it.</li>
+      <li><b>Will ADBMeta be populated, and in which release?</b> It is marked out of scope for 2026.1. Every department and division figure depends on it, so this is the largest open item by some distance.</li>
+      <li><b>What identifies an EDRMS compliant site?</b> Sets <code>dim_site.is_edrms_compliant</code>, which is the denominator of most of the report. Candidates are a naming convention, the EDRMS Site Type term, or an AvePoint provisioning flag.</li>
+      <li><b>Where does the site to department mapping come from?</b> AvePoint may already hold it from provisioning. If not it has to be created, and it is a records decision rather than a technical one.</li>
+      <li><b>Can FileSizeBytes be added to FileMeta?</b> Needed only for per record storage. Library and format storage can come from the inventory scan without it.</li>
+      <li><b>Who owns and runs the inventory scan?</b> It needs an identity with tenant wide read. Search and Graph are security trimmed, so an identity that cannot see every site returns quietly low numbers rather than an error.</li>
+      <li><b>Which storage definition does the report mean?</b> Site storage from M365 includes version history and the recycle bin, so it will not match the sum of current file sizes, often by several times. Both are legitimate. The dashboard must say which one it shows.</li>
+      <li><b>Do all retention labels mark items as records?</b> If some do not, <code>dim_retention_label.marks_as_record</code> does real work and every count must filter on it.</li>
+      <li><b>What happens to disposed records?</b> If they leave the counts, historical trends change retrospectively. Soft delete via <code>IsDeleted</code> already gives the option to keep them, which is the safer default.</li>
     </ol>
   </div>
 </section>
