@@ -311,6 +311,44 @@ so changes there need whoever holds Term Store Admin, usually ITD.
 - **BATCH:** weekly cross-system scan, cached.
 - **SPO:** SharePoint usage analytics.
 
+## 5b. The existing declaration database, and what the report needs on top
+
+Reviewed from `Database_Design_12.03`. The existing database is the AvePoint
+declaration system: `JobTriggers`, `QueueRecords`, `TrackingRecords`, `Records`,
+`Physical Records`, `favoritelocations`, plus `Site`, `Library`, `ADBMaster` and
+`EDRMSMasters`. The full analysis is rendered in `databasedesign.html`.
+
+**It already provides more than the tenant investigation suggested.**
+`Records.CreatedDate` is documented as "when the User Declared the file as a
+Record", which is the declaration date in a proper column. `CreatedBy` and
+`CreatedByName` give the declarer, confirmed populated in the R1.2 sample data.
+`ListId` gives a safe library key. Retention label, applied date, duration and
+due date for disposal are all designed in, so the unbuilt Retention dashboard is
+already sourced. `TrackingRecords` holds failed and skipped attempts too, so
+declaration success rate is available and currently unused.
+
+**The structural problem is the denominator.** The database only ever holds
+declared records, so total documents, declaration rate, storage by format and
+library adoption have no source in it at all. That requires a separate periodic
+inventory scan of SharePoint feeding a `fact_library_snapshot` table at
+snapshot date by library by format grain. This is the single most important
+addition proposed.
+
+**Critical gaps.** File size is captured nowhere, blocking every storage figure.
+The `Site` table carries only SiteUrl, SiteName and ProjectEndDate, so it has no
+site created date, no compliance flag and no department, blocking the sites
+created treemap. `ADBMeta`, which carries department, division and unit, is
+marked **out of scope for Release 2026.1**, and `ADB Document Owner` is empty
+across the sample tracking data. That last one is a release scoping decision
+rather than a technical gap and should be raised as such.
+
+**Other gaps.** `Library` has no ListId or url despite library names repeating
+across sites. `ADBMaster` is flat with no parent term id, losing the department
+to division hierarchy that the term store already models. Nothing is time
+sliced except declarations. `Physical Records` duplicates the whole `Records`
+schema and will drift. There is no refresh audit, which is what the dashboards'
+"data as of" line and the Overview's oldest input rule should read from.
+
 ## 6. API contracts / interfaces
 
 None currently. The prototypes are static and read from the in-file sample-data

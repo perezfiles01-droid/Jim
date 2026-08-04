@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDRMS Utilization Report: Reporting Data Design</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230E1F35'/><rect x='7' y='17' width='4' height='8' fill='%239DB8D2'/><rect x='14' y='12' width='4' height='13' fill='%2300A5A8'/><rect x='21' y='7' width='4' height='18' fill='%230072BC'/></svg>">
+<style>
+  :root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--teal:#00A5A8;--green:#5CA943;--orange:#E8763C;--greyblue:#9DB8D2;--deepblue:#1B5E82;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif;--shadow:0 1px 2px rgba(16,36,62,.06),0 4px 14px rgba(16,36,62,.06);--mono:"Cascadia Mono",Consolas,"Courier New",monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  header{background:var(--nav);color:#fff;padding:26px 30px}
+  header .t1{font-family:var(--serif);font-size:23px}
+  header .t2{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#7FA8CC;margin-top:5px}
+  header .t3{font-size:12.5px;color:#C7D3E0;margin-top:10px;max-width:900px}
+  main{max-width:1180px;margin:0 auto;padding:24px 22px 60px}
+  section{margin-bottom:30px}
+  h2{font-family:var(--serif);font-size:19px;margin-bottom:5px}
+  h2 .n{color:var(--blue);font-size:14px;margin-right:8px;font-family:var(--sans);font-weight:700}
+  .lead{font-size:13px;color:var(--ink2);max-width:880px;margin-bottom:16px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--line);padding:0 10px 8px 0;vertical-align:bottom}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid #EEF2F6;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  code{font-family:var(--mono);font-size:11.5px;background:#F3F7FB;border:1px solid #E4EBF3;border-radius:4px;padding:1px 5px;color:var(--deepblue);white-space:nowrap}
+  .tag{display:inline-block;font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;border-radius:4px;padding:2px 6px;white-space:nowrap}
+  .t-new{background:#E7F4E2;color:#33691E;border:1px solid #C6E3BB}
+  .t-exist{background:#EAF2FA;color:#1B5E82;border:1px solid #CFE0F2}
+  .t-change{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
+  .t-crit{background:#FBE9E9;color:#9B1C1C;border:1px solid #F2C9C9}
+  .t-high{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
+  .t-med{background:#FDF9EF;color:#8A6100;border:1px solid #EFE0BD}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+  .tbl{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+  .tbl .hd{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .tbl .hd b{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .tbl .gr{font-size:11px;color:var(--mut);padding:9px 15px;background:#F8FAFC;border-bottom:1px solid #EEF2F6}
+  .tbl .gr b{color:var(--ink2)}
+  .tbl ul{list-style:none;padding:10px 15px 13px}
+  .tbl li{font-size:11.5px;padding:2.5px 0;display:flex;gap:7px;align-items:baseline}
+  .tbl li .c{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+  .tbl li .d{color:var(--mut);font-size:10.5px}
+  .tbl li.pk .c{font-weight:700;color:var(--deepblue)}
+  .tbl li.fk .c{color:var(--teal)}
+  .tbl li.gap .c{color:#9C4A16;font-weight:700}
+  .arch{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px;overflow-x:auto}
+  .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:12px 15px;font-size:12.5px;color:var(--ink2);margin-top:14px}
+  .note b{color:var(--ink)}
+  .keyrow{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin-bottom:14px;align-items:center}
+  .keyrow span{display:inline-flex;align-items:center;gap:6px}
+  ol.steps{padding-left:20px;font-size:13px;color:var(--ink2)}
+  ol.steps li{margin-bottom:9px}
+  ol.steps b{color:var(--ink)}
+  @media(max-width:700px){.cards{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header>
+  <div class="t1">EDRMS Utilization Report</div>
+  <div class="t2">Asian Development Bank &middot; Reporting Data Design</div>
+  <div class="t3">A proposed reporting layer for the Utilization Report, mapped against the existing EDRMS declaration database (Database Design 12.03). It sets out what the current design already supplies, what is missing, and the tables needed to serve every figure the dashboards show.</div>
+</header>
+<main>
+
+<section>
+  <h2><span class="n">1</span>The core problem this design solves</h2>
+  <div class="lead">The existing database is an <b>operational</b> system. It records declarations: jobs, queues, attempts, and the resulting records. It is well suited to that, and the Utilization Report should reuse it rather than duplicate it.</div>
+  <div class="panel">
+    <p style="font-size:13px;color:var(--ink2);margin-bottom:12px">But most of the report is about the <b>denominator</b>, not the numerator. Total documents held (3.47M in the prototype), declaration rate per library, storage consumed by format, sites created by department. A declaration log never sees any of that, because a document that was never declared produces no row anywhere in it.</p>
+    <p style="font-size:13px;color:var(--ink2)">So the reporting layer needs a second source: a periodic scan of SharePoint that counts and measures <b>everything</b>, declared or not. That scan is the single most important addition proposed here, and it is what makes the declaration rate, the storage figures, and the library adoption panels possible at all.</p>
+    <div class="note"><b>Design consequence.</b> Two grains, deliberately. Declared records are stored one row per record, because there are only tens of thousands of them and the report drills into individual retention and physical counterpart detail. Everything else is stored as bounded periodic aggregates, because 3.47M documents at row grain would be expensive to refresh weekly and no dashboard figure needs that detail.</div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span>How the layers fit together</h2>
+  <div class="lead">Four layers. The middle one is what exists today. The third is what this design proposes.</div>
+  <div class="arch">
+    <svg viewBox="0 0 1130 400" width="100%" style="min-width:880px;display:block">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0 0 L9 4.5 L0 9 z" fill="#9DB8D2"/>
+        </marker>
+        <marker id="aro" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+          <path d="M0 0 L9 4.5 L0 9 z" fill="#E8763C"/>
+        </marker>
+      </defs>
+
+      <!-- layer captions live in a left gutter so no arrow crosses them -->
+      <g font-size="10" font-weight="700" fill="#6B7A8C" letter-spacing="0.8" text-anchor="end">
+        <text x="142" y="62">SOURCE</text><text x="142" y="75">SYSTEMS</text>
+        <text x="142" y="167">OPERATIONAL</text><text x="142" y="180">EXISTS TODAY</text>
+        <text x="142" y="273">REPORTING LAYER</text><text x="142" y="286">PROPOSED</text>
+        <text x="142" y="381">PRESENTATION</text>
+      </g>
+
+      <!-- source systems -->
+      <g font-size="11.5" fill="#fff">
+        <rect x="160" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="244" y="70" text-anchor="middle">SharePoint / M365</text>
+        <rect x="340" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="424" y="70" text-anchor="middle">M365 Usage</text>
+        <rect x="520" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="604" y="70" text-anchor="middle">Term Store</text>
+        <rect x="700" y="44" width="168" height="42" rx="7" fill="#1B5E82"/><text x="784" y="70" text-anchor="middle">AvePoint Cloud Gov</text>
+        <rect x="880" y="44" width="168" height="42" rx="7" fill="#9DB8D2"/><text x="964" y="65" text-anchor="middle" fill="#10243E">Opus</text><text x="964" y="79" text-anchor="middle" fill="#33475F" font-size="9.5">physical, later</text>
+      </g>
+
+      <!-- operational, exists today -->
+      <g font-size="11.5">
+        <rect x="160" y="150" width="256" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
+        <text x="288" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Declaration DB</text>
+        <text x="288" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">JobTriggers, QueueRecords, TrackingRecords</text>
+        <rect x="428" y="150" width="228" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
+        <text x="542" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Records, Physical Records</text>
+        <text x="542" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">declared records only</text>
+        <rect x="668" y="150" width="222" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
+        <text x="779" y="170" text-anchor="middle" fill="#10243E" font-weight="600">ADBMaster, EDRMSMasters</text>
+        <text x="779" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">term mirrors, flat today</text>
+        <rect x="902" y="150" width="146" height="46" rx="7" fill="#EAF2FA" stroke="#CFE0F2"/>
+        <text x="975" y="170" text-anchor="middle" fill="#10243E" font-weight="600">Site, Library</text>
+        <text x="975" y="185" text-anchor="middle" fill="#6B7A8C" font-size="9">thin, see gaps</text>
+      </g>
+
+      <!-- reporting layer -->
+      <g font-size="11.5">
+        <rect x="160" y="256" width="206" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
+        <text x="263" y="276" text-anchor="middle" fill="#10243E" font-weight="600">Dimensions</text>
+        <text x="263" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">dept, division, site, library, format</text>
+        <rect x="378" y="256" width="206" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
+        <text x="481" y="276" text-anchor="middle" fill="#10243E" font-weight="600">fact_record</text>
+        <text x="481" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">one row per declared record</text>
+        <rect x="596" y="256" width="232" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
+        <text x="712" y="276" text-anchor="middle" fill="#10243E" font-weight="600">fact_library_snapshot</text>
+        <text x="712" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">the inventory scan, the denominator</text>
+        <rect x="840" y="256" width="208" height="46" rx="7" fill="#E7F4E2" stroke="#C6E3BB"/>
+        <text x="944" y="276" text-anchor="middle" fill="#10243E" font-weight="600">usage, attempts</text>
+        <text x="944" y="291" text-anchor="middle" fill="#6B7A8C" font-size="9">and the refresh log</text>
+      </g>
+
+      <!-- presentation -->
+      <rect x="160" y="362" width="888" height="30" rx="7" fill="#0072BC"/>
+      <text x="604" y="382" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="600">Power BI, and the HTML prototype that specifies it</text>
+
+      <g stroke="#9DB8D2" stroke-width="1.6" marker-end="url(#ar)" fill="none">
+        <path d="M244 88 L244 146"/><path d="M424 88 L424 146"/><path d="M604 88 L604 146"/><path d="M784 88 L784 146"/>
+        <path d="M288 198 L288 252"/><path d="M542 198 L542 252"/><path d="M779 198 L779 252"/><path d="M975 198 L975 252"/>
+        <path d="M263 304 L263 358"/><path d="M481 304 L481 358"/><path d="M712 304 L712 358"/><path d="M944 304 L944 358"/>
+      </g>
+
+      <!-- the scan bypasses the declaration database entirely -->
+      <path d="M1052 65 C1098 65 1098 279 1054 279" stroke="#E8763C" stroke-width="2" fill="none" marker-end="url(#aro)" stroke-dasharray="5 4"/>
+      <text x="1090" y="168" font-size="9" fill="#E8763C" font-weight="700" text-anchor="middle" transform="rotate(-90 1090 168)">weekly inventory scan</text>
+    </svg>
+  </div>
+  <div class="note"><b>Note the orange path.</b> The inventory scan goes straight from SharePoint into the reporting layer, bypassing the declaration database entirely. It has to, because it measures things the declaration system has no knowledge of.</div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>What the current design already gives us</h2>
+  <div class="lead">More than expected. Several things assumed missing during the tenant investigation turn out to be designed in already.</div>
+  <div class="panel">
+    <table>
+      <tr><th style="width:30%">Existing field</th><th style="width:26%">Table</th><th>What it unblocks in the report</th></tr>
+      <tr><td><code>CreatedDate</code></td><td>Records, TrackingRecords</td><td>Documented as "when the User Declared the file as a Record". This is the <b>declaration date</b>, in a proper column. It settles the question that the tenant investigation left open.</td></tr>
+      <tr><td><code>CreatedBy</code>, <code>CreatedByName</code></td><td>Records</td><td>Declarations by user, most active declarers. Confirmed populated in the R1.2 tracking data.</td></tr>
+      <tr><td><code>ListId</code>, <code>ItemId</code>, <code>DocumentId</code></td><td>Records, Tracking</td><td>Reliable keys. <code>ListId</code> is what lets libraries be keyed properly rather than by name.</td></tr>
+      <tr><td><code>SiteUrl</code>, <code>LibraryName</code>, <code>FolderPath</code></td><td>Records</td><td>Site and library levels of the drill down.</td></tr>
+      <tr><td><code>EDRMSMeta.HasPhysical</code></td><td>Records</td><td>The with and without physical counterpart split.</td></tr>
+      <tr><td><code>EDRMSRetentionLabel</code>, <code>...Applied</code>, <code>...DueDateForDisposal</code></td><td>Records</td><td>The entire Retention dashboard, which is still a placeholder in the prototype.</td></tr>
+      <tr><td><code>Result</code>, <code>ErrorType</code>, <code>ErrorLog</code></td><td>TrackingRecords</td><td>Declaration success rate and failure reasons. The prototype does not use this yet, and it is arguably the most actionable adoption metric available.</td></tr>
+      <tr><td><code>IsDeleted</code>, <code>DeletedDate</code></td><td>all</td><td>Soft delete throughout, which answers the "what happens when records are disposed" question cleanly.</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Gaps, ranked by what they block</h2>
+  <div class="lead">Each of these prevents at least one figure the prototype currently displays.</div>
+  <div class="panel">
+    <table>
+      <tr><th style="width:10%">Severity</th><th style="width:30%">Gap</th><th>Effect and proposed fix</th></tr>
+      <tr>
+        <td><span class="tag t-crit">Critical</span></td>
+        <td><b>File size is captured nowhere.</b> <code>FileMeta</code> holds FileType, FileCreatedDate and sensitivity, but no size.</td>
+        <td>Blocks every storage figure: storage by format, largest libraries by storage, average file size, and the whole left half of Format and Storage. Add <code>FileSizeBytes</code> to <code>FileMeta</code> and capture it in the inventory scan.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-crit">Critical</span></td>
+        <td><b>Undeclared documents are invisible.</b> The database only ever holds declared records.</td>
+        <td>Blocks total documents (3.47M), declaration rate, and the library adoption panel. There is no fix inside the declaration database. It requires the new inventory scan feeding <code>fact_library_snapshot</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-crit">Critical</span></td>
+        <td><b>Site table carries three real columns</b>: SiteUrl, SiteName, ProjectEndDate.</td>
+        <td>Blocks sites created by department, the treemap, and the compliant site count. No site creation date, no department owner, no compliance flag, no storage. See <code>dim_site</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-high">High</span></td>
+        <td><b>Library table has no ListId or URL</b>, only name, category, division and unit owner.</td>
+        <td>Library display names repeat across sites, which the prototype already handles by always showing a library with its parent site. Without <code>ListId</code> the library cannot be keyed at all. Add it, and the site foreign key.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-high">High</span></td>
+        <td><b>ADBMaster is flat.</b> Rows are TermId, TermTitle, TermValue with no parent link.</td>
+        <td>The term store models divisions as children of departments, verified in the tenant. Flattening it loses that, so department to division drill down cannot be derived. Add <code>ParentTermId</code>, or split into <code>dim_department</code> and <code>dim_division</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-high">High</span></td>
+        <td><b>ADBMeta is marked out of scope for Release 2026.1</b>, and <code>ADB Document Owner</code> is empty across the sample tracking data.</td>
+        <td>Every department and division grouping in the report depends on this. It is a release scoping decision rather than a technical gap, and it should be raised as such.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-med">Medium</span></td>
+        <td><b>No usage metrics anywhere.</b></td>
+        <td>Site visits and unique viewers come from M365 rather than this database, but they still need somewhere to land. See <code>fact_site_usage_snapshot</code>.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-med">Medium</span></td>
+        <td><b>Nothing is time sliced except declarations.</b></td>
+        <td>Declaration trends work because each record carries a date. Storage, document counts and adoption cannot be trended at all without periodic snapshots.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-med">Medium</span></td>
+        <td><b>Physical Records duplicates the entire Records schema.</b></td>
+        <td>Two tables with identical columns will drift the first time one is altered. Prefer the existing <code>HasPhysical</code> flag on Records plus a view, unless there is a retention or access reason for the separation.</td>
+      </tr>
+      <tr>
+        <td><span class="tag t-med">Medium</span></td>
+        <td><b>No refresh audit.</b></td>
+        <td>The dashboards print a "data as of" line, and the Overview deliberately quotes the oldest refresh across its sources. Nothing currently records when each source was last loaded. See <code>etl_refresh_log</code>.</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Proposed reporting schema</h2>
+  <div class="lead">Fourteen tables. Read the tags: what is new, what already exists and can be reused, and what needs changing.</div>
+  <div class="keyrow">
+    <span><span class="tag t-new">New</span> build from scratch</span>
+    <span><span class="tag t-exist">Reuse</span> exists today, load as is</span>
+    <span><span class="tag t-change">Extend</span> exists but needs columns added</span>
+    <span><b style="color:var(--deepblue);font-family:var(--mono)">bold</b> primary key</span>
+    <span><b style="color:var(--teal);font-family:var(--mono)">teal</b> foreign key</span>
+    <span><b style="color:#9C4A16;font-family:var(--mono)">amber</b> the gap being filled</span>
+  </div>
+
+  <div class="cards">
+
+    <div class="tbl">
+      <div class="hd"><b>dim_date</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>one row per calendar day</b></div>
+      <ul>
+        <li class="pk"><span class="c">date_key</span></li>
+        <li><span class="c">full_date</span></li>
+        <li><span class="c">year, quarter, month</span></li>
+        <li><span class="c">month_name, week_of_year</span></li>
+        <li><span class="c">is_month_end</span> <span class="d">for snapshot picking</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_department</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">From <b>ADBMaster</b>, filtered to ADBDepartmentOwner</div>
+      <ul>
+        <li class="pk"><span class="c">department_key</span></li>
+        <li><span class="c">term_id</span> <span class="d">uuid, term store</span></li>
+        <li><span class="c">code</span> <span class="d">CWRD, ITD</span></li>
+        <li><span class="c">name</span></li>
+        <li><span class="c">is_active</span> <span class="d">survives reorganisation</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_division</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">From <b>ADBMaster</b>, needs the parent link added</div>
+      <ul>
+        <li class="pk"><span class="c">division_key</span></li>
+        <li><span class="c">term_id</span></li>
+        <li class="fk"><span class="c">department_key</span> <span class="d">to dim_department</span></li>
+        <li class="gap"><span class="c">parent_term_id</span> <span class="d">missing in ADBMaster today</span></li>
+        <li><span class="c">code, name</span></li>
+        <li><span class="c">org_unit_type</span> <span class="d">Division or Resident Mission</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_unit</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">From <b>ADBMaster</b>, third org level</div>
+      <ul>
+        <li class="pk"><span class="c">unit_key</span></li>
+        <li><span class="c">term_id</span></li>
+        <li class="fk"><span class="c">division_key</span></li>
+        <li><span class="c">code, name</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_site</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">Grain: <b>one row per SharePoint site</b></div>
+      <ul>
+        <li class="pk"><span class="c">site_key</span></li>
+        <li><span class="c">site_url</span> <span class="d">natural key</span></li>
+        <li><span class="c">site_name</span></li>
+        <li class="gap"><span class="c">site_created_date</span> <span class="d">drives sites created</span></li>
+        <li class="gap"><span class="c">is_edrms_compliant</span> <span class="d">the 1,057 count</span></li>
+        <li class="gap"><span class="c">compliance_source</span> <span class="d">how it was decided</span></li>
+        <li class="fk gap"><span class="c">department_key</span> <span class="d">the site to department mapping</span></li>
+        <li class="gap"><span class="c">storage_bytes</span> <span class="d">site level, from M365</span></li>
+        <li class="gap"><span class="c">last_activity_date</span></li>
+        <li><span class="c">project_end_date</span> <span class="d">exists today</span></li>
+        <li><span class="c">template, is_active</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_library</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">Grain: <b>one row per document library</b></div>
+      <ul>
+        <li class="pk"><span class="c">library_key</span></li>
+        <li class="gap"><span class="c">list_id</span> <span class="d">uuid, the only safe key</span></li>
+        <li class="fk gap"><span class="c">site_key</span> <span class="d">names repeat across sites</span></li>
+        <li><span class="c">library_name</span></li>
+        <li class="gap"><span class="c">library_url</span></li>
+        <li><span class="c">library_category</span> <span class="d">exists today</span></li>
+        <li class="fk"><span class="c">division_key, unit_key</span></li>
+        <li><span class="c">is_active</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_file_format</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>one row per file extension</b></div>
+      <ul>
+        <li class="pk"><span class="c">format_key</span></li>
+        <li><span class="c">extension</span> <span class="d">docx, pdf</span></li>
+        <li><span class="c">format_group</span> <span class="d">Word, PDF, All other formats</span></li>
+        <li><span class="c">is_email</span></li>
+      </ul>
+      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">Groups the tail into "All other formats" so the donuts stay readable, in one place rather than in every query.</div>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_retention_label</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>one row per retention label</b></div>
+      <ul>
+        <li class="pk"><span class="c">label_key</span></li>
+        <li><span class="c">label_name</span> <span class="d">10 years after declaration</span></li>
+        <li><span class="c">duration_years</span></li>
+        <li><span class="c">marks_as_record</span> <span class="d">critical, see note below</span></li>
+        <li><span class="c">is_active</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl">
+      <div class="hd"><b>dim_user</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>one row per declaring user</b></div>
+      <ul>
+        <li class="pk"><span class="c">user_key</span></li>
+        <li><span class="c">upn</span> <span class="d">name@adb.org</span></li>
+        <li><span class="c">display_name</span></li>
+        <li class="fk"><span class="c">department_key</span> <span class="d">optional, from HR</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl" style="border-color:#C6E3BB">
+      <div class="hd" style="background:#F6FCF4"><b>fact_record</b><span class="tag t-change">Extend</span></div>
+      <div class="gr">Grain: <b>one row per declared record</b>, roughly 21,646 today</div>
+      <ul>
+        <li class="pk"><span class="c">record_key</span></li>
+        <li><span class="c">document_id, item_id</span></li>
+        <li class="fk"><span class="c">site_key, library_key</span></li>
+        <li class="fk"><span class="c">department_key, division_key, unit_key</span></li>
+        <li class="fk"><span class="c">declared_date_key</span> <span class="d">from Records.CreatedDate</span></li>
+        <li class="fk"><span class="c">declared_by_user_key</span></li>
+        <li class="fk"><span class="c">format_key</span></li>
+        <li class="gap"><span class="c">file_size_bytes</span> <span class="d">not captured today</span></li>
+        <li><span class="c">file_created_date</span></li>
+        <li><span class="c">has_physical</span></li>
+        <li><span class="c">physical_justification</span></li>
+        <li class="fk"><span class="c">retention_label_key</span></li>
+        <li><span class="c">retention_applied_date</span></li>
+        <li><span class="c">due_date_for_disposal</span></li>
+        <li><span class="c">retention_status</span></li>
+        <li><span class="c">sensitivity_label</span></li>
+        <li><span class="c">is_deleted, deleted_date</span></li>
+        <li><span class="c">disposal_status</span> <span class="d">for the Retention dashboard</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl" style="border-color:#C6E3BB">
+      <div class="hd" style="background:#F6FCF4"><b>fact_library_snapshot</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>snapshot date, library, file format</b></div>
+      <ul>
+        <li class="fk pk"><span class="c">snapshot_date_key</span></li>
+        <li class="fk pk"><span class="c">library_key</span></li>
+        <li class="fk pk"><span class="c">format_key</span></li>
+        <li class="gap"><span class="c">document_count</span> <span class="d">the denominator</span></li>
+        <li class="gap"><span class="c">declared_count</span></li>
+        <li class="gap"><span class="c">storage_bytes</span></li>
+      </ul>
+      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none"><b>The most important new table.</b> On its own it serves total documents, declaration rate per library, storage and files by format, largest libraries, average file size, and the trend for all of them.</div>
+    </div>
+
+    <div class="tbl" style="border-color:#C6E3BB">
+      <div class="hd" style="background:#F6FCF4"><b>fact_site_usage_snapshot</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>snapshot date, site</b></div>
+      <ul>
+        <li class="fk pk"><span class="c">snapshot_date_key</span></li>
+        <li class="fk pk"><span class="c">site_key</span></li>
+        <li><span class="c">site_visits_7 / _30 / _90</span></li>
+        <li><span class="c">unique_viewers_7 / _30</span> <span class="d">no 90, M365 does not return it</span></li>
+        <li><span class="c">last_activity_date</span></li>
+        <li><span class="c">storage_bytes</span> <span class="d">site level, includes versions</span></li>
+      </ul>
+    </div>
+
+    <div class="tbl" style="border-color:#C6E3BB">
+      <div class="hd" style="background:#F6FCF4"><b>fact_declaration_attempt</b><span class="tag t-exist">Reuse</span></div>
+      <div class="gr">Grain: <b>one row per declaration attempt</b>, from TrackingRecords</div>
+      <ul>
+        <li class="pk"><span class="c">attempt_key</span></li>
+        <li class="fk"><span class="c">attempt_date_key, user_key</span></li>
+        <li class="fk"><span class="c">site_key, library_key</span></li>
+        <li><span class="c">declaration_type</span> <span class="d">SIN, MUL, CEN, EML</span></li>
+        <li><span class="c">result</span> <span class="d">success, skipped, failed</span></li>
+        <li><span class="c">error_type, error_log</span></li>
+        <li class="fk"><span class="c">record_key</span> <span class="d">null when unsuccessful</span></li>
+      </ul>
+      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">Already exists and is not yet used by the report. Declaration success rate and the reasons declarations fail are arguably the most actionable adoption metrics available.</div>
+    </div>
+
+    <div class="tbl" style="border-color:#C6E3BB">
+      <div class="hd" style="background:#F6FCF4"><b>etl_refresh_log</b><span class="tag t-new">New</span></div>
+      <div class="gr">Grain: <b>one row per source per run</b></div>
+      <ul>
+        <li class="pk"><span class="c">refresh_key</span></li>
+        <li><span class="c">source_system</span> <span class="d">SPO scan, usage, declaration DB</span></li>
+        <li><span class="c">data_as_of</span> <span class="d">what the dashboards print</span></li>
+        <li><span class="c">started_at, completed_at</span></li>
+        <li><span class="c">rows_loaded, status, message</span></li>
+      </ul>
+      <div class="gr" style="border-top:1px solid #EEF2F6;border-bottom:none">The Overview quotes the <b>oldest</b> refresh across its sources rather than the newest, because a summary is only as current as its stalest input. This table is where that comes from.</div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Every dashboard figure, traced to its source</h2>
+  <div class="lead">If a figure has no source it should not be on a dashboard. This is the check.</div>
+  <div class="panel">
+    <table>
+      <tr><th style="width:34%">Figure</th><th style="width:34%">Source</th><th>Status</th></tr>
+      <tr><td>Total Declared Records</td><td><code>fact_record</code> count</td><td><span class="tag t-exist">Ready</span></td></tr>
+      <tr><td>Declared by department and division</td><td><code>fact_record</code> to <code>dim_department</code>, <code>dim_division</code></td><td><span class="tag t-crit">Needs ADBMeta populated</span></td></tr>
+      <tr><td>With and without physical counterpart</td><td><code>fact_record.has_physical</code></td><td><span class="tag t-exist">Ready</span></td></tr>
+      <tr><td>Declaration date filtering</td><td><code>fact_record.declared_date_key</code></td><td><span class="tag t-exist">Ready</span></td></tr>
+      <tr><td>Total Documents in compliant sites</td><td><code>fact_library_snapshot.document_count</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
+      <tr><td>Declaration rate</td><td>declared over document count, same table</td><td><span class="tag t-new">Needs the scan</span></td></tr>
+      <tr><td>Active sites, visits, unique viewers</td><td><code>fact_site_usage_snapshot</code></td><td><span class="tag t-new">New landing table</span></td></tr>
+      <tr><td>Compliant sites created, treemap by department</td><td><code>dim_site.site_created_date</code>, <code>department_key</code></td><td><span class="tag t-crit">Site table too thin</span></td></tr>
+      <tr><td>Libraries declaration rate</td><td><code>fact_library_snapshot</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
+      <tr><td>Largest libraries by storage</td><td><code>fact_library_snapshot.storage_bytes</code></td><td><span class="tag t-crit">Needs file size</span></td></tr>
+      <tr><td>Files by format</td><td><code>fact_library_snapshot</code> to <code>dim_file_format</code></td><td><span class="tag t-new">Needs the scan</span></td></tr>
+      <tr><td>Storage by format, average file size</td><td>same, plus storage_bytes</td><td><span class="tag t-crit">Needs file size</span></td></tr>
+      <tr><td>Retention dashboard, not yet built</td><td><code>fact_record</code> retention fields</td><td><span class="tag t-exist">Data already exists</span></td></tr>
+      <tr><td>Declaration success rate, not yet built</td><td><code>fact_declaration_attempt</code></td><td><span class="tag t-exist">Data already exists</span></td></tr>
+      <tr><td>Data as of line on every dashboard</td><td><code>etl_refresh_log.data_as_of</code></td><td><span class="tag t-new">New</span></td></tr>
+    </table>
+  </div>
+  <div class="note"><b>Two dashboards could be built from data that already exists.</b> Retention is fully served by fields already designed into the Records table, and declaration success rate by TrackingRecords. Both are placeholders in the prototype today. If the department backfill and the inventory scan take time to land, these are the two that could be delivered while waiting.</div>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Decisions needed before building</h2>
+  <div class="panel">
+    <ol class="steps">
+      <li><b>Is ADBMeta in scope for a release?</b> It is marked out of scope for 2026.1 and <code>ADB Document Owner</code> is empty across the sample data. Every department and division figure in the report depends on it. This is the single biggest item.</li>
+      <li><b>What identifies an EDRMS compliant site?</b> A naming convention, the EDRMS Site Type term, or an AvePoint provisioning flag. It sets <code>dim_site.is_edrms_compliant</code> and therefore the denominator of most of the report.</li>
+      <li><b>Where does the site to department mapping come from?</b> AvePoint may already hold it from provisioning. If not, it has to be created, and it is a records decision rather than a technical one.</li>
+      <li><b>How often does the inventory scan run, and at what grain?</b> Weekly at library and format grain is proposed. Consider keeping weekly snapshots for thirteen weeks and monthly thereafter, so the table does not grow without bound.</li>
+      <li><b>Do all retention labels mark items as records?</b> If some do not, <code>dim_retention_label.marks_as_record</code> does real work and every count must filter on it. If all do, the model simplifies.</li>
+      <li><b>Should Physical Records stay a separate table?</b> It duplicates the Records schema in full. Unless there is a retention or access control reason, a flag plus a view avoids the drift.</li>
+      <li><b>Which storage definition does the report mean?</b> Site storage from M365 includes version history and the recycle bin, so it will not match the sum of current file sizes, often by a factor of two to five. Both are legitimate, they measure different things, and the dashboard must say which one it shows.</li>
+      <li><b>Index the columns the report queries on.</b> Any SharePoint column used by the scan or by filters needs an index once a library passes 5,000 items, and these libraries are far past it.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+</body></html>
