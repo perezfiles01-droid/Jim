@@ -146,44 +146,41 @@ No data as of line: it prints "Design reference. Full detail in utilizationdb.md
 instead. It is the only module that returns `kind:"reference"`, which is how
 `verify.js` knows not to demand a KPI card from it.
 
-The database design, written for the client rather than for a developer. No
-sample data, no filters, no charts, and no SQL: the client reads SharePoint list
-views, so the tables are drawn as SharePoint list views.
+**The whole module is generated from `utilizationdb.md` by
+`scratchpad/gen_dd.py` and `build_dd.py`.** Edit the markdown, rerun both, splice
+the output over the `DASHBOARDS.dd` block. Never hand edit the arrays: they carry
+57 columns of parallel data and the tests compare them against the document.
+The generator converts markdown emphasis to HTML, and a test fails if any `**`
+or backtick survives to the rendered page.
+
+Sections, in order:
 
 - **Can it be one table only?** The client asked directly, so the answer opens
-  the page. Two tables, and the two things that break under one are named: a site
-  with no documents in it vanishes from the site count, and a per site visit
-  figure repeated on every document row sums to nonsense.
-- **The two tables**, each a full width card over a numbered column table with
-  type and description. Key columns render blue, unavailable ones amber.
-- **Where every figure comes from**: 23 figures, each with its dashboard, its
-  table, how the number is produced **in words rather than SQL**, and one of four
-  statuses, `Ready today`, `Needs the scan`, `Needs the usage feed`, `Blocked`.
-- **What each column is for, and whether it exists today**: all 40 columns of
-  the first table, each with where it appears in the report, a status, and its
-  exact location in the client's workbook (sheet and spreadsheet row) and in the
-  live `drm-npr` database. The tally underneath is **counted from the data at
-  render time**, never written down, so it cannot claim 24 while the table shows
-  something else.
-- **The three gaps**: no department or division on anything, file size not
-  captured, no site created date or compliance rule.
+  the page: two tables, and the two things that break under one.
+- **Naming rule.** Columns keep the name they already have in the EDRMS
+  database. `CreatedDate` stays `CreatedDate`, `ListId` stays `ListId`. JSON keys
+  inside `FileMeta`, `EDRMSMeta` and `ADBMeta` become real columns keeping the
+  key name. Only two names were invented, both because the existing name means
+  something else: `FileModifiedDate` and `FileCreatedDate`, since `ModifiedDate`
+  is the record row and `CreatedDate` is the declaration.
+- **The two tables**: 37 columns and 20 columns, each a full width card over a
+  numbered column table.
+- **Which figure each column produces, and how to source it**: all 57 columns,
+  each with the figure it feeds, a status, its exact location in
+  `Database_Design_12.03_2.xlsx` (sheet and spreadsheet row) and in live
+  `drm-npr`, and **the system to go to** for the ones that do not exist.
+- **Where every figure comes from**: 23 figures read from the other direction.
+- **Where to go for each source**: the six systems.
+- **The three gaps.**
 
-Workbook references point at `Database_Design_12.03_2.xlsx`, sheet `4 Records`,
-**the 2026.1 block at rows 56 to 82**. That sheet holds an older 1.3 block above
-it with different column names; quoting the wrong block is the easy mistake.
-`ADBMaster`, `Library`, `PhysicalRecords` and `favoritelocations` are in the
-workbook but were never built.
+The tally under the traceability tables is **counted at render time**, never
+written down, so it cannot claim a number the table does not show.
 
-**The tables mirror `utilizationdb.md` exactly, 40 and 21 columns, same names,
-same order, same types.** The test suite asserts both counts, the total of 61,
-and that every table named in the trace exists. Editing one without the other
-fails the tests.
-
-Note the earlier seven table design (`rpt_org_unit`, `rpt_record`,
-`rpt_library_snapshot` and so on) was replaced at the client's request for
-something readable. It is recoverable from git history at `0f95aa8` and is the
-better answer if the weekly cost of writing 3.47 million rows ever becomes a
-real constraint.
+Workbook references point at sheet `4 Records`, **the 2026.1 block at rows 56 to
+82**. That sheet holds an older 1.3 block above it with different column names;
+quoting the wrong block is the easy mistake. `ADBMaster`, `Library`,
+`PhysicalRecords` and `favoritelocations` are in the workbook but were never
+built.
 
 ## Known open items
 
