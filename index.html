@@ -265,6 +265,19 @@
   .dash-dd .tc tr.key td.c b{font-weight:700;color:var(--deepblue)}
   .dash-dd .tc tr.gap td.c b{font-weight:700;color:#9C4A16}
   .dash-dd .tc td.d{color:var(--ink2)}
+  /* The column traceability table is wide by nature: two location columns of
+     file, sheet and row. It scrolls inside its own box so the page body never
+     scrolls sideways. */
+  .dash-dd .scroll{overflow-x:auto}
+  .dash-dd .scroll table{min-width:1100px}
+  .dash-dd #dd-uses td.n{color:var(--mut);width:34px;font-variant-numeric:tabular-nums}
+  .dash-dd #dd-uses td.c b{font-weight:700;color:var(--deepblue)}
+  .dash-dd #dd-uses tr.gap td.c b{color:#9C4A16}
+  .dash-dd #dd-uses td.d{color:var(--ink2);font-size:11.5px;line-height:1.45}
+  .dash-dd .tally{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+  .dash-dd .tally .ti{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2)}
+  .dash-dd .tally .ti b{font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .dash-dd .tally .tot{color:var(--mut)}
 </style></head>
 <body>
 <aside id="side">
@@ -1452,6 +1465,60 @@ DASHBOARDS.dd=(function(){
     gap:['g-gap','Blocked']
   };
 
+  /* One entry per column of the Utilization Report Table, in the same order.
+     [column, where it appears in the report, status, workbook location,
+     live database location]. The test suite asserts that the names here match
+     TABLES[0] exactly, so the two cannot drift. */
+  const USES=[
+   ["Row ID","Not shown. Identifies each row so it can be updated or removed","have","Equivalent at <code>4 Records</code> row 56 (S/N 1) <code>Id</code>","<code>Records.Id</code>"],
+   ["Snapshot Date","The Data as of line at the top right of all five dashboards","none","Not in the workbook","Nowhere. Written by the refresh job"],
+   ["Document ID","Not shown. Identifies a document across refreshes, so a renamed or moved file is not counted twice","have","<code>4 Records</code> row 69 (S/N 14) <code>DocumentId</code>","<code>Records.DocumentId</code>"],
+   ["Document Name","Not shown on a chart. Makes an export or a click through readable","have","<code>4 Records</code> row 66 (S/N 11) <code>Title</code>","<code>Records.Title</code>"],
+   ["Document URL","Not shown on a chart. The click through from the report to the document","derived","Built from rows 70, 72, 74 and 66","Built from SiteUrl, LibraryUrl, FolderPath and Title"],
+   ["File Extension","Feeds Format Group. Not shown on its own","have","<code>4 Records</code> row 75 (S/N 20) <code>FileMeta</code>, key <code>FileType</code>","<code>Records.FileMeta</code> key <code>FileType</code>"],
+   ["Format Group","<b>Format and Storage:</b> the 8 rows of the storage table, the Most Common Format KPI, the declared records by format bars. <b>Overview:</b> both format donuts","derived","Not in the workbook. Grouped from File Extension","Grouped from File Extension"],
+   ["File Size (MB)","<b>Format and Storage:</b> the Storage GB column, the Avg file size column, the 46.7 GB KPI. <b>Sites and Libraries:</b> Largest Libraries bars, the 43.1 GB KPI, the avg file size sort. <b>Overview:</b> the storage donut and the storage KPI card","gap","<code>4 Records</code> row 75 <code>FileMeta</code> holds FileType, FileCreatedDate, SensitivityLabelName and SensitivityLabelID. There is no size key","Missing from <code>Records.FileMeta</code>. One key to add, not a migration"],
+   ["Document Created Date","<b>Records Management:</b> the date range filter on the Total Documents panel","have","<code>4 Records</code> row 75 (S/N 20) <code>FileMeta</code>, key <code>FileCreatedDate</code>","<code>Records.FileMeta</code> key <code>FileCreatedDate</code>"],
+   ["Document Modified Date","Not shown. Needed for any future stale content view","have","<code>4 Records</code> row 61 (S/N 6) <code>ModifiedDate</code>","<code>Records.ModifiedDate</code>. This is when the record row changed, not when the file changed. For the file itself, use the scan"],
+   ["Folder Path","Not shown. Builds Document URL and separates folders inside one library","have","<code>4 Records</code> row 74 (S/N 19) <code>FolderPath</code>","<code>Records.FolderPath</code>"],
+   ["Library Name","<b>Records Management:</b> level 4 of both drill downs. <b>Sites and Libraries:</b> the row label on Libraries Declaration Rate and on Largest Libraries","have","<code>4 Records</code> row 73 (S/N 18) <code>LibraryName</code>","<code>Records.LibraryName</code>"],
+   ["Library URL","Not shown. Click through to the library","have","<code>4 Records</code> row 72 (S/N 17) <code>LibraryUrl</code>","<code>Records.LibraryUrl</code>"],
+   ["Library ID","Not shown. The grouping key behind every library figure, because library names can change","have","<code>4 Records</code> row 67 (S/N 12) <code>ListId</code>","<code>Records.ListId</code>"],
+   ["Library Category","Not shown today. The natural grouping for Department Performance when it is built","planned","<code>4 Records</code> row 76 (S/N 21) <code>ADBMeta</code>, key <code>ADBLibraryCategory</code>, marked Future Enhancement. Also <code>Library</code> row 6 and <code>ADBMaster</code> rows 22 to 24","<code>Records.ADBMeta</code> is empty. Populated today as Library Type in the Retention Label Mapping list in app_edrms_data_uat"],
+   ["Site Name","<b>Records Management:</b> level 3 of both drill downs, and the row label on Active Sites. <b>Sites and Libraries:</b> the in site sub label under each library","have","<code>4 Records</code> row 71 (S/N 16) <code>SiteName</code>. Also <code>Site</code> row 14 (S/N 10)","<code>Records.SiteName</code> and <code>ADBSites.SiteName</code>"],
+   ["Site URL","Not shown. Joins this table to the Site Activity Table","have","<code>4 Records</code> row 70 (S/N 15) <code>SiteUrl</code>. Also <code>Site</code> row 13 (S/N 9)","<code>Records.SiteUrl</code> and <code>ADBSites.SiteUrl</code>"],
+   ["Site Created Date","Not shown from this table. A copy of the Site Activity value, so documents can be filtered by site age without a join","gap","<code>Site</code> row 6 (S/N 2) is <code>CreatedDate</code>, but that is when the row was created in EDRMS, not when the SharePoint site was created","Not in <code>ADBSites</code>. Read from the SharePoint admin centre"],
+   ["EDRMS Compliant","<b>Records Management:</b> decides which documents count toward Total Documents in EDRMS Compliant Sites, 3.47M. Defines the population of the whole table","gap","No such column and no rule anywhere in the workbook","Nowhere. A definition RAC has to give before it can be built"],
+   ["Department Code","Not shown. The short code behind the department filter values","planned","<code>4 Records</code> row 76 (S/N 21) <code>ADBMeta</code>, key <code>ADBDepartmentOwner</code>, marked Future Enhancement. Values in <code>ADBMaster</code> rows 13 to 15","<code>Records.ADBMeta</code> is empty. <code>ADBMaster</code> was never built"],
+   ["Department Name","<b>Records Management:</b> level 1 of both drill downs and the department filter on 4 panels. <b>Sites and Libraries:</b> the department filter and the treemap. <b>Overview:</b> both top 5 department lists","planned","Same as Department Code. The vocabulary itself is populated in the SharePoint term store","Same as Department Code"],
+   ["Division Code","Not shown. The short code behind division values","planned","<code>4 Records</code> row 76 <code>ADBMeta</code>, key <code>ADBDivisionOwner</code>. Values in <code>ADBMaster</code> rows 16 to 18","<code>Records.ADBMeta</code> is empty"],
+   ["Division Name","<b>Records Management:</b> level 2 of both drill downs","planned","Same as Division Code","Same as Division Code"],
+   ["Unit Code","Not shown. No current dashboard uses it","planned","<code>4 Records</code> row 76 <code>ADBMeta</code>, key <code>ADBUnitOwner</code>. Values in <code>ADBMaster</code> rows 19 to 21","<code>Records.ADBMeta</code> is empty"],
+   ["Unit Name","Not shown. No current dashboard uses it","planned","Same as Unit Code","Same as Unit Code"],
+   ["Declared as Record","<b>Records Management:</b> Total Declared Records 21,646 and every bar under it. <b>Sites and Libraries:</b> the declared half of Libraries Declaration Rate. <b>Format and Storage:</b> declared records by format. <b>Overview:</b> 3 of the 5 KPI cards and both split donuts. <b>Retention:</b> every figure","have","Not a column, because every row of the <code>4 Records</code> sheet already is a declared record","A row existing in <code>Records</code> means Yes. The No side comes from the scan"],
+   ["Declared Date","<b>Records Management:</b> the date range filter on Total Declared Records, and the in range subtotal line under it","have","<code>4 Records</code> row 59 (S/N 4) <code>CreatedDate</code>, described as when the user declared the file as a record","<code>Records.CreatedDate</code>"],
+   ["Declared By","Not shown today. Supports a declarations by user view","have","<code>4 Records</code> row 60 (S/N 5) <code>CreatedBy</code>","<code>Records.CreatedBy</code>"],
+   ["Declaration Type","Not shown. Separates Regular from Centralized declarations","planned","<code>4 Records</code> row 82 (S/N 27) <code>DeclarationType</code>, release 2026.2","Not deployed yet"],
+   ["Has Physical Counterpart","<b>Records Management:</b> the two colour split on every bar of Total Declared Records. <b>Overview:</b> the physical counterpart donut","have","<code>4 Records</code> row 77 (S/N 22) <code>EDRMSMeta</code>, key <code>HasPhysical</code>","<code>Records.EDRMSMeta</code> key <code>HasPhysical</code>"],
+   ["Physical Counterpart Retention","Not shown. The retention that applies to the physical copy","have","Not in the workbook","Physical Counterpart in the Retention Label Mapping list in app_edrms_data_uat"],
+   ["Retention Label","<b>Retention</b>, not yet built","have","<code>4 Records</code> row 78 (S/N 23) <code>EDRMSRetentionLabel</code>","<code>Records.EDRMSRetentionLabel</code>. Also Retention Label in the mapping list"],
+   ["Retention Duration (Years)","Feeds Due Date for Disposal","have","<code>4 Records</code> row 80 (S/N 25) <code>EDRMSDuration</code>","<code>Records.EDRMSDuration</code>. Also Retention Duration in the mapping list"],
+   ["Retention Label Applied Date","Feeds Due Date for Disposal. Deliberately not used to date declarations","have","<code>4 Records</code> row 79 (S/N 24) <code>EDRMSRetentionLabelApplied</code>, described as the basis for the duration computation","<code>Records.EDRMSRetentionLabelApplied</code>"],
+   ["Due Date for Disposal","<b>Retention</b>, not yet built: records due for disposal","have","<code>4 Records</code> row 81 (S/N 26) <code>EDRMSDueDateForDisposal</code>, defined there as RetentionLabelApplied plus Duration","<code>Records.EDRMSDueDateForDisposal</code>"],
+   ["Retention Status","<b>Retention</b>, not yet built: the status breakdown","have","<code>4 Records</code> row 77 (S/N 22) <code>EDRMSMeta</code>, key <code>RetentionStatus</code>. Permitted values in <code>5 EDRMSMasters</code> rows 16 to 18","<code>Records.EDRMSMeta</code> key <code>RetentionStatus</code>, values in <code>EDRMSMasters</code>"],
+   ["Disposal Status","<b>Retention</b>, not yet built: where a record sits in the disposal process","none","Not in the workbook","Nowhere. Needed only when Retention is built"],
+   ["Sensitivity Label","Not shown on any dashboard","have","<code>4 Records</code> row 75 (S/N 20) <code>FileMeta</code>, key <code>SensitivityLabelName</code>","<code>Records.FileMeta</code> key <code>SensitivityLabelName</code>"],
+   ["Is Deleted","Every count on every dashboard excludes rows where this is Yes","have","<code>4 Records</code> row 65 (S/N 10) <code>IsDeleted</code>","<code>Records.IsDeleted</code>"],
+   ["Last Refreshed","Not shown. Operational, so a partial refresh can be spotted","none","Not in the workbook","Nowhere. Written by the refresh job"]
+  ];
+  const UBADGE={
+    have:['g-ok','Exists today'],
+    derived:['g-ok','Derived'],
+    planned:['g-part','Planned only'],
+    gap:['g-gap','Missing, blocks a figure'],
+    none:['g-part','Missing, blocks nothing']
+  };
+
   const html=`<section class="dash-dd">
     <div class="band">
       <h2>The database behind the report</h2>
@@ -1470,6 +1537,14 @@ DASHBOARDS.dd=(function(){
       <h3>The two tables</h3>
       <div class="lead">Column names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> are not available today and are covered by the three gaps below.</div>
       <div id="dd-tables"></div>
+    </div>
+
+    <div class="panel">
+      <h3>What each column is for, and whether it exists today</h3>
+      <div class="lead">Every one of the 40 columns of the Utilization Report Table, what it produces in the report, and exactly where it can be found today. <b>Read this first, or the table will mislead you:</b> the Records table holds declared records only, about 21,646 of them, while this table holds every document, about 3.47 million. So where a row says a column exists in Records, it exists <b>for the declared 21,646</b>. For the other 3.45 million the same column comes from the weekly SharePoint scan, which is one piece of work covering rows 3 to 19 in one go, not seventeen separate problems.</div>
+      <div class="lead">Workbook means the uploaded <code>Database_Design_12.03_2.xlsx</code>, and the row numbers are actual spreadsheet rows. All Records references are to the <b>2026.1 block, rows 56 to 82</b>, not the older 1.3 block above it. Live database means <code>drm-npr</code>, schema <code>public</code>, which is what is actually deployed: four tables in the workbook were never built, <code>ADBMaster</code>, <code>Library</code>, <code>PhysicalRecords</code> and <code>favoritelocations</code>.</div>
+      <div class="scroll"><table id="dd-uses"></table></div>
+      <div class="tally" id="dd-tally"></div>
     </div>
 
     <div class="panel">
@@ -1497,6 +1572,23 @@ DASHBOARDS.dd=(function(){
              <td class="t">${typ}</td><td class="d">${desc}</td></tr>`).join("")}
         </table></div>
       </div>`).join("");
+
+    document.getElementById("dd-uses").innerHTML=
+      `<tr><th style="width:34px">#</th><th style="width:150px">Column</th><th style="width:27%">Where it appears in the report</th><th style="width:126px">Exists today?</th><th>Workbook location</th><th>Live database location</th></tr>`+
+      USES.map(([col,use,st,wb,live],i)=>
+        `<tr class="${st==='gap'?'gap':st==='planned'?'gap':''}">
+          <td class="n">${i+1}</td><td class="c"><b>${col}</b></td><td class="d">${use}</td>
+          <td><span class="dtag ${UBADGE[st][0]}">${UBADGE[st][1]}</span></td>
+          <td class="d">${wb}</td><td class="d">${live}</td></tr>`).join("");
+
+    /* Counted from USES rather than written down, so the tally cannot say 24
+       while the table shows something else. */
+    const tally={};
+    USES.forEach(u=>tally[u[2]]=(tally[u[2]]||0)+1);
+    document.getElementById("dd-tally").innerHTML=
+      Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
+        `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
+      `<span class="ti tot"><b>${USES.length}</b> columns in total</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+

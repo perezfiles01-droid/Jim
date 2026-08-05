@@ -128,7 +128,7 @@ About 3.47 million rows. Replaced in full at each weekly refresh.
 | 32 | Retention Label | Text | The retention label applied | | 10 years after declaration | Retention Label Mapping list, or the item | |
 | 33 | Retention Duration (Years) | Whole number | Retention period in years | | 10 | Retention Label Mapping list | Blank where the label is Permanent |
 | 34 | Retention Label Applied Date | Date and time | When the label was applied to the item | | 12 Mar 2026 09:20 | SharePoint | **Never use this as the declaration date.** A label can be applied to a document that was never declared, so a report built on this date would date records that are not records. Use Declared Date |
-| 35 | Due Date for Disposal | Date | When the record becomes due for disposal | | 12 Mar 2036 | Derived from Declared Date plus Retention Duration | Feeds the Retention dashboard |
+| 35 | Due Date for Disposal | Date | When the record becomes due for disposal | | 12 Mar 2036 | Derived from Retention Label Applied Date plus Retention Duration | The workbook defines it this way at `4 Records` row 81. Feeds the Retention dashboard |
 | 36 | Retention Status | Choice | Where the record sits against its retention period | Active, Due for review, Due for disposal, Disposed, Permanent | Active | Derived from Due Date for Disposal | Feeds the Retention dashboard |
 | 37 | Disposal Status | Choice | Where the record sits in the disposal process | Not due, Pending approval, Approved, Disposed | Not due | EDRMS application | Feeds the Retention dashboard |
 | 38 | Sensitivity Label | Text | Sensitivity label on the document | | Internal | SharePoint | Not on any current dashboard. Included because it is free to collect and is the obvious next question after retention |
@@ -136,6 +136,102 @@ About 3.47 million rows. Replaced in full at each weekly refresh.
 | 40 | Last Refreshed | Date and time | When this row was last written | | 27 Jul 2026 06:00 | Refresh job | Operational. Lets a failed or partial refresh be spotted |
 
 **40 columns.**
+
+---
+
+## COLUMN BY COLUMN: WHAT EACH ONE IS FOR, AND WHETHER IT EXISTS TODAY
+
+Every one of the 40 columns above, what it produces in the report, and exactly
+where it can be found today.
+
+**Read this first, or the table below will mislead you.** The Records table in
+the database holds **declared records only**, about 21,646 of them. The
+Utilization Report Table holds **every document**, about 3.47 million. So when a
+row below says a column exists in `Records`, that means it exists **for the
+declared 21,646**. For the other 3.45 million documents the same column comes
+from the weekly SharePoint scan, which does not exist yet. That is one piece of
+work covering columns 3 to 19 in one go, not nineteen separate problems.
+
+**Workbook** means the uploaded `Database_Design_12.03_2.xlsx`. Sheet names and
+row numbers are the actual sheet tabs and spreadsheet row numbers in that file.
+The Records sheet holds two blocks; all references below are to the **2026.1
+block, rows 56 to 82**, not the older 1.3 block above it.
+
+**Live database** means `drm-npr`, schema `public`, which is what is actually
+deployed. Four tables in the workbook were never built: `ADBMaster`, `Library`,
+`PhysicalRecords` and `favoritelocations`.
+
+| # | Column | Where it appears in the report | Exists today? | Workbook location | Live database location |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Row ID | Not shown. Identifies each row so it can be updated or removed | New | Equivalent at `4 Records` row 56 (S/N 1) `Id` | `Records.Id` |
+| 2 | Snapshot Date | The "Data as of" line at the top right of all five dashboards | **No** | Not in the workbook | Nowhere. Written by the refresh job |
+| 3 | Document ID | Not shown. Identifies a document across refreshes, so a renamed or moved file is not counted twice | Yes | `4 Records` row 69 (S/N 14) `DocumentId` | `Records.DocumentId` |
+| 4 | Document Name | Not shown on a chart. Makes an export or a click through readable | Yes | `4 Records` row 66 (S/N 11) `Title` | `Records.Title` |
+| 5 | Document URL | Not shown on a chart. The click through from the report to the document | Derived | Built from rows 70, 72, 74 and 66 | Built from `SiteUrl`, `LibraryUrl`, `FolderPath`, `Title` |
+| 6 | File Extension | Feeds Format Group. Not shown on its own | Yes, in JSON | `4 Records` row 75 (S/N 20) `FileMeta`, key `FileType` | `Records.FileMeta` key `FileType` |
+| 7 | Format Group | **Format and Storage:** the 8 rows of the storage table, the Most Common Format KPI, the declared records by format bars. **Overview:** both format donuts | Derived | Not in the workbook. Grouped from File Extension | Grouped from File Extension |
+| 8 | File Size (MB) | **Format and Storage:** the Storage GB column, the Avg file size column, the 46.7 GB KPI. **Sites and Libraries:** Largest Libraries bars, the 43.1 GB KPI, the avg file size sort. **Overview:** the storage donut and the storage KPI card | **No. Gap 2** | `4 Records` row 75 `FileMeta` holds FileType, FileCreatedDate, SensitivityLabelName and SensitivityLabelID. **There is no size key** | Missing from `Records.FileMeta`. One key to add, not a migration |
+| 9 | Document Created Date | **Records Management:** the date range filter on the Total Documents panel | Yes, in JSON | `4 Records` row 75 (S/N 20) `FileMeta`, key `FileCreatedDate` | `Records.FileMeta` key `FileCreatedDate` |
+| 10 | Document Modified Date | Not shown. Needed for any future stale content view | Yes, with a caveat | `4 Records` row 61 (S/N 6) `ModifiedDate` | `Records.ModifiedDate`. **This is when the record row changed, not when the file changed.** For the file itself, use the scan |
+| 11 | Folder Path | Not shown. Builds Document URL and separates folders inside one library | Yes | `4 Records` row 74 (S/N 19) `FolderPath` | `Records.FolderPath` |
+| 12 | Library Name | **Records Management:** level 4 of both drill downs. **Sites and Libraries:** the row label on Libraries Declaration Rate and on Largest Libraries | Yes | `4 Records` row 73 (S/N 18) `LibraryName` | `Records.LibraryName` |
+| 13 | Library URL | Not shown. Click through to the library | Yes | `4 Records` row 72 (S/N 17) `LibraryUrl` | `Records.LibraryUrl` |
+| 14 | Library ID | Not shown. The grouping key behind every library figure, because library names can change | Yes | `4 Records` row 67 (S/N 12) `ListId` | `Records.ListId` |
+| 15 | Library Category | Not shown today. The natural grouping for Department Performance when it is built | Planned, but available elsewhere | `4 Records` row 76 (S/N 21) `ADBMeta`, key `ADBLibraryCategory`, marked **Future Enhancement**. Also `Library` sheet row 6 (R1.4) and `ADBMaster` rows 22 to 24 | `Records.ADBMeta` is empty. **Populated today** as "Library Type" in the Retention Label Mapping list in `app_edrms_data_uat` |
+| 16 | Site Name | **Records Management:** level 3 of both drill downs, and the row label on Active Sites. **Sites and Libraries:** the "in <site>" sub label under each library | Yes | `4 Records` row 71 (S/N 16) `SiteName`. Also `Site` sheet row 14 (S/N 10) | `Records.SiteName` and `ADBSites.SiteName` |
+| 17 | Site URL | Not shown. Joins this table to the Site Activity Table | Yes | `4 Records` row 70 (S/N 15) `SiteUrl`. Also `Site` sheet row 13 (S/N 9) | `Records.SiteUrl` and `ADBSites.SiteUrl` |
+| 18 | Site Created Date | Not shown from this table. A copy of the Site Activity value, so documents can be filtered by site age without a join | **No. Gap 3** | `Site` sheet row 6 (S/N 2) is `CreatedDate`, but that is **when the row was created in EDRMS, not when the SharePoint site was created** | Not in `ADBSites`. Read from the SharePoint admin centre |
+| 19 | EDRMS Compliant | **Records Management:** decides which documents count toward Total Documents in EDRMS Compliant Sites, 3.47M. Defines the population of the whole table | **No. Gap 3** | No such column and no rule anywhere in the workbook | Nowhere. A definition RAC has to give before it can be built |
+| 20 | Department Code | Not shown. The short code behind the department filter values | **Planned only. Gap 1** | `4 Records` row 76 (S/N 21) `ADBMeta`, key `ADBDepartmentOwner`, marked **Future Enhancement**. Values in `ADBMaster` rows 13 to 15 | `Records.ADBMeta` is empty. `ADBMaster` was never built |
+| 21 | Department Name | **Records Management:** level 1 of both drill downs and the department filter on 4 panels. **Sites and Libraries:** the department filter, and the treemap. **Overview:** both top 5 department lists | **Planned only. Gap 1** | Same as row 20. The vocabulary itself is populated in the SharePoint term store | Same as row 20 |
+| 22 | Division Code | Not shown. The short code behind division values | **Planned only. Gap 1** | `4 Records` row 76 `ADBMeta`, key `ADBDivisionOwner`. Values in `ADBMaster` rows 16 to 18 | `Records.ADBMeta` is empty |
+| 23 | Division Name | **Records Management:** level 2 of both drill downs | **Planned only. Gap 1** | Same as row 22 | Same as row 22 |
+| 24 | Unit Code | Not shown. No current dashboard uses it | **Planned only** | `4 Records` row 76 `ADBMeta`, key `ADBUnitOwner`. Values in `ADBMaster` rows 19 to 21 | `Records.ADBMeta` is empty |
+| 25 | Unit Name | Not shown. No current dashboard uses it | **Planned only** | Same as row 24 | Same as row 24 |
+| 26 | Declared as Record | **Records Management:** Total Declared Records 21,646 and every bar under it. **Sites and Libraries:** the declared half of Libraries Declaration Rate. **Format and Storage:** declared records by format. **Overview:** 3 of the 5 KPI cards and both split donuts. **Retention:** every figure | Yes, implicitly | Not a column, because every row of the `4 Records` sheet already **is** a declared record | A row existing in `Records` means Yes. The No side comes from the scan |
+| 27 | Declared Date | **Records Management:** the date range filter on Total Declared Records, and the in range subtotal line under it | Yes | `4 Records` row 59 (S/N 4) `CreatedDate`, described as "When the User Declared the file as a Record" | `Records.CreatedDate` |
+| 28 | Declared By | Not shown today. Supports a declarations by user view | Yes | `4 Records` row 60 (S/N 5) `CreatedBy` | `Records.CreatedBy` |
+| 29 | Declaration Type | Not shown. Separates Regular from Centralized declarations | Planned, release 2026.2 | `4 Records` row 82 (S/N 27) `DeclarationType` | Not deployed yet |
+| 30 | Has Physical Counterpart | **Records Management:** the two colour split on every bar of Total Declared Records. **Overview:** the physical counterpart donut | Yes, in JSON | `4 Records` row 77 (S/N 22) `EDRMSMeta`, key `HasPhysical` | `Records.EDRMSMeta` key `HasPhysical` |
+| 31 | Physical Counterpart Retention | Not shown. The retention that applies to the physical copy | Yes, outside the database | Not in the workbook | "Physical Counterpart" in the Retention Label Mapping list in `app_edrms_data_uat` |
+| 32 | Retention Label | **Retention**, not yet built | Yes | `4 Records` row 78 (S/N 23) `EDRMSRetentionLabel` | `Records.EDRMSRetentionLabel`. Also "Retention Label" in the mapping list |
+| 33 | Retention Duration (Years) | Feeds Due Date for Disposal | Yes | `4 Records` row 80 (S/N 25) `EDRMSDuration` | `Records.EDRMSDuration`. Also "Retention Duration" in the mapping list |
+| 34 | Retention Label Applied Date | Feeds Due Date for Disposal. **Deliberately not used to date declarations** | Yes | `4 Records` row 79 (S/N 24) `EDRMSRetentionLabelApplied`, described as the basis for the duration computation | `Records.EDRMSRetentionLabelApplied` |
+| 35 | Due Date for Disposal | **Retention**, not yet built: records due for disposal | Yes | `4 Records` row 81 (S/N 26) `EDRMSDueDateForDisposal`, defined there as RetentionLabelApplied plus Duration | `Records.EDRMSDueDateForDisposal` |
+| 36 | Retention Status | **Retention**, not yet built: the status breakdown | Yes, in JSON | `4 Records` row 77 (S/N 22) `EDRMSMeta`, key `RetentionStatus`. Permitted values in `5 EDRMSMasters` rows 16 to 18 | `Records.EDRMSMeta` key `RetentionStatus`, values in `EDRMSMasters` |
+| 37 | Disposal Status | **Retention**, not yet built: where a record sits in the disposal process | **No** | Not in the workbook | Nowhere. Needed only when Retention is built |
+| 38 | Sensitivity Label | Not shown on any dashboard | Yes, in JSON | `4 Records` row 75 (S/N 20) `FileMeta`, key `SensitivityLabelName` | `Records.FileMeta` key `SensitivityLabelName` |
+| 39 | Is Deleted | Every count on every dashboard excludes rows where this is Yes | Yes | `4 Records` row 65 (S/N 10) `IsDeleted` | `Records.IsDeleted` |
+| 40 | Last Refreshed | Not shown. Operational, so a partial refresh can be spotted | **No** | Not in the workbook | Nowhere. Written by the refresh job |
+
+### What that adds up to
+
+| Status | Count | Which columns |
+| --- | --- | --- |
+| Already captured today | 24 | 1, 3, 4, 6, 9, 10, 11, 12, 13, 14, 16, 17, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 38, 39 |
+| Derived from a column already captured | 2 | 5 Document URL, 7 Format Group |
+| Planned in the workbook but not built | 8 | 15, 20, 21, 22, 23, 24, 25, 29 |
+| Not anywhere, and blocking a figure | 3 | 8 File Size, 18 Site Created Date, 19 EDRMS Compliant |
+| Not anywhere, and blocking nothing | 3 | 2 Snapshot Date, 37 Disposal Status, 40 Last Refreshed |
+| **Total** | **40** | |
+
+The honest headline: **24 of the 40 columns already exist** for the declared
+records, and the effort is concentrated in three places, which are the same three
+gaps described further down. Nothing in this table is a surprise requirement.
+
+### Columns that exist and were deliberately left out
+
+- **`PhysicalRecordJustification`**, workbook `4 Records` row 77 `EDRMSMeta`,
+  second key. The reason a physical counterpart exists. Free to add and it is
+  the natural companion to column 30. Left out only because no dashboard shows
+  it. Say the word and it becomes column 41.
+- **`JobTriggerId`**, workbook `4 Records` row 57 (S/N 2). Groups records
+  declared in the same batch. Belongs with declaration success rate, which is a
+  dashboard that does not exist yet.
+- **`RecordID`**, workbook `4 Records` row 58 (S/N 3). Internal to the EDRMS
+  application. `DocumentId` is the identifier the report should key on.
+- **`ModifiedBy`, `DeletedBy`, `DeletedDate`**, workbook rows 62, 64 and 63.
+  Audit columns with no reporting use.
 
 ---
 

@@ -159,8 +159,20 @@ views, so the tables are drawn as SharePoint list views.
 - **Where every figure comes from**: 23 figures, each with its dashboard, its
   table, how the number is produced **in words rather than SQL**, and one of four
   statuses, `Ready today`, `Needs the scan`, `Needs the usage feed`, `Blocked`.
+- **What each column is for, and whether it exists today**: all 40 columns of
+  the first table, each with where it appears in the report, a status, and its
+  exact location in the client's workbook (sheet and spreadsheet row) and in the
+  live `drm-npr` database. The tally underneath is **counted from the data at
+  render time**, never written down, so it cannot claim 24 while the table shows
+  something else.
 - **The three gaps**: no department or division on anything, file size not
   captured, no site created date or compliance rule.
+
+Workbook references point at `Database_Design_12.03_2.xlsx`, sheet `4 Records`,
+**the 2026.1 block at rows 56 to 82**. That sheet holds an older 1.3 block above
+it with different column names; quoting the wrong block is the easy mistake.
+`ADBMaster`, `Library`, `PhysicalRecords` and `favoritelocations` are in the
+workbook but were never built.
 
 **The tables mirror `utilizationdb.md` exactly, 40 and 21 columns, same names,
 same order, same types.** The test suite asserts both counts, the total of 61,
