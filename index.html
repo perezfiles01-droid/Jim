@@ -247,23 +247,24 @@
   .dash-dd .g-ok{background:#E7F4E2;color:#33691E;border:1px solid #C6E3BB}
   .dash-dd .g-gap{background:#FBE9E9;color:#9B1C1C;border:1px solid #F2C9C9}
   .dash-dd .g-part{background:#FDF1E7;color:#9C4A16;border:1px solid #F3D5BF}
-  /* Columns rather than a grid: the cards differ wildly in height, 41 rows
-     against 8, and a grid row stretches every card to its tallest sibling.
-     Columns let each card end where its content ends. */
-  .dash-dd .tcards{column-count:3;column-gap:16px}
-  .dash-dd .tc{background:#F8FAFC;border:1px solid #E4EBF3;border-radius:10px;overflow:hidden;break-inside:avoid;margin:0 0 16px}
-  @media(max-width:1280px){.dash-dd .tcards{column-count:2}}
-  @media(max-width:860px){.dash-dd .tcards{column-count:1}}
-  .dash-dd .tc .th{padding:11px 14px;background:#fff;border-bottom:1px solid #E4EBF3}
-  .dash-dd .tc .th b{font-family:"Cascadia Mono",Consolas,monospace;font-size:12.5px}
-  .dash-dd .tc .th small{display:block;color:var(--mut);font-size:10.5px;margin-top:3px}
-  .dash-dd .tc ul{list-style:none;padding:10px 14px 12px;margin:0}
-  .dash-dd .tc li{font-size:11px;padding:2px 0;display:flex;gap:7px;align-items:baseline}
-  .dash-dd .tc li b{font-family:"Cascadia Mono",Consolas,monospace;font-weight:400;color:var(--ink)}
-  .dash-dd .tc li.key b{font-weight:700;color:var(--deepblue)}
-  .dash-dd .tc li.gap b{font-weight:700;color:#9C4A16}
-  .dash-dd .tc li span{color:var(--mut);font-size:10px}
-  .dash-dd .cnt{font-size:10.5px;color:var(--mut);padding:8px 14px;border-top:1px solid #E4EBF3;background:#fff}
+  /* Each table is a full width card holding a real column table, because the
+     point of this page is that it reads like the SharePoint list views the
+     client already knows: a numbered row per column, with its type and what it
+     holds. */
+  .dash-dd .tc{background:#fff;border:1px solid #E4EBF3;border-radius:10px;overflow:hidden;margin:0 0 18px}
+  .dash-dd .tc:last-child{margin-bottom:0}
+  .dash-dd .tc .th{padding:12px 16px;background:#F8FAFC;border-bottom:1px solid #E4EBF3;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .dash-dd .tc .th b{font-size:13.5px;color:var(--ink)}
+  .dash-dd .tc .th b em{font-style:normal;font-family:"Cascadia Mono",Consolas,monospace;font-size:11.5px;color:var(--mut);font-weight:400;margin-left:8px}
+  .dash-dd .tc .th small{color:var(--mut);font-size:11px}
+  .dash-dd .tc .wrap{padding:4px 16px 12px}
+  .dash-dd .tc td.n{color:var(--mut);width:34px;font-variant-numeric:tabular-nums}
+  .dash-dd .tc td.t{width:132px;color:var(--ink2);white-space:nowrap}
+  .dash-dd .tc td.c{width:230px}
+  .dash-dd .tc td.c b{font-weight:400;color:var(--ink)}
+  .dash-dd .tc tr.key td.c b{font-weight:700;color:var(--deepblue)}
+  .dash-dd .tc tr.gap td.c b{font-weight:700;color:#9C4A16}
+  .dash-dd .tc td.d{color:var(--ink2)}
 </style></head>
 <body>
 <aside id="side">
@@ -1339,124 +1340,168 @@ DASHBOARDS.ov=(function(){
    column that will supply them. Full detail lives in utilizationdb.md.
    ================================================================= */
 DASHBOARDS.dd=(function(){
+  /* Columns are held as [name, type, description, flag]. flag "key" marks a
+     column the report cannot function without, "gap" marks one that is not
+     available today. Both tables mirror utilizationdb.md exactly, 40 columns
+     and 21 columns, and the test suite asserts those counts so the page and
+     the document cannot drift apart. */
   const TABLES=[
-    {n:"rpt_org_unit", g:"one department, division or unit",
-     c:[["OrgUnitKey","key"],["TermId","term store GUID"],["OrgLevel","1 dept, 2 division, 3 unit"],
-        ["OrgCode","CWRD"],["OrgName",""],["ParentTermId","GAP, flat in ADBMaster"],["ParentCode",""],
-        ["OrgUnitType","Division or Resident Mission"],["IsActive",""],["RowLoadedDate",""]],
-     s:"Term store. Serves every department and division filter."},
-    {n:"rpt_site", g:"one SharePoint site",
-     c:[["SiteKey","key"],["SiteUrl","natural key"],["SiteName",""],["SiteCreatedDate","GAP, admin centre"],
-        ["IsEdrmsCompliant","GAP, needs a rule"],["ComplianceSource",""],["DepartmentCode","GAP, the mapping"],
-        ["DepartmentName",""],["DivisionCode",""],["SiteTemplate",""],["StorageBytes","includes versions"],
-        ["StorageQuotaBytes",""],["LastActivityDate",""],["ProjectEndDate","exists in ADBSites"],
-        ["PrimaryAdminUpn",""],["IsActive",""],["RowLoadedDate",""]],
-     s:"Admin centre export plus AvePoint. Serves sites created and the treemap."},
-    {n:"rpt_record", g:"one declared record, about 21,646",
-     c:[["RecordKey","key"],["SourceRecordId","Records.Id"],["DocumentId",""],["ItemId",""],["ListId","the safe library key"],
-        ["Title",""],["DeclaredDate","Records.CreatedDate"],["DeclaredDateOnly",""],["DeclaredByUpn","Records.CreatedBy"],
-        ["DeclaredByName",""],["DeclarationType",""],["JobTriggerId",""],["SiteUrl",""],["SiteName",""],
-        ["LibraryName",""],["LibraryUrl",""],["FolderPath",""],["DepartmentCode","GAP, ADBMeta empty"],
-        ["DepartmentName",""],["DivisionCode","GAP, ADBMeta empty"],["DivisionName",""],["UnitCode","GAP"],
-        ["UnitName",""],["LibraryCategory","GAP"],["FileExtension","FileMeta.FileType"],["FormatGroup",""],
-        ["FileSizeBytes","GAP, not captured"],["FileCreatedDate",""],["SensitivityLabelName",""],
-        ["SensitivityLabelId",""],["HasPhysicalCounterpart","EDRMSMeta"],["PhysicalRecordJustification",""],
-        ["RetentionLabel",""],["RetentionLabelApplied",""],["RetentionDurationYears",""],["DueDateForDisposal",""],
-        ["RetentionStatus",""],["DisposalStatus","for Retention"],["IsDeleted",""],["DeletedDate",""],["RowLoadedDate",""]],
-     s:"public.Records. Serves Records Management, Retention, records by format."},
-    {n:"rpt_library_snapshot", g:"snapshot date, library, file format",
-     c:[["SnapshotDate","key"],["ListId","key"],["FileExtension","key"],["FormatGroup",""],["SiteUrl",""],
-        ["SiteName",""],["LibraryName",""],["LibraryUrl",""],["DepartmentCode",""],["DepartmentName",""],
-        ["DocumentCount","THE denominator"],["DeclaredCount",""],["StorageBytes","Graph returns size"],
-        ["IsEdrmsCompliant",""],["RowLoadedDate",""]],
-     s:"New weekly SharePoint scan. The only source of undeclared documents."},
-    {n:"rpt_site_usage", g:"snapshot date, site",
-     c:[["SnapshotDate","key"],["SiteUrl","key"],["SiteName",""],["DepartmentCode",""],["SiteVisits7",""],
-        ["SiteVisits30",""],["SiteVisits90",""],["UniqueViewers7",""],["UniqueViewers30",""],
-        ["UniqueViewers90","M365 does not return this"],["LastActivityDate",""],["RowLoadedDate",""]],
-     s:"Microsoft 365 usage reports. Serves active sites and active users."},
-    {n:"rpt_declaration_attempt", g:"one declaration attempt",
-     c:[["AttemptKey","key"],["SourceTrackingId",""],["AttemptedDate",""],["AttemptedDateOnly",""],
-        ["AttemptedByUpn",""],["JobTriggerId",""],["DeclarationType",""],["RecordType",""],["Result","0 ok, 1 skip, 2 fail"],
-        ["ResultName",""],["ErrorType","why declarations fail"],["ErrorLog",""],["SiteUrl",""],["SiteName",""],
-        ["LibraryName",""],["DepartmentCode",""],["ResultingDocumentId",""],["RowLoadedDate",""]],
-     s:"public.TrackingRecords, which already exists and nothing uses yet."},
-    {n:"rpt_refresh_log", g:"source system, per run",
-     c:[["RefreshKey","key"],["SourceSystem",""],["DataAsOf","what the dashboards print"],["StartedAt",""],
-        ["CompletedAt",""],["RowsLoaded",""],["Status",""],["Message",""]],
-     s:"Powers the data as of line. Overview quotes the oldest, not the newest."}
+    {n:"Utilization Report Table", db:"utilization_report",
+     g:"One row per document held in an EDRMS compliant site, declared or not",
+     v:"About 3.47 million rows, replaced in full at each weekly refresh",
+     c:[
+      ["Row ID","Whole number","Unique row identifier",""],
+      ["Snapshot Date","Date","The date this data was captured. This is the Data as of line on every dashboard","key"],
+      ["Document ID","Text","SharePoint document identifier. Survives a rename or a move",""],
+      ["Document Name","Text","The filename",""],
+      ["Document URL","Text","Direct link, so a user can click through from the report",""],
+      ["File Extension","Text","File extension, lowercase",""],
+      ["Format Group","Choice","PDF, Word, Excel, PowerPoint, Email, Image files, Video files, All other formats","key"],
+      ["File Size (MB)","Decimal number","Size of the file. Not captured today, and every storage figure needs it","gap"],
+      ["Document Created Date","Date and time","When the file was first uploaded. The date range on Total Documents reads this",""],
+      ["Document Modified Date","Date and time","When the file was last changed",""],
+      ["Folder Path","Text","Folder path inside the library",""],
+      ["Library Name","Text","Fourth and deepest level of the drill down","key"],
+      ["Library URL","Text","Link to the library",""],
+      ["Library ID","Text","Stable identifier. Libraries can be renamed, so group on this",""],
+      ["Library Category","Choice","Held today as Library Type in the Retention Label Mapping list",""],
+      ["Site Name","Text","Third level of the drill down","key"],
+      ["Site URL","Text","The column that joins this table to the Site Activity Table","key"],
+      ["Site Created Date","Date","Not captured today. See gap 3","gap"],
+      ["EDRMS Compliant","Yes / No","No rule exists for this today. See gap 3","gap"],
+      ["Department Code","Text","Owning department, short code",""],
+      ["Department Name","Text","First level of every drill down and six filters. Not available today","gap"],
+      ["Division Code","Text","Owning division, short code",""],
+      ["Division Name","Text","Second level of the drill down. Not available today","gap"],
+      ["Unit Code","Text","Not used by any dashboard yet. Lets the report go a level deeper later",""],
+      ["Unit Name","Text","Owning unit, full name",""],
+      ["Declared as Record","Yes / No","The single most important column. Total Declared Records is the count of these","key"],
+      ["Declared Date","Date and time","Blank when not declared. Every declaration date filter reads this","key"],
+      ["Declared By","Text","Who declared it. Supports a declarations by user view",""],
+      ["Declaration Type","Choice","Regular or Centralized",""],
+      ["Has Physical Counterpart","Yes / No","Drives the two colour split on every bar of Total Declared Records","key"],
+      ["Physical Counterpart Retention","Choice","Long Term or Permanent. Already held per library in the mapping list",""],
+      ["Retention Label","Text","For example, 10 years after declaration",""],
+      ["Retention Duration (Years)","Whole number","Blank where the label is Permanent",""],
+      ["Retention Label Applied Date","Date and time","Never use this as the declaration date. A label can be applied without declaring",""],
+      ["Due Date for Disposal","Date","Declared Date plus Retention Duration",""],
+      ["Retention Status","Choice","Active, Due for review, Due for disposal, Disposed, Permanent",""],
+      ["Disposal Status","Choice","Not due, Pending approval, Approved, Disposed",""],
+      ["Sensitivity Label","Text","Not on a dashboard yet. Free to collect and the obvious next question",""],
+      ["Is Deleted","Yes / No","Every count in the report excludes these rows",""],
+      ["Last Refreshed","Date and time","Operational. Lets a failed or partial refresh be spotted",""]
+     ]},
+    {n:"Site Activity Table", db:"utilization_site_activity",
+     g:"One row per SharePoint site",
+     v:"About 1,057 rows, one for every compliant site",
+     c:[
+      ["Row ID","Whole number","Unique row identifier",""],
+      ["Snapshot Date","Date","The date this data was captured",""],
+      ["Site URL","Text","The column that joins this table to the Utilization Report Table","key"],
+      ["Site Name","Text","Site display name","key"],
+      ["Site Created Date","Date","The treemap and its date range both read this. Not captured today","gap"],
+      ["EDRMS Compliant","Yes / No","No rule exists for this today. See gap 3","gap"],
+      ["Department Code","Text","Owning department, short code",""],
+      ["Department Name","Text","The treemap is grouped by this. Not available today","gap"],
+      ["Division Code","Text","Owning division, short code",""],
+      ["Division Name","Text","Owning division, full name",""],
+      ["Site Visits (7 days)","Whole number","Active Sites, 7 day window","key"],
+      ["Site Visits (30 days)","Whole number","Active Sites, 30 day window","key"],
+      ["Site Visits (90 days)","Whole number","Active Sites, 90 day window","key"],
+      ["Unique Viewers (7 days)","Whole number","Active Users, 7 day window",""],
+      ["Unique Viewers (30 days)","Whole number","Active Users, 30 day window",""],
+      ["Unique Viewers (90 days)","Whole number","Microsoft does not return this. The dashboard falls back to site visits","gap"],
+      ["Last Activity Date","Date","Printed beside each bar on Active Sites",""],
+      ["Total Storage (GB)","Decimal number","Includes version history, so it reads higher than the sum of file sizes",""],
+      ["Site Owner","Text","Who to contact about a site that has gone quiet",""],
+      ["Is Active","Yes / No","Closed sites stay in the table so historical figures do not change",""],
+      ["Last Refreshed","Date and time","When this row was last written",""]
+     ]}
   ];
 
+  const T1="Utilization Report Table", T2="Site Activity Table";
   const TRACE=[
-    ["Total Declared Records","rpt_record","count where IsDeleted is false","ok"],
-    ["Declared by department, physical split","rpt_record","DepartmentCode, HasPhysicalCounterpart","gap"],
-    ["Drill to division, site, library","rpt_record","DivisionCode, SiteName, LibraryName","gap"],
-    ["Date range on declarations","rpt_record","DeclaredDateOnly","ok"],
-    ["Declarations by user","rpt_record","DeclaredByUpn","ok"],
-    ["Total Documents in compliant sites","rpt_library_snapshot","DocumentCount","part"],
-    ["Declaration rate","rpt_library_snapshot","DeclaredCount over DocumentCount","part"],
-    ["Libraries declaration rate","rpt_library_snapshot","LibraryName, SiteName, counts","part"],
-    ["Largest libraries by storage","rpt_library_snapshot","StorageBytes","part"],
-    ["Files by format","rpt_library_snapshot","FormatGroup, DocumentCount","part"],
-    ["Storage by format, average file size","rpt_library_snapshot","FormatGroup, StorageBytes","part"],
-    ["Declared records by format","rpt_record","FormatGroup","ok"],
-    ["Compliant sites created","rpt_site","SiteCreatedDate, IsEdrmsCompliant","gap"],
-    ["Sites created by department, treemap","rpt_site","DepartmentCode, SiteCreatedDate","gap"],
-    ["Active sites, site visits","rpt_site_usage","SiteVisits7 / 30 / 90","part"],
-    ["Active users, unique viewers","rpt_site_usage","UniqueViewers7 / 30","part"],
-    ["Retention dashboard, not yet built","rpt_record","RetentionStatus, DueDateForDisposal","ok"],
-    ["Declaration success rate, not yet built","rpt_declaration_attempt","Result, ErrorType","ok"],
-    ["Data as of, every dashboard","rpt_refresh_log","DataAsOf, Status","part"]
+    ["Records Management","Total Declared Records, 21,646",T1,"Count the rows where Declared as Record is Yes","ok"],
+    ["Records Management","Declared records by department",T1,"The same count, grouped by Department Name","gap"],
+    ["Records Management","The two colour split on each bar",T1,"The same count, split by Has Physical Counterpart","ok"],
+    ["Records Management","Drill: department, division, site, library",T1,"The same count, grouped by Division Name, then Site Name, then Library Name","gap"],
+    ["Records Management","Date range on declared records",T1,"Keep only rows where Declared Date falls in the range","ok"],
+    ["Records Management","Total Documents in compliant sites, 3.47M",T1,"Count all the rows where EDRMS Compliant is Yes","scan"],
+    ["Records Management","Date range on total documents",T1,"Keep only rows where Document Created Date falls in the range","scan"],
+    ["Records Management","Active Departmental Sites",T2,"Rank sites by Site Visits for the chosen window","usage"],
+    ["Records Management","Last activity beside each site",T2,"Read Last Activity Date","usage"],
+    ["Records Management","Active Users",T2,"Rank sites by Unique Viewers for the chosen window","usage"],
+    ["Sites and Libraries","Total Compliant Sites Created, 1,057",T2,"Count the rows where EDRMS Compliant is Yes","gap"],
+    ["Sites and Libraries","Sites created by department treemap",T2,"The same count, grouped by Department Name","gap"],
+    ["Sites and Libraries","Date range on the treemap",T2,"Keep only rows where Site Created Date falls in the range","gap"],
+    ["Sites and Libraries","Libraries Declaration Rate",T1,"Per Library ID, count all rows, count the declared ones, and divide","scan"],
+    ["Sites and Libraries","Largest Libraries, 43.1 GB",T1,"Per Library ID, add up File Size","scan"],
+    ["Sites and Libraries","Average file size",T1,"Per Library ID, total File Size divided by the row count","scan"],
+    ["Format and Storage","Storage Consumed by Format, 46.7 GB",T1,"Per Format Group, add up File Size","gap"],
+    ["Format and Storage","Number of files by format",T1,"Per Format Group, count the rows","ok"],
+    ["Format and Storage","Most Common Format, PDF",T1,"The Format Group with the highest row count","ok"],
+    ["Format and Storage","Declared records by format",T1,"Per Format Group, count the rows where Declared as Record is Yes","ok"],
+    ["Retention, not yet built","Records by retention status",T1,"Per Retention Status, count the declared rows","ok"],
+    ["Retention, not yet built","Records due for disposal",T1,"Count the rows where Due Date for Disposal is in the next 12 months","ok"],
+    ["Every dashboard","The Data as of line","Both","Read Snapshot Date","ok"]
   ];
-  const BADGE={ok:['g-ok','Sourced today'],part:['g-part','Needs the scan'],gap:['g-gap','Blocked']};
+  const BADGE={
+    ok:['g-ok','Ready today'],
+    scan:['g-part','Needs the scan'],
+    usage:['g-part','Needs the usage feed'],
+    gap:['g-gap','Blocked']
+  };
 
   const html=`<section class="dash-dd">
     <div class="band">
-      <h2>Reporting database design</h2>
-      <div class="bd">The seven tables the Utilization Report needs, and where every figure on the other dashboards will come from. This is a reference page, not a dashboard: it carries no sample data and no filters. Full column detail, including field types and samples, is in utilizationdb.md in the repository.</div>
+      <h2>The database behind the report</h2>
+      <div class="bd">What has to exist in the database for the Utilization Report to work, written the way a SharePoint list is written: a table, its columns, and what each column holds. Every figure on every dashboard is traced back to a column here.</div>
     </div>
 
     <div class="panel">
-      <h3>Why a separate rpt schema</h3>
-      <p>The existing tables in <code>public</code> are owned by <code>ADBWebServiceMI1</code> and managed by Entity Framework migrations, so a column added by hand can be dropped by the next vendor release. A separate schema is never touched by those migrations, lets Power BI be granted reporting access without read on live declaration data, and can be rebuilt without any possibility of affecting production.</p>
-      <p>Two grains are unavoidable. Declared records are held one row per record because the report drills into individual retention and physical counterpart detail. Everything else is held as periodic aggregates, because 3.47 million documents at row grain would be expensive to refresh weekly and no figure needs that detail.</p>
+      <h3>Can it be one table only?</h3>
+      <p>Almost. One table gets you about nine tenths of the report. Two things break, and both break the same way.</p>
+      <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it has at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out too low. It gets worse over time, because the newest sites are the emptiest ones, and rollout progress is exactly what that dashboard is for.</p>
+      <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
+      <p>Everything else fits in one table. All of the declared record figures, every drill down, all of the library figures, all of the format and storage figures, and the whole Retention dashboard come from the first table on its own. So the answer is <b>two tables</b>. The second is small, one row per site, and it exists only because those two figures cannot live anywhere else.</p>
     </div>
 
     <div class="panel">
-      <h3>The seven tables</h3>
-      <div class="tcards" id="dd-tables"></div>
+      <h3>The two tables</h3>
+      <div class="lead">Column names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> are not available today and are covered by the three gaps below.</div>
+      <div id="dd-tables"></div>
     </div>
 
     <div class="panel">
       <h3>Where every figure comes from</h3>
-      <div class="lead">If a figure on any dashboard cannot be traced to a row here, it has no source.</div>
+      <div class="lead">Every number in this report and how it is produced. If a figure is not on this list, it has no source.</div>
       <table id="dd-trace"></table>
     </div>
 
     <div class="panel">
-      <h3>The three gaps that block figures</h3>
-      <p><b>ADBMeta is empty and out of scope for release 2026.1.</b> It supplies department, division and unit on every record. Until it is populated, every department and division figure in the report is impossible. This is a release scoping decision rather than a technical gap, and it is the largest open item.</p>
-      <p><b>File size is not captured.</b> One additional key inside the existing FileMeta jsonb column, so no migration is needed. It blocks per record storage only: Microsoft Graph returns file size on every item, so storage by library and by format can come from the scan without it.</p>
-      <p><b>There is no site created date, compliance rule, or site to department mapping.</b> ADBSites carries site url, name and project end date and none of the three. AvePoint Cloud Governance may already hold the department from when each site was provisioned, which would make this much smaller than it looks.</p>
+      <h3>The three gaps</h3>
+      <p><b>1. There is no department or division on anything.</b> Six panels and every drill down depend on it. The vocabularies exist and are populated in the term store; what does not exist is the link from a site to its department. The practical route is to attach the department to the site rather than to each record, which is about 1,057 values instead of millions, and to let every document inherit it from the site it lives in. AvePoint Cloud Governance may already hold it from when each site was provisioned, which would make this an export rather than a data entry exercise.</p>
+      <p><b>2. File size is not captured.</b> The 46.7 GB headline, storage by format, average file size and Largest Libraries all depend on it. This is the smallest of the three: file information is already stored for each record and size is one more value inside it, so no change to the database structure is needed. The document scan returns file size for every document anyway, so solving the scan solves most of this at the same time.</p>
+      <p><b>3. There is no site created date, and no rule for what counts as compliant.</b> The 1,057 sites, the treemap and its date range all depend on it. The created date can be read from the SharePoint admin centre. The compliance rule is a decision rather than a technical problem and it has to come from RAC: whether a site is compliant because it was provisioned through the EDRMS process, because it carries a particular template, or because it appears on a maintained list.</p>
     </div>
   </section>`;
 
   function init(){
     document.getElementById("dd-tables").innerHTML=TABLES.map(t=>
       `<div class="tc">
-        <div class="th"><b>${t.n}</b><small>one row per ${t.g}</small></div>
-        <ul>${t.c.map(([col,note],i)=>{
-          const gap=/GAP|THE denominator|does not return/.test(note);
-          const key=i===0||note==="key";
-          return `<li class="${gap?'gap':key?'key':''}"><b>${col}</b>${note?`<span>${note}</span>`:""}</li>`;
-        }).join("")}</ul>
-        <div class="cnt">${t.c.length} columns. ${t.s}</div>
+        <div class="th"><b>${t.n}<em>${t.db}</em></b><small>${t.g}. ${t.v}</small></div>
+        <div class="wrap"><table>
+          <tr><th>#</th><th>Column</th><th>Type</th><th>What it holds</th></tr>
+          ${t.c.map(([col,typ,desc,flag],i)=>
+            `<tr class="${flag}"><td class="n">${i+1}</td><td class="c"><b>${col}</b></td>
+             <td class="t">${typ}</td><td class="d">${desc}</td></tr>`).join("")}
+        </table></div>
       </div>`).join("");
 
     document.getElementById("dd-trace").innerHTML=
-      `<tr><th style="width:32%">Figure</th><th style="width:24%">Table</th><th style="width:28%">Columns</th><th>Status</th></tr>`+
-      TRACE.map(([fig,tbl,cols,st])=>
-        `<tr><td>${fig}</td><td><code>${tbl}</code></td><td>${cols}</td>
+      `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+
+      TRACE.map(([dash,fig,tbl,how,st])=>
+        `<tr><td>${dash}</td><td>${fig}</td><td>${tbl}</td><td>${how}</td>
          <td><span class="dtag ${BADGE[st][0]}">${BADGE[st][1]}</span></td></tr>`).join("");
   }
 
@@ -1466,7 +1511,7 @@ DASHBOARDS.dd=(function(){
     /* Documentation, not a dashboard. verify.js reads this so it does not
        demand a KPI card from a page that correctly has none. */
     kind:"reference",
-    asof:"Design reference. Full column detail in utilizationdb.md",
+    asof:"Design reference. Full detail in utilizationdb.md",
     html,init
   };
 })();

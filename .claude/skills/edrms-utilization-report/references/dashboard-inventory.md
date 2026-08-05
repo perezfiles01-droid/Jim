@@ -142,30 +142,36 @@ a known dependency.
 
 ## Data Design (`dd`)
 
-No data as of line: it prints "Design reference. Full column detail in
-utilizationdb.md" instead. It is the only module that returns `kind:"reference"`,
-which is how `verify.js` knows not to demand a KPI card from it.
+No data as of line: it prints "Design reference. Full detail in utilizationdb.md"
+instead. It is the only module that returns `kind:"reference"`, which is how
+`verify.js` knows not to demand a KPI card from it.
 
-The reporting database design, rendered so it can be read in the browser rather
-than only on github.com. It carries no sample data, no filters and no charts.
+The database design, written for the client rather than for a developer. No
+sample data, no filters, no charts, and no SQL: the client reads SharePoint list
+views, so the tables are drawn as SharePoint list views.
 
-- Why a separate `rpt` schema, in two paragraphs: Entity Framework migrations
-  own `public`, and the two grains the report needs.
-- The seven tables as cards, in `column-count:3` rather than a grid, because
-  `rpt_record` has 41 columns against `rpt_refresh_log`'s 8 and a grid row
-  stretches every card to its tallest sibling. Each card lists every column,
-  flags keys in blue and gaps in amber, and closes with its column count and
-  source.
-- Where every figure comes from: 19 dashboard figures, each mapped to a table,
-  the columns behind it, and one of three statuses, `Sourced today`,
-  `Needs the scan`, `Blocked`.
-- The three gaps that block figures: `ADBMeta` empty, file size not captured,
-  and no site created date, compliance rule or site to department mapping.
+- **Can it be one table only?** The client asked directly, so the answer opens
+  the page. Two tables, and the two things that break under one are named: a site
+  with no documents in it vanishes from the site count, and a per site visit
+  figure repeated on every document row sums to nonsense.
+- **The two tables**, each a full width card over a numbered column table with
+  type and description. Key columns render blue, unavailable ones amber.
+- **Where every figure comes from**: 23 figures, each with its dashboard, its
+  table, how the number is produced **in words rather than SQL**, and one of four
+  statuses, `Ready today`, `Needs the scan`, `Needs the usage feed`, `Blocked`.
+- **The three gaps**: no department or division on anything, file size not
+  captured, no site created date or compliance rule.
 
-**The cards are generated from a `TABLES` array that mirrors `utilizationdb.md`
-exactly, 121 columns across seven tables, in the same order.** The test suite
-asserts the per-table counts `10,17,41,15,12,18,8` and the total. If a column is
-added to the markdown it must be added here too, or the counts fail.
+**The tables mirror `utilizationdb.md` exactly, 40 and 21 columns, same names,
+same order, same types.** The test suite asserts both counts, the total of 61,
+and that every table named in the trace exists. Editing one without the other
+fails the tests.
+
+Note the earlier seven table design (`rpt_org_unit`, `rpt_record`,
+`rpt_library_snapshot` and so on) was replaced at the client's request for
+something readable. It is recoverable from git history at `0f95aa8` and is the
+better answer if the weekly cost of writing 3.47 million rows ever becomes a
+real constraint.
 
 ## Known open items
 
