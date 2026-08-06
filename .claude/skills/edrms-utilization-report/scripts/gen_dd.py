@@ -21,14 +21,14 @@ def md2html(t):
 def esc(t): return md2html(t).replace('\\','\\\\').replace('"','\\"').replace('$','\\$').replace('`','\\`')
 
 # ---- the two column definition tables (8 columns each) ----
-t1 = rows('## TABLE 1. UTILIZATION REPORT TABLE', '**37 columns.**')
+t1 = rows('## TABLE 1. UTILIZATION REPORT TABLE', '**38 columns.**')
 t2 = rows('## TABLE 2. SITE ACTIVITY TABLE', '**20 columns.**')
-assert len(t1)==37 and len(t2)==20, (len(t1), len(t2))
+assert len(t1)==38 and len(t2)==20, (len(t1), len(t2))
 
 # ---- the two traceability tables (6 columns each) ----
 u1 = rows('### Table 1: Utilization Report Table', '### Table 2: Site Activity Table')
 u2 = rows('### Table 2: Site Activity Table', '## WHERE TO GO FOR EACH SOURCE')
-assert len(u1)==37 and len(u2)==20, (len(u1), len(u2))
+assert len(u1)==38 and len(u2)==20, (len(u1), len(u2))
 
 def status(txt):
     t = txt.replace('*','')

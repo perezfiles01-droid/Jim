@@ -149,7 +149,7 @@ instead. It is the only module that returns `kind:"reference"`, which is how
 **The whole module is generated from `utilizationdb.md` by
 `scratchpad/gen_dd.py` and `build_dd.py`.** Edit the markdown, rerun both, splice
 the output over the `DASHBOARDS.dd` block. Never hand edit the arrays: they carry
-57 columns of parallel data and the tests compare them against the document.
+58 columns of parallel data and the tests compare them against the document.
 The generator converts markdown emphasis to HTML, and a test fails if any `**`
 or backtick survives to the rendered page.
 
@@ -163,9 +163,12 @@ Sections, in order:
   key name. Only two names were invented, both because the existing name means
   something else: `FileModifiedDate` and `FileCreatedDate`, since `ModifiedDate`
   is the record row and `CreatedDate` is the declaration.
-- **The two tables**: 37 columns and 20 columns, each a full width card over a
+- **What one row means.** The grain is `ListId` plus `ItemId`, not `DocumentId`,
+  which is nullable. A UAT check returned 1,990 rows against 1,984 distinct
+  `DocumentId`, so Total Declared Records counts distinct items, not rows.
+- **The two tables**: 38 columns and 20 columns, each a full width card over a
   numbered column table.
-- **Which figure each column produces, and how to source it**: all 57 columns,
+- **Which figure each column produces, and how to source it**: all 58 columns,
   each with the figure it feeds, a status, its exact location in
   `Database_Design_12.03_2.xlsx` (sheet and spreadsheet row) and in live
   `drm-npr`, and **the system to go to** for the ones that do not exist.

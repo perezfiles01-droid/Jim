@@ -74,6 +74,13 @@ mod = '''DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
+      <h3>What one row means</h3>
+      <p>One row is <b>one SharePoint item</b>, identified by <code>ListId</code> plus <code>ItemId</code> together. Not by <code>DocumentId</code>.</p>
+      <p><code>DocumentId</code> looks like the natural identifier and it is nullable, so it cannot carry that job on its own. A check against UAT returned <b>1,990 rows against 1,984 distinct DocumentId</b>, a gap of six. Whether those six are documents declared twice or rows with no <code>DocumentId</code> at all, the conclusion is the same: <code>ListId</code> and <code>ItemId</code> are both mandatory in <code>Records</code> and together they locate exactly one item in exactly one library.</p>
+      <p>This matters for one figure. <b>Total Declared Records counts distinct items, not rows</b>, so a document declared twice is one record and not two. On the UAT data that is a difference of six in 1,990, which changes nothing visually and everything about whether two people building two reports arrive at the same number. It is a definition RAC should sign off once, in writing.</p>
+    </div>
+
+    <div class="panel">
       <h3>The two tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>

@@ -46,11 +46,32 @@ convention.
 
 ---
 
+## THE GRAIN: WHAT ONE ROW MEANS
+
+One row is **one SharePoint item**, identified by `ListId` plus `ItemId`
+together. Not by `DocumentId`.
+
+`DocumentId` looks like the natural identifier and it is nullable, so it cannot
+carry that job on its own. A check against UAT returned **1,990 rows against
+1,984 distinct `DocumentId`**, a gap of six. Whether those six are documents
+declared twice or rows with no `DocumentId` at all, the conclusion is the same:
+`ListId` and `ItemId` are both `NOT NULL` in `public."Records"` and together they
+locate exactly one item in exactly one library, so they are the safe identity.
+
+This matters for one figure. **Total Declared Records should count distinct
+items, not rows**, so that a document declared twice is one record and not two.
+On the UAT data that is a difference of six in 1,990, which changes nothing
+visually and everything about whether two people building two reports get the
+same number. It is a definition RAC should sign off once, in writing.
+
+---
+
 ## HOW TO READ THE FIELD TYPES
 
 | Written here | In PostgreSQL |
 | --- | --- |
 | Text | `text` |
+| Unique ID | `uuid` |
 | Whole number | `integer` or `bigint` |
 | Decimal number | `numeric` |
 | Date | `date` |
@@ -92,7 +113,7 @@ About 3.47 million rows. Replaced in full at each weekly refresh.
 
 | S/N | Column Title | Field Type | Description | Field Values / Choices | Sample | Source | Remarks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Id | Whole number | Unique row identifier | | 1 | Generated | Primary key. Produces no figure. Same name as `Records.Id` |
+| 1 | Id | Unique ID | Unique row identifier | | 3f2a...b81c | Generated | Primary key. Produces no figure. `Records.Id` is a `uuid`, so this is one too |
 | 2 | SnapshotDate | Date | The date this data was captured | | 27 Jul 2026 | Refresh job | **NEW.** Same value on every row in a refresh. The "Data as of" line on every dashboard |
 | 3 | DocumentId | Text | SharePoint Document ID | | 1000-52341 | `Records.DocumentId` | Survives a rename or a move, so a document is never counted twice |
 | 4 | Title | Text | Filename of the file | | Board Paper Q2.pdf | `Records.Title` | |
@@ -105,32 +126,33 @@ About 3.47 million rows. Replaced in full at each weekly refresh.
 | 11 | FolderPath | Text | Folder path inside the library | | /2026/Q2/Board | `Records.FolderPath` | |
 | 12 | LibraryName | Text | Name of the library holding the file | | Annual Meetings | `Records.LibraryName` | Fourth and deepest level of the drill down |
 | 13 | LibraryUrl | Text | URL of the library | | /sites/.../AnnualMeet | `Records.LibraryUrl` | |
-| 14 | ListId | Text | SharePoint library ID | | a869c724-ac4e-... | `Records.ListId` | Libraries can be renamed. This does not change, so every library figure groups on this |
-| 15 | ADBLibraryCategory | Text | Library category | Common Document Library, Procurement, and the other values in the mapping list | Common Document Library | `Records.ADBMeta` key `ADBLibraryCategory` | ADBMeta is empty. Populated today as "Library Type" in the Retention Label Mapping list |
-| 16 | SiteName | Text | Name of the site holding the file | | org_edrms_uat | `Records.SiteName` | Third level of the drill down |
-| 17 | SiteUrl | Text | URL of the site holding the file | | https://adb.sharepoint.com/sites/edrms-cwrd | `Records.SiteUrl` | Joins this table to the Site Activity Table |
-| 18 | SiteCreatedDate | Date | When the SharePoint site was created | | 18 Jan 2026 | SharePoint admin centre | **NEW.** A copy from the Site Activity Table. See Gap 3 |
-| 19 | IsEdrmsCompliant | Yes / No | Whether the parent site is an EDRMS compliant site | true, false | true | Needs a rule | **NEW.** No rule exists anywhere today. See Gap 3 |
-| 20 | ADBDepartmentOwner | Text | Owning department | | CWRD | `Records.ADBMeta` key `ADBDepartmentOwner` | ADBMeta is marked Future Enhancement and is empty. See Gap 1 |
-| 21 | ADBDivisionOwner | Text | Owning division | | AFRM | `Records.ADBMeta` key `ADBDivisionOwner` | Same as above. See Gap 1 |
-| 22 | ADBUnitOwner | Text | Owning unit | | AFRM-PA | `Records.ADBMeta` key `ADBUnitOwner` | Same as above. No current dashboard uses it |
-| 23 | IsDeclaredRecord | Yes / No | Whether this document has been declared a record | true, false | true | Derived at load | **NEW.** true if the document appears in `Records`, false otherwise. **The single most important column in the report** |
-| 24 | CreatedDate | Date and time | Date when the user declared the file as a record | | 12 Mar 2026 09:14 | `Records.CreatedDate` | Blank when not declared. Every declaration date filter reads this |
-| 25 | CreatedBy | Text | Email or ID of the user that declared the record | | jperez@adb.org | `Records.CreatedBy` | |
-| 26 | DeclarationType | Choice | Regular or centralized declaration | Regular, Centralized | Regular | `Records.DeclarationType` | Release 2026.2, not deployed yet |
-| 27 | HasPhysical | Yes / No | Whether the file has a physical counterpart | true, false | false | `Records.EDRMSMeta` key `HasPhysical` | Drives the two colour split on every bar of Total Declared Records |
-| 28 | PhysicalCounterpartRetention | Choice | Retention that applies to the physical copy | Long Term, Permanent | Long Term | Retention Label Mapping list, column "Physical Counterpart" | Maintained per library, not per document |
-| 29 | EDRMSRetentionLabel | Text | Retention label applied to the file | | 10 years after declaration | `Records.EDRMSRetentionLabel` | |
-| 30 | EDRMSDuration | Whole number | Duration length of the retention label, in years | | 10 | `Records.EDRMSDuration` | Blank where the label is Permanent |
-| 31 | EDRMSRetentionLabelApplied | Date and time | Date the retention label was applied | | 12 Mar 2026 09:20 | `Records.EDRMSRetentionLabelApplied` | **Never use this to date a declaration.** A label can be applied to a document that was never declared. Use CreatedDate |
-| 32 | EDRMSDueDateForDisposal | Date | Computed EDRMSRetentionLabelApplied plus EDRMSDuration | | 12 Mar 2036 | `Records.EDRMSDueDateForDisposal` | The workbook defines the computation this way |
-| 33 | RetentionStatus | Text | Retention classification based on the duration | Values maintained in `EDRMSMasters` | Active | `Records.EDRMSMeta` key `RetentionStatus` | |
-| 34 | DisposalStatus | Choice | Where the record sits in the disposal process | Not due, Pending approval, Approved, Disposed | Not due | EDRMS application | **NEW.** Needed only when the Retention dashboard is built |
-| 35 | SensitivityLabelName | Text | Sensitivity label on the file | | Internal | `Records.FileMeta` key `SensitivityLabelName` | Not on any current dashboard |
-| 36 | IsDeleted | Yes / No | Soft delete flag | true, false | false | `Records.IsDeleted` | Every count on every dashboard excludes rows where this is true |
-| 37 | RowLoadedDate | Date and time | When this row was last written | | 27 Jul 2026 06:00 | Refresh job | **NEW.** Operational. Lets a failed or partial refresh be spotted |
+| 14 | ListId | Unique ID | SharePoint library ID | | a869c724-ac4e-... | `Records.ListId`, a `uuid` | Libraries can be renamed. This does not change, so every library figure groups on this |
+| 15 | ItemId | Whole number | SharePoint item ID within the library | | 203 | `Records.ItemId` | With ListId this identifies exactly one item. Together they are the identity of a row. See the grain section above |
+| 16 | ADBLibraryCategory | Text | Library category | Common Document Library, Procurement, and the other values in the mapping list | Common Document Library | `Records.ADBMeta` key `ADBLibraryCategory` | ADBMeta is empty. Populated today as "Library Type" in the Retention Label Mapping list |
+| 17 | SiteName | Text | Name of the site holding the file | | org_edrms_uat | `Records.SiteName` | Third level of the drill down |
+| 18 | SiteUrl | Text | URL of the site holding the file | | https://adb.sharepoint.com/sites/edrms-cwrd | `Records.SiteUrl` | Joins this table to the Site Activity Table |
+| 19 | SiteCreatedDate | Date | When the SharePoint site was created | | 18 Jan 2026 | SharePoint admin centre | **NEW.** A copy from the Site Activity Table. See Gap 3 |
+| 20 | IsEdrmsCompliant | Yes / No | Whether the parent site is an EDRMS compliant site | true, false | true | Needs a rule | **NEW.** No rule exists anywhere today. See Gap 3 |
+| 21 | ADBDepartmentOwner | Text | Owning department | | CWRD | `Records.ADBMeta` key `ADBDepartmentOwner` | ADBMeta is marked Future Enhancement and is empty. See Gap 1 |
+| 22 | ADBDivisionOwner | Text | Owning division | | AFRM | `Records.ADBMeta` key `ADBDivisionOwner` | Same as above. See Gap 1 |
+| 23 | ADBUnitOwner | Text | Owning unit | | AFRM-PA | `Records.ADBMeta` key `ADBUnitOwner` | Same as above. No current dashboard uses it |
+| 24 | IsDeclaredRecord | Yes / No | Whether this document has been declared a record | true, false | true | Derived at load | **NEW.** true if the document appears in `Records`, false otherwise. **The single most important column in the report** |
+| 25 | CreatedDate | Date and time | Date when the user declared the file as a record | | 12 Mar 2026 09:14 | `Records.CreatedDate` | Blank when not declared. Every declaration date filter reads this |
+| 26 | CreatedBy | Text | Email or ID of the user that declared the record | | jperez@adb.org | `Records.CreatedBy` | |
+| 27 | DeclarationType | Whole number | Regular or centralized declaration, as a code | | 1 | `Records.DeclarationType` | **Deployed today** as an `integer`. The code to label mapping needs confirming with the development team |
+| 28 | HasPhysical | Yes / No | Whether the file has a physical counterpart | true, false | false | `Records.EDRMSMeta` key `HasPhysical` | Drives the two colour split on every bar of Total Declared Records |
+| 29 | PhysicalCounterpartRetention | Choice | Retention that applies to the physical copy | Long Term, Permanent | Long Term | Retention Label Mapping list, column "Physical Counterpart" | Maintained per library, not per document |
+| 30 | EDRMSRetentionLabel | Text | Retention label applied to the file | | 10 years after declaration | `Records.EDRMSRetentionLabel` | |
+| 31 | EDRMSDuration | Text | Duration length of the retention label | | 10 | `Records.EDRMSDuration` | **Stored as text, not a number**, so it can hold Permanent alongside 10. Cast before doing arithmetic on it |
+| 32 | EDRMSRetentionLabelApplied | Date and time | Date the retention label was applied | | 12 Mar 2026 09:20 | `Records.EDRMSRetentionLabelApplied` | **Never use this to date a declaration.** A label can be applied to a document that was never declared. Use CreatedDate |
+| 33 | EDRMSDueDateForDisposal | Date | Computed EDRMSRetentionLabelApplied plus EDRMSDuration | | 12 Mar 2036 | `Records.EDRMSDueDateForDisposal` | The workbook defines the computation this way |
+| 34 | RetentionStatus | Text | Retention classification based on the duration | Values maintained in `EDRMSMasters` | Active | `Records.EDRMSMeta` key `RetentionStatus` | |
+| 35 | DisposalStatus | Choice | Where the record sits in the disposal process | Not due, Pending approval, Approved, Disposed | Not due | EDRMS application | **NEW.** Needed only when the Retention dashboard is built |
+| 36 | SensitivityLabelName | Text | Sensitivity label on the file | | Internal | `Records.FileMeta` key `SensitivityLabelName` | Not on any current dashboard |
+| 37 | IsDeleted | Yes / No | Soft delete flag | true, false | false | `Records.IsDeleted` | Every count on every dashboard excludes rows where this is true |
+| 38 | RowLoadedDate | Date and time | When this row was last written | | 27 Jul 2026 06:00 | Refresh job | **NEW.** Operational. Lets a failed or partial refresh be spotted |
 
-**37 columns.** 24 of them keep a name that already exists in the database.
+**38 columns.** 24 of them already hold data today, and 27 of the 38 carry a name that the EDRMS database already defines, whether or not it is populated yet.
 
 ---
 
@@ -175,7 +197,7 @@ hold no documents, and hold visit and viewer counts measured per site.
 holds **every document**, about 3.47 million. So where a row says a column
 exists in `Records`, it exists **for the declared 21,646**. For the other 3.45
 million documents the same column comes from the weekly SharePoint scan. That is
-one piece of work covering rows 3 to 22 in one go, not twenty separate problems.
+one piece of work covering rows 3 to 23 in one go, not twenty separate problems.
 
 **Where it is today** cites `Database_Design_12.03_2.xlsx` by sheet and actual
 spreadsheet row, and the live `drm-npr` database, schema `public`.
@@ -187,7 +209,7 @@ older 1.3 block above it. `ADBMaster`, `Library`, `PhysicalRecords` and
 
 | # | Column | Which figure it produces | Status | Where it is today | How to source it |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Id | **None.** Identifies the row so a refresh can update or remove it. It does **not** produce Total Declared Records: that figure is a count of rows where IsDeclaredRecord is true and IsDeleted is false | Exists | `4 Records` row 56 (S/N 1) `Id`. Live `Records.Id` | Generated by the refresh job |
+| 1 | Id | **None.** Identifies the row so a refresh can update or remove it. It does **not** produce Total Declared Records: that figure counts distinct ListId plus ItemId pairs where IsDeclaredRecord is true and IsDeleted is false | Exists | `4 Records` row 56 (S/N 1) `Id`. Live `Records.Id` | Generated by the refresh job |
 | 2 | SnapshotDate | The "Data as of" line, top right of all five dashboards | **NEW** | Not in the workbook | Written by the refresh job. Set it once per run |
 | 3 | DocumentId | **None directly.** Stops a renamed or moved file being counted twice, so it protects every count on every dashboard | Exists | `4 Records` row 69 (S/N 14). Live `Records.DocumentId` | EDRMS database for declared. **Microsoft Graph** returns it for the rest |
 | 4 | Title | **None on a chart.** Makes an export or a click through readable | Exists | `4 Records` row 66 (S/N 11). Live `Records.Title` | EDRMS database, then Microsoft Graph for the rest |
@@ -201,29 +223,30 @@ older 1.3 block above it. `ADBMaster`, `Library`, `PhysicalRecords` and
 | 12 | LibraryName | **Records Management:** level 4 of both drill downs. **Sites and Libraries:** the row label on Libraries Declaration Rate and on Largest Libraries | Exists | `4 Records` row 73 (S/N 18). Live `Records.LibraryName` | EDRMS database, then Microsoft Graph for the rest |
 | 13 | LibraryUrl | **None.** Click through to the library | Exists | `4 Records` row 72 (S/N 17). Live `Records.LibraryUrl` | EDRMS database, then Microsoft Graph for the rest |
 | 14 | ListId | **None directly.** The grouping key behind Libraries Declaration Rate and Largest Libraries, because library names can change | Exists | `4 Records` row 67 (S/N 12). Live `Records.ListId` | EDRMS database, then Microsoft Graph for the rest |
-| 15 | ADBLibraryCategory | **None today.** The natural grouping for Department Performance when it is built | Planned | `4 Records` row 76 (S/N 21) `ADBMeta`, marked **Future Enhancement**. Also `Library` row 6 and `ADBMaster` rows 22 to 24, neither built. Live `Records.ADBMeta` is empty | **Available now without waiting for ADBMeta.** The Retention Label Mapping list in `app_edrms_data_uat` holds it as "Library Type" per library. Join on library and you have it today |
-| 16 | SiteName | **Records Management:** level 3 of both drill downs, and the row label on Active Departmental Sites. **Sites and Libraries:** the "in site" sub label under each library | Exists | `4 Records` row 71 (S/N 16). Also `Site` row 14. Live `Records.SiteName` and `ADBSites.SiteName` | EDRMS database. `ADBSites` also carries it for every tracked site |
-| 17 | SiteUrl | **None.** Joins this table to the Site Activity Table | Exists | `4 Records` row 70 (S/N 15). Also `Site` row 13. Live `Records.SiteUrl` and `ADBSites.SiteUrl` | EDRMS database and `ADBSites` |
-| 18 | SiteCreatedDate | **None from this table.** A copy of the Site Activity value, so a document can be filtered by site age without a join | **Missing. Gap 3** | `Site` row 6 is `CreatedDate`, but that is when the **row** was created in EDRMS, not when the **SharePoint site** was created. Not in `ADBSites` | **SharePoint admin centre**, Active sites view, the "Created" column, exportable to CSV. **Microsoft Graph** `/sites` returns `createdDateTime` for a scripted version. **AvePoint Cloud Governance** holds the provisioning date if the site was provisioned through it |
-| 19 | IsEdrmsCompliant | **Records Management:** decides which documents count toward Total Documents in EDRMS Compliant Sites, 3.47M. Defines the population of the entire table | **Missing. Gap 3** | No such column and no rule anywhere in the workbook or the database | **No system holds this. It is a definition, not a lookup.** RAC picks one of three: a maintained list of compliant site URLs, which is simplest and can start today in a SharePoint list beside the Retention Label Mapping list; a site template check, if compliant sites use a distinct template; or an **AvePoint Cloud Governance** flag, if compliant sites are provisioned through a specific request form |
-| 20 | ADBDepartmentOwner | **Records Management:** level 1 of both drill downs, and the department filter on 4 panels. **Sites and Libraries:** the department filter and the treemap grouping. **Overview:** top 5 departments by declared records and top 5 by compliant sites | **Designed, empty. Gap 1** | `4 Records` row 76 (S/N 21) `ADBMeta` key `ADBDepartmentOwner`, marked **Future Enhancement**. Values in `ADBMaster` rows 13 to 15, never built. Live `Records.ADBMeta` is empty | **The vocabulary already exists**, populated in the **SharePoint term store** under Managed Metadata. What is missing is the link from a site to its department. Best source: **AvePoint Cloud Governance**, which records the requesting department when a site is provisioned. Fallback: RAC maintains a site to department list once, about 1,057 rows, in a SharePoint list. **Attach it to the site, not to each record**, and every document inherits it |
-| 21 | ADBDivisionOwner | **Records Management:** level 2 of both drill downs | **Designed, empty. Gap 1** | Same as ADBDepartmentOwner. Values in `ADBMaster` rows 16 to 18 | Same as ADBDepartmentOwner. The Division vocabulary in the term store is hierarchical, so division rolls up to department on its own |
-| 22 | ADBUnitOwner | **None today.** No current dashboard uses it | **Planned only** | Same as above. Values in `ADBMaster` rows 19 to 21 | Same as above. Collect it while collecting the other two, or leave it blank |
-| 23 | IsDeclaredRecord | **Records Management:** Total Declared Records 21,646 and every bar under it. **Sites and Libraries:** the declared half of Libraries Declaration Rate and the rate itself. **Format and Storage:** declared records by format. **Overview:** 3 of the 5 KPI cards, the physical counterpart donut, the library declared donut, the share of files donut. **Retention:** every figure | **NEW, but free** | Not a column today, because every row in `Records` already **is** a declared record | Derived at load: true where the document is present in `Records`, false where the scan found it but `Records` does not. Costs nothing beyond running the scan |
-| 24 | CreatedDate | **Records Management:** the date range filter on Total Declared Records, and the in range subtotal line under it | Exists | `4 Records` row 59 (S/N 4), described as "When the User Declared the file as a Record". Live `Records.CreatedDate` | EDRMS database. Blank for undeclared documents, which is correct |
-| 25 | CreatedBy | **None today.** Supports a declarations by user view | Exists | `4 Records` row 60 (S/N 5). Live `Records.CreatedBy` | EDRMS database |
-| 26 | DeclarationType | **None today.** Separates Regular from Centralized declarations | Planned, 2026.2 | `4 Records` row 82 (S/N 27). Not deployed | EDRMS database once release 2026.2 ships |
-| 27 | HasPhysical | **Records Management:** the two colour split on every bar of Total Declared Records. **Overview:** the physical counterpart donut | Exists | `4 Records` row 77 (S/N 22) `EDRMSMeta` key `HasPhysical`. Live `Records.EDRMSMeta` | EDRMS database. Undeclared documents are neither, so leave it blank rather than false |
-| 28 | PhysicalCounterpartRetention | **None today** | Exists, outside the database | Not in the workbook | **Retention Label Mapping list** in `app_edrms_data_uat`, column "Physical Counterpart". Maintained per library, so join on library |
-| 29 | EDRMSRetentionLabel | **Retention**, not yet built | Exists | `4 Records` row 78 (S/N 23). Live `Records.EDRMSRetentionLabel` | EDRMS database. Also per library in the Retention Label Mapping list |
-| 30 | EDRMSDuration | Feeds EDRMSDueDateForDisposal | Exists | `4 Records` row 80 (S/N 25). Live `Records.EDRMSDuration` | EDRMS database. Also "Retention Duration" per library in the mapping list |
-| 31 | EDRMSRetentionLabelApplied | Feeds EDRMSDueDateForDisposal. **Deliberately not used to date declarations** | Exists | `4 Records` row 79 (S/N 24), described as the basis for the duration computation. Live `Records.EDRMSRetentionLabelApplied` | EDRMS database |
-| 32 | EDRMSDueDateForDisposal | **Retention**, not yet built: records due for disposal | Exists | `4 Records` row 81 (S/N 26), defined as RetentionLabelApplied plus Duration. Live `Records.EDRMSDueDateForDisposal` | EDRMS database, already computed |
-| 33 | RetentionStatus | **Retention**, not yet built: the status breakdown | Exists | `4 Records` row 77 (S/N 22) `EDRMSMeta` key `RetentionStatus`. Permitted values in `5 EDRMSMasters` rows 16 to 18. Live `Records.EDRMSMeta` | EDRMS database, with the value list from `EDRMSMasters` |
-| 34 | DisposalStatus | **Retention**, not yet built: where a record sits in the disposal process | **NEW** | Not in the workbook or the database | EDRMS application, when the disposal workflow is built. Blocks nothing today |
-| 35 | SensitivityLabelName | **None on any dashboard** | Exists | `4 Records` row 75 (S/N 20) `FileMeta` key `SensitivityLabelName`. Live `Records.FileMeta` | EDRMS database, then Microsoft Graph for the rest |
-| 36 | IsDeleted | **Every count on every dashboard** excludes rows where this is true | Exists | `4 Records` row 65 (S/N 10). Live `Records.IsDeleted` | EDRMS database. For undeclared documents, absence from the next scan is the delete signal |
-| 37 | RowLoadedDate | **None.** Operational, so a partial refresh can be spotted | **NEW** | Not in the workbook | Written by the refresh job |
+| 15 | ItemId | **None on its own.** With ListId it identifies the row, which is what stops a document declared twice being counted twice | Exists | `4 Records` row 68 (S/N 13). Live `Records.ItemId` | EDRMS database, then Microsoft Graph for the rest |
+| 16 | ADBLibraryCategory | **None today.** The natural grouping for Department Performance when it is built | Planned | `4 Records` row 76 (S/N 21) `ADBMeta`, marked **Future Enhancement**. Also `Library` row 6 and `ADBMaster` rows 22 to 24, neither built. Live `Records.ADBMeta` is empty | **Available now without waiting for ADBMeta.** The Retention Label Mapping list in `app_edrms_data_uat` holds it as "Library Type" per library. Join on library and you have it today |
+| 17 | SiteName | **Records Management:** level 3 of both drill downs, and the row label on Active Departmental Sites. **Sites and Libraries:** the "in site" sub label under each library | Exists | `4 Records` row 71 (S/N 16). Also `Site` row 14. Live `Records.SiteName` and `ADBSites.SiteName` | EDRMS database. `ADBSites` also carries it for every tracked site |
+| 18 | SiteUrl | **None.** Joins this table to the Site Activity Table | Exists | `4 Records` row 70 (S/N 15). Also `Site` row 13. Live `Records.SiteUrl` and `ADBSites.SiteUrl` | EDRMS database and `ADBSites` |
+| 19 | SiteCreatedDate | **None from this table.** A copy of the Site Activity value, so a document can be filtered by site age without a join | **Missing. Gap 3** | `Site` row 6 is `CreatedDate`, but that is when the **row** was created in EDRMS, not when the **SharePoint site** was created. Not in `ADBSites` | **SharePoint admin centre**, Active sites view, the "Created" column, exportable to CSV. **Microsoft Graph** `/sites` returns `createdDateTime` for a scripted version. **AvePoint Cloud Governance** holds the provisioning date if the site was provisioned through it |
+| 20 | IsEdrmsCompliant | **Records Management:** decides which documents count toward Total Documents in EDRMS Compliant Sites, 3.47M. Defines the population of the entire table | **Missing. Gap 3** | No such column and no rule anywhere in the workbook or the database | **No system holds this. It is a definition, not a lookup.** RAC picks one of three: a maintained list of compliant site URLs, which is simplest and can start today in a SharePoint list beside the Retention Label Mapping list; a site template check, if compliant sites use a distinct template; or an **AvePoint Cloud Governance** flag, if compliant sites are provisioned through a specific request form |
+| 21 | ADBDepartmentOwner | **Records Management:** level 1 of both drill downs, and the department filter on 4 panels. **Sites and Libraries:** the department filter and the treemap grouping. **Overview:** top 5 departments by declared records and top 5 by compliant sites | **Designed, empty. Gap 1** | `4 Records` row 76 (S/N 21) `ADBMeta` key `ADBDepartmentOwner`, marked **Future Enhancement**. Values in `ADBMaster` rows 13 to 15, never built. Live `Records.ADBMeta` is empty | **The vocabulary already exists**, populated in the **SharePoint term store** under Managed Metadata. What is missing is the link from a site to its department. Best source: **AvePoint Cloud Governance**, which records the requesting department when a site is provisioned. Fallback: RAC maintains a site to department list once, about 1,057 rows, in a SharePoint list. **Attach it to the site, not to each record**, and every document inherits it |
+| 22 | ADBDivisionOwner | **Records Management:** level 2 of both drill downs | **Designed, empty. Gap 1** | Same as ADBDepartmentOwner. Values in `ADBMaster` rows 16 to 18 | Same as ADBDepartmentOwner. The Division vocabulary in the term store is hierarchical, so division rolls up to department on its own |
+| 23 | ADBUnitOwner | **None today.** No current dashboard uses it | **Planned only** | Same as above. Values in `ADBMaster` rows 19 to 21 | Same as above. Collect it while collecting the other two, or leave it blank |
+| 24 | IsDeclaredRecord | **Records Management:** Total Declared Records 21,646 and every bar under it, counted over distinct items rather than rows. **Sites and Libraries:** the declared half of Libraries Declaration Rate and the rate itself. **Format and Storage:** declared records by format. **Overview:** 3 of the 5 KPI cards, the physical counterpart donut, the library declared donut, the share of files donut. **Retention:** every figure | **NEW, but free** | Not a column today, because every row in `Records` already **is** a declared record | Derived at load: true where the document is present in `Records`, false where the scan found it but `Records` does not. Costs nothing beyond running the scan |
+| 25 | CreatedDate | **Records Management:** the date range filter on Total Declared Records, and the in range subtotal line under it | Exists | `4 Records` row 59 (S/N 4), described as "When the User Declared the file as a Record". Live `Records.CreatedDate` | EDRMS database. Blank for undeclared documents, which is correct |
+| 26 | CreatedBy | **None today.** Supports a declarations by user view | Exists | `4 Records` row 60 (S/N 5). Live `Records.CreatedBy` | EDRMS database |
+| 27 | DeclarationType | **None today.** Separates Regular from Centralized declarations | Exists | `4 Records` row 82 (S/N 27) shows it as release 2026.2, but the deployed table has it as an `integer` today | EDRMS database, available now. Confirm the code to label mapping with the development team |
+| 28 | HasPhysical | **Records Management:** the two colour split on every bar of Total Declared Records. **Overview:** the physical counterpart donut | Exists | `4 Records` row 77 (S/N 22) `EDRMSMeta` key `HasPhysical`. Live `Records.EDRMSMeta` | EDRMS database. Undeclared documents are neither, so leave it blank rather than false |
+| 29 | PhysicalCounterpartRetention | **None today** | Exists, outside the database | Not in the workbook | **Retention Label Mapping list** in `app_edrms_data_uat`, column "Physical Counterpart". Maintained per library, so join on library |
+| 30 | EDRMSRetentionLabel | **Retention**, not yet built | Exists | `4 Records` row 78 (S/N 23). Live `Records.EDRMSRetentionLabel` | EDRMS database. Also per library in the Retention Label Mapping list |
+| 31 | EDRMSDuration | Feeds EDRMSDueDateForDisposal | Exists | `4 Records` row 80 (S/N 25). Live `Records.EDRMSDuration` | EDRMS database. Also "Retention Duration" per library in the mapping list |
+| 32 | EDRMSRetentionLabelApplied | Feeds EDRMSDueDateForDisposal. **Deliberately not used to date declarations** | Exists | `4 Records` row 79 (S/N 24), described as the basis for the duration computation. Live `Records.EDRMSRetentionLabelApplied` | EDRMS database |
+| 33 | EDRMSDueDateForDisposal | **Retention**, not yet built: records due for disposal | Exists | `4 Records` row 81 (S/N 26), defined as RetentionLabelApplied plus Duration. Live `Records.EDRMSDueDateForDisposal` | EDRMS database, already computed |
+| 34 | RetentionStatus | **Retention**, not yet built: the status breakdown | Exists | `4 Records` row 77 (S/N 22) `EDRMSMeta` key `RetentionStatus`. Permitted values in `5 EDRMSMasters` rows 16 to 18. Live `Records.EDRMSMeta` | EDRMS database, with the value list from `EDRMSMasters` |
+| 35 | DisposalStatus | **Retention**, not yet built: where a record sits in the disposal process | **NEW** | Not in the workbook or the database | EDRMS application, when the disposal workflow is built. Blocks nothing today |
+| 36 | SensitivityLabelName | **None on any dashboard** | Exists | `4 Records` row 75 (S/N 20) `FileMeta` key `SensitivityLabelName`. Live `Records.FileMeta` | EDRMS database, then Microsoft Graph for the rest |
+| 37 | IsDeleted | **Every count on every dashboard** excludes rows where this is true | Exists | `4 Records` row 65 (S/N 10). Live `Records.IsDeleted` | EDRMS database. For undeclared documents, absence from the next scan is the delete signal |
+| 38 | RowLoadedDate | **None.** Operational, so a partial refresh can be spotted | **NEW** | Not in the workbook | Written by the refresh job |
 
 ### Table 2: Site Activity Table
 
@@ -260,7 +283,7 @@ source.
 
 | Dashboard | Figure | Table | How the number is produced | Ready? |
 | --- | --- | --- | --- | --- |
-| Records Management | Total Declared Records, 21,646 | Utilization Report Table | Count the rows where IsDeclaredRecord is true and IsDeleted is false | Ready today |
+| Records Management | Total Declared Records, 21,646 | Utilization Report Table | Count the distinct ListId plus ItemId pairs where IsDeclaredRecord is true and IsDeleted is false | Ready today |
 | Records Management | Declared records by department | Utilization Report Table | The same count, grouped by ADBDepartmentOwner | Blocked, Gap 1 |
 | Records Management | The two colour split on each bar | Utilization Report Table | The same count, split by HasPhysical | Ready today |
 | Records Management | Drill: department, division, site, library | Utilization Report Table | The same count, grouped by ADBDivisionOwner, then SiteName, then LibraryName | Blocked, Gap 1 |
@@ -348,6 +371,7 @@ appears in two dashboard titles with nothing behind it.
 | 3 | Which extensions map to which of the eight format groups? | RAC | A short list, signed off once. Without it `FormatGroup` has no rule |
 | 4 | How often should the report refresh? | RAC | Assumed weekly. The document scan is the part that sets the cost |
 | 5 | Is the 90 day Active Users fallback acceptable? | RAC | Microsoft does not return unique viewers at 90 days. The report shows site visits instead, with a note |
+| 6 | Does a document declared twice count once or twice? | RAC | UAT shows 1,990 rows against 1,984 distinct DocumentId. The report counts distinct items, so once. Worth signing off so two reports cannot use two rules |
 
 ---
 
