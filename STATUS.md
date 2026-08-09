@@ -5,7 +5,7 @@ BACKGROUND.md is the durable project context and is still correct about the tech
 stack, the palette and the hard rules, but it was written on 4 August and predates
 everything below.
 
-Last updated 9 August 2026.
+Last updated 9 August 2026, after the client identified the compliance marker.
 
 ---
 
@@ -31,11 +31,11 @@ is unknown any more.
 | Ready today | 14 | Nothing. The data is in `Records`. Point a query at it |
 | Needs the document scan | 17 | Code. One Microsoft Graph job |
 | Needs the usage feed | 8 | Code. A smaller job over the M365 usage reports |
-| **Blocked** | **12** | **Two asks to RAC.** Not impossible, waiting on a person |
+| **Blocked** | **12** | **Two asks.** Not impossible, waiting on a person |
 | Derived | 1 | Reads the other elements |
 
-**"Blocked" never means impossible.** It means a human has to supply a list or
-make a decision.
+**"Blocked" never means impossible.** It means a human has to supply a list, make
+a decision, or answer a question.
 
 ### The 12 blocked, and the two asks that clear them
 
@@ -50,7 +50,9 @@ make a decision.
 7. Overview, top 5 departments by declared records
 8. Overview, top 5 departments by compliant sites
 
-**Ask 2, a decision from RAC: what makes a site EDRMS compliant?** Clears 4:
+**Ask 2, a question for the development team**, no longer a RAC decision: how do
+we detect which sites have the EDRMS app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}`
+installed? See Gap 3b. Clears 4:
 
 9. Sites and Libraries, Total EDRMS Compliant Sites Created, the 1,057 KPI
 10. Sites and Libraries, all time total tile
@@ -157,19 +159,65 @@ needs the compliance rule or department.
 `lastModifiedDateTime`, probably a restore. The treemap is built on created date,
 so such sites land in the wrong bucket. Count them on the real data.
 
-### Gap 3b, the compliance rule. OPEN, but with a strong candidate
+### Gap 3b, the compliance rule. ANSWERED IN PRINCIPLE, 9 August 2026
 
-**The rule may already exist and nobody has called it that.** The test tenant
-holds `No mapping library1`, a real library full of real documents where
-declaration **fails** with *"No Library and Retention Label Mapping found"*.
+**The client gave the definition, and then found the marker.**
 
-So the **Retention Label Mapping list** in `app_edrms_data_uat` is already the
-enforced registry of what EDRMS manages. Proposed rule: a library is in scope if
-it appears in that list; a site is compliant if it holds at least one mapped
-library. No new list, no new process, and RAC already maintains it.
+> A site is EDRMS compliant if it has the **Declare as Record button**. Two routes
+> to getting it: created through Cloud Governance, or adopted afterwards. Age and
+> origin do not matter, only whether the button is there.
 
-**Ruled out:** `Root Web Template` does not distinguish EDRMS sites. Both test
-sites report "Team Site", along with 2,078 of 2,359 sites in the tenant.
+The button comes from an SPFx app, found in `Apps for SharePoint` on
+`org_csd_1.4testsite`:
+
+```
+Title        digital-records-management-system-client-side-solution
+Name         digital-records-management-system
+App version  1.0.0.6
+Product ID   {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}
+```
+
+**So the rule is mechanical, not a maintained list:** a site is compliant if that
+app is installed on it. A Product ID does not drift and cannot go stale, and it
+covers both routes because either way the app ends up installed.
+
+**Two things still to confirm with the development team, not with RAC:**
+
+1. `Apps for SharePoint` is normally a *catalog* library, a place packages are
+   stored, which is not quite the same as "installed on this site". Usually the
+   same in practice, but the distinction matters for the query.
+2. How to ask "which sites have this app installed" across 1,057 sites. Candidate
+   routes are the SharePoint REST app inventory, PnP PowerShell, or the tenant app
+   catalog's own deployment view. Let whoever deployed it name the right one.
+
+The question to ask: *"The EDRMS button comes from app
+{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}. How do we query which sites have it
+installed?"* Also ask whether the app version is tracked, because sites on
+different versions would be a useful health metric in itself.
+
+**This changes the nature of the blocker.** Gap 3b was "RAC must decide", which is
+slow and political. It is now "dev confirms the query", which is a five minute
+conversation. The four blocked elements stay blocked until the detection method is
+confirmed and built, but nobody has to make a decision any more.
+
+**Two candidates ruled out along the way:**
+
+- `Root Web Template` does not distinguish EDRMS sites. Both test sites report
+  "Team Site", along with 2,078 of the 2,359 sites in the tenant.
+- A maintained list of compliant site URLs. Workable, but it needs an owner and it
+  goes stale. The app marker needs neither.
+
+**The Retention Label Mapping list is still needed, at a different level.** It
+governs whether a *library* is in scope, which is a separate question from whether
+a *site* is compliant. That is exactly what `No mapping library1` demonstrates: a
+real library, full of real documents, inside a compliant site, where declaration
+**fails** with *"No Library and Retention Label Mapping found"*. Compliant site,
+unmapped library, both true at once.
+
+| Level | Rule | Governs |
+| --- | --- | --- |
+| Site | The EDRMS app is installed | Is this site compliant? The 1,057 KPI |
+| Library | Appears in the Retention Label Mapping list | Can a document here actually be declared? |
 
 ---
 
@@ -208,6 +256,9 @@ of the workbook. The ones that changed decisions:
   on every row, so it is derived rather than typed by hand. It is still writable.
 - **Due Date for Disposal = Retention Label Applied + Duration**, confirmed from
   the live calculated column formula. Not Declared Date plus duration.
+- **The EDRMS button comes from an SPFx app**, `digital-records-management-system`,
+  Product ID `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}`, version 1.0.0.6, found in
+  `Apps for SharePoint` on the EDRMS site. **That is the compliance marker.**
 
 ---
 
@@ -231,6 +282,14 @@ Site      org_csd_1.3testsite
   webId   d51a0e85-950e-4031-a0b0-7bf43feb7c50
 ```
 
+EDRMS marker app, the thing that puts the Declare as Record button on a site:
+
+```
+digital-records-management-system-client-side-solution
+Product ID   {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}
+Version      1.0.0.6
+```
+
 Database `drm-npr`, schema `public`. Deployed tables: `Records`,
 `TrackingRecords`, `JobTriggers`, `QueueRecords`, `ADBSites`, `EDRMSMasters`.
 **Never built despite being in the workbook:** `ADBMaster`, `Library`,
@@ -247,7 +306,7 @@ with different column names; quoting the wrong block is the easy mistake.
 
 | # | Question | Why it matters |
 | --- | --- | --- |
-| 1 | What makes a site EDRMS compliant? | 4 figures, and the phrase appears in two dashboard titles |
+| 1 | ~~What makes a site EDRMS compliant?~~ **ANSWERED by the client.** Now a dev question: how to query which sites have app `{B255A2AF-...}` installed | 4 figures. No longer a RAC decision |
 | 2 | Do documents in unmapped libraries count in Total Documents? | They are undeclarable. Counting them caps the declaration rate below 100 percent permanently |
 | 3 | Does a document declared twice count once or twice? | Recommend once, distinct `ListId` + `ItemId` |
 | 4 | Is department by site acceptable? | Decides whether Gap 1 is a week or a quarter |
@@ -272,6 +331,8 @@ with different column names; quoting the wrong block is the easy mistake.
    One row per site, department and division blank, headings matching
    `rpt.utilization_site_activity`.
 4. **Email IT about AvePoint Cloud Governance.** Could collapse Gap 1 to an export.
+4b. **Ask the development team how to detect the EDRMS app per site.** Gap 3b is
+   answered in principle; this is the only thing between it and being built.
 5. **The join test.** Query `Records` for
    `ListId = '387ed159-b632-45af-b4d4-c6fd96d8ee33'`, enumerate Annual Meetings,
    match on `ItemId`. First end to end proof of the design, on data small enough
