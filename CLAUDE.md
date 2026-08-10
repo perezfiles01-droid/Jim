@@ -22,7 +22,7 @@ sources, and what each dashboard currently contains.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. One self contained file, 5 dashboards plus a Data Design page |
+| `index.html` | The prototype. One self contained file, 6 dashboards |
 | `utilizationdb.md` | The database design, two tables and 58 columns, in the client's workbook format |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | The working document. Every element mapped to its source, plus gaps, actions and 25 findings |
 

@@ -45,12 +45,13 @@ Active / Inactive split at 90 days idle, and the disposal figures.
 
 **Two structural changes worth knowing**
 
-1. **Three tables now, not two.** The User Activity Table is one row per person,
+1. **Four tables now, not two.** The User Activity Table is one row per person,
    about 9,400 rows, from `getSharePointActivityUserDetail(period='D30')`. It
    exists because Total EDRMS Users counts **people**, and someone working in
    three sites appears in three rows of the site table, so summing
    `UniqueViewers30` overstates headcount. The dashboard shows both figures and
-   explains the gap.
+   explains the gap. The File Plan Table followed for the same reason: terms are
+   a fourth grain and no other table can hold them.
 2. **The Retention dashboard is built.** It was a placeholder hiding figures that
    need no new source: `EDRMSDueDateForDisposal` already exists and is computed,
    so records due for disposal is a count and next due date is a `MIN()`. Only
@@ -58,6 +59,10 @@ Active / Inactive split at 90 days idle, and the disposal figures.
 
 Department Performance is the only placeholder left, and most of its data now
 exists. It needs a screen, not a source.
+
+**The Data Design page was removed on 10 August.** It rendered the database
+design inside the prototype as a reference page. `utilizationdb.md` still holds
+all of it, so nothing was lost; the prototype is now reports only.
 
 ---
 
@@ -120,8 +125,8 @@ every library figure.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. Single self contained file, **5 dashboards including Retention**, plus a Data Design reference page |
-| `utilizationdb.md` | The database design in the client's own workbook format. **Three tables, 61 columns**, no code |
+| `index.html` | The prototype. Single self contained file, **6 dashboards**: Overview, Records Management, File Plan, Sites and Libraries, Format and Storage, Retention |
+| `utilizationdb.md` | The database design in the client's own workbook format. **Four tables, 70 columns**, no code |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | **The working document.** Every element mapped to its source, the gaps, the action plan, 25 findings with evidence |
 | `BACKGROUND.md` | Durable project context. Still correct on stack, palette, hard rules |
 | `STATUS.md` | This file |
@@ -134,13 +139,14 @@ required, not merely warranted. See section 9.
 
 ## 4. THE DESIGN, SETTLED
 
-**Three tables**, one per grain. Not one, and not seven.
+**Four tables**, one per grain. Not one, and not seven.
 
 | Table | One row per | Why it must exist |
 | --- | --- | --- |
 | `rpt.utilization_report` | document | Holds declared AND undeclared together. Without the undeclared there is no denominator and no declaration rate |
 | `rpt.utilization_site_activity` | SharePoint site | A site with no documents would vanish from the site count, and visit counts are per site so repeating them on every document row makes any total nonsense |
 | `rpt.utilization_user_activity` | person | Total EDRMS Users counts people. Someone working in three sites appears in three rows of the site table, so summing `UniqueViewers30` overstates headcount |
+| `rpt.utilization_file_plan` | term | The institutional file plan is the term store. Its terms are the taxonomy that classifies content, so they are neither documents nor sites nor people |
 
 **The grain is one SharePoint item, identified by `ListId` + `ItemId`.** Not
 `DocumentId`, which is nullable. UAT returned 1,990 rows against 1,984 distinct
@@ -556,18 +562,15 @@ build_xlsx.py   builds the workbook from both
 Run `build_xlsx.py`. Edit `OUT` for the version. **Never hand edit the workbook**,
 edit the data and rebuild.
 
-**The Data Design page inside `index.html`.** Generated from `utilizationdb.md`:
+**The Data Design page is gone.** It rendered `utilizationdb.md` as a reference
+page inside the prototype and was removed on 10 August. `gen_dd.py` and
+`build_dd.py` went with it, since they had no other target. Both are in git
+history if the page is ever wanted back. `utilizationdb.md` still carries the
+whole design, so nothing was lost.
 
-```
-gen_dd.py    parses the markdown
-build_dd.py  emits the JavaScript module
-```
-
-Run both, then splice the output over the `DASHBOARDS.dd` block. The tests compare
-the page against the document, so they cannot drift.
-
-**Verification.** Test suites are in the session scratchpad, not the repo.
-`.claude/skills/edrms-utilization-report/scripts/verify.js` is the generic floor
-and is in the repo. Serve `index.html` over http and run it with `playwright-core`
+**Verification.** All of it is in the repo now, under
+`.claude/skills/edrms-utilization-report/scripts/`. `verify.js` is the generic
+floor; `check_metrics.js`, `check_retention.js`, `check_fileplan.js` and
+`check_tree.py` assert the numbers, which is what `verify.js` cannot do. Serve `index.html` over http and run it with `playwright-core`
 against `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`. Two em dash failures
 in the department dropdowns are known, pre-existing and deliberately left alone.
