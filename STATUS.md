@@ -41,7 +41,7 @@ application. **Nothing in the design now lacks a source.**
 
 **Added**, each mapped to a call already run against 7rkd12: site owner,
 `LibraryCount` from `/sites/{id}/drives`, users and visits per site, an
-Active / Orphaned split at 90 days idle, and the disposal figures.
+Active / Inactive split at 90 days idle, and the disposal figures.
 
 **Two structural changes worth knowing**
 
@@ -500,7 +500,7 @@ State these plainly to the client. They are the confirmations, not open items.
 1. **Recount the elements and rebuild the workbook as v5.** `elements.py` still
    holds the pre-cut 52, so the workbook built from it is stale. What changed:
    Division and the 90 day fallback came out; the site inventory (owner,
-   libraries, users, visits, Active/Orphaned) and the whole Retention dashboard
+   libraries, users, visits, Active/Inactive) and the whole Retention dashboard
    went in; Active Users became Total EDRMS Users off a third table. Recount
    against `index.html`, update `elements.py`, then rerun `build_xlsx.py`.
    This is the one deliverable still describing the old design.

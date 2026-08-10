@@ -29,7 +29,10 @@ const r=await p.evaluate(()=>{
     rawTick:(txt.match(/`/g)||[]).length,
     hasDivision:/division/i.test(txt),
     hasUserTable:/User Activity Table/.test(txt),
-    threeTables:/three tables/i.test(txt),
+    /* Derive the count word from what is actually rendered rather than
+       hardcoding it, so adding a fifth table cannot silently leave the prose
+       claiming four. */
+    countWord:(txt.match(/\b(one|two|three|four|five|six)\s+tables\b/i)||[])[1]||null,
     figRows:document.querySelectorAll('#dd-fig tr, #dd-fig > *').length,
   };
 });
@@ -38,9 +41,13 @@ if(r.rawBold) fail.push(`${r.rawBold} unconverted ** in rendered text`);
 if(r.rawTick) fail.push(`${r.rawTick} unconverted backticks in rendered text`);
 if(r.hasDivision) fail.push('Division still appears on the Data Design page');
 if(!r.hasUserTable) fail.push('User Activity Table missing');
-if(!r.threeTables) fail.push('page still says two tables');
+const WORDS=['zero','one','two','three','four','five','six'];
+const expected=WORDS[r.tableBlocks];
+if(!r.countWord) fail.push('page never states how many tables there are');
+else if(r.countWord.toLowerCase()!==expected)
+  fail.push(`page says "${r.countWord} tables" but renders ${r.tableBlocks}`);
 console.log('table cards   :', r.cards.join(' | ')||'(n/a)');
-console.log('table blocks  :', r.tableBlocks, '| use blocks:', r.useBlocks);
+console.log('table blocks  :', r.tableBlocks, '| use blocks:', r.useBlocks, '| prose says:', r.countWord);
 console.log('tally         :', r.tally.replace(/\s+/g,' ').trim().slice(0,160));
 console.log('raw markdown  :', r.rawBold, 'bold,', r.rawTick, 'backticks');
 console.log('console errors:', errs.length?errs:'none');

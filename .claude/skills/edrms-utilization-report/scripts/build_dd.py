@@ -24,7 +24,11 @@ mod = '''DASHBOARDS.dd=(function(){
     {n:"User Activity Table", db:"utilization_user_activity",
      g:"One row per person who used SharePoint in the window",
      v:"About 9,400 rows. Exists because people cannot be counted from a table of sites",
-     c:''' + arr(d['c3'],6) + '''}
+     c:''' + arr(d['c3'],6) + '''},
+    {n:"File Plan Table", db:"utilization_file_plan",
+     g:"One row per term in the institutional file plan",
+     v:"A few hundred to a few thousand rows. The taxonomy that classifies the content, rather than the content",
+     c:''' + arr(d['c4'],6) + '''}
   ];
 
   /* [column, which figure it produces, status, where it is today, how to
@@ -32,7 +36,8 @@ mod = '''DASHBOARDS.dd=(function(){
   const USES=[
    {t:"Utilization Report Table", r:''' + arr(d['u1'],5) + '''},
    {t:"Site Activity Table", r:''' + arr(d['u2'],5) + '''},
-   {t:"User Activity Table", r:''' + arr(d['u3'],5) + '''}
+   {t:"User Activity Table", r:''' + arr(d['u3'],5) + '''},
+   {t:"File Plan Table", r:''' + arr(d['u4'],5) + '''}
   ];
   const UBADGE={
     have:['g-ok','In the database'],
@@ -65,11 +70,12 @@ mod = '''DASHBOARDS.dd=(function(){
 
     <div class="panel">
       <h3>Can it be one table only?</h3>
-      <p>Almost. One table gets you about nine tenths of the report. Three things break.</p>
+      <p>Almost. One table gets you about nine tenths of the report. Four things break.</p>
       <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it holds at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out low. It gets worse over time, because the newest sites are the emptiest ones.</p>
       <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
       <p><b>People cannot be counted from a table of sites.</b> Total EDRMS Users asks how many people used EDRMS. Someone who works in three sites appears in three site rows, so adding up the per site viewer counts counts that person three times. Only a row per person answers it.</p>
-      <p>Everything else fits in one table. So the answer is <b>three tables, one per grain</b>: one row per document, one row per site, one row per person. The second and third are small, about 1,057 and 9,400 rows, and each exists only because its grain cannot be reached from the others.</p>
+      <p><b>The file plan is not content at all.</b> Its terms are the taxonomy that classifies documents, so they are neither documents nor sites nor people and none of the other tables can hold them.</p>
+      <p>Everything else fits in one table. So the answer is <b>four tables, one per grain</b>: one row per document, one row per site, one row per person, one row per term. The last three are small, and each exists only because its grain cannot be reached from the others.</p>
     </div>
 
     <div class="panel">
@@ -87,7 +93,7 @@ mod = '''DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The three tables</h3>
+      <h3>The four tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>
     </div>
@@ -155,7 +161,7 @@ mod = '''DASHBOARDS.dd=(function(){
     document.getElementById("dd-tally").innerHTML=
       Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
         `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
-      `<span class="ti tot"><b>${n}</b> columns across the three tables</span>`;
+      `<span class="ti tot"><b>${n}</b> columns across the four tables</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+

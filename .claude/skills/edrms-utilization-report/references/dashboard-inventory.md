@@ -9,7 +9,8 @@ touching another's blocks.
 | --- | --- | --- | --- |
 | Overview | `ov` | `overview` blocks | Built, the default on load |
 | Records Management | `rm` | `recordsmanagement` blocks | Built |
-| Department Performance | - | - | Placeholder, `class="dis"` |
+| Department Performance | - | - | Placeholder, `class="dis"`. The only one left |
+| File Plan | `fp` | `fileplan` blocks | Built |
 | Sites and Libraries | `sl` | `sitesandlibraries` blocks | Built |
 | Format and Storage | `fs` | `formatandstorage` blocks | Built |
 | Retention | `rt` | `retention` blocks | Built |
@@ -206,6 +207,33 @@ quoting the wrong block is the easy mistake. `ADBMaster`, `Library`,
 `PhysicalRecords` and `favoritelocations` are in the workbook but were never
 built.
 
+## File Plan (`fp`)
+
+The institutional file plan is the SharePoint term store, read as a report.
+Answers the client's section 3.
+
+- Two KPI cards, *Total Terms* (1,099) and *Term Sets* (45).
+- Five category bars sized by term count, each showing its term set count and how
+  many levels deep it runs.
+
+**Source is confirmed, counts are not.** Three Graph calls, needing
+`TermStore.Read.All`:
+
+```
+GET /termStore/groups                    the five categories
+GET /termStore/groups/{groupId}/sets     the sets inside one
+GET /termStore/sets/{setId}/children     the terms at one level
+```
+
+**The wrinkle worth knowing before anyone estimates it:** a file plan is a tree
+and the API returns one level at a time, so counting every term under a category
+means walking down through each level rather than reading a total. A loop, not a
+blocker. `Depth` is recorded while walking at no extra cost, and it answers what
+a file plan review usually asks anyway.
+
+The amber note on the panel says the counts are illustrative until that walk is
+run. Leave it there until it has been.
+
 ## Retention (`rt`)
 
 Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00.
@@ -231,6 +259,29 @@ an assertion enforcing it. A second assertion ties the label total to
 **Inactive over 1 year is the one figure here that is not ready.** It needs the
 document scan, because an untouched document has no row until the scan creates
 one, and the panel says so in an amber note rather than implying otherwise.
+
+## Sites and Libraries, section 3 and 4
+
+Added 10 August, answering the client's 1.1.1, 2.1.1.2, 2.1.1.3.x, 4.1, 4.3, 4.4
+and 4.8.
+
+**Section 3, site inventory.** *Active Sites* and *Inactive Sites, over 90 days*,
+over a sortable table of site, department, owner, libraries, users, visits, last
+activity and status.
+
+**Inactive, not orphaned.** The word orphaned was dropped deliberately: the
+client's own list pairs it with "sites without owners", which is a different
+question. This figure measures idle time only and is named for that. Ownerless
+sites are out of scope.
+
+**Section 4, library health and growth.** *Active Libraries, last 90 days* and
+*Library Growth Rate*, over a sortable table with three states rather than two,
+because a library over the 180 day dormant threshold is a different conversation
+from one that has merely gone quiet.
+
+**The growth rate needs no snapshot history**, which is the thing people assume.
+Every record carries `CreatedDate`, so records held at the start of the period is
+the total minus those declared since. It is ready today.
 
 ## Known open items
 

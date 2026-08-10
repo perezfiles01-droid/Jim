@@ -165,7 +165,30 @@
   .dash-sl .pill.ok{background:#E7F4EC;color:#1C6B3C}
   .dash-sl .pill.no{background:#FBEEE7;color:#9A4A17}
   .dash-sl .scrollx{overflow-x:auto}
+  .dash-sl .ltab{--sc:200px 200px 118px 130px 118px 118px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:880px}
+  .dash-sl .ltab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  .dash-sl .ltab .hd.on{color:var(--blue);font-weight:700}
+  .dash-sl .ltab .hd.num{text-align:right}
+  .dash-sl .ltab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-sl .ltab .dp{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-sl .ltab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
+  .dash-sl .ltab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
+  .dash-sl .ltab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-sl .pill.mid{background:#FDF4E3;color:#8A5A12}
+  .dash-sl .subtotal{margin-top:12px;font-size:12.5px;color:var(--ink2)}
 
+
+/* ================= fileplan.css ================= */
+/* File Plan: scoped styles. Only loaded shapes under .dash-fp. */
+  .dash-fp .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,300px));gap:16px;margin-bottom:16px}
+  @media(max-width:740px){.dash-fp .kpis{grid-template-columns:1fr}}
+  .dash-fp .fbar{display:grid;grid-template-columns:250px 1fr 58px;align-items:center;gap:12px;margin-bottom:10px}
+  .dash-fp .fbar .fl b{font-size:13px;font-weight:600}
+  .dash-fp .fbar .fl small{display:block;color:var(--mut);font-size:11px}
+  .dash-fp .fbar .ft{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
+  .dash-fp .fbar .ff{height:26px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
+  .dash-fp .fbar .fp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .dash-fp .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:14px;line-height:1.5}
 
 /* ================= retention.css ================= */
 /* Retention: scoped styles. Only loaded shapes under .dash-rt. */
@@ -334,6 +357,7 @@
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
+    <a data-d="fp"><span class="ic">⌸</span>File Plan</a>
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
     <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
     <a data-d="rt"><span class="ic">⏳</span>Retention</a>
@@ -411,26 +435,47 @@ DASHBOARDS.sl=(function(){
   const DNAME={};SITEDEPTS.forEach(d=>DNAME[d[0]]=d[1]);
   const ALLTIME_SITES=1057;
 
-  /* [lib, site, dept, docs, records, storageGB] */
+  /* [lib, site, dept, docs, records, storageGB, idleDays, newRecords]
+     idleDays    days since the library was last touched. Graph returns
+                 lastModifiedDateTime on every drive, from the same
+                 GET /sites/{id}/drives call that already supplies LibraryCount.
+     newRecords  records declared during the reporting period. Already in the
+                 data: every record carries CreatedDate, so the growth rate
+                 needs no snapshot history. */
   const LIBS=[
-   ["Final Documents","ITD Records Site","ITD",3200,640,4.2],
-   ["Loan Agreements","FIN Treasury Site","FIN",2400,384,6.8],
-   ["Correspondence","PARD Procurement Site","PARD",2100,210,1.9],
-   ["Board Papers","OGC Legal Site","OGC",1800,540,5.4],
-   ["Country Reports","SARD Ops Site","SARD",1500,450,3.1],
-   ["Field Reports","SERD Ops Site","SERD",1300,286,7.2],
-   ["Project Completion","OSFG Country Site","OSFG",1200,300,8.9],
-   ["Case Files","OGC Compliance Site","OGC",1000,280,2.4],
-   ["Policies","HRD People Site","HRD",900,315,0.8],
-   ["Minutes","BRM Budget Site","BRM",700,245,0.5],
-   ["Legal Opinions","OGC Advisory Site","OGC",640,150,0.45],
-   ["Audit Reports","CWRD Ops Site","CWRD",580,120,0.42],
-   ["Investment Memos","PSOD Investments Site","PSOD",520,180,0.38],
-   ["Climate Briefs","SDCC Climate Site","SDCC",460,95,0.35],
-   ["Admin Records","OAS Facilities Site","OAS",400,88,0.30],
+   ["Final Documents","ITD Records Site","ITD",3200,640,4.2,3,74],
+   ["Loan Agreements","FIN Treasury Site","FIN",2400,384,6.8,11,41],
+   ["Correspondence","PARD Procurement Site","PARD",2100,210,1.9,6,28],
+   ["Board Papers","OGC Legal Site","OGC",1800,540,5.4,2,63],
+   ["Country Reports","SARD Ops Site","SARD",1500,450,3.1,9,52],
+   ["Field Reports","SERD Ops Site","SERD",1300,286,7.2,17,31],
+   ["Project Completion","OSFG Country Site","OSFG",1200,300,8.9,24,26],
+   ["Case Files","OGC Compliance Site","OGC",1000,280,2.4,41,19],
+   ["Policies","HRD People Site","HRD",900,315,0.8,8,34],
+   ["Minutes","BRM Budget Site","BRM",700,245,0.5,33,22],
+   ["Legal Opinions","OGC Advisory Site","OGC",640,150,0.45,118,4],
+   ["Audit Reports","CWRD Ops Site","CWRD",580,120,0.42,96,7],
+   ["Investment Memos","PSOD Investments Site","PSOD",520,180,0.38,54,12],
+   ["Climate Briefs","SDCC Climate Site","SDCC",460,95,0.35,142,2],
+   ["Admin Records","OAS Facilities Site","OAS",400,88,0.30,207,0],
   ];
   const TOTAL_RECORDS=LIBS.reduce((a,l)=>a+l[4],0);
   const TOTAL_GB=LIBS.reduce((a,l)=>a+l[5],0);
+
+  /* Library health. Two thresholds because the client asks for both: 90 days
+     marks a library as inactive, 180 flags it as long dormant. */
+  const LIB_IDLE=90, LIB_DORMANT=180;
+  const LIBS_ACTIVE=LIBS.filter(l=>l[6]<=LIB_IDLE).length;
+  const LIBS_INACTIVE=LIBS.filter(l=>l[6]>LIB_IDLE).length;
+  const LIBS_DORMANT=LIBS.filter(l=>l[6]>LIB_DORMANT).length;
+
+  /* Growth rate = records declared during the period, over records held at the
+     start of it. No snapshot history needed: every record carries CreatedDate,
+     so records at the start is simply the total minus those declared since. */
+  const NEW_RECORDS=LIBS.reduce((a,l)=>a+l[7],0);
+  const RECORDS_AT_START=TOTAL_RECORDS-NEW_RECORDS;
+  const GROWTH_RATE=NEW_RECORDS/RECORDS_AT_START;
+  console.assert(RECORDS_AT_START>0,"Records at the start of the period must be positive for a growth rate to mean anything");
 
   /* Site inventory. Every column here maps to a call already run against the
      7rkd12 test tenant, which is the whole reason this section exists:
@@ -457,11 +502,12 @@ DASHBOARDS.sl=(function(){
    ["SDCC Climate Site","SDCC","t.bautista@adb.org",5,16,430,142],
    ["OAS Facilities Site","OAS","f.gutierrez@adb.org",3,11,290,207],
   ];
-  /* The orphan rule. 90 days with no activity, which is the client's own
-     wording in 1.1.1 and is read straight off Last Activity Date. */
-  const ORPHAN_DAYS=90;
-  const ACTIVE_SITES=SITES.filter(s=>s[6]<=ORPHAN_DAYS).length;
-  const ORPHAN_SITES=SITES.length-ACTIVE_SITES;
+  /* The inactivity rule. 90 days with no activity, read straight off Last
+     Activity Date. Ownerless sites are a different question and deliberately
+     out of scope, so this is idle time only and is named for what it measures. */
+  const IDLE_DAYS=90;
+  const ACTIVE_SITES=SITES.filter(s=>s[6]<=IDLE_DAYS).length;
+  const INACTIVE_SITES=SITES.length-ACTIVE_SITES;
   const SITE_LIBRARIES=SITES.reduce((a,s)=>a+s[3],0);
 
   /* ===== treemap ===== */
@@ -635,11 +681,11 @@ DASHBOARDS.sl=(function(){
   function renderS3(){
     document.getElementById("s3-detail").innerHTML=`<div class="panel">
       <div class="ptitle">Every compliant site, its owner and its activity</div>
-      <div class="psub">Click any column heading to sort. Users counts distinct people who opened something in the site; visits counts page views. A site is orphaned once it has had no activity for ${ORPHAN_DAYS} days.</div>
+      <div class="psub">Click any column heading to sort. Users counts distinct people who opened something in the site; visits counts page views. A site is inactive once it has had no activity for ${IDLE_DAYS} days.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">Sites listed</div><div class="tv">${F(SITES.length)}</div></div>
         <div class="tile"><div class="tl">Libraries across them</div><div class="tv">${F(SITE_LIBRARIES)}</div></div>
-        <div class="tile hi"><div class="tl">Orphaned</div><div class="tv">${F(ORPHAN_SITES)}</div></div>
+        <div class="tile hi"><div class="tl">Inactive</div><div class="tv">${F(INACTIVE_SITES)}</div></div>
       </div>
       <div class="scrollx"><div class="stab" id="st-table"></div></div></div>`;
     drawSites();
@@ -660,12 +706,12 @@ DASHBOARDS.sl=(function(){
     h+=`<div class="hd">Status</div>`;
     rows.forEach(s=>{
       const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(s[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
-      const orphan=s[6]>ORPHAN_DAYS;
+      const idle=s[6]>IDLE_DAYS;
       h+=`<div class="nm" title="${s[0]}">${s[0]}</div>`;
       h+=`<div class="dp">${s[1]}</div>`;
       h+=`<div class="ow" title="${s[2]}">${s[2]}</div>`;
       h+=cell(3,F(s[3]))+cell(4,F(s[4]))+cell(5,F(s[5]))+cell(6,s[6]+"d ago");
-      h+=`<div class="pill ${orphan?"no":"ok"}">${orphan?"Orphaned":"Active"}</div>`;
+      h+=`<div class="pill ${idle?"no":"ok"}">${idle?"Inactive":"Active"}</div>`;
     });
     /* Eight grid columns: the seven sortable ones plus Status, which has no
        sort key of its own because it is derived from idleDays. */
@@ -676,6 +722,62 @@ DASHBOARDS.sl=(function(){
       if(sortSite===k)dirSite=dirSite==="asc"?"desc":"asc";
       else{sortSite=k;dirSite=(k==="idle"||k==="name"||k==="dept"||k==="owner")?"asc":"desc";}
       drawSites();
+    });
+  }
+
+  /* ===== library health ===== */
+  let sortLib="idle",dirLib="desc";
+  const LCOLS=[
+    {k:"lib",   i:0,lab:"Library",        num:false},
+    {k:"site",  i:1,lab:"Site",           num:false},
+    {k:"recs",  i:4,lab:"Records held",   num:true},
+    {k:"new",   i:7,lab:"New this period",num:true},
+    {k:"idle",  i:6,lab:"Last activity",  num:true},
+  ];
+  function renderS4(){
+    document.getElementById("s4-detail").innerHTML=`<div class="panel">
+      <div class="ptitle">Library activity and growth</div>
+      <div class="psub">Click any column heading to sort. Last activity is how long ago anything in the library changed. New this period counts records declared during the reporting period, which is what the growth rate divides by the holding at the start.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Active, under ${LIB_IDLE} days</div><div class="tv">${F(LIBS_ACTIVE)}</div></div>
+        <div class="tile hi"><div class="tl">Inactive, over ${LIB_IDLE} days</div><div class="tv">${F(LIBS_INACTIVE)}</div></div>
+        <div class="tile"><div class="tl">Long dormant, over ${LIB_DORMANT} days</div><div class="tv">${F(LIBS_DORMANT)}</div></div>
+        <div class="tile"><div class="tl">Growth rate</div><div class="tv">${(GROWTH_RATE*100).toFixed(1)}%</div></div>
+      </div>
+      <div class="scrollx"><div class="ltab" id="lib-table"></div></div>
+      <div class="subtotal">${F(NEW_RECORDS)} records declared this period against ${F(RECORDS_AT_START)} held at the start, a growth rate of ${(GROWTH_RATE*100).toFixed(1)} percent.</div></div>`;
+    drawLibs();
+  }
+  function drawLibs(){
+    const col=LCOLS.find(c=>c.k===sortLib);
+    const rows=[...LIBS].sort((a,b)=>{
+      const x=a[col.i],y=b[col.i];
+      const cmp=col.num?x-y:String(x).localeCompare(String(y));
+      return dirLib==="asc"?cmp:-cmp;
+    });
+    const mx={};[4,7,6].forEach(i=>mx[i]=Math.max(...LIBS.map(l=>l[i]),1));
+    let h="";
+    LCOLS.forEach(c=>{
+      const arrow=sortLib===c.k?(dirLib==="asc"?" ↑":" ↓"):"";
+      h+=`<div class="hd${c.num?" num":""}${sortLib===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
+    });
+    h+=`<div class="hd">Status</div>`;
+    rows.forEach(l=>{
+      const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(l[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
+      /* Three states, not two: a library over the dormant threshold is a
+         different conversation from one that has merely gone quiet. */
+      const state=l[6]>LIB_DORMANT?["no","Long dormant"]:l[6]>LIB_IDLE?["mid","Inactive"]:["ok","Active"];
+      h+=`<div class="nm" title="${l[0]}">${l[0]}</div><div class="dp">${l[1]}</div>`;
+      h+=cell(4,F(l[4]))+cell(7,F(l[7]))+cell(6,l[6]+"d ago");
+      h+=`<div class="pill ${state[0]}">${state[1]}</div>`;
+    });
+    const t=document.getElementById("lib-table");
+    t.innerHTML=h;
+    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
+      const k=hd.dataset.s;
+      if(sortLib===k)dirLib=dirLib==="asc"?"desc":"asc";
+      else{sortLib=k;dirLib=(k==="lib"||k==="site")?"asc":"desc";}
+      drawLibs();
     });
   }
 
@@ -701,24 +803,37 @@ DASHBOARDS.sl=(function(){
 
     <div class="band">
       <h2>Site inventory and activity</h2>
-      <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${ORPHAN_DAYS} days is counted as orphaned.</div>
+      <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${IDLE_DAYS} days is counted as inactive.</div>
     </div>
     <div class="kpis" id="s3-kpis">
       <div class="kpi on"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Orphaned Sites, over ${ORPHAN_DAYS} days idle</div><div class="val" id="kpi-orp">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="tap">▾ Opened below</div></div>
     </div>
     <div id="s3-detail"></div>
+
+    <div class="band">
+      <h2>Library health and growth</h2>
+      <div class="bd">Which libraries are still in use, which have gone quiet, and how fast the record holding is growing. A library counts as inactive after ${LIB_IDLE} days with no activity and long dormant after ${LIB_DORMANT}.</div>
+    </div>
+    <div class="kpis" id="s4-kpis">
+      <div class="kpi on"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div id="s4-detail"></div>
   </section>`;
 
   function init(){
     document.getElementById("kpi-decl").textContent=F(TOTAL_RECORDS);
     document.getElementById("kpi-stor").textContent=TOTAL_GB.toFixed(1)+" GB";
     document.getElementById("kpi-act").textContent=F(ACTIVE_SITES);
-    document.getElementById("kpi-orp").textContent=F(ORPHAN_SITES);
+    document.getElementById("kpi-orp").textContent=F(INACTIVE_SITES);
+    document.getElementById("kpi-libact").textContent=F(LIBS_ACTIVE);
+    document.getElementById("kpi-growth").textContent=(GROWTH_RATE*100).toFixed(1)+"%";
     document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
     renderS1();
     renderS2(curS2);
     renderS3();
+    renderS4();
   }
 
   return {
@@ -739,8 +854,8 @@ DASHBOARDS.sl=(function(){
       departmentCount:SITEDEPTS.length,
       sitesListed:SITES.length,
       activeSites:ACTIVE_SITES,
-      orphanSites:ORPHAN_SITES,
-      orphanDays:ORPHAN_DAYS,
+      inactiveSites:INACTIVE_SITES,
+      idleDays:IDLE_DAYS,
       librariesAcrossSites:SITE_LIBRARIES,
       distinctOwners:[...new Set(SITES.map(s=>s[2]))].length
     },
@@ -1529,6 +1644,88 @@ DASHBOARDS.ov=(function(){
 
 
 /* =================================================================
+   fileplan.js
+   The institutional file plan, which is the SharePoint term store read as
+   a report. Answers the client's section 3: total terms and the count in
+   each top level category.
+
+   Sourced from the Graph term store API and testable in Graph Explorer
+   today:
+     GET /termStore/groups                       the categories
+     GET /termStore/groups/{groupId}/sets        the sets inside one
+     GET /termStore/sets/{setId}/children        the terms at one level
+
+   One wrinkle worth knowing before anyone estimates it: a file plan is a
+   tree and the API returns one level at a time, so a full count means
+   walking down through each level rather than reading a single number.
+   That is a loop, not a blocker, and it is why this is a small job rather
+   than a free one.
+   ================================================================= */
+DASHBOARDS.fp=(function(){
+  /* [category, sets, terms, depth]. The five top level groups the client
+     names. Counts are illustrative until the walk above is run against the
+     tenant; the source is confirmed, the numbers are not. */
+  const CATS=[
+   {label:"Programme and operation", sets:14, terms:412, depth:4},
+   {label:"Administration",          sets:11, terms:286, depth:3},
+   {label:"Compliance and oversight",sets:8,  terms:174, depth:3},
+   {label:"People Management",       sets:7,  terms:139, depth:3},
+   {label:"Risk management",         sets:5,  terms:88,  depth:2},
+  ];
+  const TOTAL_TERMS=CATS.reduce((a,c)=>a+c.terms,0);
+  const TOTAL_SETS=CATS.reduce((a,c)=>a+c.sets,0);
+  const MAX_DEPTH=Math.max(...CATS.map(c=>c.depth));
+  console.assert(CATS.every(c=>c.terms>=c.sets),
+    "A category cannot hold fewer terms than it has term sets");
+
+  function draw(){
+    const mx=Math.max(...CATS.map(c=>c.terms));
+    document.getElementById("fp-bars").innerHTML=CATS.map(c=>
+      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
+        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
+        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
+  }
+
+  const html=`<section class="dash-fp">
+    <div class="band">
+      <h2>Institutional file plan</h2>
+      <div class="bd">The file plan is the SharePoint term store, so its size and shape can be reported directly. How many terms exist, and how they divide across the five categories.</div>
+    </div>
+    <div class="kpis" id="fp-kpis">
+      <div class="kpi on"><div class="lab">Total Terms</div><div class="val" id="kpi-terms">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Term Sets</div><div class="val" id="kpi-sets">…</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Terms by category</div>
+      <div class="psub">The five top level groups in the term store, sized by how many terms sit beneath them at every level. The deepest branch runs ${MAX_DEPTH} levels.</div>
+      <div id="fp-bars"></div>
+      <div class="note">Counts include terms at every level, not only the top. The term store API returns one level at a time, so producing these means walking the tree rather than reading a single total. The categories and the source are confirmed; the counts here are illustrative until that walk is run.</div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-terms").textContent=F(TOTAL_TERMS);
+    document.getElementById("kpi-sets").textContent=F(TOTAL_SETS);
+    draw();
+  }
+
+  return {
+    ver:"File Plan Dashboard",
+    crumb:"File Plan Dashboard",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{
+      totalTerms:TOTAL_TERMS,
+      totalSets:TOTAL_SETS,
+      maxDepth:MAX_DEPTH,
+      categoryCount:CATS.length,
+      categories:CATS.map(c=>({label:c.label,terms:c.terms,sets:c.sets}))
+    },
+    html,init
+  };
+})();
+
+
+/* =================================================================
    retention.js
    Answers the client's 2.1.2.8, the disposal summary. Built rather than
    left a placeholder because the data is already there: Records carries
@@ -1728,6 +1925,7 @@ DASHBOARDS.dd=(function(){
       ["FolderPath","Text","Folder path inside the library",""],
       ["LibraryName","Text","Name of the library holding the file","key"],
       ["LibraryUrl","Text","URL of the library",""],
+      ["LibraryLastActivityDate","Date","When anything in the library last changed","key"],
       ["ListId","Unique ID","SharePoint library ID","key"],
       ["ItemId","Whole number","SharePoint item ID within the library",""],
       ["ADBLibraryCategory","Text","Library category",""],
@@ -1786,6 +1984,19 @@ DASHBOARDS.dd=(function(){
       ["LastActivityDate","Date","Their most recent SharePoint activity","key"],
       ["ViewedOrEditedFileCount","Whole number","Files they viewed or edited in the window",""],
       ["RowLoadedDate","Date and time","When this row was last written",""]
+    ]},
+    {n:"File Plan Table", db:"utilization_file_plan",
+     g:"One row per term in the institutional file plan",
+     v:"A few hundred to a few thousand rows. The taxonomy that classifies the content, rather than the content",
+     c:[
+      ["Id","Whole number","Unique row identifier",""],
+      ["SnapshotDate","Date","The date this data was captured","key"],
+      ["TermId","Unique ID","The term's own identifier",""],
+      ["TermName","Text","The term's label",""],
+      ["TermSetName","Text","The term set the term belongs to",""],
+      ["CategoryName","Text","The top level group","key"],
+      ["Depth","Whole number","How many levels down the term sits",""],
+      ["RowLoadedDate","Date and time","When this row was last written",""]
     ]}
   ];
 
@@ -1806,6 +2017,7 @@ DASHBOARDS.dd=(function(){
      ["FolderPath","<b>None.</b> Builds DocumentUrl and separates folders inside one library","have","<code>4 Records</code> row 74 (S/N 19). Live <code>Records.FolderPath</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["LibraryName","<b>Records Management:</b> level 4 of both drill downs. <b>Sites and Libraries:</b> the row label on Libraries Declaration Rate and on Largest Libraries","have","<code>4 Records</code> row 73 (S/N 18). Live <code>Records.LibraryName</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["LibraryUrl","<b>None.</b> Click through to the library","have","<code>4 Records</code> row 72 (S/N 17). Live <code>Records.LibraryUrl</code>","EDRMS database, then Microsoft Graph for the rest"],
+     ["LibraryLastActivityDate","<b>Sites and Libraries:</b> Active Libraries, Inactive Libraries, the Long dormant tile and the Last activity column","new","Nowhere","<b>Microsoft Graph</b> <code>lastModifiedDateTime</code> on the drive, from the same <code>GET /sites/{id}/drives</code> call that supplies <code>LibraryCount</code>"],
      ["ListId","<b>None directly.</b> The grouping key behind Libraries Declaration Rate and Largest Libraries, because library names can change","have","<code>4 Records</code> row 67 (S/N 12). Live <code>Records.ListId</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["ItemId","<b>None on its own.</b> With ListId it identifies the row, which is what stops a document declared twice being counted twice","have","<code>4 Records</code> row 68 (S/N 13). Live <code>Records.ItemId</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["ADBLibraryCategory","<b>None today.</b> The natural grouping for Department Performance when it is built","planned","<code>4 Records</code> row 76 (S/N 21) <code>ADBMeta</code>, marked <b>Future Enhancement</b>. Also <code>Library</code> row 6 and <code>ADBMaster</code> rows 22 to 24, neither built. Live <code>Records.ADBMeta</code> is empty","<b>Available now without waiting for ADBMeta.</b> The Retention Label Mapping list in <code>app_edrms_data_uat</code> holds it as \"Library Type\" per library. Join on library and you have it today"],
@@ -1843,7 +2055,7 @@ DASHBOARDS.dd=(function(){
      ["UniqueViewers7","<b>Records Management:</b> Active Users, the 7 day window","new","Nowhere","Same report, the \"Visited Page Count\" and unique viewer fields"],
      ["UniqueViewers30","<b>Records Management:</b> Active Users, the 30 day window, and the Active Users KPI","new","Nowhere","Same report at <code>period='D30'</code>"],
      ["LibraryCount","<b>Sites and Libraries:</b> the Libraries column on the site inventory, and the \"libraries across them\" tile","new","Nowhere","<b>Microsoft Graph</b> <code>GET /sites/{id}/drives</code>, counted. Verified against the test tenant"],
-     ["LastActivityDate","<b>Sites and Libraries:</b> the Last activity column and the Active / Orphaned split. <b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
+     ["LastActivityDate","<b>Sites and Libraries:</b> the Last activity column and the Active / Inactive split. <b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
      ["StorageUsed","<b>None today.</b> Sites and Libraries measures storage from FileSize instead","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Storage used\" column. Note it includes version history, so it will not match the sum of FileSize"],
      ["SiteOwner","<b>Sites and Libraries:</b> the Site owner column on the site inventory. Who to contact about a site that has gone quiet","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Primary admin\" column"],
      ["ProjectEndDate","<b>None today.</b> The obvious basis for a site closure view","have","<code>Site</code> row 15 (S/N 11). Live <code>ADBSites.ProjectEndDate</code>","<code>ADBSites</code>, already populated"],
@@ -1857,6 +2069,16 @@ DASHBOARDS.dd=(function(){
      ["DisplayName","<b>None.</b> Readability when the list is inspected","new","Nowhere","Same call"],
      ["LastActivityDate","Filters the count to a 7 or 30 day window","new","Nowhere","Same call"],
      ["ViewedOrEditedFileCount","<b>None today.</b> Separates heavy users from one time visitors, and the obvious basis for an adoption view","new","Nowhere","Same call"],
+     ["RowLoadedDate","<b>None.</b> Operational","new","Nowhere","Written by the refresh job"]
+   ]},
+   {t:"File Plan Table", r:[
+     ["Id","<b>None.</b> Identifies the row","new","Nowhere","Generated by the refresh job"],
+     ["SnapshotDate","The \"Data as of\" line","new","Nowhere","Written by the refresh job"],
+     ["TermId","<b>None.</b> Keeps a count stable when a term is renamed","new","Nowhere","<b>Microsoft Graph</b> term store"],
+     ["TermName","<b>None on a chart.</b> Readability when the plan is inspected","new","Nowhere","Same source"],
+     ["TermSetName","<b>File Plan:</b> the \"N term sets\" line under each category","new","Nowhere","Same source"],
+     ["CategoryName","<b>File Plan:</b> the five category bars and their shares","new","Nowhere","Same source, <code>GET /termStore/groups</code>"],
+     ["Depth","<b>File Plan:</b> the \"N levels deep\" line, and the deepest branch note","new","Nowhere","Derived while walking the tree, at no extra cost"],
      ["RowLoadedDate","<b>None.</b> Operational","new","Nowhere","Written by the refresh job"]
    ]}
   ];
@@ -1891,7 +2113,11 @@ DASHBOARDS.dd=(function(){
     ["Sites and Libraries","Site owner","Site Activity Table","Read SiteOwner","ok"],
     ["Sites and Libraries","Libraries per site","Site Activity Table","Read LibraryCount","ok"],
     ["Sites and Libraries","Visits and users per site","Site Activity Table","Read SiteVisits30 and UniqueViewers30","usage"],
-    ["Sites and Libraries","Active and Orphaned sites","Site Activity Table","Orphaned where LastActivityDate is more than 90 days old, active otherwise","usage"],
+    ["Sites and Libraries","Active and Inactive sites","Site Activity Table","Inactive where LastActivityDate is more than 90 days old, active otherwise","usage"],
+    ["Sites and Libraries","Active Libraries, last 90 days","Utilization Report Table","Count distinct ListId where LibraryLastActivityDate is within 90 days","ok"],
+    ["Sites and Libraries","Inactive and Long dormant libraries","Utilization Report Table","The same count at the 90 and 180 day thresholds","ok"],
+    ["Sites and Libraries","Library Growth Rate","Utilization Report Table","Records declared during the period, divided by the records held at the start. Both come from CreatedDate, so <b>no snapshot history is needed</b>","ok"],
+    ["Sites and Libraries","New records this period, per library","Utilization Report Table","Count the declared rows per ListId where CreatedDate falls in the period","ok"],
     ["Format and Storage","Storage Consumed by Format, 46.7 GB","Utilization Report Table","Per FormatGroup, add up FileSize","gap"],
     ["Format and Storage","Number of files by format","Utilization Report Table","Per FormatGroup, count the rows","ok"],
     ["Format and Storage","Most Common Format, PDF","Utilization Report Table","The FormatGroup with the highest row count","ok"],
@@ -1901,7 +2127,11 @@ DASHBOARDS.dd=(function(){
     ["Retention","Next Due Date for Disposal","Utilization Report Table","The earliest EDRMSDueDateForDisposal still ahead of today","ok"],
     ["Retention","Disposal summary per library","Utilization Report Table","The same two figures grouped by ListId, with LibraryName for the label","ok"],
     ["Retention","Inactive over 1 year","Utilization Report Table","Count the rows where FileModifiedDate is more than a year old. <b>The one figure on the Retention dashboard that is not ready</b>, because an untouched document has no row until the scan creates one","scan"],
-    ["Every dashboard","The \"Data as of\" line","All three tables","Read SnapshotDate","ok"]
+    ["File Plan","Total Terms","<b>File Plan Table</b>","Count the rows in the latest snapshot","ok"],
+    ["File Plan","Term Sets","<b>File Plan Table</b>","Count distinct TermSetName","ok"],
+    ["File Plan","Terms by category","<b>File Plan Table</b>","Count the rows grouped by CategoryName","ok"],
+    ["File Plan","How deep the plan runs","<b>File Plan Table</b>","The maximum Depth, overall and per category","ok"],
+    ["Every dashboard","The \"Data as of\" line","All four tables","Read SnapshotDate","ok"]
   ];
   const TBADGE={ok:["g-ok","Ready today"],scan:["g-part","Needs the scan"],
                 usage:["g-part","Needs the usage feed"],gap:["g-gap","Blocked"]};
@@ -1923,11 +2153,12 @@ DASHBOARDS.dd=(function(){
 
     <div class="panel">
       <h3>Can it be one table only?</h3>
-      <p>Almost. One table gets you about nine tenths of the report. Three things break.</p>
+      <p>Almost. One table gets you about nine tenths of the report. Four things break.</p>
       <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it holds at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out low. It gets worse over time, because the newest sites are the emptiest ones.</p>
       <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
       <p><b>People cannot be counted from a table of sites.</b> Total EDRMS Users asks how many people used EDRMS. Someone who works in three sites appears in three site rows, so adding up the per site viewer counts counts that person three times. Only a row per person answers it.</p>
-      <p>Everything else fits in one table. So the answer is <b>three tables, one per grain</b>: one row per document, one row per site, one row per person. The second and third are small, about 1,057 and 9,400 rows, and each exists only because its grain cannot be reached from the others.</p>
+      <p><b>The file plan is not content at all.</b> Its terms are the taxonomy that classifies documents, so they are neither documents nor sites nor people and none of the other tables can hold them.</p>
+      <p>Everything else fits in one table. So the answer is <b>four tables, one per grain</b>: one row per document, one row per site, one row per person, one row per term. The last three are small, and each exists only because its grain cannot be reached from the others.</p>
     </div>
 
     <div class="panel">
@@ -1945,7 +2176,7 @@ DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The three tables</h3>
+      <h3>The four tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>
     </div>
@@ -2013,7 +2244,7 @@ DASHBOARDS.dd=(function(){
     document.getElementById("dd-tally").innerHTML=
       Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
         `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
-      `<span class="ti tot"><b>${n}</b> columns across the three tables</span>`;
+      `<span class="ti tot"><b>${n}</b> columns across the four tables</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+

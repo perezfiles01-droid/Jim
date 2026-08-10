@@ -35,7 +35,7 @@ const BROWSER = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
       siteSum: rm.activeUsers7,
       sitesListed: sl.sitesListed,
       active: sl.activeSites,
-      orphan: sl.orphanSites,
+      inactive: sl.inactiveSites,
       libs: sl.librariesAcrossSites,
       owners: sl.distinctOwners,
       navLive: [...document.querySelectorAll('nav a[data-d]')].map(a => a.dataset.d),
@@ -61,7 +61,7 @@ const BROWSER = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
   eq(r.labelTotal, 21646, 'declared record total');
   if (!(r.due < r.labelTotal - r.permanent)) fail.push('records due must exclude the permanent population');
   if (!(r.mau < r.siteSum * 3)) fail.push('monthly active users looks implausible against per site sums');
-  eq(r.active + r.orphan, r.sitesListed, 'active plus orphaned vs sites listed');
+  eq(r.active + r.inactive, r.sitesListed, 'active plus inactive vs sites listed');
   eq(seen.rows, 15, 'disposal table rows');
   eq(seen.labelRows, 5, 'retention label bars');
   if (!seen.scope) fail.push('retention section missing its .dash-rt scope class');
@@ -72,7 +72,7 @@ const BROWSER = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
   console.log('declared records:', r.declared, '| retention labels total:', r.labelTotal);
   console.log('due next 12m    :', seen.kpiDue, '| next due date:', seen.kpiNext);
   console.log('permanent       :', r.permanent, 'never due');
-  console.log('sites           :', r.sitesListed, '=', r.active, 'active +', r.orphan, 'orphaned');
+  console.log('sites           :', r.sitesListed, '=', r.active, 'active +', r.inactive, "inactive");
   console.log('libraries       :', r.libs, '| distinct owners:', r.owners);
   console.log('monthly users   :', r.mau, 'distinct, vs', r.siteSum, 'summed over sites at 7 days');
   console.log('console errors  :', errs.length ? errs : 'none');

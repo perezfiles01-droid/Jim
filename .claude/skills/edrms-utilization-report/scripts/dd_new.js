@@ -22,6 +22,7 @@ DASHBOARDS.dd=(function(){
       ["FolderPath","Text","Folder path inside the library",""],
       ["LibraryName","Text","Name of the library holding the file","key"],
       ["LibraryUrl","Text","URL of the library",""],
+      ["LibraryLastActivityDate","Date","When anything in the library last changed","key"],
       ["ListId","Unique ID","SharePoint library ID","key"],
       ["ItemId","Whole number","SharePoint item ID within the library",""],
       ["ADBLibraryCategory","Text","Library category",""],
@@ -80,6 +81,19 @@ DASHBOARDS.dd=(function(){
       ["LastActivityDate","Date","Their most recent SharePoint activity","key"],
       ["ViewedOrEditedFileCount","Whole number","Files they viewed or edited in the window",""],
       ["RowLoadedDate","Date and time","When this row was last written",""]
+    ]},
+    {n:"File Plan Table", db:"utilization_file_plan",
+     g:"One row per term in the institutional file plan",
+     v:"A few hundred to a few thousand rows. The taxonomy that classifies the content, rather than the content",
+     c:[
+      ["Id","Whole number","Unique row identifier",""],
+      ["SnapshotDate","Date","The date this data was captured","key"],
+      ["TermId","Unique ID","The term's own identifier",""],
+      ["TermName","Text","The term's label",""],
+      ["TermSetName","Text","The term set the term belongs to",""],
+      ["CategoryName","Text","The top level group","key"],
+      ["Depth","Whole number","How many levels down the term sits",""],
+      ["RowLoadedDate","Date and time","When this row was last written",""]
     ]}
   ];
 
@@ -100,6 +114,7 @@ DASHBOARDS.dd=(function(){
      ["FolderPath","<b>None.</b> Builds DocumentUrl and separates folders inside one library","have","<code>4 Records</code> row 74 (S/N 19). Live <code>Records.FolderPath</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["LibraryName","<b>Records Management:</b> level 4 of both drill downs. <b>Sites and Libraries:</b> the row label on Libraries Declaration Rate and on Largest Libraries","have","<code>4 Records</code> row 73 (S/N 18). Live <code>Records.LibraryName</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["LibraryUrl","<b>None.</b> Click through to the library","have","<code>4 Records</code> row 72 (S/N 17). Live <code>Records.LibraryUrl</code>","EDRMS database, then Microsoft Graph for the rest"],
+     ["LibraryLastActivityDate","<b>Sites and Libraries:</b> Active Libraries, Inactive Libraries, the Long dormant tile and the Last activity column","new","Nowhere","<b>Microsoft Graph</b> <code>lastModifiedDateTime</code> on the drive, from the same <code>GET /sites/{id}/drives</code> call that supplies <code>LibraryCount</code>"],
      ["ListId","<b>None directly.</b> The grouping key behind Libraries Declaration Rate and Largest Libraries, because library names can change","have","<code>4 Records</code> row 67 (S/N 12). Live <code>Records.ListId</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["ItemId","<b>None on its own.</b> With ListId it identifies the row, which is what stops a document declared twice being counted twice","have","<code>4 Records</code> row 68 (S/N 13). Live <code>Records.ItemId</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["ADBLibraryCategory","<b>None today.</b> The natural grouping for Department Performance when it is built","planned","<code>4 Records</code> row 76 (S/N 21) <code>ADBMeta</code>, marked <b>Future Enhancement</b>. Also <code>Library</code> row 6 and <code>ADBMaster</code> rows 22 to 24, neither built. Live <code>Records.ADBMeta</code> is empty","<b>Available now without waiting for ADBMeta.</b> The Retention Label Mapping list in <code>app_edrms_data_uat</code> holds it as \"Library Type\" per library. Join on library and you have it today"],
@@ -137,7 +152,7 @@ DASHBOARDS.dd=(function(){
      ["UniqueViewers7","<b>Records Management:</b> Active Users, the 7 day window","new","Nowhere","Same report, the \"Visited Page Count\" and unique viewer fields"],
      ["UniqueViewers30","<b>Records Management:</b> Active Users, the 30 day window, and the Active Users KPI","new","Nowhere","Same report at <code>period='D30'</code>"],
      ["LibraryCount","<b>Sites and Libraries:</b> the Libraries column on the site inventory, and the \"libraries across them\" tile","new","Nowhere","<b>Microsoft Graph</b> <code>GET /sites/{id}/drives</code>, counted. Verified against the test tenant"],
-     ["LastActivityDate","<b>Sites and Libraries:</b> the Last activity column and the Active / Orphaned split. <b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
+     ["LastActivityDate","<b>Sites and Libraries:</b> the Last activity column and the Active / Inactive split. <b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
      ["StorageUsed","<b>None today.</b> Sites and Libraries measures storage from FileSize instead","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Storage used\" column. Note it includes version history, so it will not match the sum of FileSize"],
      ["SiteOwner","<b>Sites and Libraries:</b> the Site owner column on the site inventory. Who to contact about a site that has gone quiet","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Primary admin\" column"],
      ["ProjectEndDate","<b>None today.</b> The obvious basis for a site closure view","have","<code>Site</code> row 15 (S/N 11). Live <code>ADBSites.ProjectEndDate</code>","<code>ADBSites</code>, already populated"],
@@ -151,6 +166,16 @@ DASHBOARDS.dd=(function(){
      ["DisplayName","<b>None.</b> Readability when the list is inspected","new","Nowhere","Same call"],
      ["LastActivityDate","Filters the count to a 7 or 30 day window","new","Nowhere","Same call"],
      ["ViewedOrEditedFileCount","<b>None today.</b> Separates heavy users from one time visitors, and the obvious basis for an adoption view","new","Nowhere","Same call"],
+     ["RowLoadedDate","<b>None.</b> Operational","new","Nowhere","Written by the refresh job"]
+   ]},
+   {t:"File Plan Table", r:[
+     ["Id","<b>None.</b> Identifies the row","new","Nowhere","Generated by the refresh job"],
+     ["SnapshotDate","The \"Data as of\" line","new","Nowhere","Written by the refresh job"],
+     ["TermId","<b>None.</b> Keeps a count stable when a term is renamed","new","Nowhere","<b>Microsoft Graph</b> term store"],
+     ["TermName","<b>None on a chart.</b> Readability when the plan is inspected","new","Nowhere","Same source"],
+     ["TermSetName","<b>File Plan:</b> the \"N term sets\" line under each category","new","Nowhere","Same source"],
+     ["CategoryName","<b>File Plan:</b> the five category bars and their shares","new","Nowhere","Same source, <code>GET /termStore/groups</code>"],
+     ["Depth","<b>File Plan:</b> the \"N levels deep\" line, and the deepest branch note","new","Nowhere","Derived while walking the tree, at no extra cost"],
      ["RowLoadedDate","<b>None.</b> Operational","new","Nowhere","Written by the refresh job"]
    ]}
   ];
@@ -185,7 +210,11 @@ DASHBOARDS.dd=(function(){
     ["Sites and Libraries","Site owner","Site Activity Table","Read SiteOwner","ok"],
     ["Sites and Libraries","Libraries per site","Site Activity Table","Read LibraryCount","ok"],
     ["Sites and Libraries","Visits and users per site","Site Activity Table","Read SiteVisits30 and UniqueViewers30","usage"],
-    ["Sites and Libraries","Active and Orphaned sites","Site Activity Table","Orphaned where LastActivityDate is more than 90 days old, active otherwise","usage"],
+    ["Sites and Libraries","Active and Inactive sites","Site Activity Table","Inactive where LastActivityDate is more than 90 days old, active otherwise","usage"],
+    ["Sites and Libraries","Active Libraries, last 90 days","Utilization Report Table","Count distinct ListId where LibraryLastActivityDate is within 90 days","ok"],
+    ["Sites and Libraries","Inactive and Long dormant libraries","Utilization Report Table","The same count at the 90 and 180 day thresholds","ok"],
+    ["Sites and Libraries","Library Growth Rate","Utilization Report Table","Records declared during the period, divided by the records held at the start. Both come from CreatedDate, so <b>no snapshot history is needed</b>","ok"],
+    ["Sites and Libraries","New records this period, per library","Utilization Report Table","Count the declared rows per ListId where CreatedDate falls in the period","ok"],
     ["Format and Storage","Storage Consumed by Format, 46.7 GB","Utilization Report Table","Per FormatGroup, add up FileSize","gap"],
     ["Format and Storage","Number of files by format","Utilization Report Table","Per FormatGroup, count the rows","ok"],
     ["Format and Storage","Most Common Format, PDF","Utilization Report Table","The FormatGroup with the highest row count","ok"],
@@ -195,7 +224,11 @@ DASHBOARDS.dd=(function(){
     ["Retention","Next Due Date for Disposal","Utilization Report Table","The earliest EDRMSDueDateForDisposal still ahead of today","ok"],
     ["Retention","Disposal summary per library","Utilization Report Table","The same two figures grouped by ListId, with LibraryName for the label","ok"],
     ["Retention","Inactive over 1 year","Utilization Report Table","Count the rows where FileModifiedDate is more than a year old. <b>The one figure on the Retention dashboard that is not ready</b>, because an untouched document has no row until the scan creates one","scan"],
-    ["Every dashboard","The \"Data as of\" line","All three tables","Read SnapshotDate","ok"]
+    ["File Plan","Total Terms","<b>File Plan Table</b>","Count the rows in the latest snapshot","ok"],
+    ["File Plan","Term Sets","<b>File Plan Table</b>","Count distinct TermSetName","ok"],
+    ["File Plan","Terms by category","<b>File Plan Table</b>","Count the rows grouped by CategoryName","ok"],
+    ["File Plan","How deep the plan runs","<b>File Plan Table</b>","The maximum Depth, overall and per category","ok"],
+    ["Every dashboard","The \"Data as of\" line","All four tables","Read SnapshotDate","ok"]
   ];
   const TBADGE={ok:["g-ok","Ready today"],scan:["g-part","Needs the scan"],
                 usage:["g-part","Needs the usage feed"],gap:["g-gap","Blocked"]};
@@ -217,11 +250,12 @@ DASHBOARDS.dd=(function(){
 
     <div class="panel">
       <h3>Can it be one table only?</h3>
-      <p>Almost. One table gets you about nine tenths of the report. Three things break.</p>
+      <p>Almost. One table gets you about nine tenths of the report. Four things break.</p>
       <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it holds at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out low. It gets worse over time, because the newest sites are the emptiest ones.</p>
       <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
       <p><b>People cannot be counted from a table of sites.</b> Total EDRMS Users asks how many people used EDRMS. Someone who works in three sites appears in three site rows, so adding up the per site viewer counts counts that person three times. Only a row per person answers it.</p>
-      <p>Everything else fits in one table. So the answer is <b>three tables, one per grain</b>: one row per document, one row per site, one row per person. The second and third are small, about 1,057 and 9,400 rows, and each exists only because its grain cannot be reached from the others.</p>
+      <p><b>The file plan is not content at all.</b> Its terms are the taxonomy that classifies documents, so they are neither documents nor sites nor people and none of the other tables can hold them.</p>
+      <p>Everything else fits in one table. So the answer is <b>four tables, one per grain</b>: one row per document, one row per site, one row per person, one row per term. The last three are small, and each exists only because its grain cannot be reached from the others.</p>
     </div>
 
     <div class="panel">
@@ -239,7 +273,7 @@ DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The three tables</h3>
+      <h3>The four tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>
     </div>
@@ -307,7 +341,7 @@ DASHBOARDS.dd=(function(){
     document.getElementById("dd-tally").innerHTML=
       Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
         `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
-      `<span class="ti tot"><b>${n}</b> columns across the three tables</span>`;
+      `<span class="ti tot"><b>${n}</b> columns across the four tables</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+
