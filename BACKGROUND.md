@@ -23,7 +23,7 @@ connection has been built yet.
 
 ## 2. What to build first
 
-**Status: done.** Delivered as `EDRMS_Reporting_Suite_Integrated_v1.html`.
+**Status: done.** Delivered as the static site described in section 4.
 
 **Task (as narrowed by the requester):** Integrate **two** dashboards, Sites and
 Libraries plus Records Management, into one navigable prototype. Overview was
@@ -88,7 +88,7 @@ to change the separator in each `deptOptions` builder.
 | Concern | Choice |
 | --- | --- |
 | Language | HTML5 + CSS3 + vanilla JavaScript (ES2020), no transpiler |
-| Frameworks | None. Single-file prototypes, no framework, no bundler, no build step. Production target is Power BI Desktop / Service, not a JS framework. |
+| Frameworks | None. Static site, no framework, no bundler, no build step. Classic scripts, not ES modules, so index.html also opens from disk. Production target is Power BI Desktop / Service, not a JS framework. |
 | Database | None in the prototype (sample data lives in in-file JS arrays). Production target: PostgreSQL 16 as the EDRMS reporting store, read by Power BI. |
 | Package manager | None for the prototypes (zero dependencies). npm is used only for optional Node deliverable scripts. |
 
@@ -101,32 +101,41 @@ runtime): Node.js with pptxgenjs (PPTX), Python 3 with openpyxl (XLSX), docx-js
 **Repo:** `perezfiles01-droid/Jim` (the repo attached to this session, and the
 only one currently available). Confirm if a different owner/repo is intended.
 
-**Layout: single file. The `index.html` + `assets/` + `dashboards/` split
-originally proposed here was dropped.** The requester's goal was that the
-prototype stop being a hassle to open, and a split folder means keeping several
-files together and serving them over a local HTTP server. One self-contained
-file just opens by double-click. The internals are still organized (see below),
-just concatenated into one deliverable.
+**Layout: one self-contained `index.html`.** Published with GitHub Pages, and
+it also opens by double click. No other files, no build step, no dependencies.
 
-**Entry point:** `EDRMS_Reporting_Suite_Integrated_v1.html`
+**Why one file, after trying the alternatives.** This went single file, then per
+dashboard folders, then flat per dashboard files, and back to single file. The
+deciding constraint is that the only write path available is the GitHub web
+uploader, driven by hand. Folders were flattened and files were silently
+dropped. Flat files worked, but a change touching four of them meant four
+downloads and a seven file upload, every time, and each of those is a chance to
+miss one. One file means one download and one upload, always.
 
-**How that file is structured internally:**
+The isolation that motivated splitting is preserved inside the file rather than
+by the filesystem. Each dashboard is a banner marked block holding its own
+scoped CSS and its own closure, so editing one still means editing inside its
+block and nothing else, and the diff still shows only that block changed. That
+is what actually protects the other dashboards, not the file boundary.
+
+Do not split this up again unless the write path changes to real git pushes.
+
+**How the code is organised inside that structure:**
 
 - Shared shell CSS (tokens, sidebar, header, `.band`, `.kpi`, `.panel`,
-  `.pager`) is global.
-- Each dashboard's own CSS is **scoped** under a container class, `.dash-sl` for
-  Sites and Libraries and `.dash-rm` for Records Management. This is required,
-  not cosmetic: the two source prototypes use the same class names with
-  different values. `.sbar` is `200px 1fr 210px` in one and `210px 1fr 72px` in
-  the other, and the `.seg.e` / `.seg.p` segment colours are **inverted**
-  between them. `.kpis`, `.drange`, `.resetbtn`, `.legend`, and `select` also
-  differ.
-- Each dashboard's JS lives in its own IIFE in `DASHBOARDS.sl` / `DASHBOARDS.rm`,
-  exposing `{ver, crumb, asof, html, init}`. Only `F()` and `wirePager()` are
-  shared, because only those two were byte identical. `pager()` and
-  `deptOptions()` differ per dashboard and stay private: the Sites and Libraries
-  `pager()` prints a row count on a single page, the Records Management one
-  returns an empty string.
+  `.pager`) sits in the first block of the `<style>` element.
+- Each dashboard's CSS is **scoped** under a container class, `.dash-sl`,
+  `.dash-rm`, `.dash-fs`. This is required, not cosmetic: the two source
+  prototypes use the same class names with different values. `.sbar` is
+  `200px 1fr 210px` in one and `210px 1fr 72px` in the other, and the
+  `.seg.e` / `.seg.p` segment colours are **inverted** between them. `.kpis`,
+  `.drange`, `.resetbtn`, `.legend`, and `select` also differ.
+- Each dashboard's JS is an IIFE in its own banner marked block registering into
+  `DASHBOARDS.sl` / `.rm` / `.fs`, exposing `{ver, crumb, asof, html, init}`.
+  Only `F()` and `wirePager()` are shared, because only those two were byte
+  identical. `pager()` and `deptOptions()` differ per dashboard and stay
+  private: the Sites and Libraries `pager()` prints a row count on a single
+  page, the Records Management one returns an empty string.
 - **Only one dashboard is mounted in the DOM at a time.** `switchTo(key)`
   replaces `#view`, so both dashboards keep their original element ids
   (`s1-detail`, `s2-kpis`, and so on) with no renaming and therefore no risk of
@@ -160,11 +169,193 @@ From the EDRMS database design and the prototype sample data:
 - **Storage:** measured per site today (M365), not per file. Per-library and
   per-format storage are data dependencies (need file size captured per file).
 
+**Term store findings, verified in the tenant (Aug 2026).** These were checked
+directly rather than assumed, because the project notes had recorded department
+and division grouping as blocked without saying what exactly was missing.
+
+- `Department Owner`, `Division`, `Record Department Owner`, `Record Division
+  Owner` and `Record Unit Owner` are all **Managed Metadata** columns on the
+  `ADB Baseline Document` content type, so the structure was never the problem.
+- The **`Department` term set exists and is populated** with real ADB codes
+  (ADBI, BIOC, BOD, BPMSD, CCSD, CRPN, CSD, CTL, CWRD and more beyond the first
+  visible page). It is flat.
+- The **`Division` term set is hierarchical**: each department code is a parent
+  that expands to the divisions within it. So the department to division
+  relationship is already modelled in the term store, and the drill down in
+  Records Management is achievable without inventing a mapping. Verified by
+  expanding CWRD, which contains AFRM, ARRM, AZRM, CWEC, CWOC, CWOD and more.
+  These are genuine ADB codes, so the hierarchy is populated rather than
+  half built. Note that for regional departments the second level mixes
+  functional divisions with **resident missions**, so AFRM is the Afghanistan
+  Resident Mission rather than a division in the usual sense. Worth explaining
+  before a stakeholder asks why a country appears as a division.
+- The division terms have no children, so `Division` stops at two levels. A
+  `Record Unit Owner` column exists, so a separate `Unit` term set presumably
+  holds the third level. Not yet checked.
+- **Scale.** CWRD alone shows six divisions with more below the fold. Across
+  thirty plus departments that implies several hundred divisions. The sample
+  data gives each department one or two, so the division level of the drill down
+  will span many pages against real data, and the Sites and Libraries treemap
+  paging needs rechecking once real counts are known.
+- **Both column pairs share vocabularies.** `Department Owner` and `Record
+  Department Owner` both bind to `Department`; `Division` and `Record Division
+  Owner` both bind to `Division`. Choosing between the pairs is a question of
+  which one is authoritative and gets populated, not of different value sets.
+  Still open with the client.
+- The real department codes **do not match the prototype's sample data** (ITD,
+  SARD, OSFG and so on are invented; only CWRD happens to coincide), and there
+  are likely far more than the fifteen or sixteen the dashboards assume. Sample
+  data will need replacing wholesale, and pagination and treemap paging should be
+  rechecked against the real count.
+- Nothing is populated. No library default is set and no document carries a
+  value, which is why every record shows an empty field.
+
+**Declaration date, resolved. Use the native SharePoint fields.**
+
+Earlier notes proposed `Retention Label Applied For Calculated` as a proxy, then
+retracted it because a user can apply a label without declaring. Both are
+superseded. Three **native** SharePoint columns exist and were simply not
+noticed, visible in the library's view editor:
+
+- **`Item is a Record`** - definitive true or false record flag
+- **`Retention label Applied`** - the date the label was applied
+- **`Label applied by`** - who applied it
+
+**Filter on `Item is a Record` = Yes, and take the date from `Retention label
+Applied`.** Both are ordinary queryable columns, readable by Search and Power BI
+in one query. No new column, no backfill, no version history crawl, no
+restriction on users. Ignore `Retention Label Applied For Calculated` entirely;
+it is a custom column and was a red herring.
+
+`Item is a Record` is what makes this robust against the original objection. If
+somebody applies a retention label that does not mark the item as a record, the
+flag stays false and the document is correctly excluded, so record status is
+read rather than inferred from the presence of a label.
+
+Classic in place records management is **not** enabled on this site collection,
+confirmed by the absence of a "Record declaration settings" link in library
+settings, so `_vti_ItemDeclaredRecord` will be empty. Do not chase it. The
+record lock comes from a Purview retention label marked as a record.
+
+The library's own **`Undeclared Documents`** view filters on `Retention label is
+equal to (blank)`, so the system's working definition is that an unlabelled
+document is undeclared. That is a simplification which `Item is a Record` makes
+precise, and reporting should use the flag rather than copy the view's filter.
+
+**Declarations can be attributed to a user after all.** An earlier note said
+this should be scoped out because the declarer's name existed only in a free
+text version comment. `Label applied by` is a proper queryable column, so a
+declarations by user or most active declarers view is feasible. Confirm it is
+populated on real records before promising it.
+
+**Also spotted, and it may cheapen the storage problem.** `File Size` is
+available as a list column, and `Size` is a SharePoint Search managed property.
+Storage per library and per format was assessed as hard on the assumption it
+required opening every file. It may only require enumerating list items, which
+is needed for counts anyway. Worth re-estimating before committing to a crawl,
+and before assuming an AvePoint report is required.
+
+**So the remaining work is a backfill, not a vocabulary build.** Two separate
+tracks, and neither substitutes for the other: set column defaults per library or
+folder so new documents inherit a value, and stamp existing documents through
+Edit in grid view for small volumes or PnP PowerShell or Power Automate for
+large ones. Defaults never apply retrospectively.
+
+**The real blocker is the site to department mapping**, which is a records
+decision rather than a technical one. Worth checking whether AvePoint Cloud
+Governance already captured the owning department when each site was
+provisioned, in which case the mapping may already exist.
+
+**Risks that would produce plausible but wrong numbers.** These matter more
+than the outright blockers, because a report that fails gets fixed and a report
+that is quietly wrong gets presented.
+
+- **Search is security trimmed.** Results are limited to what the querying
+  identity can see, with no error and no warning. If the refresh account lacks
+  read access across all sites, every count comes back low and looks reasonable.
+  Settle which identity runs the refresh and confirm tenant wide read early; it
+  is usually a longer approval than expected and it gates everything.
+- **Storage will not reconcile, by design.** Site storage in Microsoft 365
+  includes version history, recycle bin and metadata overhead, so it can be two
+  to five times the sum of current file sizes. Decide which definition the report
+  means, label it on the dashboard, and never place both figures on one page
+  unlabelled.
+- **Check whether the managed metadata columns are multi value.** If
+  `Department Owner` permits more than one term, a document tagged to two
+  departments counts in both and the department bars exceed the total. The
+  reconciliation rules would catch it, but only after the work was done.
+- **The 5,000 item list view threshold.** SharePoint will not filter or sort a
+  list on a non indexed column past 5,000 items, and these libraries are far
+  past it. Any column the report queries on, `Item is a Record`,
+  `Department Owner`, `Retention label Applied`, needs an index. Small
+  administrative task, blocks everything, invisible until a large library is hit.
+  Include it in the same ask as the backfill.
+- **Define disposal and deletion now.** Retention runs to 50 years so it is not
+  imminent, but if disposed records leave the counts then historical trends
+  change retrospectively, and a chart showing one figure for 2026 will show a
+  different one in 2027. Same question for deleted items and the recycle bin.
+
+**Site inventory** comes from SharePoint admin centre, Sites, Active sites,
+which exports to CSV with site name, url, storage, created date and last
+activity. That export feeds the mapping exercise and several Sites and Libraries
+figures directly. It lists every site in the tenant though, not just EDRMS
+compliant ones, so identifying the compliant subset is still open: candidates
+are a naming convention, the `EDRMS Site Type` term set, or AvePoint's records.
+
+**Access note.** The term store showed "view-only access to this term group",
+so changes there need whoever holds Term Store Admin, usually ITD.
+
 **Data-source tiers** used across the suite:
 
 - **LIVE:** cheap in-EDRMS counts read on demand.
 - **BATCH:** weekly cross-system scan, cached.
 - **SPO:** SharePoint usage analytics.
+
+## 5b. The reporting database design
+
+Full design rendered in `databasedesign.html`, written against the live
+`drm-npr` PostgreSQL database rather than the design workbook, because the two
+differ.
+
+**What is actually deployed** in `drm-npr.public`: `Records`, `TrackingRecords`,
+`JobTriggers` (699 rows live), `QueueRecords`, `ADBSites`, `EDRMSMasters`, plus
+`__EFMigrationsHistory` and the Keycloak tables. Present in the workbook but
+**not** in the database: `ADBMaster`, `Library`, `PhysicalRecords`,
+`favoritelocations`.
+
+**`public."Records"` is the core source** and is better than expected.
+`CreatedDate timestamptz` is the declaration date in a proper column,
+`CreatedBy text NOT NULL` is the declarer, `ListId uuid` is a safe library key,
+and the full retention set is present. `EDRMSMeta`, `FileMeta` and `ADBMeta` are
+`jsonb`. Owner is `ADBWebServiceMI1`, managed by Entity Framework migrations.
+
+**Recommendation: a separate `rpt` schema** in the same database, not new tables
+in `public` and not extra columns on the vendor's tables. The operational tables
+are EF managed and a hand added column can be dropped by the next release;
+reporting wants pre joined dimensions and snapshots that do not belong in a
+transactional table; Power BI can then be granted `rpt` only rather than read
+access to live declaration data; and reporting tables can be rebuilt without any
+possibility of touching production.
+
+**Two things must change inside the application**, because they can only be
+captured at declaration time. `FileMeta` needs `FileSizeBytes` added, which is a
+jsonb key rather than a migration. And `ADBMeta` must actually be populated;
+it is currently marked out of scope for release 2026.1 and `ADB Document Owner`
+is blank across the sample data, which blocks every department and division
+figure in the report.
+
+**The structural point.** The declaration database only ever holds declared
+records, so total documents, declaration rate, storage by format and library
+adoption have no source in it at all. That requires a weekly SharePoint
+inventory scan writing `rpt.fact_library_snapshot` at snapshot date by library
+by format grain. Microsoft Graph returns file size on every item, so **storage
+by library and by format can be delivered from the scan alone**, and the
+`FileMeta` change is only needed for per record storage detail. That splits the
+critical storage gap into a large solvable half and a small one.
+
+Fourteen tables, runnable DDL, the load query from `public."Records"` including
+the jsonb extraction, and the SQL behind every dashboard figure are all in
+`databasedesign.html`.
 
 ## 6. API contracts / interfaces
 
@@ -234,7 +425,11 @@ plain ES2020, no external libraries.
 
 - **Install:** none (no dependencies).
 - **Run locally:** open `index.html` in a browser, or serve the folder with
-  `python3 -m http.server 8000` and open `http://localhost:8000`.
+  `python3 -m http.server 8000` and open `http://localhost:8000`. Check both,
+  since only the served run catches a broken asset path or a 404.
+- **Live site:** published with GitHub Pages from `main` at the repository root.
+  Enable under Settings, Pages, Source "Deploy from a branch", branch `main`,
+  folder `/ (root)`.
 - **Tests:** none automated yet. Verify manually against the acceptance
   checklist in section 2.
 - **Lint/typecheck:** none configured.

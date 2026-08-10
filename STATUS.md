@@ -5,7 +5,7 @@ BACKGROUND.md is the durable project context and is still correct about the tech
 stack, the palette and the hard rules, but it was written on 4 August and predates
 everything below.
 
-Last updated 9 August 2026, after the client identified the compliance marker.
+Last updated 10 August 2026, after the design was cut to what the tenant supplies.
 
 ---
 
@@ -21,10 +21,57 @@ yet. That single fact explains most of what is still open.
 
 ---
 
+## 1B. THE DESIGN WAS CUT ON 10 AUGUST 2026
+
+The prototype and the database design were revised to remove everything that
+needed a person, a rule nobody had written, or a change to the EDRMS
+application. **Nothing in the design now lacks a source.**
+
+**Removed**
+
+| Cut | Why |
+| --- | --- |
+| Division, the whole tier | Designed in `ADBMeta`, empty on every row, nothing supplies it. Drill is now Department, Site, Library |
+| `ADBUnitOwner` | Same, and no panel read it |
+| `DisposalStatus` | Needs a new field in the EDRMS application. Disposal works from the due date alone |
+| `UniqueViewers90` and the 90 day fallback | Microsoft does not return it. The column held a blank and justified an apology |
+| Field office, sovereign / nonsovereign | New dimensions with no source anywhere |
+| Users per library | SharePoint reports viewers per site. No list level figure exists |
+| Site go live date | The app install date is promising but unproven, so nothing depends on it yet |
+
+**Added**, each mapped to a call already run against 7rkd12: site owner,
+`LibraryCount` from `/sites/{id}/drives`, users and visits per site, an
+Active / Orphaned split at 90 days idle, and the disposal figures.
+
+**Two structural changes worth knowing**
+
+1. **Three tables now, not two.** The User Activity Table is one row per person,
+   about 9,400 rows, from `getSharePointActivityUserDetail(period='D30')`. It
+   exists because Total EDRMS Users counts **people**, and someone working in
+   three sites appears in three rows of the site table, so summing
+   `UniqueViewers30` overstates headcount. The dashboard shows both figures and
+   explains the gap.
+2. **The Retention dashboard is built.** It was a placeholder hiding figures that
+   need no new source: `EDRMSDueDateForDisposal` already exists and is computed,
+   so records due for disposal is a count and next due date is a `MIN()`. Only
+   "inactive over 1 year" waits on the scan, and the panel says so.
+
+Department Performance is the only placeholder left, and most of its data now
+exists. It needs a screen, not a source.
+
+---
+
 ## 2. THE BOARD
 
-52 visual elements in the prototype. Every one of them is **buildable**. Nothing
-is unknown any more.
+**These counts predate the 10 August cut and have not been recounted.** They
+described 52 elements across 4 dashboards plus the reference page. Since then
+Division and the 90 day fallback came out, and the site inventory and the whole
+Retention dashboard went in. `elements.py` still holds the old 52, so the
+workbook built from it is stale too. **Recounting is the first job of the next
+session**, see section 9.
+
+The shape of the answer has not changed: every element is buildable, and nothing
+is unknown.
 
 | Status | Count | Waiting on |
 | --- | --- | --- |
@@ -39,16 +86,19 @@ a decision, or answer a question.
 
 ### The 12 blocked, and the two asks that clear them
 
-**Ask 1, a list from RAC: site to department and division.** Clears 8:
+**Ask 1, a list from RAC: site to department.** Division is no longer on the
+list, so this is now 7, not 8:
 
 1. Records Management, declared records per department
 2. Records Management, drill level 1 Department
-3. Records Management, drill level 2 Division
-4. Records Management, documents per department
-5. Records Management, department filter
-6. Sites and Libraries, sites created by department treemap
-7. Overview, top 5 departments by declared records
-8. Overview, top 5 departments by compliant sites
+3. Records Management, documents per department
+4. Records Management, department filter
+5. Sites and Libraries, sites created by department treemap
+6. Overview, top 5 departments by declared records
+7. Overview, top 5 departments by compliant sites
+
+Drill levels 2 and 3, Site and Library, are **ready today**. They were only ever
+blocked because Division sat above them.
 
 **Ask 2, a question for the development team**, no longer a RAC decision: how do
 we detect which sites have the EDRMS app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}`
@@ -70,25 +120,27 @@ every library figure.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. Single self contained file, 5 dashboards plus a Data Design reference page |
-| `utilizationdb.md` | The database design in the client's own workbook format. Two tables, 58 columns, no code |
+| `index.html` | The prototype. Single self contained file, **5 dashboards including Retention**, plus a Data Design reference page |
+| `utilizationdb.md` | The database design in the client's own workbook format. **Three tables, 61 columns**, no code |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | **The working document.** Every element mapped to its source, the gaps, the action plan, 25 findings with evidence |
 | `BACKGROUND.md` | Durable project context. Still correct on stack, palette, hard rules |
 | `STATUS.md` | This file |
 
-Earlier workbook versions v1 to v3 are kept for the audit trail. **v4 is current.**
-A v5 is warranted, see section 9.
+Earlier workbook versions v1 to v3 are kept for the audit trail. **v4 is the
+latest built, and it is now stale**: it predates the 10 August cut. v5 is
+required, not merely warranted. See section 9.
 
 ---
 
 ## 4. THE DESIGN, SETTLED
 
-**Two tables**, not one and not seven.
+**Three tables**, one per grain. Not one, and not seven.
 
 | Table | One row per | Why it must exist |
 | --- | --- | --- |
 | `rpt.utilization_report` | document | Holds declared AND undeclared together. Without the undeclared there is no denominator and no declaration rate |
 | `rpt.utilization_site_activity` | SharePoint site | A site with no documents would vanish from the site count, and visit counts are per site so repeating them on every document row makes any total nonsense |
+| `rpt.utilization_user_activity` | person | Total EDRMS Users counts people. Someone working in three sites appears in three rows of the site table, so summing `UniqueViewers30` overstates headcount |
 
 **The grain is one SharePoint item, identified by `ListId` + `ItemId`.** Not
 `DocumentId`, which is nullable. UAT returned 1,990 rows against 1,984 distinct
@@ -107,7 +159,32 @@ since `CreatedDate` is the declaration and `ModifiedDate` is the record row.
 
 ## 5. THE GAPS
 
-### Gap 1, department and division. THE LARGEST OPEN ITEM
+### Gap 1, department and division. APPROACH CONFIRMED BY DEV 10 Aug 2026
+
+**The site level join is feasible and needs no migration.** Confirmed by Mihal
+Le, 10 August 2026: "If we just add it into database, it's yes, feasible. But if
+client want to populate dev&div in sharepoint records we need migration."
+
+Two different requirements, and only the first one is ours:
+
+| | Department in the reporting database | Department written into SharePoint |
+| --- | --- | --- |
+| What it means | Two columns on `ADBSites`, join `Records.SiteUrl` to `ADBSites.SiteUrl`, group by Department | `ADBDepartmentOwner` populated on all 3.47M SharePoint items |
+| Old records | Work. They already carry `SiteUrl` | Need a backfill migration |
+| Verdict | **Feasible, no migration. This is what the report needs** | Separate scope, not required for the report |
+
+His first answer ("for new records we can count by department and division, for
+old records we have no other way except migration") assumed department is stored
+per document. It is correct under that assumption and irrelevant under ours,
+because `Records.SiteUrl` is already populated on every existing row.
+
+**Open with the client:** do they need department and division visible inside
+SharePoint, or only in the Utilization Report? Only the report means no
+migration. Ask rather than assume.
+
+**Watch for later:** if the SharePoint column ever does get populated, department
+arrives from two places, the site table and the per-document field. Decide which
+wins before that happens.
 
 **Cause traced end to end.** The SharePoint column `ADBDepartmentOwner` exists on
 the library, is named exactly like the `ADBMeta` key, and is **empty on every
@@ -181,14 +258,23 @@ Product ID   {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}
 app is installed on it. A Product ID does not drift and cannot go stale, and it
 covers both routes because either way the app ends up installed.
 
-**Two things still to confirm with the development team, not with RAC:**
+**The catalog / installed distinction is now settled, 10 August 2026.** Site
+Contents on a compliant site shows **both**, on the same page, and they are
+different rows:
 
-1. `Apps for SharePoint` is normally a *catalog* library, a place packages are
-   stored, which is not quite the same as "installed on this site". Usually the
-   same in practice, but the distinction matters for the query.
-2. How to ask "which sites have this app installed" across 1,057 sites. Candidate
-   routes are the SharePoint REST app inventory, PnP PowerShell, or the tenant app
-   catalog's own deployment view. Let whoever deployed it name the right one.
+```
+Apps for SharePoint            List   3/5/2026  5:05 PM   <- the catalog
+digital-records-management-    App    12/4/2025 2:11 PM   <- installed here
+```
+
+The `App` row is the per-site marker. Visible in the UI at
+`/sites/<name>/_layouts/15/viewlst.aspx?view=14`, so an API exists behind it.
+
+**One thing still to confirm with the development team, not with RAC:** which
+call returns that row, so it can be run across 1,057 sites instead of opened one
+at a time. Candidates are the SharePoint REST app inventory, PnP PowerShell, or
+the tenant app catalog's deployment view. Let whoever deployed it name the right
+one.
 
 The question to ask: *"The EDRMS button comes from app
 {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}. How do we query which sites have it
@@ -199,6 +285,50 @@ different versions would be a useful health metric in itself.
 slow and political. It is now "dev confirms the query", which is a five minute
 conversation. The four blocked elements stay blocked until the detection method is
 confirmed and built, but nobody has to make a decision any more.
+
+### Site go live date. LIKELY SOLVED, one check outstanding
+
+The `App` row carries a **Modified** date, `12/4/2025` on the first site
+inspected. It is the site's EDRMS go live date, and a better basis for the
+rollout chart than `createdDateTime`.
+
+**Bulk upgrade ruled out, 10 August 2026.** The failure mode was that Modified
+might change on a version *upgrade* rather than only on install, in which case a
+bulk upgrade would stamp the whole estate with one date. The client checked
+several sites and **the dates differ**, so this is not a single bulk stamp.
+
+**One confound left.** Apps upgraded individually over time would also produce
+differing dates, giving a mix of install and upgrade dates with no way to tell
+them apart.
+
+**The decisive test, one query on data already held.** Compare each site's app
+Modified date against `MIN(CreatedDate)` over `Records` for that site.
+
+- App date consistently *before* the first declared record: consistent with
+  install. Nothing can be declared before the button exists.
+- Any site with records declared *before* its app date: that date is an upgrade,
+  because the app was already present.
+
+Capture the **app version per site** at the same time. Uniform 1.0.0.6 across
+spread out dates points to install; differing versions point to upgrade dates.
+
+**Supporting hint from the same screenshot.** Default libraries created with the
+site (`Form Templates`, `Site Assets`) show 9/25/2025; the app shows 12/4/2025.
+Around two and a half months apart, so this site was created well before it became
+compliant. That is the distortion that makes `createdDateTime` the wrong basis for
+a rollout chart. Treat as a hint, since Modified is not Created for libraries
+either.
+
+**Fallback if the date proves useless.** `MIN(CreatedDate)` per site over
+`Records` where `IsDeclaredRecord` is true. Computable today, no new source, and
+it measures first EDRMS activity rather than compliance. Label it honestly if
+used.
+
+**Audit log route and why it probably fails.** Purview
+(`https://purview.microsoft.com/audit/auditsearch`) logs app installation with an
+exact timestamp, but retention is commonly 90 days on E3 and a year on E5. The
+1,057 sites took longer than that to onboard, so the older majority will have no
+event. Check ADB's licence before relying on it.
 
 **Two candidates ruled out along the way:**
 
@@ -316,12 +446,64 @@ with different column names; quoting the wrong block is the easy mistake.
 
 ---
 
+## 8B. QUESTIONS FOR THE DEVELOPMENT TEAM
+
+Distinct from section 8. Those are business decisions only RAC can make. These
+are technical unknowns only the dev team can answer.
+
+| # | Question | Blocks |
+| --- | --- | --- |
+| 1 | How do we list every site with app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}` installed? Graph call, PnP script or admin report, and it must be repeatable | 4 KPIs. The single highest value question on this list |
+| 2 | Is `Apps for SharePoint` the catalog or the installed-apps list? | Shapes the query for #1. The catalog proves the app exists in the tenant, not which sites took it |
+| 3 | Is the app version tracked per site? | Nothing today, but sites on mixed versions would make a useful health metric |
+| 4 | Can provisioning set a default on `ADBDepartmentOwner` when it creates a site's libraries? | Stops Gap 1 recurring. Does not fix the existing 1,057 |
+| 5 | Does `ADBDivisionOwner` exist as a column on any library? | Only one library was inspected. Does not change the plan, both fields are empty either way |
+| 6 | What counts as a document? Folders, versions, system files | Graph returns folders with a **cumulative** size. A scan that sums every item double counts storage |
+| 7 | Does an extension to format-group mapping already exist? | `FormatGroup` has no rule without it. 8 buckets |
+
+**Question 1 in the words to send:** "We need to identify every site with app
+`{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}` installed. Is there a Graph API call, a
+PnP PowerShell script, or an admin report that returns this per site? It needs to
+be repeatable, not one-off, because the report refreshes."
+
+### Department and division, the settled position
+
+State these plainly to the client. They are the confirmations, not open items.
+
+- **Nothing in SharePoint records which department owns a site.** Not the site,
+  not the library, not the documents. The column exists and is empty. Unfilled
+  data entry, not a technical limitation.
+- **Division IS designed in `ADBMeta`.** What is missing is a SharePoint column
+  to feed it, and that was observed in one library only. Earlier notes conflated
+  "no Division anywhere" with "no Division column in this one library". Both
+  fields are empty in practice, so the plan is the same for both.
+- **The term store holds the vocabulary, not the assignment.** It supplies the
+  list of valid department names, which is what makes a dropdown work. It cannot
+  say which site belongs to which department.
+- **The site owner is a pre-fill guess, not a source.** 1,683 of 1,702 sites have
+  an owner but only 474 distinct, and `Admin@7rkd12.onmicrosoft.com` owns 954 of
+  them, 56 percent. Covers 44 percent at best, and RAC must verify all of it.
+- **RAC is the source of truth.** There is no way to derive it.
+- **After RAC sends the list, dev does an import and a join, never manual
+  tagging.** One row per site into the Site Activity Table, about 1,057 rows.
+  Documents inherit department from their site.
+- **The one confirmation to get first:** is it acceptable that every document in
+  a CWRD site counts as CWRD? The drill down already assumes yes. Yes means a
+  week. No means a quarter.
+- **Email AvePoint Cloud Governance before RAC spends effort.** If it recorded
+  the requesting department at provisioning, this becomes an export.
+
+---
+
 ## 9. NEXT STEPS
 
-1. **Build v5 of the workbook.** Test D passed, so Active Users and Unique
-   viewers per site move from Blocked to Needs the usage feed. Blocked goes 14 to
-   12, the usage feed 6 to 8. The version where the workbook can say "nothing
-   unknown remains".
+1. **Recount the elements and rebuild the workbook as v5.** `elements.py` still
+   holds the pre-cut 52, so the workbook built from it is stale. What changed:
+   Division and the 90 day fallback came out; the site inventory (owner,
+   libraries, users, visits, Active/Orphaned) and the whole Retention dashboard
+   went in; Active Users became Total EDRMS Users off a third table. Recount
+   against `index.html`, update `elements.py`, then rerun `build_xlsx.py`.
+   This is the one deliverable still describing the old design.
 2. **Reconcile the unique viewer numbers.** The Site usage page showed 22 unique
    viewers; Graph `allTime` returned 12 for `org_csd_1.4testsite`. All time should
    exceed 90 days, so either the screenshot was a different site or the two count
