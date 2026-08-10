@@ -409,7 +409,7 @@ DASHBOARDS.sl=(function(){
       <div class="tilesrow">
         <div class="tiles">
           <div class="tile"><div class="tl">Total sites created</div><div class="tv">${F(ALLTIME_SITES)}</div></div>
-          <div class="tile hi"><div class="tl">Total sites created by date range</div><div class="tv" id="st-tile2">—</div></div>
+          <div class="tile hi"><div class="tl">Total sites created by date range</div><div class="tv" id="st-tile2">…</div></div>
         </div>
         <div class="stfilter">
           <div class="drange">Date range <input type="date" id="st-s"> to <input type="date" id="st-e"></div>
@@ -445,7 +445,7 @@ DASHBOARDS.sl=(function(){
   }
 
   /* ===== libraries ===== */
-  function deptOptions(sel){const codes=[...new Set(LIBS.map(l=>l[2]))];return `<option value="all">All departments</option>`+codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} — ${DNAME[c]||c}</option>`).join("");}
+  function deptOptions(sel){const codes=[...new Set(LIBS.map(l=>l[2]))];return `<option value="all">All departments</option>`+codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} - ${DNAME[c]||c}</option>`).join("");}
   let deptDecl="all",fieldDecl="docs",dirDecl="desc",pageDecl=1;
   let deptStor="all",fieldStor="gb",dirStor="desc",pageStor=1;
   let curS2="decl";
@@ -554,8 +554,8 @@ DASHBOARDS.sl=(function(){
       <div class="bd">How thoroughly libraries are declaring records, and which libraries hold the most content.</div>
     </div>
     <div class="kpis" id="s2-kpis">
-      <div class="kpi on" data-k="decl"><div class="lab">Libraries Declaration Rate</div><div class="val" id="kpi-decl">—</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="stor"><div class="lab">Largest Libraries</div><div class="val" id="kpi-stor">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi on" data-k="decl"><div class="lab">Libraries Declaration Rate</div><div class="val" id="kpi-decl">…</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="stor"><div class="lab">Largest Libraries</div><div class="val" id="kpi-stor">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s2-detail"></div>
   </section>`;
@@ -640,7 +640,12 @@ DASHBOARDS.rm=(function(){
   const ANNUAL_REC=DEPTS.reduce((a,d)=>a+d.rec,0);
   const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
 
-  const DIVNAMES={ITD:["Digital Services","Infrastructure & Operations"],SARD:["South Asia Operations","South Asia Programs"],
+  /* Site name stems per department. This used to be DIVNAMES and carried a
+     division tier in the drill. Division was cut from the design: ADBMeta holds
+     no division for any row, and nothing in the tenant supplies one, so a level
+     that can never be populated was removed rather than left to fail at build
+     time. The stems survive only as a way to name two sites apiece. */
+  const SITESTEMS={ITD:["Digital Services","Infrastructure & Operations"],SARD:["South Asia Operations","South Asia Programs"],
    OSFG:["Country Operations","Safeguards"],FIN:["Treasury","Financial Control"],PARD:["Procurement","Administration"],
    HRD:["People Operations","Talent & Learning"],SERD:["Southeast Asia Operations"],EARD:["East Asia Operations"],
    OGC:["Legal Advisory","Compliance"],CWRD:["Central Asia Operations","West Asia Operations"],PSOD:["Investments","Portfolio Management"],
@@ -649,23 +654,26 @@ DASHBOARDS.rm=(function(){
   const LIBPOOL=["Final Documents","Board Papers","Loan Agreements","Country Reports","Policies","Correspondence","Minutes","Project Completion"];
 
   const TREE=DEPTS.map(d=>{
-    const divs=DIVNAMES[d.c];
-    const dr=split(d.rec,divs.length,d.c.length+1),dp=split(d.phys,divs.length,d.c.length+2),dd=split(d.docs,divs.length,d.c.length+3);
-    const children=divs.map((dv,i)=>{
-      const short=dv.split(" ")[0];
-      const siteNames=[`${d.c} ${short} Site`,`${d.c} ${short} Annex`];
-      const sr=split(dr[i],2,i+3),sp=split(dp[i],2,i+4),sd=split(dd[i],2,i+5);
-      const sites=siteNames.map((sn,j)=>{
-        const libNames=[LIBPOOL[(i+j)%LIBPOOL.length],LIBPOOL[(i+j+3)%LIBPOOL.length]];
-        const lr=split(sr[j],2,j+6),lp=split(sp[j],2,j+7),ld=split(sd[j],2,j+8);
-        const libs=libNames.map((ln,k)=>({label:ln,site:sn,rec:lr[k],phys:lp[k],docs:ld[k]}));
-        return {label:sn,sub:`${d.c} · ${dv}`,rec:sr[j],phys:sp[j],docs:sd[j],children:libs};
-      });
-      return {label:dv,sub:d.c,rec:dr[i],phys:dp[i],docs:dd[i],children:sites};
+    /* Sites hang directly off the department now. Each stem yields a Site and an
+       Annex, so a department with two stems has four sites and one stem has two.
+       split() distributes exactly, so the department totals are unchanged by the
+       tier removal. */
+    const siteNames=[];
+    SITESTEMS[d.c].forEach(stem=>{
+      const short=stem.split(" ")[0];
+      siteNames.push(`${d.c} ${short} Site`,`${d.c} ${short} Annex`);
     });
-    return {label:d.c,sub:d.n,rec:d.rec,phys:d.phys,docs:d.docs,children};
+    const n=siteNames.length;
+    const sr=split(d.rec,n,d.c.length+1),sp=split(d.phys,n,d.c.length+2),sd=split(d.docs,n,d.c.length+3);
+    const sites=siteNames.map((sn,j)=>{
+      const libNames=[LIBPOOL[j%LIBPOOL.length],LIBPOOL[(j+3)%LIBPOOL.length]];
+      const lr=split(sr[j],2,j+6),lp=split(sp[j],2,j+7),ld=split(sd[j],2,j+8);
+      const libs=libNames.map((ln,k)=>({label:ln,site:sn,rec:lr[k],phys:lp[k],docs:ld[k]}));
+      return {label:sn,sub:d.c,rec:sr[j],phys:sp[j],docs:sd[j],children:libs};
+    });
+    return {label:d.c,sub:d.n,rec:d.rec,phys:d.phys,docs:d.docs,children:sites};
   });
-  const LEVELS=["Department","Division","Site","Library"];
+  const LEVELS=["Department","Site","Library"];
   function listAt(path){let lvl=TREE;for(const idx of path)lvl=lvl[idx].children;return lvl;}
   function crumbHTML(path){let lvl=TREE,html=`<a data-i="-1">All departments</a>`;
     path.forEach((idx,i)=>{html+=`<span class="arw">›</span><a data-i="${i}">${lvl[idx].label}</a>`;lvl=lvl[idx].children;});
@@ -681,7 +689,7 @@ DASHBOARDS.rm=(function(){
     if(which==="rec"){
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Total Declared Records</div>
-        <div class="psub">Declared records per department, split into those with and without a physical counterpart. Click a bar to drill down from department to division to site to library.</div>
+        <div class="psub">Declared records per department, split into those with and without a physical counterpart. Click a bar to drill down from department to site to library.</div>
         <div class="daterow">
           <div class="drill" id="rec-crumb" style="margin:0"></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -705,7 +713,7 @@ DASHBOARDS.rm=(function(){
     }else{
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Total Documents in EDRMS Compliant Sites</div>
-        <div class="psub">Total documents held in each department's EDRMS compliant sites. Click a bar to drill down from department to division to site to library.</div>
+        <div class="psub">Total documents held in each department's EDRMS compliant sites. Click a bar to drill down from department to site to library.</div>
         <div class="daterow">
           <div class="drill" id="docs-crumb" style="margin:0"></div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -831,7 +839,7 @@ DASHBOARDS.rm=(function(){
 
   let winSites=7,deptSites="all",pageSites=1,winUsers=7,deptUsers="all",pageUsers=1;
   let curS2="sites";
-  function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} — ${d.n}</option>`).join("");}
+  function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} - ${d.n}</option>`).join("");}
 
   function renderS2(which){
     curS2=which;
@@ -912,11 +920,11 @@ DASHBOARDS.rm=(function(){
   const html=`<section class="dash-rm">
     <div class="band">
       <h2>Total Declared Records vs Total Documents in EDRMS Compliant Sites</h2>
-      <div class="bd">See how much of the content stored in EDRMS compliant sites has been formally declared as an official record, and how that breaks down by department, division, site, and library.</div>
+      <div class="bd">See how much of the content stored in EDRMS compliant sites has been formally declared as an official record, and how that breaks down by department, site, and library.</div>
     </div>
     <div class="kpis" id="s1-kpis">
-      <div class="kpi on" data-k="rec"><div class="lab">Total Declared Records</div><div class="val" id="kpi-rec">—</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="docs"><div class="lab">Total Documents in EDRMS Compliant Sites</div><div class="val" id="kpi-docs">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi on" data-k="rec"><div class="lab">Total Declared Records</div><div class="val" id="kpi-rec">…</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="docs"><div class="lab">Total Documents in EDRMS Compliant Sites</div><div class="val" id="kpi-docs">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s1-detail"></div>
 
@@ -925,8 +933,8 @@ DASHBOARDS.rm=(function(){
       <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage over the last 7, 30, or 90 days.</div>
     </div>
     <div class="kpis" id="s2-kpis">
-      <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">—</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="users"><div class="lab">Active Users</div><div class="val" id="kpi-users">—</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">…</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="users"><div class="lab">Active Users</div><div class="val" id="kpi-users">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s2-detail"></div>
   </section>`;
