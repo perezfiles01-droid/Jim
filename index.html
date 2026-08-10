@@ -167,6 +167,36 @@
   .dash-sl .scrollx{overflow-x:auto}
 
 
+/* ================= retention.css ================= */
+/* Retention: scoped styles. Only loaded shapes under .dash-rt. */
+  .dash-rt .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:16px;margin-bottom:16px}
+  @media(max-width:740px){.dash-rt .kpis{grid-template-columns:1fr}}
+  .dash-rt .tiles{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-rt .tile{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:180px}
+  .dash-rt .tile.hi{border-color:#CFE0F2;background:#EEF5FC}
+  .dash-rt .tile .tl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+  .dash-rt .tile .tv{font-size:24px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  .dash-rt .scrollx{overflow-x:auto}
+  .dash-rt .dtab{--dc:186px 190px 116px 152px 128px 132px;display:grid;grid-template-columns:var(--dc);gap:8px 12px;align-items:center;min-width:900px}
+  .dash-rt .dtab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  .dash-rt .dtab .hd.on{color:var(--blue);font-weight:700}
+  .dash-rt .dtab .hd.num{text-align:right}
+  .dash-rt .dtab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-rt .dtab .dp{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-rt .dtab .dt{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-rt .dtab .dt.far{color:var(--mut)}
+  .dash-rt .dtab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
+  .dash-rt .dtab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
+  .dash-rt .dtab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-rt .lbar{display:grid;grid-template-columns:236px 1fr 58px;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-rt .lbar .ll b{font-size:13px;font-weight:600}
+  .dash-rt .lbar .ll small{display:block;color:var(--mut);font-size:11px}
+  .dash-rt .lbar .lt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
+  .dash-rt .lbar .lf{height:26px;border-radius:6px;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
+  .dash-rt .lbar .lp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .dash-rt .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
+
+
 /* ================= recordsmanagement.css ================= */
 /* Records Management: scoped styles. Only loaded shapes under .dash-rm. */
   /* ===== Records Management, scoped ===== */
@@ -306,7 +336,7 @@
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
     <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
-    <a class="dis"><span class="ic">⏳</span>Retention</a>
+    <a data-d="rt"><span class="ic">⏳</span>Retention</a>
     <div class="grp">Reference</div>
     <a data-d="dd"><span class="ic">▤</span>Data Design</a>
   </nav>
@@ -1493,6 +1523,175 @@ DASHBOARDS.ov=(function(){
     /* A summary is only as current as its stalest input, so this quotes the
        oldest refresh across the dashboards it draws from rather than the newest. */
     asof:"Data as of Sun 05 Jul 2026 23:59, the oldest refresh across the dashboards summarised here",
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   retention.js
+   Answers the client's 2.1.2.8, the disposal summary. Built rather than
+   left a placeholder because the data is already there: Records carries
+   EDRMSDueDateForDisposal, computed as EDRMSRetentionLabelApplied plus
+   EDRMSDuration, so records due for disposal and the next due date are a
+   count and a MIN over a column that exists today. The only figure here
+   that is not available now is the inactive document count, which needs
+   the document scan, and it is marked as such on the panel.
+   ================================================================= */
+DASHBOARDS.rt=(function(){
+  /* Retention labels across all declared records. Sums to the same 21,646 the
+     other dashboards use, and asserts it below rather than trusting it. */
+  const LABELS=[
+    {label:"10 years after declaration",count:8420},
+    {label:"7 years after declaration", count:5310},
+    {label:"5 years after declaration", count:3980},
+    {label:"Permanent",                 count:2460},
+    {label:"3 years after declaration", count:1476},
+  ];
+  const LABEL_TOTAL=LABELS.reduce((a,l)=>a+l.count,0);
+  /* Permanent records are never due for disposal. Stating it as a constant
+     keeps the "never due" population visible instead of buried in a filter. */
+  const PERMANENT=LABELS.find(l=>l.label==="Permanent").count;
+
+  /* Disposal summary per library. Record counts are the same figures the
+     Sites and Libraries dashboard shows, so the two reconcile.
+     [library, site, records, dueWithin12m, nextDue, inactive1y] */
+  const DLIBS=[
+   ["Final Documents","ITD Records Site",640,84,"2026-11-14",210],
+   ["Board Papers","OGC Legal Site",540,96,"2026-09-02",164],
+   ["Country Reports","SARD Ops Site",450,61,"2026-10-27",138],
+   ["Loan Agreements","FIN Treasury Site",384,0,"2031-04-18",92],
+   ["Policies","HRD People Site",315,44,"2027-01-09",71],
+   ["Project Completion","OSFG Country Site",300,38,"2026-12-03",96],
+   ["Field Reports","SERD Ops Site",286,52,"2026-08-21",118],
+   ["Case Files","OGC Compliance Site",280,31,"2027-02-16",64],
+   ["Minutes","BRM Budget Site",245,58,"2026-09-30",83],
+   ["Correspondence","PARD Procurement Site",210,74,"2026-08-14",147],
+   ["Investment Memos","PSOD Investments Site",180,22,"2027-03-05",40],
+   ["Legal Opinions","OGC Advisory Site",150,0,"2033-06-11",55],
+   ["Audit Reports","CWRD Ops Site",120,19,"2026-12-19",37],
+   ["Climate Briefs","SDCC Climate Site",95,12,"2027-05-22",26],
+   ["Admin Records","OAS Facilities Site",88,17,"2026-10-08",31],
+  ];
+  const DUE_TOTAL=DLIBS.reduce((a,l)=>a+l[3],0);
+  const LIB_RECORDS=DLIBS.reduce((a,l)=>a+l[2],0);
+  const INACTIVE_TOTAL=DLIBS.reduce((a,l)=>a+l[5],0);
+  const NEXT_DUE=DLIBS.map(l=>l[4]).sort()[0];
+
+  const DFMT=d=>{const x=new Date(d+"T00:00:00");
+    return x.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});};
+
+  /* Reconciliation. The label breakdown must equal the declared record total
+     the Records Management dashboard publishes, and no library can have more
+     records due than it holds. */
+  console.assert(LABEL_TOTAL===DASHBOARDS.rm.summary.declared,
+    `Retention labels total ${LABEL_TOTAL} but Records Management declares ${DASHBOARDS.rm.summary.declared}`);
+  console.assert(DLIBS.every(l=>l[3]<=l[2]),"A library cannot have more records due for disposal than it holds");
+  console.assert(DUE_TOTAL<LABEL_TOTAL-PERMANENT,"Records due must exclude the permanent population");
+
+  let sortD="due",dirD="desc";
+  const DCOLS=[
+    {k:"lib",  i:0,lab:"Library",              num:false},
+    {k:"site", i:1,lab:"Site",                 num:false},
+    {k:"held", i:2,lab:"Records held",         num:true},
+    {k:"due",  i:3,lab:"Due within 12 months", num:true},
+    {k:"next", i:4,lab:"Next due date",        num:false},
+    {k:"inact",i:5,lab:"Inactive over 1 year", num:true},
+  ];
+
+  function drawTable(){
+    const col=DCOLS.find(c=>c.k===sortD);
+    const rows=[...DLIBS].sort((a,b)=>{
+      const x=a[col.i],y=b[col.i];
+      const cmp=col.num?x-y:String(x).localeCompare(String(y));
+      return dirD==="asc"?cmp:-cmp;
+    });
+    const mx={};[2,3,5].forEach(i=>mx[i]=Math.max(...DLIBS.map(l=>l[i]),1));
+    let h="";
+    DCOLS.forEach(c=>{
+      const arrow=sortD===c.k?(dirD==="asc"?" ↑":" ↓"):"";
+      h+=`<div class="hd${c.num?" num":""}${sortD===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
+    });
+    rows.forEach(l=>{
+      const cell=i=>`<div class="nc"><div class="nb" style="width:${(l[i]/mx[i]*100).toFixed(1)}%"></div><b>${F(l[i])}</b></div>`;
+      h+=`<div class="nm" title="${l[0]}">${l[0]}</div><div class="dp">${l[1]}</div>`;
+      h+=cell(2)+cell(3);
+      /* A library whose next due date is years out is not "nothing due", it is
+         a long or permanent retention. Saying so beats an empty cell. */
+      h+=`<div class="dt${l[3]===0?" far":""}">${DFMT(l[4])}</div>`;
+      h+=cell(5);
+    });
+    const t=document.getElementById("rt-table");
+    t.innerHTML=h;
+    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
+      const k=hd.dataset.s;
+      if(sortD===k)dirD=dirD==="asc"?"desc":"asc";
+      else{sortD=k;dirD=(k==="lib"||k==="site"||k==="next")?"asc":"desc";}
+      drawTable();
+    });
+  }
+
+  function drawLabels(){
+    const mx=Math.max(...LABELS.map(l=>l.count));
+    document.getElementById("rt-labels").innerHTML=LABELS.map(l=>{
+      const perm=l.label==="Permanent";
+      return `<div class="lbar"><div class="ll"><b>${l.label}</b>${perm?`<small>Never due for disposal</small>`:""}</div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*l.count/mx)}%;background:${perm?"var(--greyblue)":"var(--deepblue)"}">${F(l.count)}</div></div>
+        <div class="lp">${(l.count/LABEL_TOTAL*100).toFixed(1)}%</div></div>`;
+    }).join("");
+  }
+
+  const html=`<section class="dash-rt">
+    <div class="band">
+      <h2>Disposal pipeline</h2>
+      <div class="bd">Which declared records are approaching the end of their retention period, and when the next disposal falls due. Due dates come from the retention label applied to each record plus its duration.</div>
+    </div>
+    <div class="kpis" id="rt-kpis">
+      <div class="kpi on"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Disposal summary by library</div>
+      <div class="psub">Click any column heading to sort. Records held and records due come from the declared record rows. Inactive over 1 year counts documents untouched for a year, which is the one column here that waits on the document scan.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Records in these libraries</div><div class="tv">${F(LIB_RECORDS)}</div></div>
+        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DUE_TOTAL)}</div></div>
+        <div class="tile"><div class="tl">Inactive over 1 year</div><div class="tv">${F(INACTIVE_TOTAL)}</div></div>
+      </div>
+      <div class="scrollx"><div class="dtab" id="rt-table"></div></div>
+      <div class="note">Inactive over 1 year is the only figure on this page that is not available today. It needs the weekly document scan, because an undeclared or untouched document has no row in the records table to read a date from.</div>
+    </div>
+
+    <div class="band">
+      <h2>Retention profile</h2>
+      <div class="bd">How the declared records divide across retention labels, and how much of the holding is permanent and therefore never due for disposal.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by retention label</div>
+      <div class="psub">All ${F(LABEL_TOTAL)} declared records. ${F(PERMANENT)} of them carry a permanent label, so they are excluded from every disposal figure above.</div>
+      <div id="rt-labels"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("kpi-due").textContent=F(DUE_TOTAL);
+    document.getElementById("kpi-next").textContent=DFMT(NEXT_DUE);
+    drawTable();
+    drawLabels();
+  }
+
+  return {
+    ver:"Retention Dashboard",
+    crumb:"Retention Dashboard",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{
+      dueNext12:DUE_TOTAL,
+      nextDue:NEXT_DUE,
+      permanent:PERMANENT,
+      labelTotal:LABEL_TOTAL,
+      inactiveOverYear:INACTIVE_TOTAL,
+      labels:LABELS.map(l=>({label:l.label,count:l.count}))
+    },
     html,init
   };
 })();
