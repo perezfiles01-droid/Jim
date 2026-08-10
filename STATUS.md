@@ -64,6 +64,15 @@ exists. It needs a screen, not a source.
 design inside the prototype as a reference page. `utilizationdb.md` still holds
 all of it, so nothing was lost; the prototype is now reports only.
 
+**The file plan sits inside Retention, not on its own dashboard.** Two cards and
+five bars did not earn a nav entry, and the pairing is sound: the plan says how
+content is classified, retention says how long each class is kept.
+
+**Its source is the one thing in the suite still unverified.** The panel assumes
+the SharePoint term store. It may instead be **Microsoft Purview Records
+management, File plan**, where retention labels carry classification descriptors.
+Two tests settle it, both a couple of minutes, and neither has been run.
+
 ---
 
 ## 2. THE BOARD
@@ -125,7 +134,7 @@ every library figure.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. Single self contained file, **6 dashboards**: Overview, Records Management, File Plan, Sites and Libraries, Format and Storage, Retention |
+| `index.html` | The prototype. Single self contained file, **5 dashboards**: Overview, Records Management, Sites and Libraries, Format and Storage, Retention and File Plan |
 | `utilizationdb.md` | The database design in the client's own workbook format. **Four tables, 70 columns**, no code |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | **The working document.** Every element mapped to its source, the gaps, the action plan, 25 findings with evidence |
 | `BACKGROUND.md` | Durable project context. Still correct on stack, palette, hard rules |

@@ -9,17 +9,18 @@ p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
 p.on('pageerror',e=>errs.push('pageerror: '+e.message));
 await p.goto('file:///home/user/Jim/index.html'); await p.waitForTimeout(300);
 const r=await p.evaluate(()=>{
-  const fp=DASHBOARDS.fp.summary, sl=DASHBOARDS.sl.summary;
+  const fp=DASHBOARDS.rt.summary, sl=DASHBOARDS.sl.summary;
   return {terms:fp.totalTerms,sets:fp.totalSets,cats:fp.categoryCount,
           sum:fp.categories.reduce((a,c)=>a+c.terms,0),depth:fp.maxDepth,
           navLive:[...document.querySelectorAll('nav a[data-d]')].map(a=>a.dataset.d),
           dis:document.querySelectorAll('nav a.dis').length};
 });
-await p.click('nav a[data-d="fp"]'); await p.waitForTimeout(400);
+await p.click('nav a[data-d="rt"]'); await p.waitForTimeout(400);
 const seen=await p.evaluate(()=>({
-  kpi:document.getElementById('kpi-terms').textContent,
-  bars:document.querySelectorAll('#fp-bars .fbar').length,
-  scope:!!document.querySelector('section.dash-fp')}));
+  bars:document.querySelectorAll('#rt-plan .fbar').length,
+  scope:!!document.querySelector('section.dash-rt'),
+  /* The file plan must sit alongside the retention figures, not replace them */
+  labels:document.querySelectorAll('#rt-labels .lbar').length}));
 await p.click('nav a[data-d="sl"]'); await p.waitForTimeout(400);
 const sl=await p.evaluate(()=>({
   libRows:document.querySelectorAll('#lib-table .nm').length,
@@ -30,15 +31,16 @@ const sl=await p.evaluate(()=>({
 const fail=[];
 if(r.sum!==r.terms) fail.push(`category terms sum ${r.sum} vs total ${r.terms}`);
 if(seen.bars!==r.cats) fail.push(`rendered ${seen.bars} category bars for ${r.cats} categories`);
-if(!seen.scope) fail.push('file plan section missing its .dash-fp scope class');
+if(!seen.scope) fail.push('retention section missing its .dash-rt scope class');
+if(!seen.labels) fail.push('the retention label profile was lost when the file plan moved in');
 if(sl.libRows!==15) fail.push(`library table rows ${sl.libRows}`);
-if(!r.navLive.includes('fp')) fail.push('File Plan not in the nav');
+if(r.navLive.includes('fp')) fail.push('a standalone File Plan nav entry survives; it should live inside Retention');
 const states=new Set(sl.pills);
 if(!(states.has('Active')&&states.has('Inactive')&&states.has('Long dormant')))
   fail.push('library table does not show all three states: '+[...states].join(', '));
 if(sl.pills.some(x=>/orphan/i.test(x))) fail.push('Orphaned wording survives in the library table');
 console.log('nav live      :', r.navLive.join(', '), `(${r.dis} placeholder left)`);
-console.log('file plan     :', seen.kpi, 'terms over', r.cats, 'categories,', r.sets, 'sets, deepest', r.depth, 'levels');
+console.log('file plan     :', r.terms, 'terms over', r.cats, 'categories,', r.sets, 'sets, deepest', r.depth, 'levels');
 console.log('library health:', sl.libact, 'active |', sl.libRows, 'rows | growth', sl.growth);
 console.log('states seen   :', [...states].join(', '));
 console.log('console errors:', errs.length?errs:'none');

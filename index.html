@@ -185,17 +185,6 @@
   .dash-sl .subtotal{margin-top:12px;font-size:12.5px;color:var(--ink2)}
 
 
-/* ================= fileplan.css ================= */
-/* File Plan: scoped styles. Only loaded shapes under .dash-fp. */
-  .dash-fp .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,300px));gap:16px;margin-bottom:16px}
-  @media(max-width:740px){.dash-fp .kpis{grid-template-columns:1fr}}
-  .dash-fp .fbar{display:grid;grid-template-columns:250px 1fr 58px;align-items:center;gap:12px;margin-bottom:10px}
-  .dash-fp .fbar .fl b{font-size:13px;font-weight:600}
-  .dash-fp .fbar .fl small{display:block;color:var(--mut);font-size:11px}
-  .dash-fp .fbar .ft{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
-  .dash-fp .fbar .ff{height:26px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
-  .dash-fp .fbar .fp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-
 /* ================= retention.css ================= */
 /* Retention: scoped styles. Only loaded shapes under .dash-rt. */
   .dash-rt .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:16px;margin-bottom:16px}
@@ -223,6 +212,12 @@
   .dash-rt .lbar .lt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
   .dash-rt .lbar .lf{height:26px;border-radius:6px;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
   .dash-rt .lbar .lp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .dash-rt .fbar{display:grid;grid-template-columns:250px 1fr 58px;align-items:center;gap:12px;margin-bottom:10px}
+  .dash-rt .fbar .fl b{font-size:13px;font-weight:600}
+  .dash-rt .fbar .fl small{display:block;color:var(--mut);font-size:11px}
+  .dash-rt .fbar .ft{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
+  .dash-rt .fbar .ff{height:26px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
+  .dash-rt .fbar .fp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
 
 
 /* ================= recordsmanagement.css ================= */
@@ -326,10 +321,9 @@
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
     <a class="dis"><span class="ic">▦</span>Department Performance</a>
-    <a data-d="fp"><span class="ic">⌸</span>File Plan</a>
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
     <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
-    <a data-d="rt"><span class="ic">⏳</span>Retention</a>
+    <a data-d="rt"><span class="ic">⏳</span>Retention &amp; File Plan</a>
   </nav>
 </aside>
 <div id="main">
@@ -1347,6 +1341,14 @@ DASHBOARDS.fs=(function(){
 
   let field="files",dir="desc";
 
+  function drawPlan(){
+    const mx=Math.max(...CATS.map(c=>c.terms));
+    document.getElementById("rt-plan").innerHTML=CATS.map(c=>
+      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
+        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
+        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
+  }
+
   function drawTable(){
     document.querySelectorAll("#fs-field button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));
     document.getElementById("fs-dir").innerHTML=(dir==="desc"?'▼ Highest first':'▲ Lowest first');
@@ -1698,87 +1700,6 @@ DASHBOARDS.ov=(function(){
 
 
 /* =================================================================
-   fileplan.js
-   The institutional file plan, which is the SharePoint term store read as
-   a report. Answers the client's section 3: total terms and the count in
-   each top level category.
-
-   Sourced from the Graph term store API and testable in Graph Explorer
-   today:
-     GET /termStore/groups                       the categories
-     GET /termStore/groups/{groupId}/sets        the sets inside one
-     GET /termStore/sets/{setId}/children        the terms at one level
-
-   One wrinkle worth knowing before anyone estimates it: a file plan is a
-   tree and the API returns one level at a time, so a full count means
-   walking down through each level rather than reading a single number.
-   That is a loop, not a blocker, and it is why this is a small job rather
-   than a free one.
-   ================================================================= */
-DASHBOARDS.fp=(function(){
-  /* [category, sets, terms, depth]. The five top level groups the client
-     names. Counts are illustrative until the walk above is run against the
-     tenant; the source is confirmed, the numbers are not. */
-  const CATS=[
-   {label:"Programme and operation", sets:14, terms:412, depth:4},
-   {label:"Administration",          sets:11, terms:286, depth:3},
-   {label:"Compliance and oversight",sets:8,  terms:174, depth:3},
-   {label:"People Management",       sets:7,  terms:139, depth:3},
-   {label:"Risk management",         sets:5,  terms:88,  depth:2},
-  ];
-  const TOTAL_TERMS=CATS.reduce((a,c)=>a+c.terms,0);
-  const TOTAL_SETS=CATS.reduce((a,c)=>a+c.sets,0);
-  const MAX_DEPTH=Math.max(...CATS.map(c=>c.depth));
-  console.assert(CATS.every(c=>c.terms>=c.sets),
-    "A category cannot hold fewer terms than it has term sets");
-
-  function draw(){
-    const mx=Math.max(...CATS.map(c=>c.terms));
-    document.getElementById("fp-bars").innerHTML=CATS.map(c=>
-      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
-        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
-        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
-  }
-
-  const html=`<section class="dash-fp">
-    <div class="band">
-      <h2>Institutional file plan</h2>
-      <div class="bd">The file plan is the SharePoint term store, so its size and shape can be reported directly. How many terms exist, and how they divide across the five categories.</div>
-    </div>
-    <div class="kpis" id="fp-kpis">
-      <div class="kpi stat"><div class="lab">Total Terms</div><div class="val" id="kpi-terms">…</div><div class="sub">Across ${CATS.length} categories, at every level of the plan</div></div>
-      <div class="kpi stat"><div class="lab">Term Sets</div><div class="val" id="kpi-sets">…</div><div class="sub">Deepest branch runs ${MAX_DEPTH} levels</div></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Terms by category</div>
-      <div class="psub">The five top level groups in the term store, sized by how many terms sit beneath them at every level, not only the top. The deepest branch runs ${MAX_DEPTH} levels.</div>
-      <div id="fp-bars"></div>
-    </div>
-  </section>`;
-
-  function init(){
-    document.getElementById("kpi-terms").textContent=F(TOTAL_TERMS);
-    document.getElementById("kpi-sets").textContent=F(TOTAL_SETS);
-    draw();
-  }
-
-  return {
-    ver:"File Plan Dashboard",
-    crumb:"File Plan Dashboard",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
-    summary:{
-      totalTerms:TOTAL_TERMS,
-      totalSets:TOTAL_SETS,
-      maxDepth:MAX_DEPTH,
-      categoryCount:CATS.length,
-      categories:CATS.map(c=>({label:c.label,terms:c.terms,sets:c.sets}))
-    },
-    html,init
-  };
-})();
-
-
-/* =================================================================
    retention.js
    Answers the client's 2.1.2.8, the disposal summary. Built rather than
    left a placeholder because the data is already there: Records carries
@@ -1854,6 +1775,23 @@ DASHBOARDS.rt=(function(){
   console.assert(WITH_SCHEDULE<=LABEL_TOTAL,"Records with a schedule cannot exceed the declared total");
   console.assert(BEYOND_RETENTION<=WITH_SCHEDULE,"Only a record with a schedule can be beyond its retention period");
 
+  /* [category, sets, terms, depth]. The five top level groups the client
+     names. Counts are illustrative until the walk above is run against the
+     tenant; the source is confirmed, the numbers are not. */
+  const CATS=[
+   {label:"Programme and operation", sets:14, terms:412, depth:4},
+   {label:"Administration",          sets:11, terms:286, depth:3},
+   {label:"Compliance and oversight",sets:8,  terms:174, depth:3},
+   {label:"People Management",       sets:7,  terms:139, depth:3},
+   {label:"Risk management",         sets:5,  terms:88,  depth:2},
+  ];
+  const TOTAL_TERMS=CATS.reduce((a,c)=>a+c.terms,0);
+  const TOTAL_SETS=CATS.reduce((a,c)=>a+c.sets,0);
+  const MAX_DEPTH=Math.max(...CATS.map(c=>c.depth));
+  console.assert(CATS.every(c=>c.terms>=c.sets),
+    "A category cannot hold fewer terms than it has term sets");
+
+
   let sortD="due",dirD="desc";
   const DCOLS=[
     {k:"lib",  i:0,lab:"Library",              num:false},
@@ -1863,6 +1801,14 @@ DASHBOARDS.rt=(function(){
     {k:"next", i:4,lab:"Next due date",        num:false},
     {k:"inact",i:5,lab:"Inactive over 1 year", num:true},
   ];
+
+  function drawPlan(){
+    const mx=Math.max(...CATS.map(c=>c.terms));
+    document.getElementById("rt-plan").innerHTML=CATS.map(c=>
+      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
+        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
+        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
+  }
 
   function drawTable(){
     const col=DCOLS.find(c=>c.k===sortD);
@@ -1955,6 +1901,16 @@ DASHBOARDS.rt=(function(){
     </div>
 
     <div class="band">
+      <h2>Institutional file plan</h2>
+      <div class="bd">The classification scheme these retention rules apply to. The file plan says how content is filed; the retention labels above say how long each class is kept. Two views of the same governance.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Terms by category</div>
+      <div class="psub">The ${CATS.length} top level groups in the file plan, sized by how many terms sit beneath them at every level, not only the top. ${TOTAL_TERMS.toLocaleString()} terms across ${TOTAL_SETS} term sets, the deepest branch running ${MAX_DEPTH} levels.</div>
+      <div id="rt-plan"></div>
+    </div>
+
+    <div class="band">
       <h2>Retention profile</h2>
       <div class="bd">How the declared records divide across retention labels, and how much of the holding is permanent and therefore never due for disposal.</div>
     </div>
@@ -1971,11 +1927,12 @@ DASHBOARDS.rt=(function(){
     drawTable();
     drawLabels();
     drawCompliance();
+    drawPlan();
   }
 
   return {
-    ver:"Retention Dashboard",
-    crumb:"Retention Dashboard",
+    ver:"Retention and File Plan Dashboard",
+    crumb:"Retention and File Plan",
     asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{
       dueNext12:DUE_TOTAL,
@@ -1988,7 +1945,12 @@ DASHBOARDS.rt=(function(){
       permanent:PERMANENT,
       labelTotal:LABEL_TOTAL,
       inactiveOverYear:INACTIVE_TOTAL,
-      labels:LABELS.map(l=>({label:l.label,count:l.count}))
+      labels:LABELS.map(l=>({label:l.label,count:l.count})),
+      totalTerms:TOTAL_TERMS,
+      totalSets:TOTAL_SETS,
+      maxDepth:MAX_DEPTH,
+      categoryCount:CATS.length,
+      categories:CATS.map(c=>({label:c.label,terms:c.terms,sets:c.sets}))
     },
     html,init
   };
