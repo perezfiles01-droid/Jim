@@ -316,6 +316,55 @@ with different column names; quoting the wrong block is the easy mistake.
 
 ---
 
+## 8B. QUESTIONS FOR THE DEVELOPMENT TEAM
+
+Distinct from section 8. Those are business decisions only RAC can make. These
+are technical unknowns only the dev team can answer.
+
+| # | Question | Blocks |
+| --- | --- | --- |
+| 1 | How do we list every site with app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}` installed? Graph call, PnP script or admin report, and it must be repeatable | 4 KPIs. The single highest value question on this list |
+| 2 | Is `Apps for SharePoint` the catalog or the installed-apps list? | Shapes the query for #1. The catalog proves the app exists in the tenant, not which sites took it |
+| 3 | Is the app version tracked per site? | Nothing today, but sites on mixed versions would make a useful health metric |
+| 4 | Can provisioning set a default on `ADBDepartmentOwner` when it creates a site's libraries? | Stops Gap 1 recurring. Does not fix the existing 1,057 |
+| 5 | Does `ADBDivisionOwner` exist as a column on any library? | Only one library was inspected. Does not change the plan, both fields are empty either way |
+| 6 | What counts as a document? Folders, versions, system files | Graph returns folders with a **cumulative** size. A scan that sums every item double counts storage |
+| 7 | Does an extension to format-group mapping already exist? | `FormatGroup` has no rule without it. 8 buckets |
+
+**Question 1 in the words to send:** "We need to identify every site with app
+`{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}` installed. Is there a Graph API call, a
+PnP PowerShell script, or an admin report that returns this per site? It needs to
+be repeatable, not one-off, because the report refreshes."
+
+### Department and division, the settled position
+
+State these plainly to the client. They are the confirmations, not open items.
+
+- **Nothing in SharePoint records which department owns a site.** Not the site,
+  not the library, not the documents. The column exists and is empty. Unfilled
+  data entry, not a technical limitation.
+- **Division IS designed in `ADBMeta`.** What is missing is a SharePoint column
+  to feed it, and that was observed in one library only. Earlier notes conflated
+  "no Division anywhere" with "no Division column in this one library". Both
+  fields are empty in practice, so the plan is the same for both.
+- **The term store holds the vocabulary, not the assignment.** It supplies the
+  list of valid department names, which is what makes a dropdown work. It cannot
+  say which site belongs to which department.
+- **The site owner is a pre-fill guess, not a source.** 1,683 of 1,702 sites have
+  an owner but only 474 distinct, and `Admin@7rkd12.onmicrosoft.com` owns 954 of
+  them, 56 percent. Covers 44 percent at best, and RAC must verify all of it.
+- **RAC is the source of truth.** There is no way to derive it.
+- **After RAC sends the list, dev does an import and a join, never manual
+  tagging.** One row per site into the Site Activity Table, about 1,057 rows.
+  Documents inherit department from their site.
+- **The one confirmation to get first:** is it acceptable that every document in
+  a CWRD site counts as CWRD? The drill down already assumes yes. Yes means a
+  week. No means a quarter.
+- **Email AvePoint Cloud Governance before RAC spends effort.** If it recorded
+  the requesting department at provisioning, this becomes an export.
+
+---
+
 ## 9. NEXT STEPS
 
 1. **Build v5 of the workbook.** Test D passed, so Active Users and Unique
