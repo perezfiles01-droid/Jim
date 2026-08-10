@@ -10,10 +10,9 @@ touching another's blocks.
 | Overview | `ov` | `overview` blocks | Built, the default on load |
 | Records Management | `rm` | `recordsmanagement` blocks | Built |
 | Department Performance | - | - | Placeholder, `class="dis"`. The only one left |
-| File Plan | `fp` | `fileplan` blocks | Built |
 | Sites and Libraries | `sl` | `sitesandlibraries` blocks | Built |
 | Format and Storage | `fs` | `formatandstorage` blocks | Built |
-| Retention | `rt` | `retention` blocks | Built |
+| Retention & File Plan | `rt` | `retention` blocks | Built |
 
 Default on load is Overview, the first live entry. Every entry is now a report;
 there is no documentation page in the nav.
@@ -170,6 +169,88 @@ a known dependency.
 | Video files | 466 | 20.5 |
 | All other formats | 400 | 0.8 |
 | **Total** | **21,646** | **46.7** |
+
+## Retention and File Plan (`rt`)
+
+Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00.
+
+Built rather than left a placeholder because the data was already there.
+`Records` carries `EDRMSDueDateForDisposal`, computed as label applied plus
+duration, so records due for disposal is a count and next due date is a `MIN()`
+over a column that exists today.
+
+**The file plan lives here rather than on its own dashboard.** Two KPI cards and
+five bars did not earn a nav entry, and the pairing is more than tidiness: in
+records management the file plan and the retention schedule are the same
+governance artifact seen from two sides. The plan says how content is classified;
+retention says how long each class is kept.
+
+Sections, in order:
+
+- **Disposal pipeline.** Two static KPI cards, *Records Due for Disposal, next 12
+  months* (608) and *Next Due Date for Disposal*, over a sortable table of 15
+  libraries: library, site, records held, due within 12 months, next due date,
+  inactive over 1 year. Tiles show the 30 day, 90 day and 12 month horizons,
+  which nest by construction and are asserted to.
+- **Retention compliance.** Records with and without a retention schedule, and
+  records already past their disposal date.
+- **Institutional file plan.** The five top level groups sized by term count,
+  each showing its term set count and depth.
+- **Retention profile.** Declared records by label over all 21,646, with
+  `Permanent` drawn in grey blue and marked "Never due for disposal".
+
+`PERMANENT` (2,460) is a named constant excluded from every disposal figure, with
+an assertion enforcing it. A second assertion ties the label total to
+`DASHBOARDS.rm.summary.declared`.
+
+**A record with no retention schedule has no due date**, so it sits outside every
+disposal figure. That is why it is counted separately rather than left to vanish.
+
+**Beyond retention does not mean still awaiting action.** Nothing records whether
+a disposal was carried out. The four client metrics needing disposal state
+(8.1.4, 8.1.5, 8.1.6, 8.3.3) are deliberately absent: they need a `DisposalStatus`
+field the EDRMS application does not have.
+
+**Inactive over 1 year is the one figure here that is not ready.** It needs the
+document scan, because an untouched document has no row until the scan creates
+one.
+
+### The file plan source is the weakest claim in the suite
+
+The panel assumes the file plan lives in the **SharePoint term store**. It may
+instead live in **Microsoft Purview**, whose Records management area has a literal
+File plan feature where retention labels carry classification descriptors. For an
+EDRMS that is at least as likely. We know the term store holds departments and
+divisions; we do not know it holds a file plan.
+
+**Two tests settle it**, both a couple of minutes, and neither has been run:
+
+- SharePoint admin centre, Content services, Term store. Is there a file plan
+  group beside Department and Division?
+- `https://purview.microsoft.com`, Solutions, Records management, File plan. Are
+  the descriptors filled in?
+
+If it turns out to be Purview, the panel keeps its shape and only the source side
+is rewritten. The tree walking problem below disappears, since Purview returns
+labels as a flat list.
+
+Assuming the term store, three Graph calls, needing `TermStore.Read.All`:
+
+```
+GET /termStore/groups                    the categories
+GET /termStore/groups/{groupId}/sets     the sets inside one
+GET /termStore/sets/{setId}/children     the terms at one level
+```
+
+**The wrinkle worth knowing before anyone estimates it:** a file plan is a tree
+and the API returns one level at a time, so counting every term under a category
+means walking down through each level rather than reading a total. A loop, not a
+blocker. `Depth` is recorded while walking at no extra cost.
+
+**Every figure on that panel is invented**: the five category names, the counts,
+the term set numbers, the depths. That is true of the whole prototype, but it
+matters more here, because elsewhere the column a number will come from is known
+and here even the system is not.
 
 ## KPI cards: interactive or static, never ambiguous
 
