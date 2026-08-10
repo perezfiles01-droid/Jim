@@ -21,14 +21,16 @@ def md2html(t):
 def esc(t): return md2html(t).replace('\\','\\\\').replace('"','\\"').replace('$','\\$').replace('`','\\`')
 
 # ---- the two column definition tables (8 columns each) ----
-t1 = rows('## TABLE 1. UTILIZATION REPORT TABLE', '**38 columns.**')
-t2 = rows('## TABLE 2. SITE ACTIVITY TABLE', '**20 columns.**')
-assert len(t1)==38 and len(t2)==20, (len(t1), len(t2))
+t1 = rows('## TABLE 1. UTILIZATION REPORT TABLE', '**35 columns**')
+t2 = rows('## TABLE 2. SITE ACTIVITY TABLE', '**19 columns.**')
+t3 = rows('## TABLE 3. USER ACTIVITY TABLE', '**7 columns.**')
+assert (len(t1),len(t2),len(t3))==(35,19,7), (len(t1),len(t2),len(t3))
 
-# ---- the two traceability tables (6 columns each) ----
+# ---- the three traceability tables (6 columns each) ----
 u1 = rows('### Table 1: Utilization Report Table', '### Table 2: Site Activity Table')
-u2 = rows('### Table 2: Site Activity Table', '## WHERE TO GO FOR EACH SOURCE')
-assert len(u1)==38 and len(u2)==20, (len(u1), len(u2))
+u2 = rows('### Table 2: Site Activity Table', '### Table 3: User Activity Table')
+u3 = rows('### Table 3: User Activity Table', '## WHERE EVERY FIGURE COMES FROM')
+assert (len(u1),len(u2),len(u3))==(35,19,7), (len(u1),len(u2),len(u3))
 
 def status(txt):
     t = txt.replace('*','')
@@ -40,7 +42,8 @@ def status(txt):
 
 KEY = {'SnapshotDate','FormatGroup','ListId','SiteUrl','SiteName','LibraryName',
        'IsDeclaredRecord','CreatedDate','HasPhysical','IsDeleted',
-       'SiteVisits7','SiteVisits30','SiteVisits90'}
+       'SiteVisits7','SiteVisits30','SiteVisits90','LibraryCount',
+       'LastActivityDate','UserPrincipalName','EDRMSDueDateForDisposal'}
 
 def cardcols(defs, uses, tname):
     out=[]
@@ -59,7 +62,7 @@ def js(arr, indent):
     pad=' '*indent
     return '\n'.join(pad+'['+','.join('"'+esc(c)+'"' for c in r)+'],' for r in arr).rstrip(',')
 
-c1, c2 = cardcols(t1,u1,'T1'), cardcols(t2,u2,'T2')
+c1, c2, c3 = cardcols(t1,u1,'T1'), cardcols(t2,u2,'T2'), cardcols(t3,u3,'T3')
 
 # figure-side table: | Dashboard | Figure | Table | How | Ready? |
 seg = md[md.index('## WHERE EVERY FIGURE COMES FROM'):md.index('## WHERE TO GO FOR EACH SOURCE')]
@@ -71,12 +74,13 @@ for line in seg.split('\n'):
     if len(cells)!=5: continue
     r=cells[4]
     st = 'gap' if 'Blocked' in r else 'usage' if 'usage' in r else 'scan' if 'scan' in r else 'ok'
-    tr.append([cells[0], cells[1], cells[2], md2html(cells[3]), st])
-assert len(tr)==23, len(tr)
+    tr.append([md2html(cells[0]), md2html(cells[1]), md2html(cells[2]), md2html(cells[3]), st])
+assert len(tr)>=28, len(tr)   # grew with the site inventory and Retention figures
 
 open('gen_out.js','w').write(json.dumps({
- 'c1':c1,'c2':c2,'u1':usecols(u1),'u2':usecols(u2),'tr':tr}))
-print('T1',len(c1),'T2',len(c2))
+ 'c1':c1,'c2':c2,'c3':c3,
+ 'u1':usecols(u1),'u2':usecols(u2),'u3':usecols(u3),'tr':tr}))
+print('T1',len(c1),'T2',len(c2),'T3',len(c3),'figures',len(tr))
 from collections import Counter
-print('T1 status', Counter(status(u[3]) for u in u1))
-print('T2 status', Counter(status(u[3]) for u in u2))
+for nm,u in (('T1',u1),('T2',u2),('T3',u3)):
+    print(nm,'status',Counter(status(x[3]) for x in u))

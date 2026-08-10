@@ -1736,8 +1736,6 @@ DASHBOARDS.dd=(function(){
       ["SiteCreatedDate","Date","When the SharePoint site was created","gap"],
       ["IsEdrmsCompliant","Yes / No","Whether the parent site is an EDRMS compliant site","gap"],
       ["ADBDepartmentOwner","Text","Owning department","gap"],
-      ["ADBDivisionOwner","Text","Owning division","gap"],
-      ["ADBUnitOwner","Text","Owning unit",""],
       ["IsDeclaredRecord","Yes / No","Whether this document has been declared a record","key"],
       ["CreatedDate","Date and time","Date when the user declared the file as a record","key"],
       ["CreatedBy","Text","Email or ID of the user that declared the record",""],
@@ -1747,9 +1745,8 @@ DASHBOARDS.dd=(function(){
       ["EDRMSRetentionLabel","Text","Retention label applied to the file",""],
       ["EDRMSDuration","Text","Duration length of the retention label",""],
       ["EDRMSRetentionLabelApplied","Date and time","Date the retention label was applied",""],
-      ["EDRMSDueDateForDisposal","Date","Computed EDRMSRetentionLabelApplied plus EDRMSDuration",""],
+      ["EDRMSDueDateForDisposal","Date","Computed EDRMSRetentionLabelApplied plus EDRMSDuration","key"],
       ["RetentionStatus","Text","Retention classification based on the duration",""],
-      ["DisposalStatus","Choice","Where the record sits in the disposal process",""],
       ["SensitivityLabelName","Text","Sensitivity label on the file",""],
       ["IsDeleted","Yes / No","Soft delete flag","key"],
       ["RowLoadedDate","Date and time","When this row was last written",""]
@@ -1765,18 +1762,29 @@ DASHBOARDS.dd=(function(){
       ["SiteCreatedDate","Date","When the SharePoint site was created","gap"],
       ["IsEdrmsCompliant","Yes / No","Whether this is an EDRMS compliant site","gap"],
       ["ADBDepartmentOwner","Text","Owning department","gap"],
-      ["ADBDivisionOwner","Text","Owning division","gap"],
       ["SiteVisits7","Whole number","Site visits, last 7 days","key"],
       ["SiteVisits30","Whole number","Site visits, last 30 days","key"],
       ["SiteVisits90","Whole number","Site visits, last 90 days","key"],
       ["UniqueViewers7","Whole number","Unique viewers, last 7 days",""],
       ["UniqueViewers30","Whole number","Unique viewers, last 30 days",""],
-      ["UniqueViewers90","Whole number","Unique viewers, last 90 days",""],
-      ["LastActivityDate","Date","Most recent activity on the site",""],
+      ["LibraryCount","Whole number","Number of document libraries in the site","key"],
+      ["LastActivityDate","Date","Most recent activity on the site","key"],
       ["StorageUsed","Whole number","Storage used by the site, in bytes",""],
       ["SiteOwner","Text","Primary site administrator",""],
       ["ProjectEndDate","Date","Project end date for the site",""],
       ["IsDeleted","Yes / No","Soft delete flag","key"],
+      ["RowLoadedDate","Date and time","When this row was last written",""]
+    ]},
+    {n:"User Activity Table", db:"utilization_user_activity",
+     g:"One row per person who used SharePoint in the window",
+     v:"About 9,400 rows. Exists because people cannot be counted from a table of sites",
+     c:[
+      ["Id","Whole number","Unique row identifier",""],
+      ["SnapshotDate","Date","The date this data was captured","key"],
+      ["UserPrincipalName","Text","The person's sign in name","key"],
+      ["DisplayName","Text","The person's display name",""],
+      ["LastActivityDate","Date","Their most recent SharePoint activity","key"],
+      ["ViewedOrEditedFileCount","Whole number","Files they viewed or edited in the window",""],
       ["RowLoadedDate","Date and time","When this row was last written",""]
     ]}
   ];
@@ -1806,8 +1814,6 @@ DASHBOARDS.dd=(function(){
      ["SiteCreatedDate","<b>None from this table.</b> A copy of the Site Activity value, so a document can be filtered by site age without a join","gap","<code>Site</code> row 6 is <code>CreatedDate</code>, but that is when the <b>row</b> was created in EDRMS, not when the <b>SharePoint site</b> was created. Not in <code>ADBSites</code>","<b>SharePoint admin centre</b>, Active sites view, the \"Created\" column, exportable to CSV. <b>Microsoft Graph</b> <code>/sites</code> returns <code>createdDateTime</code> for a scripted version. <b>AvePoint Cloud Governance</b> holds the provisioning date if the site was provisioned through it"],
      ["IsEdrmsCompliant","<b>Records Management:</b> decides which documents count toward Total Documents in EDRMS Compliant Sites, 3.47M. Defines the population of the entire table","gap","No such column and no rule anywhere in the workbook or the database","<b>No system holds this. It is a definition, not a lookup.</b> RAC picks one of three: a maintained list of compliant site URLs, which is simplest and can start today in a SharePoint list beside the Retention Label Mapping list; a site template check, if compliant sites use a distinct template; or an <b>AvePoint Cloud Governance</b> flag, if compliant sites are provisioned through a specific request form"],
      ["ADBDepartmentOwner","<b>Records Management:</b> level 1 of both drill downs, and the department filter on 4 panels. <b>Sites and Libraries:</b> the department filter and the treemap grouping. <b>Overview:</b> top 5 departments by declared records and top 5 by compliant sites","gap","<code>4 Records</code> row 76 (S/N 21) <code>ADBMeta</code> key <code>ADBDepartmentOwner</code>, marked <b>Future Enhancement</b>. Values in <code>ADBMaster</code> rows 13 to 15, never built. Live <code>Records.ADBMeta</code> is empty","<b>The vocabulary already exists</b>, populated in the <b>SharePoint term store</b> under Managed Metadata. What is missing is the link from a site to its department. Best source: <b>AvePoint Cloud Governance</b>, which records the requesting department when a site is provisioned. Fallback: RAC maintains a site to department list once, about 1,057 rows, in a SharePoint list. <b>Attach it to the site, not to each record</b>, and every document inherits it"],
-     ["ADBDivisionOwner","<b>Records Management:</b> level 2 of both drill downs","gap","Same as ADBDepartmentOwner. Values in <code>ADBMaster</code> rows 16 to 18","Same as ADBDepartmentOwner. The Division vocabulary in the term store is hierarchical, so division rolls up to department on its own"],
-     ["ADBUnitOwner","<b>None today.</b> No current dashboard uses it","planned","Same as above. Values in <code>ADBMaster</code> rows 19 to 21","Same as above. Collect it while collecting the other two, or leave it blank"],
      ["IsDeclaredRecord","<b>Records Management:</b> Total Declared Records 21,646 and every bar under it, counted over distinct items rather than rows. <b>Sites and Libraries:</b> the declared half of Libraries Declaration Rate and the rate itself. <b>Format and Storage:</b> declared records by format. <b>Overview:</b> 3 of the 5 KPI cards, the physical counterpart donut, the library declared donut, the share of files donut. <b>Retention:</b> every figure","new","Not a column today, because every row in <code>Records</code> already <b>is</b> a declared record","Derived at load: true where the document is present in <code>Records</code>, false where the scan found it but <code>Records</code> does not. Costs nothing beyond running the scan"],
      ["CreatedDate","<b>Records Management:</b> the date range filter on Total Declared Records, and the in range subtotal line under it","have","<code>4 Records</code> row 59 (S/N 4), described as \"When the User Declared the file as a Record\". Live <code>Records.CreatedDate</code>","EDRMS database. Blank for undeclared documents, which is correct"],
      ["CreatedBy","<b>None today.</b> Supports a declarations by user view","have","<code>4 Records</code> row 60 (S/N 5). Live <code>Records.CreatedBy</code>","EDRMS database"],
@@ -1819,7 +1825,6 @@ DASHBOARDS.dd=(function(){
      ["EDRMSRetentionLabelApplied","Feeds EDRMSDueDateForDisposal. <b>Deliberately not used to date declarations</b>","have","<code>4 Records</code> row 79 (S/N 24), described as the basis for the duration computation. Live <code>Records.EDRMSRetentionLabelApplied</code>","EDRMS database"],
      ["EDRMSDueDateForDisposal","<b>Retention</b>, not yet built: records due for disposal","have","<code>4 Records</code> row 81 (S/N 26), defined as RetentionLabelApplied plus Duration. Live <code>Records.EDRMSDueDateForDisposal</code>","EDRMS database, already computed"],
      ["RetentionStatus","<b>Retention</b>, not yet built: the status breakdown","have","<code>4 Records</code> row 77 (S/N 22) <code>EDRMSMeta</code> key <code>RetentionStatus</code>. Permitted values in <code>5 EDRMSMasters</code> rows 16 to 18. Live <code>Records.EDRMSMeta</code>","EDRMS database, with the value list from <code>EDRMSMasters</code>"],
-     ["DisposalStatus","<b>Retention</b>, not yet built: where a record sits in the disposal process","new","Not in the workbook or the database","EDRMS application, when the disposal workflow is built. Blocks nothing today"],
      ["SensitivityLabelName","<b>None on any dashboard</b>","have","<code>4 Records</code> row 75 (S/N 20) <code>FileMeta</code> key <code>SensitivityLabelName</code>. Live <code>Records.FileMeta</code>","EDRMS database, then Microsoft Graph for the rest"],
      ["IsDeleted","<b>Every count on every dashboard</b> excludes rows where this is true","have","<code>4 Records</code> row 65 (S/N 10). Live <code>Records.IsDeleted</code>","EDRMS database. For undeclared documents, absence from the next scan is the delete signal"],
      ["RowLoadedDate","<b>None.</b> Operational, so a partial refresh can be spotted","new","Not in the workbook","Written by the refresh job"]
@@ -1832,19 +1837,27 @@ DASHBOARDS.dd=(function(){
      ["SiteCreatedDate","<b>Sites and Libraries:</b> the treemap of sites created by department, and the date range filter above it","gap","<code>Site</code> row 6 <code>CreatedDate</code> is the row's creation, not the site's. Not in <code>ADBSites</code>","<b>SharePoint admin centre</b>, Active sites, the \"Created\" column, exportable to CSV. Or <b>Microsoft Graph</b> <code>/sites</code> <code>createdDateTime</code>. Or <b>AvePoint Cloud Governance</b> provisioning date"],
      ["IsEdrmsCompliant","<b>Sites and Libraries:</b> Total EDRMS Compliant Sites Created, 1,057, and everything drawn from it","gap","Nowhere","A RAC definition. See row 19 of Table 1"],
      ["ADBDepartmentOwner","<b>Sites and Libraries:</b> the treemap grouping and the department filter. <b>Overview:</b> top 5 departments by compliant sites","gap","Nowhere. <code>ADBSites</code> has no department column","<b>AvePoint Cloud Governance</b> provisioning record first. Fallback: RAC maintains the site to department list once. <b>This is the single highest value item in the whole report</b>, because attaching it here fixes it for all 3.47 million documents at once"],
-     ["ADBDivisionOwner","<b>None today</b> on this table","gap","Nowhere","Same as ADBDepartmentOwner"],
      ["SiteVisits7","<b>Records Management:</b> Active Departmental Sites, the 7 day window","new","Nowhere","<b>Microsoft 365 admin centre</b>, Reports, Usage, SharePoint site usage. Or the <b>Microsoft Graph reports API</b>, <code>getSharePointSiteUsageDetail(period='D7')</code>"],
      ["SiteVisits30","<b>Records Management:</b> Active Departmental Sites, the 30 day window, and the Active Sites KPI","new","Nowhere","Same report at <code>period='D30'</code>"],
-     ["SiteVisits90","<b>Records Management:</b> Active Departmental Sites, the 90 day window, and the Active Users fallback at 90 days","new","Nowhere","Same report at <code>period='D90'</code>"],
+     ["SiteVisits90","<b>Records Management:</b> Active Departmental Sites, the 90 day window. Site visits are available at 90 days even though unique viewers are not","new","Nowhere","Same report at <code>period='D90'</code>"],
      ["UniqueViewers7","<b>Records Management:</b> Active Users, the 7 day window","new","Nowhere","Same report, the \"Visited Page Count\" and unique viewer fields"],
      ["UniqueViewers30","<b>Records Management:</b> Active Users, the 30 day window, and the Active Users KPI","new","Nowhere","Same report at <code>period='D30'</code>"],
-     ["UniqueViewers90","<b>Records Management:</b> nothing. <b>Microsoft does not return this at 90 days</b>, which is why the dashboard falls back to site visits and shows an amber note","new","Nowhere","Not available from Microsoft. Keep the column so the gap stays visible rather than silently becoming a zero"],
-     ["LastActivityDate","<b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
+     ["LibraryCount","<b>Sites and Libraries:</b> the Libraries column on the site inventory, and the \"libraries across them\" tile","new","Nowhere","<b>Microsoft Graph</b> <code>GET /sites/{id}/drives</code>, counted. Verified against the test tenant"],
+     ["LastActivityDate","<b>Sites and Libraries:</b> the Last activity column and the Active / Orphaned split. <b>Records Management:</b> the \"last activity\" text beside each bar on Active Departmental Sites","new","Nowhere","Same Microsoft 365 usage report, \"Last Activity Date\" column"],
      ["StorageUsed","<b>None today.</b> Sites and Libraries measures storage from FileSize instead","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Storage used\" column. Note it includes version history, so it will not match the sum of FileSize"],
-     ["SiteOwner","<b>None.</b> Who to contact about a site that has gone quiet","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Primary admin\" column"],
+     ["SiteOwner","<b>Sites and Libraries:</b> the Site owner column on the site inventory. Who to contact about a site that has gone quiet","new","Nowhere","<b>SharePoint admin centre</b>, Active sites, the \"Primary admin\" column"],
      ["ProjectEndDate","<b>None today.</b> The obvious basis for a site closure view","have","<code>Site</code> row 15 (S/N 11). Live <code>ADBSites.ProjectEndDate</code>","<code>ADBSites</code>, already populated"],
      ["IsDeleted","Excludes closed sites from current figures without changing historical ones","have","<code>Site</code> row 12 (S/N 8). Live <code>ADBSites.IsDeleted</code>","<code>ADBSites</code>, already populated. A site missing from the next admin centre export is the delete signal"],
      ["RowLoadedDate","<b>None.</b> Operational","new","Not in the workbook","Written by the refresh job"]
+   ]},
+   {t:"User Activity Table", r:[
+     ["Id","<b>None.</b> Identifies the row","new","Nowhere","Generated by the refresh job"],
+     ["SnapshotDate","The \"Data as of\" line","new","Nowhere","Written by the refresh job"],
+     ["UserPrincipalName","<b>Records Management:</b> Total EDRMS Users, counted distinct. The only column the headline figure needs","new","Nowhere","<b>Microsoft Graph</b> <code>getSharePointActivityUserDetail(period='D30')</code>, one row per person"],
+     ["DisplayName","<b>None.</b> Readability when the list is inspected","new","Nowhere","Same call"],
+     ["LastActivityDate","Filters the count to a 7 or 30 day window","new","Nowhere","Same call"],
+     ["ViewedOrEditedFileCount","<b>None today.</b> Separates heavy users from one time visitors, and the obvious basis for an adoption view","new","Nowhere","Same call"],
+     ["RowLoadedDate","<b>None.</b> Operational","new","Nowhere","Written by the refresh job"]
    ]}
   ];
   const UBADGE={
@@ -1861,26 +1874,34 @@ DASHBOARDS.dd=(function(){
     ["Records Management","Total Declared Records, 21,646","Utilization Report Table","Count the distinct ListId plus ItemId pairs where IsDeclaredRecord is true and IsDeleted is false","ok"],
     ["Records Management","Declared records by department","Utilization Report Table","The same count, grouped by ADBDepartmentOwner","gap"],
     ["Records Management","The two colour split on each bar","Utilization Report Table","The same count, split by HasPhysical","ok"],
-    ["Records Management","Drill: department, division, site, library","Utilization Report Table","The same count, grouped by ADBDivisionOwner, then SiteName, then LibraryName","gap"],
+    ["Records Management","Drill: department, site, library","Utilization Report Table","The same count, regrouped by SiteName, then LibraryName. Level 1 needs ADBDepartmentOwner; levels 2 and 3 are ready today","ok"],
     ["Records Management","Date range on declared records","Utilization Report Table","Keep only rows where CreatedDate falls in the range","ok"],
     ["Records Management","Total Documents in compliant sites, 3.47M","Utilization Report Table","Count all the rows where IsEdrmsCompliant is true","scan"],
     ["Records Management","Date range on total documents","Utilization Report Table","Keep only rows where FileCreatedDate falls in the range","scan"],
     ["Records Management","Active Departmental Sites","Site Activity Table","Rank sites by SiteVisits7, SiteVisits30 or SiteVisits90","usage"],
     ["Records Management","Last activity beside each site","Site Activity Table","Read LastActivityDate","usage"],
-    ["Records Management","Active Users","Site Activity Table","Rank sites by UniqueViewers7 or UniqueViewers30","usage"],
+    ["Records Management","Unique viewers per site","Site Activity Table","Rank sites by UniqueViewers7 or UniqueViewers30","usage"],
+    ["Records Management","Total EDRMS Users, monthly active","<b>User Activity Table</b>","Count distinct UserPrincipalName in the latest snapshot. <b>Not</b> the sum of UniqueViewers30, which counts a person once per site","usage"],
     ["Sites and Libraries","Total Compliant Sites Created, 1,057","Site Activity Table","Count the rows where IsEdrmsCompliant is true","gap"],
     ["Sites and Libraries","Sites created by department treemap","Site Activity Table","The same count, grouped by ADBDepartmentOwner","gap"],
     ["Sites and Libraries","Date range on the treemap","Site Activity Table","Keep only rows where SiteCreatedDate falls in the range","gap"],
     ["Sites and Libraries","Libraries Declaration Rate","Utilization Report Table","Per ListId, count all rows, count the rows where IsDeclaredRecord is true, and divide","scan"],
     ["Sites and Libraries","Largest Libraries, 43.1 GB","Utilization Report Table","Per ListId, add up FileSize","scan"],
     ["Sites and Libraries","Average file size","Utilization Report Table","Per ListId, total FileSize divided by the row count","scan"],
+    ["Sites and Libraries","Site owner","Site Activity Table","Read SiteOwner","ok"],
+    ["Sites and Libraries","Libraries per site","Site Activity Table","Read LibraryCount","ok"],
+    ["Sites and Libraries","Visits and users per site","Site Activity Table","Read SiteVisits30 and UniqueViewers30","usage"],
+    ["Sites and Libraries","Active and Orphaned sites","Site Activity Table","Orphaned where LastActivityDate is more than 90 days old, active otherwise","usage"],
     ["Format and Storage","Storage Consumed by Format, 46.7 GB","Utilization Report Table","Per FormatGroup, add up FileSize","gap"],
     ["Format and Storage","Number of files by format","Utilization Report Table","Per FormatGroup, count the rows","ok"],
     ["Format and Storage","Most Common Format, PDF","Utilization Report Table","The FormatGroup with the highest row count","ok"],
     ["Format and Storage","Declared records by format","Utilization Report Table","Per FormatGroup, count the rows where IsDeclaredRecord is true","ok"],
-    ["Retention, not yet built","Records by retention status","Utilization Report Table","Per RetentionStatus, count the declared rows","ok"],
-    ["Retention, not yet built","Records due for disposal","Utilization Report Table","Count the rows where EDRMSDueDateForDisposal falls in the next 12 months","ok"],
-    ["Every dashboard","The \"Data as of\" line","Both tables","Read SnapshotDate","ok"]
+    ["Retention","Declared records by retention label","Utilization Report Table","Per EDRMSRetentionLabel, count the declared rows","ok"],
+    ["Retention","Records Due for Disposal, next 12 months","Utilization Report Table","Count the declared rows where EDRMSDueDateForDisposal falls in the next 12 months. Permanent labels have no due date and drop out on their own","ok"],
+    ["Retention","Next Due Date for Disposal","Utilization Report Table","The earliest EDRMSDueDateForDisposal still ahead of today","ok"],
+    ["Retention","Disposal summary per library","Utilization Report Table","The same two figures grouped by ListId, with LibraryName for the label","ok"],
+    ["Retention","Inactive over 1 year","Utilization Report Table","Count the rows where FileModifiedDate is more than a year old. <b>The one figure on the Retention dashboard that is not ready</b>, because an untouched document has no row until the scan creates one","scan"],
+    ["Every dashboard","The \"Data as of\" line","All three tables","Read SnapshotDate","ok"]
   ];
   const TBADGE={ok:["g-ok","Ready today"],scan:["g-part","Needs the scan"],
                 usage:["g-part","Needs the usage feed"],gap:["g-gap","Blocked"]};
@@ -1902,10 +1923,11 @@ DASHBOARDS.dd=(function(){
 
     <div class="panel">
       <h3>Can it be one table only?</h3>
-      <p>Almost. One table gets you about nine tenths of the report. Two things break.</p>
+      <p>Almost. One table gets you about nine tenths of the report. Three things break.</p>
       <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it holds at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out low. It gets worse over time, because the newest sites are the emptiest ones.</p>
       <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
-      <p>Everything else fits in one table. So the answer is <b>two tables</b>. The second is small, one row per site, and it exists only because those two figures cannot live anywhere else.</p>
+      <p><b>People cannot be counted from a table of sites.</b> Total EDRMS Users asks how many people used EDRMS. Someone who works in three sites appears in three site rows, so adding up the per site viewer counts counts that person three times. Only a row per person answers it.</p>
+      <p>Everything else fits in one table. So the answer is <b>three tables, one per grain</b>: one row per document, one row per site, one row per person. The second and third are small, about 1,057 and 9,400 rows, and each exists only because its grain cannot be reached from the others.</p>
     </div>
 
     <div class="panel">
@@ -1923,14 +1945,14 @@ DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The two tables</h3>
+      <h3>The three tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>
     </div>
 
     <div class="panel">
       <h3>Which figure each column produces, and how to source it</h3>
-      <div class="lead"><b>Read this first, or the table will mislead you:</b> <code>Records</code> holds declared records only, about 21,646 of them, while the Utilization Report Table holds every document, about 3.47 million. So where a row says a column exists in <code>Records</code>, it exists <b>for the declared 21,646</b>. For the other 3.45 million the same column comes from the weekly SharePoint scan, which is one piece of work covering rows 3 to 22 in one go, not twenty separate problems.</div>
+      <div class="lead"><b>Read this first, or the table will mislead you:</b> <code>Records</code> holds declared records only, about 21,646 of them, while the Utilization Report Table holds every document, about 3.47 million. So where a row says a column exists in <code>Records</code>, it exists <b>for the declared 21,646</b>. For the other 3.45 million the same column comes from the weekly SharePoint scan, which is one piece of work covering most of the table in one go, not twenty separate problems.</div>
       <div class="lead">Where it is today cites <code>Database_Design_12.03_2.xlsx</code> by sheet and actual spreadsheet row, and the live <code>drm-npr</code> database. All Records references are to the <b>2026.1 block, rows 56 to 82</b>, not the older 1.3 block above it. <code>ADBMaster</code>, <code>Library</code>, <code>PhysicalRecords</code> and <code>favoritelocations</code> are in the workbook but were never built.</div>
       <div id="dd-uses"></div>
       <div class="tally" id="dd-tally"></div>
@@ -1950,10 +1972,11 @@ DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The three gaps</h3>
-      <p><b>1. There is no department or division on anything.</b> Blocks six panels and every drill down. The vocabularies exist and are populated in the SharePoint term store; the missing link is site to department. Attach it to the <b>site</b>, in the Site Activity Table, and let every document inherit it: about 1,057 values instead of 3.47 million. AvePoint Cloud Governance may already hold it from provisioning, which turns this from a data entry exercise into an export. Check that first.</p>
-      <p><b>2. File size is not captured.</b> Blocks the 46.7 GB headline, storage by format, average file size and Largest Libraries. The smallest of the three, and it has two independent routes: Microsoft Graph returns <code>size</code> on every item so the weekly scan solves the library and format figures on its own, and adding a <code>FileSize</code> key to the existing <code>FileMeta</code> JSON solves per record storage without a migration.</p>
-      <p><b>3. There is no site created date, and no rule for what counts as compliant.</b> Blocks the 1,057 compliant sites, the treemap and its date range. The created date is a straight read from the SharePoint admin centre. The compliance rule is a decision RAC has to make: a maintained list of compliant site URLs, a site template check, or an AvePoint provisioning flag.</p>
+      <h3>The remaining gaps</h3>
+      <p><b>1. Nothing records which department owns a site.</b> The only gap left that needs a person rather than code. <code>ADBDepartmentOwner</code> exists as a SharePoint column and is empty on every row, which is why <code>ADBMeta</code> is empty. The term store holds the vocabulary, but a list of valid answers is not the answer. Attach department to the <b>site</b>, in the Site Activity Table, and let every document inherit it through <code>SiteUrl</code>, which every row already carries: about 1,057 values instead of 3.47 million, working for existing documents as well as new ones with no migration. Confirmed feasible by the development team on 10 August 2026. Check AvePoint Cloud Governance first, since it may already hold it from provisioning.</p>
+      <p><b>2. File size is not captured.</b> Blocks the 46.7 GB headline, storage by format, average file size and Largest Libraries. The smallest of the three, and it has two independent routes: Microsoft Graph returns <code>size</code> on every item so the weekly scan solves the library and format figures on its own, and adding a <code>FileSize</code> key to the existing <code>FileMeta</code> JSON solves per record storage without a migration. One warning that came with it: folders are returned with a <b>cumulative</b> size, so the scan must filter to files only or storage is double counted.</p>
+      <p><b>3. Which sites are EDRMS compliant.</b> No longer a decision. A site is compliant when it has the Declare as Record button, and that button comes from an installed app, Product ID <code>{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}</code>. It is visible per site in Site Contents, listed separately from the app catalog, so the rule is mechanical rather than a maintained list. What remains is a question for the development team: which call returns that row across 1,057 sites rather than one at a time.</p>
+      <p>Site created date is closed: Microsoft Graph returns <code>createdDateTime</code> on every site.</p>
     </div>
   </section>`;
 
@@ -1990,7 +2013,7 @@ DASHBOARDS.dd=(function(){
     document.getElementById("dd-tally").innerHTML=
       Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
         `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
-      `<span class="ti tot"><b>${n}</b> columns across both tables</span>`;
+      `<span class="ti tot"><b>${n}</b> columns across the three tables</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+

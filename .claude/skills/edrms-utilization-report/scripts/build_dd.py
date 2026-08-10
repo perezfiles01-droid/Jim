@@ -20,14 +20,19 @@ mod = '''DASHBOARDS.dd=(function(){
     {n:"Site Activity Table", db:"utilization_site_activity",
      g:"One row per SharePoint site",
      v:"About 1,057 rows, one for every compliant site",
-     c:''' + arr(d['c2'],6) + '''}
+     c:''' + arr(d['c2'],6) + '''},
+    {n:"User Activity Table", db:"utilization_user_activity",
+     g:"One row per person who used SharePoint in the window",
+     v:"About 9,400 rows. Exists because people cannot be counted from a table of sites",
+     c:''' + arr(d['c3'],6) + '''}
   ];
 
   /* [column, which figure it produces, status, where it is today, how to
      source it], in the same order as the tables above. */
   const USES=[
    {t:"Utilization Report Table", r:''' + arr(d['u1'],5) + '''},
-   {t:"Site Activity Table", r:''' + arr(d['u2'],5) + '''}
+   {t:"Site Activity Table", r:''' + arr(d['u2'],5) + '''},
+   {t:"User Activity Table", r:''' + arr(d['u3'],5) + '''}
   ];
   const UBADGE={
     have:['g-ok','In the database'],
@@ -60,10 +65,11 @@ mod = '''DASHBOARDS.dd=(function(){
 
     <div class="panel">
       <h3>Can it be one table only?</h3>
-      <p>Almost. One table gets you about nine tenths of the report. Two things break.</p>
+      <p>Almost. One table gets you about nine tenths of the report. Three things break.</p>
       <p><b>A site with no documents in it disappears.</b> Sites and Libraries reports 1,057 compliant sites created. If sites are counted from a table of documents, a site is only counted once it holds at least one document, so a site created last month that nobody has uploaded to yet is invisible and the count comes out low. It gets worse over time, because the newest sites are the emptiest ones.</p>
       <p><b>Site visits and unique viewers are measured per site, not per document.</b> If a site had 4,812 visits last month and holds 6,000 documents, putting 4,812 on all 6,000 rows means any total that adds the column up returns 28 million visits. There is no way to put a per site figure on a per document table and have it stay correct when summed.</p>
-      <p>Everything else fits in one table. So the answer is <b>two tables</b>. The second is small, one row per site, and it exists only because those two figures cannot live anywhere else.</p>
+      <p><b>People cannot be counted from a table of sites.</b> Total EDRMS Users asks how many people used EDRMS. Someone who works in three sites appears in three site rows, so adding up the per site viewer counts counts that person three times. Only a row per person answers it.</p>
+      <p>Everything else fits in one table. So the answer is <b>three tables, one per grain</b>: one row per document, one row per site, one row per person. The second and third are small, about 1,057 and 9,400 rows, and each exists only because its grain cannot be reached from the others.</p>
     </div>
 
     <div class="panel">
@@ -81,14 +87,14 @@ mod = '''DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The two tables</h3>
+      <h3>The three tables</h3>
       <div class="lead">Names in <b style="color:var(--deepblue)">blue</b> are ones the report cannot function without. Names in <b style="color:#9C4A16">amber</b> do not exist today and block a figure.</div>
       <div id="dd-tables"></div>
     </div>
 
     <div class="panel">
       <h3>Which figure each column produces, and how to source it</h3>
-      <div class="lead"><b>Read this first, or the table will mislead you:</b> <code>Records</code> holds declared records only, about 21,646 of them, while the Utilization Report Table holds every document, about 3.47 million. So where a row says a column exists in <code>Records</code>, it exists <b>for the declared 21,646</b>. For the other 3.45 million the same column comes from the weekly SharePoint scan, which is one piece of work covering rows 3 to 22 in one go, not twenty separate problems.</div>
+      <div class="lead"><b>Read this first, or the table will mislead you:</b> <code>Records</code> holds declared records only, about 21,646 of them, while the Utilization Report Table holds every document, about 3.47 million. So where a row says a column exists in <code>Records</code>, it exists <b>for the declared 21,646</b>. For the other 3.45 million the same column comes from the weekly SharePoint scan, which is one piece of work covering most of the table in one go, not twenty separate problems.</div>
       <div class="lead">Where it is today cites <code>Database_Design_12.03_2.xlsx</code> by sheet and actual spreadsheet row, and the live <code>drm-npr</code> database. All Records references are to the <b>2026.1 block, rows 56 to 82</b>, not the older 1.3 block above it. <code>ADBMaster</code>, <code>Library</code>, <code>PhysicalRecords</code> and <code>favoritelocations</code> are in the workbook but were never built.</div>
       <div id="dd-uses"></div>
       <div class="tally" id="dd-tally"></div>
@@ -108,10 +114,11 @@ mod = '''DASHBOARDS.dd=(function(){
     </div>
 
     <div class="panel">
-      <h3>The three gaps</h3>
-      <p><b>1. There is no department or division on anything.</b> Blocks six panels and every drill down. The vocabularies exist and are populated in the SharePoint term store; the missing link is site to department. Attach it to the <b>site</b>, in the Site Activity Table, and let every document inherit it: about 1,057 values instead of 3.47 million. AvePoint Cloud Governance may already hold it from provisioning, which turns this from a data entry exercise into an export. Check that first.</p>
-      <p><b>2. File size is not captured.</b> Blocks the 46.7 GB headline, storage by format, average file size and Largest Libraries. The smallest of the three, and it has two independent routes: Microsoft Graph returns <code>size</code> on every item so the weekly scan solves the library and format figures on its own, and adding a <code>FileSize</code> key to the existing <code>FileMeta</code> JSON solves per record storage without a migration.</p>
-      <p><b>3. There is no site created date, and no rule for what counts as compliant.</b> Blocks the 1,057 compliant sites, the treemap and its date range. The created date is a straight read from the SharePoint admin centre. The compliance rule is a decision RAC has to make: a maintained list of compliant site URLs, a site template check, or an AvePoint provisioning flag.</p>
+      <h3>The remaining gaps</h3>
+      <p><b>1. Nothing records which department owns a site.</b> The only gap left that needs a person rather than code. <code>ADBDepartmentOwner</code> exists as a SharePoint column and is empty on every row, which is why <code>ADBMeta</code> is empty. The term store holds the vocabulary, but a list of valid answers is not the answer. Attach department to the <b>site</b>, in the Site Activity Table, and let every document inherit it through <code>SiteUrl</code>, which every row already carries: about 1,057 values instead of 3.47 million, working for existing documents as well as new ones with no migration. Confirmed feasible by the development team on 10 August 2026. Check AvePoint Cloud Governance first, since it may already hold it from provisioning.</p>
+      <p><b>2. File size is not captured.</b> Blocks the 46.7 GB headline, storage by format, average file size and Largest Libraries. The smallest of the three, and it has two independent routes: Microsoft Graph returns <code>size</code> on every item so the weekly scan solves the library and format figures on its own, and adding a <code>FileSize</code> key to the existing <code>FileMeta</code> JSON solves per record storage without a migration. One warning that came with it: folders are returned with a <b>cumulative</b> size, so the scan must filter to files only or storage is double counted.</p>
+      <p><b>3. Which sites are EDRMS compliant.</b> No longer a decision. A site is compliant when it has the Declare as Record button, and that button comes from an installed app, Product ID <code>{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}</code>. It is visible per site in Site Contents, listed separately from the app catalog, so the rule is mechanical rather than a maintained list. What remains is a question for the development team: which call returns that row across 1,057 sites rather than one at a time.</p>
+      <p>Site created date is closed: Microsoft Graph returns <code>createdDateTime</code> on every site.</p>
     </div>
   </section>`;
 
@@ -148,7 +155,7 @@ mod = '''DASHBOARDS.dd=(function(){
     document.getElementById("dd-tally").innerHTML=
       Object.entries(UBADGE).filter(([k])=>tally[k]).map(([k,[cls,lbl]])=>
         `<span class="ti"><b>${tally[k]}</b> <span class="dtag ${cls}">${lbl}</span></span>`).join("")+
-      `<span class="ti tot"><b>${n}</b> columns across both tables</span>`;
+      `<span class="ti tot"><b>${n}</b> columns across the three tables</span>`;
 
     document.getElementById("dd-trace").innerHTML=
       `<tr><th style="width:15%">Dashboard</th><th style="width:22%">Figure</th><th style="width:16%">Table</th><th>How the number is produced</th><th style="width:14%">Ready?</th></tr>`+
