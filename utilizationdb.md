@@ -435,6 +435,14 @@ source.
 | Format and Storage | Most Common Format, PDF | Utilization Report Table | The FormatGroup with the highest row count | Ready today |
 | Format and Storage | Declared records by format | Utilization Report Table | Per FormatGroup, count the rows where IsDeclaredRecord is true | Ready today |
 | Retention | Declared records by retention label | Utilization Report Table | Per EDRMSRetentionLabel, count the declared rows | Ready today |
+| Records Management | Records Declared This Month | Utilization Report Table | Count the declared rows where CreatedDate falls in the current month | Ready today |
+| Records Management | Records declared by month | Utilization Report Table | The same count grouped by month of CreatedDate | Ready today |
+| Records Management | Records declared by year | Utilization Report Table | The same count grouped by year of CreatedDate | Ready today |
+| Sites and Libraries | Libraries with no declared records | Site Activity Table and Utilization Report Table | Libraries counted from LibraryCount, minus the distinct ListId values present in the report table. **Not a scan job**, and the join is safe because ListId is verified to match SharePoint's own list GUID | Needs one Graph call |
+| Retention | Records due within 30 and 90 days | Utilization Report Table | The same count as the 12 month figure at nearer horizons. The three necessarily nest | Ready today |
+| Retention | Records with a retention schedule | Utilization Report Table | Count the declared rows where EDRMSRetentionLabel is not null | Ready today |
+| Retention | Records without a retention schedule | Utilization Report Table | The same count where EDRMSRetentionLabel is null. These have no due date, so they sit outside every disposal figure | Ready today |
+| Retention | Records beyond retention period | Utilization Report Table | Count the declared rows where EDRMSDueDateForDisposal is already past. **Does not mean still awaiting action**, since nothing records whether a disposal happened | Ready today |
 | Retention | Records Due for Disposal, next 12 months | Utilization Report Table | Count the declared rows where EDRMSDueDateForDisposal falls in the next 12 months. Permanent labels have no due date and drop out on their own | Ready today |
 | Retention | Next Due Date for Disposal | Utilization Report Table | The earliest EDRMSDueDateForDisposal still ahead of today | Ready today |
 | Retention | Disposal summary per library | Utilization Report Table | The same two figures grouped by ListId, with LibraryName for the label | Ready today |

@@ -78,7 +78,7 @@ for line in seg.split('\n'):
     r=cells[4]
     st = 'gap' if 'Blocked' in r else 'usage' if 'usage' in r else 'scan' if 'scan' in r else 'ok'
     tr.append([md2html(cells[0]), md2html(cells[1]), md2html(cells[2]), md2html(cells[3]), st])
-assert len(tr)>=38, len(tr)   # grew again with library health and the file plan
+assert len(tr)>=46, len(tr)   # grew again with the section 5 and 8 metrics
 
 open('gen_out.js','w').write(json.dumps({
  'c1':c1,'c2':c2,'c3':c3,'c4':c4,

@@ -264,6 +264,16 @@
   .dash-rm .stat{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:150px}
   .dash-rm .stat .sl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
   .dash-rm .stat .sv{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+  .dash-rm .mrow{display:flex;align-items:flex-end;gap:8px;height:210px;margin-bottom:10px}
+  .dash-rm .mcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+  .dash-rm .mbar{width:100%;background:var(--blue);border-radius:5px 5px 0 0;transition:height .5s ease;min-height:4px}
+  .dash-rm .mval{font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink2);margin-top:5px}
+  .dash-rm .mlab{font-size:11px;color:var(--mut);margin-top:2px}
+  .dash-rm .ybar{display:grid;grid-template-columns:60px 1fr;align-items:center;gap:12px;margin-bottom:9px}
+  .dash-rm .ybar .yl b{font-size:13px;font-weight:600}
+  .dash-rm .ybar .yt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
+  .dash-rm .ybar .yf{height:26px;border-radius:6px;background:var(--deepblue);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
+  .dash-rm .subtotal{margin-top:4px;font-size:12.5px;color:var(--ink2)}
   .dash-rm .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
 
 
@@ -510,6 +520,18 @@ DASHBOARDS.sl=(function(){
   const INACTIVE_SITES=SITES.length-ACTIVE_SITES;
   const SITE_LIBRARIES=SITES.reduce((a,s)=>a+s[3],0);
 
+  /* Libraries holding no declared records. Not a scan job: enumerate libraries
+     from GET /sites/{id}/drives, then subtract the distinct ListId values
+     present in Records. ListId is verified to match SharePoint's own list GUID,
+     so the join is safe. A library here is not necessarily empty; it may hold
+     documents nobody has declared, which is exactly what makes it worth
+     showing. */
+  const LIBS_WITH_RECORDS=78;
+  const LIBS_NO_RECORDS=SITE_LIBRARIES-LIBS_WITH_RECORDS;
+  console.assert(LIBS_WITH_RECORDS<=SITE_LIBRARIES,"Libraries holding records cannot exceed the libraries counted");
+  console.assert(LIBS_WITH_RECORDS>=LIBS.length,"The sampled libraries all hold records, so the total cannot be lower");
+
+
   /* ===== treemap ===== */
   function squarify(items,x,y,w,h){
     const area=w*h,sum=items.reduce((a,b)=>a+b.v,0)||1;
@@ -742,10 +764,12 @@ DASHBOARDS.sl=(function(){
         <div class="tile"><div class="tl">Active, under ${LIB_IDLE} days</div><div class="tv">${F(LIBS_ACTIVE)}</div></div>
         <div class="tile hi"><div class="tl">Inactive, over ${LIB_IDLE} days</div><div class="tv">${F(LIBS_INACTIVE)}</div></div>
         <div class="tile"><div class="tl">Long dormant, over ${LIB_DORMANT} days</div><div class="tv">${F(LIBS_DORMANT)}</div></div>
+        <div class="tile"><div class="tl">No declared records</div><div class="tv">${F(LIBS_NO_RECORDS)}</div></div>
         <div class="tile"><div class="tl">Growth rate</div><div class="tv">${(GROWTH_RATE*100).toFixed(1)}%</div></div>
       </div>
       <div class="scrollx"><div class="ltab" id="lib-table"></div></div>
-      <div class="subtotal">${F(NEW_RECORDS)} records declared this period against ${F(RECORDS_AT_START)} held at the start, a growth rate of ${(GROWTH_RATE*100).toFixed(1)} percent.</div></div>`;
+      <div class="subtotal">${F(NEW_RECORDS)} records declared this period against ${F(RECORDS_AT_START)} held at the start, a growth rate of ${(GROWTH_RATE*100).toFixed(1)} percent.<br>
+        ${F(LIBS_NO_RECORDS)} of the ${F(SITE_LIBRARIES)} libraries hold no declared records at all. Some are genuinely empty; the rest hold documents nobody has declared, and those are the ones worth looking at.</div></div>`;
     drawLibs();
   }
   function drawLibs(){
@@ -857,6 +881,8 @@ DASHBOARDS.sl=(function(){
       inactiveSites:INACTIVE_SITES,
       idleDays:IDLE_DAYS,
       librariesAcrossSites:SITE_LIBRARIES,
+      librariesWithRecords:LIBS_WITH_RECORDS,
+      librariesNoRecords:LIBS_NO_RECORDS,
       distinctOwners:[...new Set(SITES.map(s=>s[2]))].length
     },
     html,init
@@ -912,7 +938,24 @@ DASHBOARDS.rm=(function(){
   ];
   DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.c.length+i+1);d.mphys=monthly(d.phys,d.c.length+i+2);d.mdocs=monthly(d.docs,d.c.length+i+3);});
   const ANNUAL_REC=DEPTS.reduce((a,d)=>a+d.rec,0);
+  /* Declaration over time. Both figures read one column, Records.CreatedDate,
+     which is populated today, so neither waits on the scan or the usage feed.
+     MONTHS is the current year summed across departments, so it necessarily
+     totals ANNUAL_REC and is asserted below rather than typed twice. */
+  const MONTHNAMES=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const MONTHS=MONTHNAMES.map((m,i)=>({label:m,value:DEPTS.reduce((a,d)=>a+d.mrec[i],0)}));
+  const THIS_MONTH=MONTHS[6];   /* the latest closed month in the sample data */
+  const YEARS=[
+    {label:"2023",value:6480},
+    {label:"2024",value:11240},
+    {label:"2025",value:17905},
+    {label:"2026",value:ANNUAL_REC},
+  ];
   const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
+  console.assert(MONTHS.reduce((a,m)=>a+m.value,0)===ANNUAL_REC,
+    "Monthly declarations must total the annual figure");
+  console.assert(YEARS[YEARS.length-1].value===ANNUAL_REC,
+    "The current year in the trend must match Total Declared Records");
 
   /* Site name stems per department. This used to be DIVNAMES and carried a
      division tier in the drill. Division was cut from the design: ADBMeta holds
@@ -1206,6 +1249,29 @@ DASHBOARDS.rm=(function(){
     wirePager("#users-pager",v=>{pageUsers=v==="prev"?Math.max(1,pageUsers-1):v==="next"?Math.min(pages,pageUsers+1):+v;drawUsers();});
   }
 
+  /* ===== declaration over time ===== */
+  function renderS3(){
+    const mmax=Math.max(...MONTHS.map(m=>m.value));
+    const ymax=Math.max(...YEARS.map(y=>y.value));
+    document.getElementById("s3-detail").innerHTML=`<div class="panel">
+      <div class="ptitle">Records declared by month, ${YEARS[YEARS.length-1].label}</div>
+      <div class="psub">Declarations in each month of the current year. The twelve months total ${F(ANNUAL_REC)}, the same figure as Total Declared Records above.</div>
+      <div class="mrow">${MONTHS.map(m=>`
+        <div class="mcol" title="${m.label}: ${F(m.value)} records">
+          <div class="mbar" style="height:${Math.max(4,100*m.value/mmax)}%"></div>
+          <div class="mval">${F(m.value)}</div>
+          <div class="mlab">${m.label}</div>
+        </div>`).join("")}</div>
+      <div class="subtotal">Latest closed month, ${THIS_MONTH.label}: <b>${F(THIS_MONTH.value)}</b> records declared.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records declared by year</div>
+      <div class="psub">Declarations per year since the programme began. The current year is still in progress, so it is not directly comparable with the closed years beside it.</div>
+      ${YEARS.map(y=>`<div class="ybar"><div class="yl"><b>${y.label}</b></div>
+        <div class="yt"><div class="yf" style="width:${Math.max(6,100*y.value/ymax)}%">${F(y.value)}</div></div></div>`).join("")}
+    </div>`;
+  }
+
   const html=`<section class="dash-rm">
     <div class="band">
       <h2>Total Declared Records vs Total Documents in EDRMS Compliant Sites</h2>
@@ -1226,16 +1292,28 @@ DASHBOARDS.rm=(function(){
       <div class="kpi" data-k="users"><div class="lab">Total EDRMS Users, monthly active</div><div class="val" id="kpi-users">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s2-detail"></div>
+
+    <div class="band">
+      <h2>Declaration over time</h2>
+      <div class="bd">When records were declared, by month across the current year and by year since the programme began. Both read the declaration date held against every record, so neither waits on anything.</div>
+    </div>
+    <div class="kpis" id="s3-kpis">
+      <div class="kpi on"><div class="lab">Records Declared This Month</div><div class="val" id="kpi-month">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Records Declared This Year</div><div class="val" id="kpi-year">…</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div id="s3-detail"></div>
   </section>`;
 
   function init(){
     document.getElementById("kpi-rec").textContent=F(ANNUAL_REC);
+    document.getElementById("kpi-month").textContent=F(THIS_MONTH.value);
+    document.getElementById("kpi-year").textContent=F(ANNUAL_REC);
     document.getElementById("kpi-docs").textContent=(ANNUAL_DOCS/1e6).toFixed(2)+"M";
     document.getElementById("kpi-sites").textContent=F(SITES.filter(s=>s.last<=7).length);
     document.getElementById("kpi-users").textContent=F(MONTHLY_ACTIVE_USERS);
     document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.onclick=()=>renderS1(k.dataset.k));
     document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
-    renderS1(curS1);renderS2(curS2);
+    renderS1(curS1);renderS2(curS2);renderS3();
   }
 
   return {
@@ -1257,6 +1335,8 @@ DASHBOARDS.rm=(function(){
       totalSitesTracked:SITES.length,
       activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
       monthlyActiveUsers:MONTHLY_ACTIVE_USERS,
+      declaredThisMonth:THIS_MONTH.value,
+      declaredByYear:YEARS.map(y=>({label:y.label,value:y.value})),
       topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
       departmentCount:DEPTS.length
     },
@@ -1771,6 +1851,18 @@ DASHBOARDS.rt=(function(){
    ["Admin Records","OAS Facilities Site",88,17,"2026-10-08",31],
   ];
   const DUE_TOTAL=DLIBS.reduce((a,l)=>a+l[3],0);
+  /* Disposal windows. All three are the same count over EDRMSDueDateForDisposal
+     at different horizons, so they are held as one shape rather than three
+     unrelated numbers, and each is necessarily a subset of the next. */
+  const DUE_30=71, DUE_90=196;
+  console.assert(DUE_30<=DUE_90 && DUE_90<=DUE_TOTAL,
+    "Disposal windows must nest: 30 days inside 90 inside 12 months");
+
+  /* Retention compliance. A record with no retention label has no due date and
+     can never be disposed of, which is why it is worth counting separately
+     rather than letting it sit silently outside every disposal figure. */
+  const WITH_SCHEDULE=20114;
+  const BEYOND_RETENTION=342;
   const LIB_RECORDS=DLIBS.reduce((a,l)=>a+l[2],0);
   const INACTIVE_TOTAL=DLIBS.reduce((a,l)=>a+l[5],0);
   const NEXT_DUE=DLIBS.map(l=>l[4]).sort()[0];
@@ -1785,6 +1877,9 @@ DASHBOARDS.rt=(function(){
     `Retention labels total ${LABEL_TOTAL} but Records Management declares ${DASHBOARDS.rm.summary.declared}`);
   console.assert(DLIBS.every(l=>l[3]<=l[2]),"A library cannot have more records due for disposal than it holds");
   console.assert(DUE_TOTAL<LABEL_TOTAL-PERMANENT,"Records due must exclude the permanent population");
+  const NO_SCHEDULE=LABEL_TOTAL-WITH_SCHEDULE;
+  console.assert(WITH_SCHEDULE<=LABEL_TOTAL,"Records with a schedule cannot exceed the declared total");
+  console.assert(BEYOND_RETENTION<=WITH_SCHEDULE,"Only a record with a schedule can be beyond its retention period");
 
   let sortD="due",dirD="desc";
   const DCOLS=[
@@ -1828,6 +1923,18 @@ DASHBOARDS.rt=(function(){
     });
   }
 
+  function drawCompliance(){
+    const rows=[
+      ["With a retention schedule",WITH_SCHEDULE,"var(--teal)"],
+      ["No retention schedule",NO_SCHEDULE,"var(--greyblue)"],
+      ["Beyond retention period",BEYOND_RETENTION,"var(--orange)"],
+    ];
+    const mx=Math.max(...rows.map(r=>r[1]));
+    document.getElementById("rt-compliance").innerHTML=rows.map(([lab,v,col])=>
+      `<div class="lbar"><div class="ll"><b>${lab}</b></div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*v/mx)}%;background:${col}">${F(v)}</div></div>
+        <div class="lp">${(v/LABEL_TOTAL*100).toFixed(1)}%</div></div>`).join("");
+  }
   function drawLabels(){
     const mx=Math.max(...LABELS.map(l=>l.count));
     document.getElementById("rt-labels").innerHTML=LABELS.map(l=>{
@@ -1851,12 +1958,29 @@ DASHBOARDS.rt=(function(){
       <div class="ptitle">Disposal summary by library</div>
       <div class="psub">Click any column heading to sort. Records held and records due come from the declared record rows. Inactive over 1 year counts documents untouched for a year, which is the one column here that waits on the document scan.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Records in these libraries</div><div class="tv">${F(LIB_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DUE_30)}</div></div>
+        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(DUE_90)}</div></div>
         <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DUE_TOTAL)}</div></div>
-        <div class="tile"><div class="tl">Inactive over 1 year</div><div class="tv">${F(INACTIVE_TOTAL)}</div></div>
+        <div class="tile"><div class="tl">Records in these libraries</div><div class="tv">${F(LIB_RECORDS)}</div></div>
       </div>
       <div class="scrollx"><div class="dtab" id="rt-table"></div></div>
       <div class="note">Inactive over 1 year is the only figure on this page that is not available today. It needs the weekly document scan, because an undeclared or untouched document has no row in the records table to read a date from.</div>
+    </div>
+
+    <div class="band">
+      <h2>Retention compliance</h2>
+      <div class="bd">Whether each declared record actually carries a retention schedule, and how many have already passed the end of theirs. A record with no schedule has no due date, so it sits outside every disposal figure above.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Schedules and overdue records</div>
+      <div class="psub">All ${F(LABEL_TOTAL)} declared records. Beyond retention counts records whose disposal date has already passed, which is measurable today from the due date alone.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(WITH_SCHEDULE)}</div></div>
+        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(NO_SCHEDULE)}</div></div>
+        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(BEYOND_RETENTION)}</div></div>
+      </div>
+      <div id="rt-compliance"></div>
+      <div class="note">Beyond retention means the disposal date has passed. It does <b>not</b> mean the record is still awaiting action, because nothing in the database records whether a disposal was carried out. That needs a disposal status field the EDRMS application does not have.</div>
     </div>
 
     <div class="band">
@@ -1875,6 +1999,7 @@ DASHBOARDS.rt=(function(){
     document.getElementById("kpi-next").textContent=DFMT(NEXT_DUE);
     drawTable();
     drawLabels();
+    drawCompliance();
   }
 
   return {
@@ -1883,6 +2008,11 @@ DASHBOARDS.rt=(function(){
     asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{
       dueNext12:DUE_TOTAL,
+      due30:DUE_30,
+      due90:DUE_90,
+      withSchedule:WITH_SCHEDULE,
+      get noSchedule(){return this.labelTotal-this.withSchedule;},
+      beyondRetention:BEYOND_RETENTION,
       nextDue:NEXT_DUE,
       permanent:PERMANENT,
       labelTotal:LABEL_TOTAL,
@@ -2123,6 +2253,14 @@ DASHBOARDS.dd=(function(){
     ["Format and Storage","Most Common Format, PDF","Utilization Report Table","The FormatGroup with the highest row count","ok"],
     ["Format and Storage","Declared records by format","Utilization Report Table","Per FormatGroup, count the rows where IsDeclaredRecord is true","ok"],
     ["Retention","Declared records by retention label","Utilization Report Table","Per EDRMSRetentionLabel, count the declared rows","ok"],
+    ["Records Management","Records Declared This Month","Utilization Report Table","Count the declared rows where CreatedDate falls in the current month","ok"],
+    ["Records Management","Records declared by month","Utilization Report Table","The same count grouped by month of CreatedDate","ok"],
+    ["Records Management","Records declared by year","Utilization Report Table","The same count grouped by year of CreatedDate","ok"],
+    ["Sites and Libraries","Libraries with no declared records","Site Activity Table and Utilization Report Table","Libraries counted from LibraryCount, minus the distinct ListId values present in the report table. <b>Not a scan job</b>, and the join is safe because ListId is verified to match SharePoint's own list GUID","ok"],
+    ["Retention","Records due within 30 and 90 days","Utilization Report Table","The same count as the 12 month figure at nearer horizons. The three necessarily nest","ok"],
+    ["Retention","Records with a retention schedule","Utilization Report Table","Count the declared rows where EDRMSRetentionLabel is not null","ok"],
+    ["Retention","Records without a retention schedule","Utilization Report Table","The same count where EDRMSRetentionLabel is null. These have no due date, so they sit outside every disposal figure","ok"],
+    ["Retention","Records beyond retention period","Utilization Report Table","Count the declared rows where EDRMSDueDateForDisposal is already past. <b>Does not mean still awaiting action</b>, since nothing records whether a disposal happened","ok"],
     ["Retention","Records Due for Disposal, next 12 months","Utilization Report Table","Count the declared rows where EDRMSDueDateForDisposal falls in the next 12 months. Permanent labels have no due date and drop out on their own","ok"],
     ["Retention","Next Due Date for Disposal","Utilization Report Table","The earliest EDRMSDueDateForDisposal still ahead of today","ok"],
     ["Retention","Disposal summary per library","Utilization Report Table","The same two figures grouped by ListId, with LibraryName for the label","ok"],

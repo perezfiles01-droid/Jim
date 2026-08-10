@@ -94,6 +94,15 @@ names two sites apiece.
 
 16 departments, so two pages at 10 rows.
 
+**Section 3: declaration over time.** Added 10 August, answering the client's
+5.1.2 and 5.1.4. *Records Declared This Month* and *Records Declared This Year*,
+over a twelve month bar chart and a per year comparison since 2023.
+
+Both read one column, `CreatedDate`, which is populated today, so neither waits
+on the scan or the usage feed. The twelve monthly bars are summed from the
+department data rather than typed, and an assertion ties their total to
+`ANNUAL_REC`, so the chart cannot drift from the KPI above it.
+
 Exposes `annualRec` (21,646) so other dashboards can assert against it.
 
 ## Sites and Libraries (`sl`)
@@ -251,6 +260,19 @@ exists today. Leaving it a placeholder was hiding a figure needing no new source
   reconcile.
 - **Retention profile**, declared records by label over all 21,646, with
   `Permanent` drawn in grey blue and marked "Never due for disposal".
+- **Retention compliance**, added 10 August for the client's 8.1.2, 8.1.3, 8.2.1,
+  8.2.2 and 8.3.2: records with and without a retention schedule, and records
+  already past their disposal date. The disposal tiles now show 30 day, 90 day
+  and 12 month horizons, which necessarily nest and are asserted to.
+
+**A record with no retention schedule has no due date**, so it sits outside every
+disposal figure. That is why it is counted separately rather than left to vanish.
+
+**Beyond retention does not mean still awaiting action.** Nothing in the database
+records whether a disposal was carried out, so the panel says so in a note. The
+four client metrics that need disposal state (8.1.4, 8.1.5, 8.1.6, 8.3.3) are
+deliberately not built: they need a `DisposalStatus` field the EDRMS application
+does not have.
 
 `PERMANENT` (2,460) is a named constant excluded from every disposal figure, with
 an assertion enforcing it. A second assertion ties the label total to
