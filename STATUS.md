@@ -234,20 +234,31 @@ slow and political. It is now "dev confirms the query", which is a five minute
 conversation. The four blocked elements stay blocked until the detection method is
 confirmed and built, but nobody has to make a decision any more.
 
-### Site go live date. A candidate source, unverified
+### Site go live date. LIKELY SOLVED, one check outstanding
 
-The `App` row carries a **Modified** date, `12/4/2025` on the site inspected. If
-that is the install date it is the site's EDRMS go live date, which is a better
-basis for the rollout chart than `createdDateTime`.
+The `App` row carries a **Modified** date, `12/4/2025` on the first site
+inspected. It is the site's EDRMS go live date, and a better basis for the
+rollout chart than `createdDateTime`.
 
-**Not yet proven, and the failure mode is specific.** Modified may change on a
-version *upgrade*, not only on install. The app is on 1.0.0.6, so there have been
-at least six versions. A bulk upgrade would stamp every site with the same date
-and the rollout chart would show the whole estate going live in one day.
+**Bulk upgrade ruled out, 10 August 2026.** The failure mode was that Modified
+might change on a version *upgrade* rather than only on install, in which case a
+bulk upgrade would stamp the whole estate with one date. The client checked
+several sites and **the dates differ**, so this is not a single bulk stamp.
 
-**The test, ten minutes:** open Site Contents on three or four sites and compare
-the app's Modified date. Spread across months means install dates. Identical
-timestamps mean a bulk deployment and the date is worthless per site.
+**One confound left.** Apps upgraded individually over time would also produce
+differing dates, giving a mix of install and upgrade dates with no way to tell
+them apart.
+
+**The decisive test, one query on data already held.** Compare each site's app
+Modified date against `MIN(CreatedDate)` over `Records` for that site.
+
+- App date consistently *before* the first declared record: consistent with
+  install. Nothing can be declared before the button exists.
+- Any site with records declared *before* its app date: that date is an upgrade,
+  because the app was already present.
+
+Capture the **app version per site** at the same time. Uniform 1.0.0.6 across
+spread out dates points to install; differing versions point to upgrade dates.
 
 **Supporting hint from the same screenshot.** Default libraries created with the
 site (`Form Templates`, `Site Assets`) show 9/25/2025; the app shows 12/4/2025.
