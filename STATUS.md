@@ -5,7 +5,7 @@ BACKGROUND.md is the durable project context and is still correct about the tech
 stack, the palette and the hard rules, but it was written on 4 August and predates
 everything below.
 
-Last updated 9 August 2026, after the client identified the compliance marker.
+Last updated 10 August 2026, after the compliance marker was located per site.
 
 ---
 
@@ -206,14 +206,23 @@ Product ID   {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}
 app is installed on it. A Product ID does not drift and cannot go stale, and it
 covers both routes because either way the app ends up installed.
 
-**Two things still to confirm with the development team, not with RAC:**
+**The catalog / installed distinction is now settled, 10 August 2026.** Site
+Contents on a compliant site shows **both**, on the same page, and they are
+different rows:
 
-1. `Apps for SharePoint` is normally a *catalog* library, a place packages are
-   stored, which is not quite the same as "installed on this site". Usually the
-   same in practice, but the distinction matters for the query.
-2. How to ask "which sites have this app installed" across 1,057 sites. Candidate
-   routes are the SharePoint REST app inventory, PnP PowerShell, or the tenant app
-   catalog's own deployment view. Let whoever deployed it name the right one.
+```
+Apps for SharePoint            List   3/5/2026  5:05 PM   <- the catalog
+digital-records-management-    App    12/4/2025 2:11 PM   <- installed here
+```
+
+The `App` row is the per-site marker. Visible in the UI at
+`/sites/<name>/_layouts/15/viewlst.aspx?view=14`, so an API exists behind it.
+
+**One thing still to confirm with the development team, not with RAC:** which
+call returns that row, so it can be run across 1,057 sites instead of opened one
+at a time. Candidates are the SharePoint REST app inventory, PnP PowerShell, or
+the tenant app catalog's deployment view. Let whoever deployed it name the right
+one.
 
 The question to ask: *"The EDRMS button comes from app
 {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}. How do we query which sites have it
@@ -224,6 +233,39 @@ different versions would be a useful health metric in itself.
 slow and political. It is now "dev confirms the query", which is a five minute
 conversation. The four blocked elements stay blocked until the detection method is
 confirmed and built, but nobody has to make a decision any more.
+
+### Site go live date. A candidate source, unverified
+
+The `App` row carries a **Modified** date, `12/4/2025` on the site inspected. If
+that is the install date it is the site's EDRMS go live date, which is a better
+basis for the rollout chart than `createdDateTime`.
+
+**Not yet proven, and the failure mode is specific.** Modified may change on a
+version *upgrade*, not only on install. The app is on 1.0.0.6, so there have been
+at least six versions. A bulk upgrade would stamp every site with the same date
+and the rollout chart would show the whole estate going live in one day.
+
+**The test, ten minutes:** open Site Contents on three or four sites and compare
+the app's Modified date. Spread across months means install dates. Identical
+timestamps mean a bulk deployment and the date is worthless per site.
+
+**Supporting hint from the same screenshot.** Default libraries created with the
+site (`Form Templates`, `Site Assets`) show 9/25/2025; the app shows 12/4/2025.
+Around two and a half months apart, so this site was created well before it became
+compliant. That is the distortion that makes `createdDateTime` the wrong basis for
+a rollout chart. Treat as a hint, since Modified is not Created for libraries
+either.
+
+**Fallback if the date proves useless.** `MIN(CreatedDate)` per site over
+`Records` where `IsDeclaredRecord` is true. Computable today, no new source, and
+it measures first EDRMS activity rather than compliance. Label it honestly if
+used.
+
+**Audit log route and why it probably fails.** Purview
+(`https://purview.microsoft.com/audit/auditsearch`) logs app installation with an
+exact timestamp, but retention is commonly 90 days on E3 and a year on E5. The
+1,057 sites took longer than that to onboard, so the older majority will have no
+event. Check ADB's licence before relying on it.
 
 **Two candidates ruled out along the way:**
 
