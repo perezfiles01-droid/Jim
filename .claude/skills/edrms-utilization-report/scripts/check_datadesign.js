@@ -1,6 +1,18 @@
-const {chromium}=require('playwright-core');
+/* playwright-core is installed ad hoc, and this script lives in the repo rather
+   than beside node_modules, so resolve it the same way verify.js does. */
+let chromium;
+for (const base of [process.cwd(), '/tmp', process.env.HOME || '']) {
+  try { ({chromium} = require(require.resolve('playwright-core', {paths:[base]}))); break; }
+  catch (e) { /* keep looking */ }
+}
+if (!chromium) {
+  console.error('playwright-core not found. Run:  cd /tmp && npm i playwright-core');
+  process.exit(2);
+}
+/* The image ships Chromium already; never download one. */
+const BROWSER = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 (async()=>{
-const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+const b=await chromium.launch({executablePath:BROWSER});
 const p=await b.newPage(); const errs=[];
 p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
 p.on('pageerror',e=>errs.push('pageerror: '+e.message));
