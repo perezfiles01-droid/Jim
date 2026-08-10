@@ -148,6 +148,23 @@
   .dash-sl .sbar .single{height:26px;background:var(--blue);border-radius:6px;transition:width .5s ease}
   .dash-sl .sbar .vv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
   .dash-sl .sbar .vv b{color:var(--ink);font-weight:600}.dash-sl .sbar .vv span{color:var(--mut)}
+  /* Site inventory table. A plain grid so Power BI can reproduce it with a
+     table visual, with the numeric cells carrying a data bar the way the
+     Format and Storage table does. */
+  .dash-sl .stab{--sc:206px 70px 210px 88px 78px 98px 112px 92px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:900px}
+  .dash-sl .stab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  .dash-sl .stab .hd.on{color:var(--blue);font-weight:700}
+  .dash-sl .stab .hd.num{text-align:right}
+  .dash-sl .stab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-sl .stab .ow{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dash-sl .stab .dp{font-size:12px;color:var(--mut)}
+  .dash-sl .stab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
+  .dash-sl .stab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
+  .dash-sl .stab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .dash-sl .pill{font-size:11px;font-weight:700;border-radius:999px;padding:4px 10px;text-align:center;white-space:nowrap}
+  .dash-sl .pill.ok{background:#E7F4EC;color:#1C6B3C}
+  .dash-sl .pill.no{background:#FBEEE7;color:#9A4A17}
+  .dash-sl .scrollx{overflow-x:auto}
 
 
 /* ================= recordsmanagement.css ================= */
@@ -385,6 +402,38 @@ DASHBOARDS.sl=(function(){
   const TOTAL_RECORDS=LIBS.reduce((a,l)=>a+l[4],0);
   const TOTAL_GB=LIBS.reduce((a,l)=>a+l[5],0);
 
+  /* Site inventory. Every column here maps to a call already run against the
+     7rkd12 test tenant, which is the whole reason this section exists:
+       owner      Get-PnPTenantSite, 1,683 of 1,702 sites carry one
+       libraries  GET /sites/{id}/drives, counted
+       users      GET /sites/{id}/analytics/allTime, the actorCount field
+       visits     the M365 site usage report, Page View Count
+       idleDays   the same report, derived from Last Activity Date
+     [site, dept, owner, libraries, users, visits, idleDays] */
+  const SITES=[
+   ["ITD Records Site","ITD","a.mendoza@adb.org",12,86,4210,3],
+   ["FIN Treasury Site","FIN","r.tan@adb.org",9,64,3180,5],
+   ["PARD Procurement Site","PARD","j.cruz@adb.org",11,52,2740,2],
+   ["OGC Legal Site","OGC","m.reyes@adb.org",8,71,2510,6],
+   ["SARD Ops Site","SARD","l.fernandez@adb.org",14,58,2360,11],
+   ["SERD Ops Site","SERD","p.santos@adb.org",7,43,1920,9],
+   ["OSFG Country Site","OSFG","c.delacruz@adb.org",10,39,1640,17],
+   ["OGC Compliance Site","OGC","m.reyes@adb.org",6,34,1425,24],
+   ["HRD People Site","HRD","s.villanueva@adb.org",9,47,1310,8],
+   ["BRM Budget Site","BRM","d.ramos@adb.org",5,28,980,33],
+   ["OGC Advisory Site","OGC","m.reyes@adb.org",4,19,760,118],
+   ["CWRD Ops Site","CWRD","k.aquino@adb.org",7,22,640,96],
+   ["PSOD Investments Site","PSOD","e.navarro@adb.org",6,31,585,41],
+   ["SDCC Climate Site","SDCC","t.bautista@adb.org",5,16,430,142],
+   ["OAS Facilities Site","OAS","f.gutierrez@adb.org",3,11,290,207],
+  ];
+  /* The orphan rule. 90 days with no activity, which is the client's own
+     wording in 1.1.1 and is read straight off Last Activity Date. */
+  const ORPHAN_DAYS=90;
+  const ACTIVE_SITES=SITES.filter(s=>s[6]<=ORPHAN_DAYS).length;
+  const ORPHAN_SITES=SITES.length-ACTIVE_SITES;
+  const SITE_LIBRARIES=SITES.reduce((a,s)=>a+s[3],0);
+
   /* ===== treemap ===== */
   function squarify(items,x,y,w,h){
     const area=w*h,sum=items.reduce((a,b)=>a+b.v,0)||1;
@@ -539,6 +588,67 @@ DASHBOARDS.sl=(function(){
     wirePager("#stor-pager",v=>{pageStor=v==="prev"?Math.max(1,pageStor-1):v==="next"?Math.min(pages,pageStor+1):+v;drawStor();});
   }
 
+  /* ===== site inventory ===== */
+  /* Sort keys line up with the SITES columns so the header click needs no
+     lookup table. idleDays sorts ascending by default because "most recently
+     active first" is what a reader expects from a Last activity column. */
+  const SCOLS=[
+    {k:"name", i:0, lab:"Site",          num:false},
+    {k:"dept", i:1, lab:"Dept",          num:false},
+    {k:"owner",i:2, lab:"Site owner",    num:false},
+    {k:"libs", i:3, lab:"Libraries",     num:true},
+    {k:"users",i:4, lab:"Users",         num:true},
+    {k:"visits",i:5,lab:"Visits",        num:true},
+    {k:"idle", i:6, lab:"Last activity", num:true},
+  ];
+  let sortSite="visits",dirSite="desc";
+  function renderS3(){
+    document.getElementById("s3-detail").innerHTML=`<div class="panel">
+      <div class="ptitle">Every compliant site, its owner and its activity</div>
+      <div class="psub">Click any column heading to sort. Users counts distinct people who opened something in the site; visits counts page views. A site is orphaned once it has had no activity for ${ORPHAN_DAYS} days.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Sites listed</div><div class="tv">${F(SITES.length)}</div></div>
+        <div class="tile"><div class="tl">Libraries across them</div><div class="tv">${F(SITE_LIBRARIES)}</div></div>
+        <div class="tile hi"><div class="tl">Orphaned</div><div class="tv">${F(ORPHAN_SITES)}</div></div>
+      </div>
+      <div class="scrollx"><div class="stab" id="st-table"></div></div></div>`;
+    drawSites();
+  }
+  function drawSites(){
+    const col=SCOLS.find(c=>c.k===sortSite);
+    const rows=[...SITES].sort((a,b)=>{
+      const x=a[col.i],y=b[col.i];
+      const cmp=col.num?x-y:String(x).localeCompare(String(y));
+      return dirSite==="asc"?cmp:-cmp;
+    });
+    const mx={};[3,4,5,6].forEach(i=>mx[i]=Math.max(...SITES.map(s=>s[i])));
+    let h="";
+    SCOLS.forEach(c=>{
+      const arrow=sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):"";
+      h+=`<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
+    });
+    h+=`<div class="hd">Status</div>`;
+    rows.forEach(s=>{
+      const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(s[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
+      const orphan=s[6]>ORPHAN_DAYS;
+      h+=`<div class="nm" title="${s[0]}">${s[0]}</div>`;
+      h+=`<div class="dp">${s[1]}</div>`;
+      h+=`<div class="ow" title="${s[2]}">${s[2]}</div>`;
+      h+=cell(3,F(s[3]))+cell(4,F(s[4]))+cell(5,F(s[5]))+cell(6,s[6]+"d ago");
+      h+=`<div class="pill ${orphan?"no":"ok"}">${orphan?"Orphaned":"Active"}</div>`;
+    });
+    /* Eight grid columns: the seven sortable ones plus Status, which has no
+       sort key of its own because it is derived from idleDays. */
+    const t=document.getElementById("st-table");
+    t.innerHTML=h;
+    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
+      const k=hd.dataset.s;
+      if(sortSite===k)dirSite=dirSite==="asc"?"desc":"asc";
+      else{sortSite=k;dirSite=(k==="idle"||k==="name"||k==="dept"||k==="owner")?"asc":"desc";}
+      drawSites();
+    });
+  }
+
   const html=`<section class="dash-sl">
     <div class="band">
       <h2>Compliant site rollout</h2>
@@ -558,14 +668,27 @@ DASHBOARDS.sl=(function(){
       <div class="kpi" data-k="stor"><div class="lab">Largest Libraries</div><div class="val" id="kpi-stor">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s2-detail"></div>
+
+    <div class="band">
+      <h2>Site inventory and activity</h2>
+      <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${ORPHAN_DAYS} days is counted as orphaned.</div>
+    </div>
+    <div class="kpis" id="s3-kpis">
+      <div class="kpi on"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi"><div class="lab">Orphaned Sites, over ${ORPHAN_DAYS} days idle</div><div class="val" id="kpi-orp">…</div><div class="tap">▾ Opened below</div></div>
+    </div>
+    <div id="s3-detail"></div>
   </section>`;
 
   function init(){
     document.getElementById("kpi-decl").textContent=F(TOTAL_RECORDS);
     document.getElementById("kpi-stor").textContent=TOTAL_GB.toFixed(1)+" GB";
+    document.getElementById("kpi-act").textContent=F(ACTIVE_SITES);
+    document.getElementById("kpi-orp").textContent=F(ORPHAN_SITES);
     document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
     renderS1();
     renderS2(curS2);
+    renderS3();
   }
 
   return {
@@ -583,7 +706,13 @@ DASHBOARDS.sl=(function(){
       get libraryUndeclared(){return this.libraryDocuments-this.libraryRecords;},
       storageGB:TOTAL_GB,
       topDepartments:[...SITEDEPTS].sort((a,b)=>b[2]-a[2]).slice(0,5).map(d=>({label:d[0],name:d[1],value:d[2]})),
-      departmentCount:SITEDEPTS.length
+      departmentCount:SITEDEPTS.length,
+      sitesListed:SITES.length,
+      activeSites:ACTIVE_SITES,
+      orphanSites:ORPHAN_SITES,
+      orphanDays:ORPHAN_DAYS,
+      librariesAcrossSites:SITE_LIBRARIES,
+      distinctOwners:[...new Set(SITES.map(s=>s[2]))].length
     },
     html,init
   };
@@ -837,6 +966,21 @@ DASHBOARDS.rm=(function(){
     s.v90=s.last<=90?Math.round(s.base*1.5*2.2):0;
   });
 
+  /* Monthly active users, the client's 1.1.2.
+     This is deliberately NOT the sum of the per site unique viewers below.
+     Per site figures come from /sites/{id}/analytics, and anyone who works in
+     three sites is counted three times, so summing them overstates headcount.
+     The bankwide figure comes from a different report,
+     getSharePointActivityUserDetail(period='D30'), which returns one row per
+     person. Count the rows and you have distinct people.
+     The gap between the two is real and is explained on the panel rather than
+     hidden, because a reader who adds up the bars will otherwise think the
+     total is wrong. */
+  const MAU_SITE_SUM=SITES.reduce((a,s)=>a+s.uv30,0);
+  const MONTHLY_ACTIVE_USERS=9420;
+  console.assert(MONTHLY_ACTIVE_USERS<MAU_SITE_SUM,
+    "Distinct monthly users must be below the sum of per site viewers, since sites overlap");
+
   let winSites=7,deptSites="all",pageSites=1,winUsers=7,deptUsers="all",pageUsers=1;
   let curS2="sites";
   function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} - ${d.n}</option>`).join("");}
@@ -860,10 +1004,10 @@ DASHBOARDS.rm=(function(){
       drawSites();
     }else{
       box.innerHTML=`<div class="panel">
-        <div class="ptitle">Active Users</div>
-        <div class="psub">Unique viewers per site in the selected window, with each site's most recent activity.</div>
+        <div class="ptitle">Total EDRMS Users</div>
+        <div class="psub">Distinct people who opened something in each site. The 90 day window is deliberately absent: Microsoft returns no unique viewer total at 90 days, so the button could only ever show something else.</div>
         <div class="toolbar">
-          <div class="dayf" id="users-win">${[7,30,90].map(dd=>`<button class="${winUsers===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
+          <div class="dayf" id="users-win">${[7,30].map(dd=>`<button class="${winUsers===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
           <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
         <div class="statrow" id="users-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
@@ -892,27 +1036,27 @@ DASHBOARDS.rm=(function(){
     wirePager("#sites-pager",v=>{pageSites=v==="prev"?Math.max(1,pageSites-1):v==="next"?Math.min(pages,pageSites+1):+v;drawSites();});
   }
   function drawUsers(){
-    const at90=winUsers===90;
-    const uvKey=s=>winUsers===7?s.uv7:winUsers===30?s.uv30:null;
+    const uvKey=s=>winUsers===7?s.uv7:s.uv30;
     let list=SITES.filter(s=>s.last<=winUsers);
     if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
-    const metric=s=>at90?s.v90:uvKey(s);
-    list=list.map(s=>({...s,m:metric(s)})).sort((a,b)=>b.m-a.m);
-    document.getElementById("users-metric-h").textContent=at90?"Site visits":"Unique viewers";
-    const totUV=list.reduce((a,b)=>a+(uvKey(b)||0),0);
-    const totV=list.reduce((a,b)=>a+s90(b),0);
-    function s90(x){return x.v90;}
-    document.getElementById("users-stats").innerHTML= at90
-      ? `<div class="stat"><div class="sl">Total site visits</div><div class="sv">${F(totV)}</div></div>`
-      : `<div class="stat"><div class="sl">Total unique viewers</div><div class="sv">${F(totUV)}</div></div>`;
+    list=list.map(s=>({...s,m:uvKey(s)})).sort((a,b)=>b.m-a.m);
+    document.getElementById("users-metric-h").textContent="Unique viewers";
+    const totUV=list.reduce((a,b)=>a+uvKey(b),0);
+    /* Two figures, not one, because they answer different questions. The
+       bankwide total counts people; the sum of the bars counts site
+       memberships. Showing only the sum would overstate headcount. */
+    const bank=(winUsers===30&&deptUsers==="all")
+      ? `<div class="stat"><div class="sl">Distinct people, bankwide</div><div class="sv">${F(MONTHLY_ACTIVE_USERS)}</div></div>`:"";
+    document.getElementById("users-stats").innerHTML=
+      bank+`<div class="stat"><div class="sl">Sum of per site viewers</div><div class="sv">${F(totUV)}</div></div>`;
     const mx=Math.max(...list.map(s=>s.m),1);
     const pages=Math.max(1,Math.ceil(list.length/10));if(pageUsers>pages)pageUsers=pages;
     const pg=list.slice((pageUsers-1)*10,pageUsers*10);
     document.getElementById("users-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
       <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.m/mx)}%;background:var(--deepblue)">${F(s.m)}</div></div>
       <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
-    document.getElementById("users-note").innerHTML=at90
-      ? `<div class="note">At 90 days SharePoint does not return a unique viewer total, so site visits are shown here. Switch to 7 or 30 days to see unique viewers.</div>`:"";
+    document.getElementById("users-note").innerHTML=(winUsers===30&&deptUsers==="all")
+      ? `<div class="note">The bars add up to ${F(totUV)}, more than the ${F(MONTHLY_ACTIVE_USERS)} distinct people bankwide, because anyone working in several sites is counted once per site. Use the bankwide figure for headcount and the bars for reach.</div>`:"";
     document.getElementById("users-pager").innerHTML=pager(list.length,pageUsers,pages,"sites");
     wirePager("#users-pager",v=>{pageUsers=v==="prev"?Math.max(1,pageUsers-1):v==="next"?Math.min(pages,pageUsers+1):+v;drawUsers();});
   }
@@ -930,11 +1074,11 @@ DASHBOARDS.rm=(function(){
 
     <div class="band">
       <h2>SharePoint Sites and Users Governance</h2>
-      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage over the last 7, 30, or 90 days.</div>
+      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage. Site visits are available at 7, 30 and 90 days; unique viewers only at 7 and 30, which is a Microsoft limit rather than a design choice.</div>
     </div>
     <div class="kpis" id="s2-kpis">
       <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">…</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="users"><div class="lab">Active Users</div><div class="val" id="kpi-users">…</div><div class="tap">▾ Click to open</div></div>
+      <div class="kpi" data-k="users"><div class="lab">Total EDRMS Users, monthly active</div><div class="val" id="kpi-users">…</div><div class="tap">▾ Click to open</div></div>
     </div>
     <div id="s2-detail"></div>
   </section>`;
@@ -943,7 +1087,7 @@ DASHBOARDS.rm=(function(){
     document.getElementById("kpi-rec").textContent=F(ANNUAL_REC);
     document.getElementById("kpi-docs").textContent=(ANNUAL_DOCS/1e6).toFixed(2)+"M";
     document.getElementById("kpi-sites").textContent=F(SITES.filter(s=>s.last<=7).length);
-    document.getElementById("kpi-users").textContent=F(SITES.filter(s=>s.last<=7).reduce((a,b)=>a+b.uv7,0));
+    document.getElementById("kpi-users").textContent=F(MONTHLY_ACTIVE_USERS);
     document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.onclick=()=>renderS1(k.dataset.k));
     document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
     renderS1(curS1);renderS2(curS2);
@@ -967,6 +1111,7 @@ DASHBOARDS.rm=(function(){
       activeSites7:SITES.filter(s=>s.last<=7).length,
       totalSitesTracked:SITES.length,
       activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
+      monthlyActiveUsers:MONTHLY_ACTIVE_USERS,
       topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
       departmentCount:DEPTS.length
     },
@@ -1311,7 +1456,7 @@ DASHBOARDS.ov=(function(){
 
     document.getElementById("ov-rm-top").innerHTML=topBars(RM.topDepartments,F)+
       `<div class="mini"><div>Departments reporting<b>${F(RM.departmentCount)}</b></div>
-        <div>Active users, last 7 days<b>${F(RM.activeUsers7)}</b></div></div>`;
+        <div>EDRMS users, monthly active<b>${F(RM.monthlyActiveUsers)}</b></div></div>`;
 
     /* Sites and Libraries */
     const libSlices=[
