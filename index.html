@@ -41,6 +41,13 @@
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;border-left:4px solid transparent}
   .kpi:hover{transform:translateY(-2px)}
   .kpi.on{border-left-color:var(--blue);box-shadow:0 0 0 2px rgba(0,114,188,.22),var(--shadow)}
+  /* A card that is not wired to anything must not look like one that is. No
+     pointer, no hover lift, no selected-state rail: it reads as a figure, not a
+     control. Every KPI whose panel is always open below it carries .stat. */
+  .kpi.stat{cursor:default;border-left-color:#E4EBF3}
+  .kpi.stat:hover{transform:none}
+  .kpi.stat .val{color:var(--ink)}
+  .kpi.stat .sub{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.35}
   .kpi .lab{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
   .kpi .val{font-size:30px;font-weight:700;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1}
   .kpi .tap{font-size:11px;color:var(--blue);margin-top:8px;font-weight:600}
@@ -188,7 +195,6 @@
   .dash-fp .fbar .ft{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
   .dash-fp .fbar .ff{height:26px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
   .dash-fp .fbar .fp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-  .dash-fp .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:14px;line-height:1.5}
 
 /* ================= retention.css ================= */
 /* Retention: scoped styles. Only loaded shapes under .dash-rt. */
@@ -217,7 +223,6 @@
   .dash-rt .lbar .lt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
   .dash-rt .lbar .lf{height:26px;border-radius:6px;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
   .dash-rt .lbar .lp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-  .dash-rt .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
 
 
 /* ================= recordsmanagement.css ================= */
@@ -274,7 +279,6 @@
   .dash-rm .ybar .yt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
   .dash-rm .ybar .yf{height:26px;border-radius:6px;background:var(--deepblue);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
   .dash-rm .subtotal{margin-top:4px;font-size:12.5px;color:var(--ink2)}
-  .dash-rm .note{background:#FDF9EF;border:1px solid #EFE0BD;border-left:3px solid #E8A317;border-radius:8px;padding:11px 14px;font-size:12px;color:var(--ink2);margin-top:12px;line-height:1.5}
 
 
 /* ================= formatandstorage.css ================= */
@@ -764,7 +768,7 @@ DASHBOARDS.sl=(function(){
       <div class="bd">How many EDRMS compliant sites have been created, and how new site creation is spread across departments.</div>
     </div>
     <div class="kpis" id="s1-kpis">
-      <div class="kpi on"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div><div class="sub">Across ${SITEDEPTS.length} departments. Placeholder figure, not measured</div></div>
     </div>
     <div id="s1-detail"></div>
 
@@ -783,8 +787,8 @@ DASHBOARDS.sl=(function(){
       <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${IDLE_DAYS} days is counted as inactive.</div>
     </div>
     <div class="kpis" id="s3-kpis">
-      <div class="kpi on"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="sub">Of ${SITES.length} listed below</div></div>
+      <div class="kpi stat"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="sub">No activity since. Owners are listed so someone can be asked</div></div>
     </div>
     <div id="s3-detail"></div>
 
@@ -793,8 +797,8 @@ DASHBOARDS.sl=(function(){
       <div class="bd">Which libraries are still in use, which have gone quiet, and how fast the record holding is growing. A library counts as inactive after ${LIB_IDLE} days with no activity and long dormant after ${LIB_DORMANT}.</div>
     </div>
     <div class="kpis" id="s4-kpis">
-      <div class="kpi on"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div><div class="sub">Of ${LIBS.length} sampled. ${LIBS_DORMANT} have been dormant over ${LIB_DORMANT} days</div></div>
+      <div class="kpi stat"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div><div class="sub">${F(NEW_RECORDS)} new records against ${F(RECORDS_AT_START)} held at the start</div></div>
     </div>
     <div id="s4-detail"></div>
   </section>`;
@@ -895,14 +899,21 @@ DASHBOARDS.rm=(function(){
      which is populated today, so neither waits on the scan or the usage feed.
      MONTHS is the current year summed across departments, so it necessarily
      totals ANNUAL_REC and is asserted below rather than typed twice. */
-  const MONTHNAMES=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  /* Rolling twelve months ending at the latest closed month, not a calendar
+     year. The dashboard is dated 20 Jul 2026, so a Jan to Dec chart would show
+     figures for months that have not happened. */
+  const MONTHNAMES=["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"];
   const MONTHS=MONTHNAMES.map((m,i)=>({label:m,value:DEPTS.reduce((a,d)=>a+d.mrec[i],0)}));
-  const THIS_MONTH=MONTHS[6];   /* the latest closed month in the sample data */
+  const THIS_MONTH=MONTHS[MONTHS.length-1];
+  const MONTH_AVG=Math.round(ANNUAL_REC/12);
+  const VS_AVG=(THIS_MONTH.value-MONTH_AVG)/MONTH_AVG;
+  /* The last entry is the same population as the monthly chart, so the two
+     agree by construction rather than by coincidence. */
   const YEARS=[
     {label:"2023",value:6480},
     {label:"2024",value:11240},
     {label:"2025",value:17905},
-    {label:"2026",value:ANNUAL_REC},
+    {label:"Last 12 months",value:ANNUAL_REC},
   ];
   const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
   console.assert(MONTHS.reduce((a,m)=>a+m.value,0)===ANNUAL_REC,
@@ -1146,13 +1157,13 @@ DASHBOARDS.rm=(function(){
     }else{
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Total EDRMS Users</div>
-        <div class="psub">Distinct people who opened something in each site. The 90 day window is deliberately absent: Microsoft returns no unique viewer total at 90 days, so the button could only ever show something else.</div>
+        <div class="psub">Distinct people who opened something in each site, at 7 or 30 days. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site: use the bankwide figure for headcount and the bars for reach.</div>
         <div class="toolbar">
           <div class="dayf" id="users-win">${[7,30].map(dd=>`<button class="${winUsers===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
           <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
         <div class="statrow" id="users-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
-        <div id="users-bars"></div><div id="users-note"></div><div id="users-pager"></div></div>`;
+        <div id="users-bars"></div><div id="users-pager"></div></div>`;
       document.querySelectorAll("#users-win button").forEach(b=>b.onclick=()=>{winUsers=+b.dataset.d;pageUsers=1;renderS2("users");});
       document.getElementById("users-dept").onchange=e=>{deptUsers=e.target.value;pageUsers=1;drawUsers();};
       drawUsers();
@@ -1196,8 +1207,6 @@ DASHBOARDS.rm=(function(){
     document.getElementById("users-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
       <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.m/mx)}%;background:var(--deepblue)">${F(s.m)}</div></div>
       <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
-    document.getElementById("users-note").innerHTML=(winUsers===30&&deptUsers==="all")
-      ? `<div class="note">The bars add up to ${F(totUV)}, more than the ${F(MONTHLY_ACTIVE_USERS)} distinct people bankwide, because anyone working in several sites is counted once per site. Use the bankwide figure for headcount and the bars for reach.</div>`:"";
     document.getElementById("users-pager").innerHTML=pager(list.length,pageUsers,pages,"sites");
     wirePager("#users-pager",v=>{pageUsers=v==="prev"?Math.max(1,pageUsers-1):v==="next"?Math.min(pages,pageUsers+1):+v;drawUsers();});
   }
@@ -1207,19 +1216,19 @@ DASHBOARDS.rm=(function(){
     const mmax=Math.max(...MONTHS.map(m=>m.value));
     const ymax=Math.max(...YEARS.map(y=>y.value));
     document.getElementById("s3-detail").innerHTML=`<div class="panel">
-      <div class="ptitle">Records declared by month, ${YEARS[YEARS.length-1].label}</div>
-      <div class="psub">Declarations in each month of the current year. The twelve months total ${F(ANNUAL_REC)}, the same figure as Total Declared Records above.</div>
+      <div class="ptitle">Records declared by month, last 12 months</div>
+      <div class="psub">Declarations in each of the last twelve months, ending ${THIS_MONTH.label} 2026. They total ${F(ANNUAL_REC)}, the same figure as Total Declared Records above.</div>
       <div class="mrow">${MONTHS.map(m=>`
         <div class="mcol" title="${m.label}: ${F(m.value)} records">
           <div class="mbar" style="height:${Math.max(4,100*m.value/mmax)}%"></div>
           <div class="mval">${F(m.value)}</div>
           <div class="mlab">${m.label}</div>
         </div>`).join("")}</div>
-      <div class="subtotal">Latest closed month, ${THIS_MONTH.label}: <b>${F(THIS_MONTH.value)}</b> records declared.</div>
+      <div class="subtotal">Latest closed month, ${THIS_MONTH.label} 2026: <b>${F(THIS_MONTH.value)}</b> records declared, against a twelve month average of <b>${F(MONTH_AVG)}</b>.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records declared by year</div>
-      <div class="psub">Declarations per year since the programme began. The current year is still in progress, so it is not directly comparable with the closed years beside it.</div>
+      <div class="psub">Declarations per year since the programme began. The last bar is the trailing twelve months rather than a calendar year, which is why it matches the chart above.</div>
       ${YEARS.map(y=>`<div class="ybar"><div class="yl"><b>${y.label}</b></div>
         <div class="yt"><div class="yf" style="width:${Math.max(6,100*y.value/ymax)}%">${F(y.value)}</div></div></div>`).join("")}
     </div>`;
@@ -1251,8 +1260,8 @@ DASHBOARDS.rm=(function(){
       <div class="bd">When records were declared, by month across the current year and by year since the programme began. Both read the declaration date held against every record, so neither waits on anything.</div>
     </div>
     <div class="kpis" id="s3-kpis">
-      <div class="kpi on"><div class="lab">Records Declared This Month</div><div class="val" id="kpi-month">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Records Declared This Year</div><div class="val" id="kpi-year">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Records Declared This Month</div><div class="val" id="kpi-month">…</div><div class="sub" id="sub-month"></div></div>
+      <div class="kpi stat"><div class="lab">Monthly Average, last 12 months</div><div class="val" id="kpi-avg">…</div><div class="sub" id="sub-avg"></div></div>
     </div>
     <div id="s3-detail"></div>
   </section>`;
@@ -1260,7 +1269,10 @@ DASHBOARDS.rm=(function(){
   function init(){
     document.getElementById("kpi-rec").textContent=F(ANNUAL_REC);
     document.getElementById("kpi-month").textContent=F(THIS_MONTH.value);
-    document.getElementById("kpi-year").textContent=F(ANNUAL_REC);
+    document.getElementById("kpi-avg").textContent=F(MONTH_AVG);
+    document.getElementById("sub-month").textContent=`${THIS_MONTH.label} 2026, the latest closed month`;
+    document.getElementById("sub-avg").textContent=
+      `${THIS_MONTH.label} ran ${Math.abs(VS_AVG*100).toFixed(0)} percent ${VS_AVG>=0?"above":"below"} the average`;
     document.getElementById("kpi-docs").textContent=(ANNUAL_DOCS/1e6).toFixed(2)+"M";
     document.getElementById("kpi-sites").textContent=F(SITES.filter(s=>s.last<=7).length);
     document.getElementById("kpi-users").textContent=F(MONTHLY_ACTIVE_USERS);
@@ -1289,6 +1301,7 @@ DASHBOARDS.rm=(function(){
       activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
       monthlyActiveUsers:MONTHLY_ACTIVE_USERS,
       declaredThisMonth:THIS_MONTH.value,
+      monthlyAverage:MONTH_AVG,
       declaredByYear:YEARS.map(y=>({label:y.label,value:y.value})),
       topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
       departmentCount:DEPTS.length
@@ -1364,7 +1377,7 @@ DASHBOARDS.fs=(function(){
       <div class="bd">Which file formats consume the most storage across EDRMS compliant sites, and how declared records break down by format.</div>
     </div>
     <div class="kpis">
-      <div class="kpi on"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div><div class="sub" id="sub-fsgb"></div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Storage consumed by format</div>
@@ -1376,7 +1389,7 @@ DASHBOARDS.fs=(function(){
     </div>
 
     <div class="kpis">
-      <div class="kpi on"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div><div class="sub" id="sub-fstop"></div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Declared records by format</div>
@@ -1387,7 +1400,15 @@ DASHBOARDS.fs=(function(){
 
   function init(){
     document.getElementById("kpi-fsgb").textContent=TOT_GB.toFixed(1)+" GB";
-    document.getElementById("kpi-fstop").textContent=FORMATS.reduce((a,b)=>b.files>a.files?b:a).label;
+    const top=FORMATS.reduce((a,b)=>b.files>a.files?b:a);
+    const heaviest=FORMATS.reduce((a,b)=>b.gb>a.gb?b:a);
+    document.getElementById("kpi-fstop").textContent=top.label;
+    document.getElementById("sub-fsgb").textContent=
+      `Across ${FORMATS.length} formats and ${F(TOT_FILES)} files. ${heaviest.label} takes the most space`;
+    /* The finding this dashboard exists to make: the format people see most is
+       not the one filling the disk. Stated on the card, not just in the panel. */
+    document.getElementById("sub-fstop").textContent=
+      `${F(top.files)} files, ${(top.files/TOT_FILES*100).toFixed(0)} percent of all records`;
     document.querySelectorAll("#fs-field button").forEach(b=>b.onclick=()=>{field=b.dataset.f;drawTable();});
     document.getElementById("fs-dir").onclick=()=>{dir=dir==="desc"?"asc":"desc";drawTable();};
     drawTable();drawRecords();
@@ -1725,14 +1746,13 @@ DASHBOARDS.fp=(function(){
       <div class="bd">The file plan is the SharePoint term store, so its size and shape can be reported directly. How many terms exist, and how they divide across the five categories.</div>
     </div>
     <div class="kpis" id="fp-kpis">
-      <div class="kpi on"><div class="lab">Total Terms</div><div class="val" id="kpi-terms">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Term Sets</div><div class="val" id="kpi-sets">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Total Terms</div><div class="val" id="kpi-terms">…</div><div class="sub">Across ${CATS.length} categories, at every level of the plan</div></div>
+      <div class="kpi stat"><div class="lab">Term Sets</div><div class="val" id="kpi-sets">…</div><div class="sub">Deepest branch runs ${MAX_DEPTH} levels</div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Terms by category</div>
-      <div class="psub">The five top level groups in the term store, sized by how many terms sit beneath them at every level. The deepest branch runs ${MAX_DEPTH} levels.</div>
+      <div class="psub">The five top level groups in the term store, sized by how many terms sit beneath them at every level, not only the top. The deepest branch runs ${MAX_DEPTH} levels.</div>
       <div id="fp-bars"></div>
-      <div class="note">Counts include terms at every level, not only the top. The term store API returns one level at a time, so producing these means walking the tree rather than reading a single total. The categories and the source are confirmed; the counts here are illustrative until that walk is run.</div>
     </div>
   </section>`;
 
@@ -1904,8 +1924,8 @@ DASHBOARDS.rt=(function(){
       <div class="bd">Which declared records are approaching the end of their retention period, and when the next disposal falls due. Due dates come from the retention label applied to each record plus its duration.</div>
     </div>
     <div class="kpis" id="rt-kpis">
-      <div class="kpi on"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div><div class="tap">▾ Opened below</div></div>
-      <div class="kpi"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div><div class="tap">▾ Opened below</div></div>
+      <div class="kpi stat"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div><div class="sub">${F(DUE_30)} of them within 30 days</div></div>
+      <div class="kpi stat"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div><div class="sub">${F(PERMANENT)} permanent records are never due</div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Disposal summary by library</div>
@@ -1917,7 +1937,6 @@ DASHBOARDS.rt=(function(){
         <div class="tile"><div class="tl">Records in these libraries</div><div class="tv">${F(LIB_RECORDS)}</div></div>
       </div>
       <div class="scrollx"><div class="dtab" id="rt-table"></div></div>
-      <div class="note">Inactive over 1 year is the only figure on this page that is not available today. It needs the weekly document scan, because an undeclared or untouched document has no row in the records table to read a date from.</div>
     </div>
 
     <div class="band">
@@ -1926,14 +1945,13 @@ DASHBOARDS.rt=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Schedules and overdue records</div>
-      <div class="psub">All ${F(LABEL_TOTAL)} declared records. Beyond retention counts records whose disposal date has already passed, which is measurable today from the due date alone.</div>
+      <div class="psub">All ${F(LABEL_TOTAL)} declared records. Beyond retention counts records whose disposal date has already passed. It does not mean the record is still awaiting action, since nothing records whether a disposal was carried out.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(WITH_SCHEDULE)}</div></div>
         <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(NO_SCHEDULE)}</div></div>
         <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(BEYOND_RETENTION)}</div></div>
       </div>
       <div id="rt-compliance"></div>
-      <div class="note">Beyond retention means the disposal date has passed. It does <b>not</b> mean the record is still awaiting action, because nothing in the database records whether a disposal was carried out. That needs a disposal status field the EDRMS application does not have.</div>
     </div>
 
     <div class="band">

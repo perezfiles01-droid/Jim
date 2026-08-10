@@ -171,6 +171,37 @@ a known dependency.
 | All other formats | 400 | 0.8 |
 | **Total** | **21,646** | **46.7** |
 
+## KPI cards: interactive or static, never ambiguous
+
+A card carrying the `.tap` chevron ("Click to open") promises a click. A card
+without one promises nothing. **The two must never disagree**, and
+`check_affordance.js` fails the build when they do.
+
+| Class | Means | Looks like |
+| --- | --- | --- |
+| `.kpi` with `.tap` | Wired to a handler, toggles a panel | Pointer cursor, hover lift, blue rail when selected |
+| `.kpi.stat` | Its panel is always open below it | No pointer, no hover, grey rail, a `.sub` line of context |
+
+11 cards are interactive, 13 are static. Before 10 August every static card
+still said "Opened below" and carried the selected-state rail, so readers clicked
+them and thought the page had hung. That is what the check exists to prevent.
+
+**A static card earns its second line.** Rather than a dead chevron, each carries
+a `.sub` that says something the number alone does not: how many of a total, what
+the comparison is, what is excluded.
+
+## No caveat boxes
+
+The amber `.note` panels were removed on 10 August, along with their CSS. Where a
+note explained something a reader genuinely needs to trust the screen, that
+sentence moved into the panel subtitle in ordinary text. The clearest case is
+Total EDRMS Users: the per site bars sum to more than the bankwide figure,
+and without a word of explanation that reads as a broken report rather than two
+correct numbers answering different questions.
+
+Caveats about what is not yet buildable belong in `STATUS.md` and the workbook,
+which are read by the build team, not on a dashboard read by RAC.
+
 ## Known open items
 
 - Overview is built. The older standalone prototypes v18 and v19 remain in the
