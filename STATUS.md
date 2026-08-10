@@ -107,7 +107,32 @@ since `CreatedDate` is the declaration and `ModifiedDate` is the record row.
 
 ## 5. THE GAPS
 
-### Gap 1, department and division. THE LARGEST OPEN ITEM
+### Gap 1, department and division. APPROACH CONFIRMED BY DEV 10 Aug 2026
+
+**The site level join is feasible and needs no migration.** Confirmed by Mihal
+Le, 10 August 2026: "If we just add it into database, it's yes, feasible. But if
+client want to populate dev&div in sharepoint records we need migration."
+
+Two different requirements, and only the first one is ours:
+
+| | Department in the reporting database | Department written into SharePoint |
+| --- | --- | --- |
+| What it means | Two columns on `ADBSites`, join `Records.SiteUrl` to `ADBSites.SiteUrl`, group by Department | `ADBDepartmentOwner` populated on all 3.47M SharePoint items |
+| Old records | Work. They already carry `SiteUrl` | Need a backfill migration |
+| Verdict | **Feasible, no migration. This is what the report needs** | Separate scope, not required for the report |
+
+His first answer ("for new records we can count by department and division, for
+old records we have no other way except migration") assumed department is stored
+per document. It is correct under that assumption and irrelevant under ours,
+because `Records.SiteUrl` is already populated on every existing row.
+
+**Open with the client:** do they need department and division visible inside
+SharePoint, or only in the Utilization Report? Only the report means no
+migration. Ask rather than assume.
+
+**Watch for later:** if the SharePoint column ever does get populated, department
+arrives from two places, the site table and the per-document field. Decide which
+wins before that happens.
 
 **Cause traced end to end.** The SharePoint column `ADBDepartmentOwner` exists on
 the library, is named exactly like the `ADBMeta` key, and is **empty on every
