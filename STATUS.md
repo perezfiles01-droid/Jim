@@ -5,7 +5,7 @@ BACKGROUND.md is the durable project context and is still correct about the tech
 stack, the palette and the hard rules, but it was written on 4 August and predates
 everything below.
 
-Last updated 10 August 2026, after the compliance marker was located per site.
+Last updated 10 August 2026, after the design was cut to what the tenant supplies.
 
 ---
 
@@ -21,10 +21,57 @@ yet. That single fact explains most of what is still open.
 
 ---
 
+## 1B. THE DESIGN WAS CUT ON 10 AUGUST 2026
+
+The prototype and the database design were revised to remove everything that
+needed a person, a rule nobody had written, or a change to the EDRMS
+application. **Nothing in the design now lacks a source.**
+
+**Removed**
+
+| Cut | Why |
+| --- | --- |
+| Division, the whole tier | Designed in `ADBMeta`, empty on every row, nothing supplies it. Drill is now Department, Site, Library |
+| `ADBUnitOwner` | Same, and no panel read it |
+| `DisposalStatus` | Needs a new field in the EDRMS application. Disposal works from the due date alone |
+| `UniqueViewers90` and the 90 day fallback | Microsoft does not return it. The column held a blank and justified an apology |
+| Field office, sovereign / nonsovereign | New dimensions with no source anywhere |
+| Users per library | SharePoint reports viewers per site. No list level figure exists |
+| Site go live date | The app install date is promising but unproven, so nothing depends on it yet |
+
+**Added**, each mapped to a call already run against 7rkd12: site owner,
+`LibraryCount` from `/sites/{id}/drives`, users and visits per site, an
+Active / Orphaned split at 90 days idle, and the disposal figures.
+
+**Two structural changes worth knowing**
+
+1. **Three tables now, not two.** The User Activity Table is one row per person,
+   about 9,400 rows, from `getSharePointActivityUserDetail(period='D30')`. It
+   exists because Total EDRMS Users counts **people**, and someone working in
+   three sites appears in three rows of the site table, so summing
+   `UniqueViewers30` overstates headcount. The dashboard shows both figures and
+   explains the gap.
+2. **The Retention dashboard is built.** It was a placeholder hiding figures that
+   need no new source: `EDRMSDueDateForDisposal` already exists and is computed,
+   so records due for disposal is a count and next due date is a `MIN()`. Only
+   "inactive over 1 year" waits on the scan, and the panel says so.
+
+Department Performance is the only placeholder left, and most of its data now
+exists. It needs a screen, not a source.
+
+---
+
 ## 2. THE BOARD
 
-52 visual elements in the prototype. Every one of them is **buildable**. Nothing
-is unknown any more.
+**These counts predate the 10 August cut and have not been recounted.** They
+described 52 elements across 4 dashboards plus the reference page. Since then
+Division and the 90 day fallback came out, and the site inventory and the whole
+Retention dashboard went in. `elements.py` still holds the old 52, so the
+workbook built from it is stale too. **Recounting is the first job of the next
+session**, see section 9.
+
+The shape of the answer has not changed: every element is buildable, and nothing
+is unknown.
 
 | Status | Count | Waiting on |
 | --- | --- | --- |
@@ -39,16 +86,19 @@ a decision, or answer a question.
 
 ### The 12 blocked, and the two asks that clear them
 
-**Ask 1, a list from RAC: site to department and division.** Clears 8:
+**Ask 1, a list from RAC: site to department.** Division is no longer on the
+list, so this is now 7, not 8:
 
 1. Records Management, declared records per department
 2. Records Management, drill level 1 Department
-3. Records Management, drill level 2 Division
-4. Records Management, documents per department
-5. Records Management, department filter
-6. Sites and Libraries, sites created by department treemap
-7. Overview, top 5 departments by declared records
-8. Overview, top 5 departments by compliant sites
+3. Records Management, documents per department
+4. Records Management, department filter
+5. Sites and Libraries, sites created by department treemap
+6. Overview, top 5 departments by declared records
+7. Overview, top 5 departments by compliant sites
+
+Drill levels 2 and 3, Site and Library, are **ready today**. They were only ever
+blocked because Division sat above them.
 
 **Ask 2, a question for the development team**, no longer a RAC decision: how do
 we detect which sites have the EDRMS app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}`
@@ -70,25 +120,27 @@ every library figure.
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. Single self contained file, 5 dashboards plus a Data Design reference page |
-| `utilizationdb.md` | The database design in the client's own workbook format. Two tables, 58 columns, no code |
+| `index.html` | The prototype. Single self contained file, **5 dashboards including Retention**, plus a Data Design reference page |
+| `utilizationdb.md` | The database design in the client's own workbook format. **Three tables, 61 columns**, no code |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | **The working document.** Every element mapped to its source, the gaps, the action plan, 25 findings with evidence |
 | `BACKGROUND.md` | Durable project context. Still correct on stack, palette, hard rules |
 | `STATUS.md` | This file |
 
-Earlier workbook versions v1 to v3 are kept for the audit trail. **v4 is current.**
-A v5 is warranted, see section 9.
+Earlier workbook versions v1 to v3 are kept for the audit trail. **v4 is the
+latest built, and it is now stale**: it predates the 10 August cut. v5 is
+required, not merely warranted. See section 9.
 
 ---
 
 ## 4. THE DESIGN, SETTLED
 
-**Two tables**, not one and not seven.
+**Three tables**, one per grain. Not one, and not seven.
 
 | Table | One row per | Why it must exist |
 | --- | --- | --- |
 | `rpt.utilization_report` | document | Holds declared AND undeclared together. Without the undeclared there is no denominator and no declaration rate |
 | `rpt.utilization_site_activity` | SharePoint site | A site with no documents would vanish from the site count, and visit counts are per site so repeating them on every document row makes any total nonsense |
+| `rpt.utilization_user_activity` | person | Total EDRMS Users counts people. Someone working in three sites appears in three rows of the site table, so summing `UniqueViewers30` overstates headcount |
 
 **The grain is one SharePoint item, identified by `ListId` + `ItemId`.** Not
 `DocumentId`, which is nullable. UAT returned 1,990 rows against 1,984 distinct
@@ -445,10 +497,13 @@ State these plainly to the client. They are the confirmations, not open items.
 
 ## 9. NEXT STEPS
 
-1. **Build v5 of the workbook.** Test D passed, so Active Users and Unique
-   viewers per site move from Blocked to Needs the usage feed. Blocked goes 14 to
-   12, the usage feed 6 to 8. The version where the workbook can say "nothing
-   unknown remains".
+1. **Recount the elements and rebuild the workbook as v5.** `elements.py` still
+   holds the pre-cut 52, so the workbook built from it is stale. What changed:
+   Division and the 90 day fallback came out; the site inventory (owner,
+   libraries, users, visits, Active/Orphaned) and the whole Retention dashboard
+   went in; Active Users became Total EDRMS Users off a third table. Recount
+   against `index.html`, update `elements.py`, then rerun `build_xlsx.py`.
+   This is the one deliverable still describing the old design.
 2. **Reconcile the unique viewer numbers.** The Site usage page showed 22 unique
    viewers; Graph `allTime` returned 12 for `org_csd_1.4testsite`. All time should
    exceed 90 days, so either the screenshot was a different site or the two count

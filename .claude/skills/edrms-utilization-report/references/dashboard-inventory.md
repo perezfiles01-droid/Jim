@@ -12,7 +12,7 @@ touching another's blocks.
 | Department Performance | - | - | Placeholder, `class="dis"` |
 | Sites and Libraries | `sl` | `sitesandlibraries` blocks | Built |
 | Format and Storage | `fs` | `formatandstorage` blocks | Built |
-| Retention | - | - | Placeholder, `class="dis"` |
+| Retention | `rt` | `retention` blocks | Built |
 | Data Design | `dd` | `datadesign` blocks | Built, a reference page not a dashboard |
 
 Default on load is Overview, the first live entry. Data Design sits under its
@@ -60,7 +60,7 @@ toggle the panel below them.
 
 - *Total Declared Records* (21,646). Stacked bars per department, grey-blue for
   without physical counterpart, teal for with. Click a bar to drill department
-  to division to site to library, with a clickable breadcrumb back. Date range
+  to site to library, with a clickable breadcrumb back. Date range
   and Reset on the right; Reset clears dates and drill path together.
 - *Total Documents in EDRMS Compliant Sites* (3.47M). Single orange bars, the
   same four-level drill, its own independent date range and Reset.
@@ -68,13 +68,28 @@ toggle the panel below them.
 Both panels show a range summary line only while a range is applied. The
 always-on "Showing all declared records" note was removed by request.
 
+**The drill is three levels, Department to Site to Library.** Division was cut:
+it was designed in `ADBMeta`, is empty on every row, and nothing in the tenant
+supplies it, so a level that could never be populated was removed rather than
+left to fail at build time. `SITESTEMS` is the former `DIVNAMES` and now only
+names two sites apiece.
+
 **Section 2: SharePoint sites and users governance.** Two KPI cards.
 
 - *Active Departmental Sites*. Green bars ranked by site visits, with last
   activity. 7 / 30 / 90 day window buttons and a department filter.
-- *Active Users*. Deep blue bars of unique viewers. At 90 days SharePoint
-  returns no unique viewer total, so it falls back to site visits and shows an
-  amber note saying so.
+- *Total EDRMS Users, monthly active*. Deep blue bars of unique viewers per
+  site, at 7 or 30 days only. **There is no 90 day option**: Microsoft returns
+  no unique viewer total at 90 days, so the button could only ever show
+  something else. Site visits still offer 7, 30 and 90.
+
+  The KPI is **not** the sum of the bars. Per site viewers come from
+  `/sites/{id}/analytics` and count a person once per site, so summing them
+  overstates headcount. The bankwide figure comes from
+  `getSharePointActivityUserDetail(period='D30')`, one row per person. Both are
+  shown, and the panel explains the gap, because a reader who adds up the bars
+  would otherwise think the total is broken. A `console.assert` keeps the
+  distinct figure below the sum.
 
 16 departments, so two pages at 10 rows.
 
@@ -149,32 +164,38 @@ instead. It is the only module that returns `kind:"reference"`, which is how
 **The whole module is generated from `utilizationdb.md` by
 `scratchpad/gen_dd.py` and `build_dd.py`.** Edit the markdown, rerun both, splice
 the output over the `DASHBOARDS.dd` block. Never hand edit the arrays: they carry
-58 columns of parallel data and the tests compare them against the document.
+61 columns of parallel data across three tables, and the tests compare them
+against the document.
 The generator converts markdown emphasis to HTML, and a test fails if any `**`
 or backtick survives to the rendered page.
 
 Sections, in order:
 
 - **Can it be one table only?** The client asked directly, so the answer opens
-  the page: two tables, and the two things that break under one.
+  the page: three tables, and the three things that break under one.
 - **Naming rule.** Columns keep the name they already have in the EDRMS
   database. `CreatedDate` stays `CreatedDate`, `ListId` stays `ListId`. JSON keys
   inside `FileMeta`, `EDRMSMeta` and `ADBMeta` become real columns keeping the
   key name. Only two names were invented, both because the existing name means
   something else: `FileModifiedDate` and `FileCreatedDate`, since `ModifiedDate`
   is the record row and `CreatedDate` is the declaration.
+- **Can it be one table only?** now answers *three*, not two, and the third
+  reason is that people cannot be counted from a table of sites.
 - **What one row means.** The grain is `ListId` plus `ItemId`, not `DocumentId`,
   which is nullable. A UAT check returned 1,990 rows against 1,984 distinct
   `DocumentId`, so Total Declared Records counts distinct items, not rows.
-- **The two tables**: 38 columns and 20 columns, each a full width card over a
-  numbered column table.
-- **Which figure each column produces, and how to source it**: all 58 columns,
+- **The three tables**: 35, 19 and 7 columns, each a full width card over a
+  numbered column table. The User Activity Table is the third grain, one row per
+  person, and exists because Total EDRMS Users counts people and people cannot be
+  counted from a table of sites.
+- **Which figure each column produces, and how to source it**: all 61 columns,
   each with the figure it feeds, a status, its exact location in
   `Database_Design_12.03_2.xlsx` (sheet and spreadsheet row) and in live
   `drm-npr`, and **the system to go to** for the ones that do not exist.
-- **Where every figure comes from**: 23 figures read from the other direction.
+- **Where every figure comes from**: 31 figures read from the other direction.
 - **Where to go for each source**: the six systems.
-- **The three gaps.**
+- **The remaining gaps.** Gap 3 is no longer a RAC decision: the compliance
+  marker is an installed app, visible per site in Site Contents.
 
 The tally under the traceability tables is **counted at render time**, never
 written down, so it cannot claim a number the table does not show.
@@ -185,13 +206,40 @@ quoting the wrong block is the easy mistake. `ADBMaster`, `Library`,
 `PhysicalRecords` and `favoritelocations` are in the workbook but were never
 built.
 
+## Retention (`rt`)
+
+Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00.
+
+Built because the data was already there. `Records` carries
+`EDRMSDueDateForDisposal`, computed as label applied plus duration, so records
+due for disposal is a count and next due date is a `MIN()` over a column that
+exists today. Leaving it a placeholder was hiding a figure needing no new source.
+
+- Two KPI cards, both always open: *Records Due for Disposal, next 12 months*
+  (608) and *Next Due Date for Disposal*.
+- **Disposal summary by library**, a sortable table over 15 libraries: library,
+  site, records held, due within 12 months, next due date, inactive over 1 year.
+  Record counts are the same figures Sites and Libraries shows, so the two
+  reconcile.
+- **Retention profile**, declared records by label over all 21,646, with
+  `Permanent` drawn in grey blue and marked "Never due for disposal".
+
+`PERMANENT` (2,460) is a named constant excluded from every disposal figure, with
+an assertion enforcing it. A second assertion ties the label total to
+`DASHBOARDS.rm.summary.declared`.
+
+**Inactive over 1 year is the one figure here that is not ready.** It needs the
+document scan, because an untouched document has no row until the scan creates
+one, and the panel says so in an amber note rather than implying otherwise.
+
 ## Known open items
 
 - Overview is built. The older standalone prototypes v18 and v19 remain in the
   repo as reference only; there is no v20 despite older notes referencing one.
-- Department Performance and Retention are placeholders with no design yet.
-- Records Management and Sites and Libraries still contain em dashes in their
-  department dropdowns (`ITD — Information Technology`), inherited from the
-  source prototypes and deliberately left alone. Fixing them means changing the
-  separator in each `deptOptions` builder. Format and Storage is clean.
+- **Department Performance is the only placeholder left.** Most of its data now
+  exists: the site inventory covers owners, libraries, users and visits per site,
+  and the drill covers the rest. What it needs is a screen, not a source.
+- Em dashes are gone from the whole page. The department dropdowns use a hyphen
+  and the pre-init KPI placeholders an ellipsis, so the rule holds everywhere for
+  the first time. `verify.js` fails on any that come back.
 - The separate Email Records Declaration stream is out of scope; do not touch it.
