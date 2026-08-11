@@ -158,7 +158,7 @@
   /* Site inventory table. A plain grid so Power BI can reproduce it with a
      table visual, with the numeric cells carrying a data bar the way the
      Format and Storage table does. */
-  .dash-sl .stab{--sc:206px 70px 210px 88px 78px 98px 112px 92px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:900px}
+  .dash-sl .stab{--sc:250px 232px 92px 84px 102px 116px 96px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:900px}
   .dash-sl .stab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
   .dash-sl .stab .hd.on{color:var(--blue);font-weight:700}
   .dash-sl .stab .hd.num{text-align:right}
@@ -641,36 +641,59 @@ DASHBOARDS.sl=(function(){
   /* Sort keys line up with the SITES columns so the header click needs no
      lookup table. idleDays sorts ascending by default because "most recently
      active first" is what a reader expects from a Last activity column. */
+  /* Department is a filter, not a column. The row is about a site; department
+     is the dimension you slice the list by, and repeating it down a column
+     tells the reader nothing the filter does not already say. */
   const SCOLS=[
     {k:"name", i:0, lab:"Site",          num:false},
-    {k:"dept", i:1, lab:"Dept",          num:false},
     {k:"owner",i:2, lab:"Site owner",    num:false},
     {k:"libs", i:3, lab:"Libraries",     num:true},
     {k:"users",i:4, lab:"Users",         num:true},
     {k:"visits",i:5,lab:"Visits",        num:true},
     {k:"idle", i:6, lab:"Last activity", num:true},
   ];
-  let sortSite="visits",dirSite="desc";
+  let sortSite="visits",dirSite="desc",deptSite="all";
+  function siteDeptOptions(sel){
+    const codes=[...new Set(SITES.map(s=>s[1]))].sort();
+    return `<option value="all">All departments</option>`+
+      codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} - ${DNAME[c]||c}</option>`).join("");
+  }
+  const sitesInScope=()=>deptSite==="all"?SITES:SITES.filter(s=>s[1]===deptSite);
   function renderS3(){
     document.getElementById("s3-detail").innerHTML=`<div class="panel">
       <div class="ptitle">Every compliant site, its owner and its activity</div>
       <div class="psub">Click any column heading to sort. Users counts distinct people who opened something in the site; visits counts page views. A site is inactive once it has had no activity for ${IDLE_DAYS} days.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Sites listed</div><div class="tv">${F(SITES.length)}</div></div>
-        <div class="tile"><div class="tl">Libraries across them</div><div class="tv">${F(SITE_LIBRARIES)}</div></div>
-        <div class="tile hi"><div class="tl">Inactive</div><div class="tv">${F(INACTIVE_SITES)}</div></div>
+      <div class="sortwrap">
+        <div class="sortctl"><span class="lbl">Department</span>
+          <select id="st-dept">${siteDeptOptions(deptSite)}</select></div>
+        <button class="resetbtn" id="st-deptreset"><i>↺</i> Reset filter</button>
       </div>
+      <div class="tiles" id="st-tiles"></div>
       <div class="scrollx"><div class="stab" id="st-table"></div></div></div>`;
+    document.getElementById("st-dept").onchange=e=>{deptSite=e.target.value;drawSites();};
+    document.getElementById("st-deptreset").onclick=()=>{
+      deptSite="all";document.getElementById("st-dept").value="all";drawSites();};
     drawSites();
   }
   function drawSites(){
+    const scope=sitesInScope();
+    /* Tiles describe what is on screen, so they follow the filter. The KPI
+       cards above the band stay at estate level, which is what they say. */
+    const libs=scope.reduce((a,s)=>a+s[3],0);
+    const idle=scope.filter(s=>s[6]>IDLE_DAYS).length;
+    document.getElementById("st-tiles").innerHTML=
+      `<div class="tile"><div class="tl">${deptSite==="all"?"Sites listed":deptSite+" sites"}</div><div class="tv">${F(scope.length)}</div></div>
+       <div class="tile"><div class="tl">Libraries across them</div><div class="tv">${F(libs)}</div></div>
+       <div class="tile hi"><div class="tl">Inactive</div><div class="tv">${F(idle)}</div></div>`;
     const col=SCOLS.find(c=>c.k===sortSite);
-    const rows=[...SITES].sort((a,b)=>{
+    const rows=[...scope].sort((a,b)=>{
       const x=a[col.i],y=b[col.i];
       const cmp=col.num?x-y:String(x).localeCompare(String(y));
       return dirSite==="asc"?cmp:-cmp;
     });
-    const mx={};[3,4,5,6].forEach(i=>mx[i]=Math.max(...SITES.map(s=>s[i])));
+    /* Bars scale within the filtered set, so a small department's busiest site
+       still fills its bar rather than looking dead against the bank total. */
+    const mx={};[3,4,5,6].forEach(i=>mx[i]=Math.max(...scope.map(s=>s[i]),1));
     let h="";
     SCOLS.forEach(c=>{
       const arrow=sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):"";
@@ -681,7 +704,6 @@ DASHBOARDS.sl=(function(){
       const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(s[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
       const idle=s[6]>IDLE_DAYS;
       h+=`<div class="nm" title="${s[0]}">${s[0]}</div>`;
-      h+=`<div class="dp">${s[1]}</div>`;
       h+=`<div class="ow" title="${s[2]}">${s[2]}</div>`;
       h+=cell(3,F(s[3]))+cell(4,F(s[4]))+cell(5,F(s[5]))+cell(6,s[6]+"d ago");
       h+=`<div class="pill ${idle?"no":"ok"}">${idle?"Inactive":"Active"}</div>`;
@@ -781,8 +803,8 @@ DASHBOARDS.sl=(function(){
       <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${IDLE_DAYS} days is counted as inactive.</div>
     </div>
     <div class="kpis" id="s3-kpis">
-      <div class="kpi stat"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="sub">Of ${SITES.length} listed below</div></div>
-      <div class="kpi stat"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="sub">No activity since. Owners are listed so someone can be asked</div></div>
+      <div class="kpi stat"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="sub">Across the whole estate</div></div>
+      <div class="kpi stat"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="sub">No activity since. The table lists an owner to ask</div></div>
     </div>
     <div id="s3-detail"></div>
 
