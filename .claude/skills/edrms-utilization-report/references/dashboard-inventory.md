@@ -9,7 +9,6 @@ touching another's blocks.
 | --- | --- | --- | --- |
 | Overview | `ov` | `overview` blocks | Built, the default on load |
 | Records Management | `rm` | `recordsmanagement` blocks | Built |
-| Department Performance | - | - | Placeholder, `class="dis"`. The only one left |
 | Sites and Libraries | `sl` | `sitesandlibraries` blocks | Built |
 | Format and Storage | `fs` | `formatandstorage` blocks | Built |
 | Retention & File Plan | `rt` | `retention` blocks | Built |
@@ -196,8 +195,17 @@ Sections, in order:
   records already past their disposal date.
 - **Institutional file plan.** The five top level groups sized by term count,
   each showing its term set count and depth.
-- **Retention profile.** Declared records by label over all 21,646, with
-  `Permanent` drawn in grey blue and marked "Never due for disposal".
+- **Retention profile.** Declared records by label, seven rows. Five retention
+  periods plus two that are not periods at all: **Others**, for labels outside
+  the standard 3, 5, 7 and 10 year set, and **No retention label**, for records
+  whose label was removed. Each is drawn in its own colour so neither reads as a
+  retention period, and each carries a one line explanation the way `Permanent`
+  already did.
+
+**`No retention label` and the compliance panel's "without a schedule" are the
+same population**, so `NO_LABEL` is read from the `LABELS` array and
+`WITH_SCHEDULE` is derived from it. Typing the figure twice is how two panels on
+one dashboard start disagreeing.
 
 `PERMANENT` (2,460) is a named constant excluded from every disposal figure, with
 an assertion enforcing it. A second assertion ties the label total to
@@ -290,9 +298,10 @@ which are read by the build team, not on a dashboard read by RAC.
 - `verify.js` still understands `kind:"reference"`, which no module now returns.
   That is deliberate: it is generic infrastructure for any future documentation
   page, not leftovers from this one.
-- **Department Performance is the only placeholder left.** Most of its data now
-  exists: the site inventory covers owners, libraries, users and visits per site,
-  and the drill covers the rest. What it needs is a screen, not a source.
+- **No placeholders remain in the nav.** Department Performance was removed on
+  10 August. Most of what it would have shown now lives elsewhere: the site
+  inventory covers owners, libraries, users and visits per site, and the Records
+  Management drill covers declarations by department.
 - Em dashes are gone from the whole page. The department dropdowns use a hyphen
   and the pre-init KPI placeholders an ellipsis, so the rule holds everywhere for
   the first time. `verify.js` fails on any that come back.

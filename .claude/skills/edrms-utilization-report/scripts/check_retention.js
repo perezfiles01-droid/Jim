@@ -63,9 +63,9 @@ const BROWSER = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
   if (!(r.mau < r.siteSum * 3)) fail.push('monthly active users looks implausible against per site sums');
   eq(r.active + r.inactive, r.sitesListed, 'active plus inactive vs sites listed');
   eq(seen.rows, 15, 'disposal table rows');
-  eq(seen.labelRows, 5, 'retention label bars');
+  eq(seen.labelRows, 7, 'retention label bars');
   if (!seen.scope) fail.push('retention section missing its .dash-rt scope class');
-  eq(r.navDis, 1, 'placeholder nav entries remaining');
+  eq(r.navDis, 0, 'placeholder nav entries remaining');
   if (!r.navLive.includes('rt')) fail.push('Retention not wired into the nav');
 
   console.log('nav live        :', r.navLive.join(', '), `(${r.navDis} placeholder left)`);

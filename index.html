@@ -320,7 +320,6 @@
     <div class="grp">Executive</div><a data-d="ov"><span class="ic">◈</span>Overview</a>
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
-    <a class="dis"><span class="ic">▦</span>Department Performance</a>
     <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
     <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
     <a data-d="rt"><span class="ic">⏳</span>Retention &amp; File Plan</a>
@@ -741,8 +740,7 @@ DASHBOARDS.sl=(function(){
         <div class="tile"><div class="tl">Growth rate</div><div class="tv">${(GROWTH_RATE*100).toFixed(1)}%</div></div>
       </div>
       <div class="scrollx"><div class="ltab" id="lib-table"></div></div>
-      <div class="subtotal">${F(NEW_RECORDS)} records declared this period against ${F(RECORDS_AT_START)} held at the start, a growth rate of ${(GROWTH_RATE*100).toFixed(1)} percent.<br>
-        ${F(LIBS_NO_RECORDS)} of the ${F(SITE_LIBRARIES)} libraries hold no declared records at all. Some are genuinely empty; the rest hold documents nobody has declared, and those are the ones worth looking at.</div></div>`;
+</div>`;
     drawLibs();
   }
   function drawLibs(){
@@ -784,7 +782,7 @@ DASHBOARDS.sl=(function(){
       <div class="bd">How many EDRMS compliant sites have been created, and how new site creation is spread across departments.</div>
     </div>
     <div class="kpis" id="s1-kpis">
-      <div class="kpi stat"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div><div class="sub">Across ${SITEDEPTS.length} departments. Placeholder figure, not measured</div></div>
+      <div class="kpi stat"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div></div>
     </div>
     <div id="s1-detail"></div>
 
@@ -813,8 +811,8 @@ DASHBOARDS.sl=(function(){
       <div class="bd">Which libraries are still in use, which have gone quiet, and how fast the record holding is growing. A library counts as inactive after ${LIB_IDLE} days with no activity and long dormant after ${LIB_DORMANT}.</div>
     </div>
     <div class="kpis" id="s4-kpis">
-      <div class="kpi stat"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div><div class="sub">Of ${LIBS.length} sampled. ${LIBS_DORMANT} have been dormant over ${LIB_DORMANT} days</div></div>
-      <div class="kpi stat"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div><div class="sub">${F(NEW_RECORDS)} new records against ${F(RECORDS_AT_START)} held at the start</div></div>
+      <div class="kpi stat"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div></div>
+      <div class="kpi stat"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div></div>
     </div>
     <div id="s4-detail"></div>
   </section>`;
@@ -1401,7 +1399,7 @@ DASHBOARDS.fs=(function(){
       <div class="bd">Which file formats consume the most storage across EDRMS compliant sites, and how declared records break down by format.</div>
     </div>
     <div class="kpis">
-      <div class="kpi stat"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div><div class="sub" id="sub-fsgb"></div></div>
+      <div class="kpi stat"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Storage consumed by format</div>
@@ -1413,7 +1411,7 @@ DASHBOARDS.fs=(function(){
     </div>
 
     <div class="kpis">
-      <div class="kpi stat"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div><div class="sub" id="sub-fstop"></div></div>
+      <div class="kpi stat"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Declared records by format</div>
@@ -1424,15 +1422,7 @@ DASHBOARDS.fs=(function(){
 
   function init(){
     document.getElementById("kpi-fsgb").textContent=TOT_GB.toFixed(1)+" GB";
-    const top=FORMATS.reduce((a,b)=>b.files>a.files?b:a);
-    const heaviest=FORMATS.reduce((a,b)=>b.gb>a.gb?b:a);
-    document.getElementById("kpi-fstop").textContent=top.label;
-    document.getElementById("sub-fsgb").textContent=
-      `Across ${FORMATS.length} formats and ${F(TOT_FILES)} files. ${heaviest.label} takes the most space`;
-    /* The finding this dashboard exists to make: the format people see most is
-       not the one filling the disk. Stated on the card, not just in the panel. */
-    document.getElementById("sub-fstop").textContent=
-      `${F(top.files)} files, ${(top.files/TOT_FILES*100).toFixed(0)} percent of all records`;
+    document.getElementById("kpi-fstop").textContent=FORMATS.reduce((a,b)=>b.files>a.files?b:a).label;
     document.querySelectorAll("#fs-field button").forEach(b=>b.onclick=()=>{field=b.dataset.f;drawTable();});
     document.getElementById("fs-dir").onclick=()=>{dir=dir==="desc"?"asc":"desc";drawTable();};
     drawTable();drawRecords();
@@ -1734,17 +1724,25 @@ DASHBOARDS.ov=(function(){
 DASHBOARDS.rt=(function(){
   /* Retention labels across all declared records. Sums to the same 21,646 the
      other dashboards use, and asserts it below rather than trusting it. */
+  /* `note` prints under the label, the way Permanent already explains itself.
+     The last two rows exist because neither is a retention period: one is
+     everything outside the standard set, the other is the absence of a label. */
   const LABELS=[
-    {label:"10 years after declaration",count:8420},
-    {label:"7 years after declaration", count:5310},
-    {label:"5 years after declaration", count:3980},
-    {label:"Permanent",                 count:2460},
-    {label:"3 years after declaration", count:1476},
+    {label:"10 years after declaration",count:8100},
+    {label:"7 years after declaration", count:5100},
+    {label:"5 years after declaration", count:3820},
+    {label:"Permanent",                 count:2400, note:"Never due for disposal"},
+    {label:"3 years after declaration", count:1420},
+    {label:"Others",                    count:574,  note:"Labels outside the standard 3, 5, 7 and 10 year set"},
+    {label:"No retention label",        count:232,  note:"No label, so no disposal date and nothing to schedule"},
   ];
   const LABEL_TOTAL=LABELS.reduce((a,l)=>a+l.count,0);
   /* Permanent records are never due for disposal. Stating it as a constant
      keeps the "never due" population visible instead of buried in a filter. */
   const PERMANENT=LABELS.find(l=>l.label==="Permanent").count;
+  /* One source of truth for the unlabelled population. The compliance panel
+     above reads the same number, so the two cannot disagree. */
+  const NO_LABEL=LABELS.find(l=>l.label==="No retention label").count;
 
   /* Disposal summary per library. Record counts are the same figures the
      Sites and Libraries dashboard shows, so the two reconcile.
@@ -1777,7 +1775,7 @@ DASHBOARDS.rt=(function(){
   /* Retention compliance. A record with no retention label has no due date and
      can never be disposed of, which is why it is worth counting separately
      rather than letting it sit silently outside every disposal figure. */
-  const WITH_SCHEDULE=20114;
+  const WITH_SCHEDULE=LABEL_TOTAL-NO_LABEL;
   const BEYOND_RETENTION=342;
   const LIB_RECORDS=DLIBS.reduce((a,l)=>a+l[2],0);
   const INACTIVE_TOTAL=DLIBS.reduce((a,l)=>a+l[5],0);
@@ -1793,7 +1791,9 @@ DASHBOARDS.rt=(function(){
     `Retention labels total ${LABEL_TOTAL} but Records Management declares ${DASHBOARDS.rm.summary.declared}`);
   console.assert(DLIBS.every(l=>l[3]<=l[2]),"A library cannot have more records due for disposal than it holds");
   console.assert(DUE_TOTAL<LABEL_TOTAL-PERMANENT,"Records due must exclude the permanent population");
-  const NO_SCHEDULE=LABEL_TOTAL-WITH_SCHEDULE;
+  const NO_SCHEDULE=NO_LABEL;
+  console.assert(WITH_SCHEDULE+NO_SCHEDULE===LABEL_TOTAL,
+    "The compliance split must account for every declared record");
   console.assert(WITH_SCHEDULE<=LABEL_TOTAL,"Records with a schedule cannot exceed the declared total");
   console.assert(BEYOND_RETENTION<=WITH_SCHEDULE,"Only a record with a schedule can be beyond its retention period");
 
@@ -1878,12 +1878,13 @@ DASHBOARDS.rt=(function(){
   }
   function drawLabels(){
     const mx=Math.max(...LABELS.map(l=>l.count));
-    document.getElementById("rt-labels").innerHTML=LABELS.map(l=>{
-      const perm=l.label==="Permanent";
-      return `<div class="lbar"><div class="ll"><b>${l.label}</b>${perm?`<small>Never due for disposal</small>`:""}</div>
-        <div class="lt"><div class="lf" style="width:${Math.max(6,100*l.count/mx)}%;background:${perm?"var(--greyblue)":"var(--deepblue)"}">${F(l.count)}</div></div>
-        <div class="lp">${(l.count/LABEL_TOTAL*100).toFixed(1)}%</div></div>`;
-    }).join("");
+    const colour=l=>l.label==="Permanent"?"var(--greyblue)"
+                  :l.label==="No retention label"?"var(--orange)"
+                  :l.label==="Others"?"var(--mut)":"var(--deepblue)";
+    document.getElementById("rt-labels").innerHTML=LABELS.map(l=>
+      `<div class="lbar"><div class="ll"><b>${l.label}</b>${l.note?`<small>${l.note}</small>`:""}</div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*l.count/mx)}%;background:${colour(l)}">${F(l.count)}</div></div>
+        <div class="lp">${(l.count/LABEL_TOTAL*100).toFixed(1)}%</div></div>`).join("");
   }
 
   const html=`<section class="dash-rt">
@@ -1892,8 +1893,8 @@ DASHBOARDS.rt=(function(){
       <div class="bd">Which declared records are approaching the end of their retention period, and when the next disposal falls due. Due dates come from the retention label applied to each record plus its duration.</div>
     </div>
     <div class="kpis" id="rt-kpis">
-      <div class="kpi stat"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div><div class="sub">${F(DUE_30)} of them within 30 days</div></div>
-      <div class="kpi stat"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div><div class="sub">${F(PERMANENT)} permanent records are never due</div></div>
+      <div class="kpi stat"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div></div>
+      <div class="kpi stat"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div></div>
     </div>
     <div class="panel">
       <div class="ptitle">Disposal summary by library</div>
@@ -1913,7 +1914,7 @@ DASHBOARDS.rt=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Schedules and overdue records</div>
-      <div class="psub">All ${F(LABEL_TOTAL)} declared records. Beyond retention counts records whose disposal date has already passed. It does not mean the record is still awaiting action, since nothing records whether a disposal was carried out.</div>
+      <div class="psub">Every declared record is counted once, as carrying a schedule or not. Beyond retention is a subset of those that carry one: it means the disposal date has passed, not that the record is still awaiting action, since nothing records whether a disposal was carried out.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(WITH_SCHEDULE)}</div></div>
         <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(NO_SCHEDULE)}</div></div>
@@ -1928,7 +1929,7 @@ DASHBOARDS.rt=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Terms by category</div>
-      <div class="psub">The ${CATS.length} top level groups in the file plan, sized by how many terms sit beneath them at every level, not only the top. ${TOTAL_TERMS.toLocaleString()} terms across ${TOTAL_SETS} term sets, the deepest branch running ${MAX_DEPTH} levels.</div>
+      <div class="psub">The ${CATS.length} top level groups in the file plan, sized by how many terms sit beneath them at every level, not only the top.</div>
       <div id="rt-plan"></div>
     </div>
 
@@ -1938,7 +1939,7 @@ DASHBOARDS.rt=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Declared records by retention label</div>
-      <div class="psub">All ${F(LABEL_TOTAL)} declared records. ${F(PERMANENT)} of them carry a permanent label, so they are excluded from every disposal figure above.</div>
+      <div class="psub">Others covers retention labels outside the standard 3, 5, 7 and 10 year set. No retention label means the label was removed from the record, so it has no disposal date and cannot be scheduled at all.</div>
       <div id="rt-labels"></div>
     </div>
   </section>`;

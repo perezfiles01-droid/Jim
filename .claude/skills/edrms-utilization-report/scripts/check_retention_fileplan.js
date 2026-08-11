@@ -39,7 +39,7 @@ const states=new Set(sl.pills);
 if(!(states.has('Active')&&states.has('Inactive')&&states.has('Long dormant')))
   fail.push('library table does not show all three states: '+[...states].join(', '));
 if(sl.pills.some(x=>/orphan/i.test(x))) fail.push('Orphaned wording survives in the library table');
-console.log('nav live      :', r.navLive.join(', '), `(${r.dis} placeholder left)`);
+console.log('nav live      :', r.navLive.join(', '), `(${r.dis} placeholders left)`);
 console.log('file plan     :', r.terms, 'terms over', r.cats, 'categories,', r.sets, 'sets, deepest', r.depth, 'levels');
 console.log('library health:', sl.libact, 'active |', sl.libRows, 'rows | growth', sl.growth);
 console.log('states seen   :', [...states].join(', '));
