@@ -146,9 +146,15 @@ notes = [
     'The earliest selectable date is the first run. History that was never captured cannot be recovered, which is why this decision could not '
     'wait: every week it is deferred is a week the report can never report on.',
     '',
-    'Two rules the queries must follow. Reports read the LATEST snapshot by default, or 1,057 compliant sites silently becomes 55,000 after a '
-    'year. And a date range sums SiteVisits7 across the weeks in the range, never SiteVisits30 or SiteVisits90: consecutive 7 day windows tile '
-    'exactly, while 30 and 90 day windows overlap and would count most days several times over.',
+    'Three rules the queries must follow. Reports read the LATEST snapshot by default, or 1,057 compliant sites silently becomes 55,000 after a '
+    'year. A date range sums SiteVisits7 across the weeks in the range, never SiteVisits30 or SiteVisits90: consecutive 7 day windows tile '
+    'exactly, while 30 and 90 day windows overlap and would count most days several times over. And the range must be matched on '
+    'ReportRefreshDate, not SnapshotDate.',
+    '',
+    'That last one is easy to get wrong. SnapshotDate is when the job ran. ReportRefreshDate is the last day Microsoft actually measured, and it '
+    'lags: an export taken on 12 Aug 2026 carried figures as at 10 Aug. The lag varies, so tiling on the job date makes consecutive weekly '
+    'windows overlap or leave gaps, and a range total comes out wrong while looking entirely reasonable. Store both dates and tile on the '
+    'refresh date. The window a row covers is ReportRefreshDate minus the period plus one, through ReportRefreshDate.',
     '',
     'Thresholds are not stored. LastActivityDate is a fact; "inactive after 90 days" is a judgement made in the report. Keeping judgements out '
     'of the database means changing 90 to 120 costs one edit in Power BI and no change to the job, the tables or the refresh.',
@@ -251,6 +257,10 @@ CONFIRMED = {
  ('SiteActivity','UniqueViewersAllTime'):('actorCount', 'GET /sites/{id}/analytics/allTime returned actorCount 12'),
  ('SiteActivity','SiteCreatedDate'):   ('createdDateTime', 'GET /sites?search=* returns it on every site'),
  ('UserActivity','UserPrincipalName'): ('User Principal Name', 'Activity CSV, 12 Aug 2026, 30 rows'),
+ ('SiteActivity','ReportRefreshDate'): ('Report Refresh Date',
+     'Both CSVs, 12 Aug 2026. Value 2026-08-10 on every row, with Report Period 30, so the window is 12 Jul to 10 Aug'),
+ ('UserActivity','ReportRefreshDate'): ('Report Refresh Date',
+     'Same column in the activity export, same 2026-08-10 and period 30'),
  ('UserActivity','LastActivityDate'):  ('Last Activity Date', 'Activity CSV. 25 of 30 rows carry one'),
  ('UserActivity','ViewedOrEditedFileCount'):('Viewed Or Edited File Count',
      'Activity CSV. Only 8 of 30 are above zero, which is the real active user count'),
