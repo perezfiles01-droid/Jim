@@ -11,7 +11,7 @@ Each column is (name, pg_type, description, values, sample, reference, remarks).
 """
 
 # Where each value comes from. Only NEEDS A DECISION requires a person.
-SOURCE = {'Id': 'Job generated', 'SnapshotDate': 'Job generated', 'RowLoadedDate': 'Job generated', 'DocumentId': 'EDRMS database', 'Title': 'EDRMS database', 'FileType': 'EDRMS database', 'FileCreatedDate': 'EDRMS database', 'FolderPath': 'EDRMS database', 'LibraryName': 'EDRMS database', 'LibraryUrl': 'EDRMS database', 'ListId': 'EDRMS database', 'ItemId': 'EDRMS database', 'SiteName': 'EDRMS database', 'SiteUrl': 'EDRMS database', 'CreatedDate': 'EDRMS database', 'CreatedBy': 'EDRMS database', 'DeclarationType': 'EDRMS database', 'HasPhysical': 'EDRMS database', 'EDRMSRetentionLabel': 'EDRMS database', 'EDRMSDuration': 'EDRMS database', 'EDRMSRetentionLabelApplied': 'EDRMS database', 'EDRMSDueDateForDisposal': 'EDRMS database', 'RetentionStatus': 'EDRMS database', 'SensitivityLabelName': 'EDRMS database', 'ProjectEndDate': 'EDRMS database', 'FileSize': 'Microsoft Graph', 'FileModifiedDate': 'Microsoft Graph', 'LibraryLastActivityDate': 'Microsoft Graph', 'SiteCreatedDate': 'Microsoft Graph', 'LibraryCount': 'Microsoft Graph', 'StorageUsed': 'Microsoft Graph', 'SiteOwner': 'Microsoft Graph', 'SiteVisits7': 'M365 usage report', 'SiteVisits30': 'M365 usage report', 'SiteVisits90': 'M365 usage report', 'UniqueViewers7': 'Site analytics', 'UniqueViewersAllTime': 'Site analytics', 'LastActivityDate': 'M365 usage report', 'UserPrincipalName': 'M365 usage report', 'DisplayName': 'M365 usage report', 'ViewedOrEditedFileCount': 'M365 usage report', 'DocumentUrl': 'Derived at load', 'IsDeclaredRecord': 'Derived at load', 'IsDeleted': 'Derived at load', 'ADBLibraryCategory': 'SharePoint list', 'PhysicalCounterpartRetention': 'SharePoint list', 'TermId': 'Term store', 'TermName': 'Term store', 'TermSetName': 'Term store', 'Depth': 'Term store', 'FormatGroup': 'NEEDS A DECISION', 'IsEdrmsCompliant': 'NEEDS A DECISION', 'ADBDepartmentOwner': 'NEEDS A DECISION', 'CategoryName': 'NEEDS A DECISION'}
+SOURCE = {'Id': 'Job generated', 'SnapshotDate': 'Job generated', 'RowLoadedDate': 'Job generated', 'DocumentId': 'EDRMS database', 'Title': 'EDRMS database', 'FileType': 'EDRMS database', 'FileCreatedDate': 'EDRMS database', 'FolderPath': 'EDRMS database', 'LibraryName': 'EDRMS database', 'LibraryUrl': 'EDRMS database', 'ListId': 'EDRMS database', 'ItemId': 'EDRMS database', 'SiteName': 'EDRMS database', 'SiteUrl': 'EDRMS database', 'CreatedDate': 'EDRMS database', 'CreatedBy': 'EDRMS database', 'DeclarationType': 'EDRMS database', 'HasPhysical': 'EDRMS database', 'EDRMSRetentionLabel': 'EDRMS database', 'EDRMSDuration': 'EDRMS database', 'EDRMSRetentionLabelApplied': 'EDRMS database', 'EDRMSDueDateForDisposal': 'EDRMS database', 'RetentionStatus': 'EDRMS database', 'SensitivityLabelName': 'EDRMS database', 'ProjectEndDate': 'EDRMS database', 'FileSize': 'Microsoft Graph', 'FileModifiedDate': 'Microsoft Graph', 'LibraryLastActivityDate': 'Microsoft Graph', 'SiteCreatedDate': 'Microsoft Graph', 'LibraryCount': 'Microsoft Graph', 'StorageUsed': 'M365 usage report', 'SiteOwner': 'M365 usage report', 'SiteId': 'M365 usage report', 'SiteVisits7': 'M365 usage report', 'SiteVisits30': 'M365 usage report', 'SiteVisits90': 'M365 usage report', 'UniqueViewers7': 'Site analytics', 'UniqueViewersAllTime': 'Site analytics', 'LastActivityDate': 'M365 usage report', 'UserPrincipalName': 'M365 usage report', 'DisplayName': 'Microsoft Graph', 'ViewedOrEditedFileCount': 'M365 usage report', 'DocumentUrl': 'Derived at load', 'IsDeclaredRecord': 'Derived at load', 'IsDeleted': 'Derived at load', 'ADBLibraryCategory': 'SharePoint list', 'PhysicalCounterpartRetention': 'SharePoint list', 'TermId': 'Term store', 'TermName': 'Term store', 'TermSetName': 'Term store', 'Depth': 'Term store', 'FormatGroup': 'NEEDS A DECISION', 'IsEdrmsCompliant': 'NEEDS A DECISION', 'ADBDepartmentOwner': 'NEEDS A DECISION', 'CategoryName': 'NEEDS A DECISION'}
 
 RELEASE = "2026.4"
 DECL = "All"          # these tables are not declaration-type specific
@@ -157,10 +157,14 @@ T2 = [
  ("SnapshotDate", "date",
   "The date the refresh job captured this data. The same value on every row of a run.",
   "System generated", "2026-07-27", "", "NEW."),
+ ("SiteId", "uuid",
+  "The GUID, meaning the system generated identifier, of the SharePoint site. Stable across a rename, unlike the URL.",
+  "SharePoint site GUID", "019adc9b-031d-4edc-b62f-512ed4671947", "",
+  "NEW. The usage export identifies sites by this and leaves Site URL blank on every row, so the refresh job must merge the export with a Graph site list to connect a GUID to a URL."),
  ("SiteUrl", "text",
   "The web address of the site. This is the column that joins this table to the Utilization Report Table.",
   "Absolute URL", "https://adb.sharepoint.com/sites/edrms-cwrd", "Utilization Report Table",
-  "Ask the development team whether the site GUID is also available. A URL can change; a GUID cannot."),
+  "NOT available from the usage export, where it is empty on all 2,575 rows. Comes from Microsoft Graph, matched to the export on SiteId."),
  ("SiteName", "text", "The display name of the site.",
   "Free text", "EDRMS CWRD", "", ""),
  ("SiteCreatedDate", "date", "The date the SharePoint site was created.",
@@ -199,7 +203,7 @@ T2 = [
  ("SiteOwner", "text",
   "The User Principal Name of the primary site administrator, meaning who to contact about a site that has gone quiet.",
   "Valid ADB UPN", "jperez@adb.org", "",
-  "NEW. Measured at 1,683 of 1,702 sites carrying one."),
+  "NEW. Usage export, Owner Principal Name. Verified: 1,899 of 1,918 live sites carry one, so 19 have no owner at all."),
  ("ProjectEndDate", "date", "The project end date recorded against the site.",
   "System generated", "2027-12-31", "ADBSites",
   "Already exists and is populated. The obvious basis for a site closure view."),
@@ -219,9 +223,10 @@ T3 = [
  ("UserPrincipalName", "text",
   "The User Principal Name, meaning the sign-in email address, of a person who used SharePoint in the window. Counting distinct values of this column is the entire purpose of the table.",
   "Valid ADB UPN", "jperez@adb.org", "",
-  "NEW. This is why the table exists: people cannot be counted from a table of sites."),
+  "NEW. This is why the table exists: people cannot be counted from a table of sites. **Monthly active users is NOT the row count**: the export lists every licensed user, active or not. Verified on the tenant, where 30 rows held only 8 people who viewed or edited anything. Count rows where ViewedOrEditedFileCount is above zero."),
  ("DisplayName", "text", "The person's display name, for readability when the list is inspected.",
-  "Free text", "J Perez", "", "NEW."),
+  "Free text", "J Perez", "",
+  "NEW. NOT in the activity export, which carries User Principal Name and no display name. Needs a separate Graph call to /users, and it is cosmetic, so drop it if that call is not worth making."),
  ("LastActivityDate", "date", "The date of the person's most recent SharePoint activity.",
   "System generated", "2026-07-24", "",
   "NEW. Filter on this to count active users over 7 or 30 days."),
