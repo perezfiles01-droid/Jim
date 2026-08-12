@@ -188,12 +188,13 @@ ws['A2'].fill = YELLOW
 ws['A2'].alignment = Alignment(wrap_text=True, vertical='center')
 ws.row_dimensions[2].height = 46
 
-ORDER = ['EDRMS database', 'Microsoft Graph', 'M365 usage report', 'SharePoint list',
-         'Term store', 'Derived at load', 'Job generated', 'NEEDS A DECISION']
+ORDER = ['EDRMS database', 'Microsoft Graph', 'M365 usage report', 'Site analytics',
+         'SharePoint list', 'Term store', 'Derived at load', 'Job generated', 'NEEDS A DECISION']
 HOW = {
  'EDRMS database': 'Read straight from public."Records" or ADBSites. Populated today for declared records; the scan supplies the same column for the rest.',
  'Microsoft Graph': 'One API call per object. GET /sites, /sites/{id}/drives, or the driveItem itself. All verified against the 7rkd12 tenant.',
- 'M365 usage report': 'getSharePointSiteUsageDetail or getSharePointActivityUserDetail. Needs Reports.Read.All.',
+ 'M365 usage report': 'Downloadable as CSV from the Microsoft 365 admin centre, Reports, Usage. Two different reports: SharePoint site usage gives one row per site, SharePoint activity gives one row per user. Needs Reports.Read.All for the API version.',
+ 'Site analytics': 'GET /sites/{id}/analytics/{window}, the actorCount field. NOT in the usage export, which carries no unique viewer column at all. Only allTime and lastSevenDays exist as windows.',
  'SharePoint list': 'The Retention Label Mapping list, which RAC already maintains. RISK: it is unproven whether that list identifies libraries by ListId or by name. A name would be a fragile join.',
  'Term store': 'Walk the term store through Graph. UNVERIFIED: the categories in the requirement are not in this tenant.',
  'Derived at load': 'Computed by the job from columns it already has. No new source, no extra call.',

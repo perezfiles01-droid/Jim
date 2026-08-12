@@ -1126,7 +1126,7 @@ DASHBOARDS.rm=(function(){
   });
   SITES.forEach(s=>{
     s.uv7=s.last<=7?Math.round(s.base*0.42):0;
-    s.uv30=s.last<=30?s.base:0;
+    s.uvAll=s.base;   /* allTime, the only other window site analytics offers */
     s.v7=s.last<=7?Math.round(s.base*0.42*1.5):0;
     s.v30=s.last<=30?Math.round(s.base*1.5):0;
     s.v90=s.last<=90?Math.round(s.base*1.5*2.2):0;
@@ -1142,7 +1142,7 @@ DASHBOARDS.rm=(function(){
      The gap between the two is real and is explained on the panel rather than
      hidden, because a reader who adds up the bars will otherwise think the
      total is wrong. */
-  const MAU_SITE_SUM=SITES.reduce((a,s)=>a+s.uv30,0);
+  const MAU_SITE_SUM=SITES.reduce((a,s)=>a+s.uvAll,0);
   const MONTHLY_ACTIVE_USERS=9420;
   console.assert(MONTHLY_ACTIVE_USERS<MAU_SITE_SUM,
     "Distinct monthly users must be below the sum of per site viewers, since sites overlap");
@@ -1171,9 +1171,9 @@ DASHBOARDS.rm=(function(){
     }else{
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Total EDRMS Users</div>
-        <div class="psub">Distinct people who opened something in each site, at 7 or 30 days. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site: use the bankwide figure for headcount and the bars for reach.</div>
+        <div class="psub">Distinct people who opened something in each site. Only two windows exist, last 7 days and all time: SharePoint returns no unique viewer figure at 30 or 90 days, so those are absent rather than approximated. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site.</div>
         <div class="toolbar">
-          <div class="dayf" id="users-win">${[7,30].map(dd=>`<button class="${winUsers===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
+          <div class="dayf" id="users-win"><button class="${winUsers===7?'on':''}" data-d="7">Last 7 days</button><button class="${winUsers===0?'on':''}" data-d="0">All time</button></div>
           <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
         <div class="statrow" id="users-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
@@ -1202,8 +1202,11 @@ DASHBOARDS.rm=(function(){
     wirePager("#sites-pager",v=>{pageSites=v==="prev"?Math.max(1,pageSites-1):v==="next"?Math.min(pages,pageSites+1):+v;drawSites();});
   }
   function drawUsers(){
-    const uvKey=s=>winUsers===7?s.uv7:s.uv30;
-    let list=SITES.filter(s=>s.last<=winUsers);
+    /* Two windows, because two is all SharePoint returns. There is no unique
+       viewer figure at 30 or 90 days, so those buttons are absent rather than
+       silently showing something else. */
+    const uvKey=s=>winUsers===7?s.uv7:s.uvAll;
+    let list=winUsers===7?SITES.filter(s=>s.last<=7):SITES.slice();
     if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
     list=list.map(s=>({...s,m:uvKey(s)})).sort((a,b)=>b.m-a.m);
     document.getElementById("users-metric-h").textContent="Unique viewers";
@@ -1211,7 +1214,7 @@ DASHBOARDS.rm=(function(){
     /* Two figures, not one, because they answer different questions. The
        bankwide total counts people; the sum of the bars counts site
        memberships. Showing only the sum would overstate headcount. */
-    const bank=(winUsers===30&&deptUsers==="all")
+    const bank=(winUsers===0&&deptUsers==="all")
       ? `<div class="stat"><div class="sl">Distinct people, bankwide</div><div class="sv">${F(MONTHLY_ACTIVE_USERS)}</div></div>`:"";
     document.getElementById("users-stats").innerHTML=
       bank+`<div class="stat"><div class="sl">Sum of per site viewers</div><div class="sv">${F(totUV)}</div></div>`;
@@ -1261,7 +1264,7 @@ DASHBOARDS.rm=(function(){
 
     <div class="band">
       <h2>SharePoint Sites and Users Governance</h2>
-      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage. Site visits are available at 7, 30 and 90 days; unique viewers only at 7 and 30, which is a Microsoft limit rather than a design choice.</div>
+      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage. Site visits are available at 7, 30 and 90 days; unique viewers only at 7 days and all time, which is a Microsoft limit rather than a design choice.</div>
     </div>
     <div class="kpis" id="s2-kpis">
       <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">…</div><div class="tap">▾ Click to open</div></div>

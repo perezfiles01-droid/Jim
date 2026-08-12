@@ -189,8 +189,8 @@ hold no documents, and hold visit and viewer counts measured per site.
 | 8 | SiteVisits7 | Whole number | Site visits, last 7 days | | 412 | Microsoft 365 usage reports | **NEW** |
 | 9 | SiteVisits30 | Whole number | Site visits, last 30 days | | 4812 | Microsoft 365 usage reports | **NEW** |
 | 10 | SiteVisits90 | Whole number | Site visits, last 90 days | | 13240 | Microsoft 365 usage reports | **NEW** |
-| 11 | UniqueViewers7 | Whole number | Unique viewers, last 7 days | | 38 | Microsoft 365 usage reports | **NEW** |
-| 12 | UniqueViewers30 | Whole number | Unique viewers, last 30 days | | 122 | Microsoft 365 usage reports | **NEW** |
+| 11 | UniqueViewers7 | Whole number | Distinct people who opened something in the site in the last 7 days | | 38 | Microsoft Graph site analytics | **NEW. Not in the usage export**, which carries no unique viewer column at all. `GET /sites/{id}/analytics/lastSevenDays`, the `actorCount` field |
+| 12 | UniqueViewersAllTime | Whole number | Distinct people who have ever opened something in the site | | 122 | Microsoft Graph site analytics | **NEW.** Replaces a UniqueViewers30 column that could not be filled. Site analytics offers `allTime` and `lastSevenDays` only, so there is no 30 or 90 day window |
 | 13 | LibraryCount | Whole number | Number of document libraries in the site | | 12 | Microsoft Graph | **NEW.** `GET /sites/{id}/drives`, counted. Answers "libraries per site" directly |
 | 14 | LastActivityDate | Date | Most recent activity on the site | | 24 Jul 2026 | Microsoft 365 usage reports | **NEW.** Printed beside each bar on Active Sites |
 | 15 | StorageUsed | Whole number | Storage used by the site, in bytes | | 13636370432 | SharePoint admin centre | **NEW.** Includes version history, so it reads higher than the sum of FileSize. Expected, not an error |
@@ -358,8 +358,8 @@ older 1.3 block above it. `ADBMaster`, `Library`, `PhysicalRecords` and
 | 8 | SiteVisits7 | **Records Management:** Active Departmental Sites, the 7 day window | **NEW** | Nowhere | **Microsoft 365 admin centre**, Reports, Usage, SharePoint site usage. Or the **Microsoft Graph reports API**, `getSharePointSiteUsageDetail(period='D7')` |
 | 9 | SiteVisits30 | **Records Management:** Active Departmental Sites, the 30 day window, and the Active Sites KPI | **NEW** | Nowhere | Same report at `period='D30'` |
 | 10 | SiteVisits90 | **Records Management:** Active Departmental Sites, the 90 day window. Site visits are available at 90 days even though unique viewers are not | **NEW** | Nowhere | Same report at `period='D90'` |
-| 11 | UniqueViewers7 | **Records Management:** Active Users, the 7 day window | **NEW** | Nowhere | Same report, the "Visited Page Count" and unique viewer fields |
-| 12 | UniqueViewers30 | **Records Management:** Active Users, the 30 day window, and the Active Users KPI | **NEW** | Nowhere | Same report at `period='D30'` |
+| 11 | UniqueViewers7 | **Records Management:** unique viewers per site, the 7 day window | **NEW** | Nowhere | **Microsoft Graph** `GET /sites/{id}/analytics/lastSevenDays`, the `actorCount` field. **Not** the usage export: it has 23 columns and none of them is unique viewers. `Visited Page Count` is unique pages, not people |
+| 12 | UniqueViewersAllTime | **Records Management:** unique viewers per site, the all time window | **NEW** | Nowhere | Same call at `/analytics/allTime`. Verified against the tenant, which returned `actorCount 12` for `org_csd_1.4testsite` |
 | 13 | LibraryCount | **Sites and Libraries:** the Libraries column on the site inventory, and the "libraries across them" tile | **NEW** | Nowhere | **Microsoft Graph** `GET /sites/{id}/drives`, counted. Verified against the test tenant |
 | 14 | LastActivityDate | **Sites and Libraries:** the Last activity column and the Active / Inactive split. **Records Management:** the "last activity" text beside each bar on Active Departmental Sites | **NEW** | Nowhere | Same Microsoft 365 usage report, "Last Activity Date" column |
 | 15 | StorageUsed | **None today.** Sites and Libraries measures storage from FileSize instead | **NEW** | Nowhere | **SharePoint admin centre**, Active sites, the "Storage used" column. Note it includes version history, so it will not match the sum of FileSize |
@@ -414,7 +414,7 @@ source.
 | Records Management | Date range on total documents | Utilization Report Table | Keep only rows where FileCreatedDate falls in the range | Needs the scan |
 | Records Management | Active Departmental Sites | Site Activity Table | Rank sites by SiteVisits7, SiteVisits30 or SiteVisits90 | Needs the usage feed |
 | Records Management | Last activity beside each site | Site Activity Table | Read LastActivityDate | Needs the usage feed |
-| Records Management | Unique viewers per site | Site Activity Table | Rank sites by UniqueViewers7 or UniqueViewers30 | Needs the usage feed |
+| Records Management | Unique viewers per site | Site Activity Table | Rank sites by UniqueViewers7 or UniqueViewersAllTime. **Only those two windows exist**; SharePoint returns no unique viewer figure at 30 or 90 days | Needs site analytics |
 | Records Management | Total EDRMS Users, monthly active | **User Activity Table** | Count distinct UserPrincipalName in the latest snapshot. **Not** the sum of UniqueViewers30, which counts a person once per site | Needs the usage feed |
 | Sites and Libraries | Total Compliant Sites Created, 1,057 | Site Activity Table | Count the rows where IsEdrmsCompliant is true | Blocked, Gap 3 |
 | Sites and Libraries | Sites created by department treemap | Site Activity Table | The same count, grouped by ADBDepartmentOwner | Blocked, Gaps 1 and 3 |
@@ -424,7 +424,7 @@ source.
 | Sites and Libraries | Average file size | Utilization Report Table | Per ListId, total FileSize divided by the row count | Needs the scan, and Gap 2 |
 | Sites and Libraries | Site owner | Site Activity Table | Read SiteOwner | Ready today |
 | Sites and Libraries | Libraries per site | Site Activity Table | Read LibraryCount | Needs one Graph call |
-| Sites and Libraries | Visits and users per site | Site Activity Table | Read SiteVisits30 and UniqueViewers30 | Needs the usage feed |
+| Sites and Libraries | Visits and users per site | Site Activity Table | Read SiteVisits30 from the usage export and UniqueViewersAllTime from site analytics. Two different sources | Needs the usage feed |
 | Sites and Libraries | Active and Inactive sites | Site Activity Table | Inactive where LastActivityDate is more than 90 days old, active otherwise | Needs the usage feed |
 | Sites and Libraries | Active Libraries, last 90 days | Utilization Report Table | Count distinct ListId where LibraryLastActivityDate is within 90 days | Needs one Graph call |
 | Sites and Libraries | Inactive and Long dormant libraries | Utilization Report Table | The same count at the 90 and 180 day thresholds | Needs one Graph call |
