@@ -84,11 +84,21 @@ names two sites apiece.
 - *Active Departmental Sites*. Green bars ranked by site visits, with last
   activity, **a date range** and a department filter.
 
-**The fixed 7 / 30 / 90 buttons were replaced by a date range on 12 August**,
-once the client settled that the refresh keeps every week's rows rather than
-replacing them. Microsoft supplies usage only as pre-aggregated windows with no
-row per visit to filter, so a range is only possible against accumulated
-snapshots.
+**The period control, settled 12 August.** Five choices: Last 7 / 30 / 90 / 180
+days, and By month with a year and month picker.
+
+**There is deliberately no day level calendar**, and that is the important part.
+A week is the smallest period the data holds. Asked for 8 to 15 January, the
+stored weeks are 4 to 10 and 11 to 17: the range cuts through both and neither
+can be split. The three possible answers are 134 (every week touched, but that
+is really 4 to 17), 0 (only whole weeks inside), or 78 (pro-rated). The last one
+invents data and would be quoted as fact, which is unacceptable in a records
+report. Constraining the input means a reader cannot ask a question the data
+cannot answer.
+
+A preset **reads one stored figure** from the newest row. By month **sums the
+weekly tiles** whose refresh date falls in the month. Both are exact, and the
+panel prints the period actually covered underneath.
 
 Three rules the panels follow, and they are not interchangeable:
 

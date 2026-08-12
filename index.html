@@ -1130,6 +1130,7 @@ DASHBOARDS.rm=(function(){
     s.v7=s.last<=7?Math.round(s.base*0.42*1.5):0;
     s.v30=s.last<=30?Math.round(s.base*1.5):0;
     s.v90=s.last<=90?Math.round(s.base*1.5*2.2):0;
+    s.v180=s.last<=180?Math.round(s.base*1.5*4.1):0;
   });
 
   /* Monthly active users, the client's 1.1.2.
@@ -1157,14 +1158,74 @@ DASHBOARDS.rm=(function(){
   /* A date range sums SiteVisits7 across the weeks it covers. Consecutive 7 day
      windows tile exactly; 30 and 90 day windows overlap and must never be
      summed, which is why the range works off the weekly figure. */
-  const WEEKS=(a,b)=>Math.max(1,Math.round((new Date(b)-new Date(a))/6048e5));
-  const SPAN_WEEKS=WEEKS(HISTORY_START,TODAY);
-  let rangeS=HISTORY_START,rangeE=TODAY,deptSites="all",pageSites=1,deptUsers="all",pageUsers=1;
-  const rangeWeeks=()=>WEEKS(rangeS,rangeE);
-  const rangeLabel=()=>{
-    const f=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-    return `${f(rangeS)} to ${f(rangeE)}`;
+  const DAY=864e5, WEEK=7*DAY;
+  const iso=d=>d.toISOString().slice(0,10);
+  const nice=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+
+  /* One row per site per week, exactly as the Site Activity Table will hold it.
+     Each SiteVisits7 covers the seven days ending on its refresh date, so
+     consecutive rows tile and can be added. This is the array a month sums. */
+  const REFRESHES=[];
+  for(let t=new Date(HISTORY_START+"T00:00:00").getTime(); t<=new Date(TODAY+"T00:00:00").getTime(); t+=WEEK)
+    REFRESHES.push(iso(new Date(t)));
+  SITES.forEach((s,i)=>{
+    s.weekly=REFRESHES.map((r,k)=>{
+      /* A gentle seasonal wobble so a month total is not simply weeks x base. */
+      const f=0.75+((i*7+k*13)%11)/22;
+      return {refresh:r, v7:Math.round((s.v7||Math.round(s.base*0.1))*f)};
+    });
+  });
+
+  /* Two ways to pick a period, and both are exact.
+     preset  reads one stored row, the way "last 30 days" is meant to be read
+     month   sums the weekly tiles whose refresh date falls in that month
+     A free day-level calendar is deliberately absent: a week is the smallest
+     unit the data holds, so 8 to 15 January could only ever be estimated. */
+  let periodMode="preset", presetDays=30, pickYear=2026, pickMonth=0;
+  const MONTHNAMES_L=["January","February","March","April","May","June",
+                      "July","August","September","October","November","December"];
+  const YEARS_AVAIL=[...new Set(REFRESHES.map(r=>+r.slice(0,4)))];
+  const monthWeeks=()=>REFRESHES.filter(r=>+r.slice(0,4)===pickYear && +r.slice(5,7)-1===pickMonth);
+  const periodLabel=()=>{
+    if(periodMode==="preset")
+      return `the last ${presetDays} days, as at ${nice(TODAY)}`;
+    const w=monthWeeks();
+    if(!w.length) return `${MONTHNAMES_L[pickMonth]} ${pickYear}, no refreshes in that month`;
+    const first=iso(new Date(new Date(w[0]+"T00:00:00").getTime()-6*DAY));
+    return `${w.length} weekly refresh${w.length>1?"es":""}, covering ${nice(first)} to ${nice(w[w.length-1])}`;
   };
+  /* The figure for one site under the current period. Presets read the stored
+     window; a month adds the tiles. Never the other way round. */
+  const sitePeriod=s=>{
+    if(periodMode==="preset")
+      return presetDays===7?s.v7:presetDays===30?s.v30:presetDays===90?s.v90:s.v180;
+    const keep=new Set(monthWeeks());
+    return s.weekly.filter(w=>keep.has(w.refresh)).reduce((a,w)=>a+w.v7,0);
+  };
+  let deptSites="all",pageSites=1,deptUsers="all",pageUsers=1;
+
+  function periodControl(id){
+    return `<div class="periodctl">
+      <div class="segctl" id="${id}-preset">
+        ${[7,30,90,180].map(d=>`<button class="${periodMode==="preset"&&presetDays===d?"on":""}" data-p="${d}">Last ${d} days</button>`).join("")}
+        <button class="${periodMode==="month"?"on":""}" data-p="month">By month</button>
+      </div>
+      ${periodMode==="month"?`<span class="mpick">
+        <select id="${id}-year">${YEARS_AVAIL.map(y=>`<option ${y===pickYear?"selected":""}>${y}</option>`).join("")}</select>
+        <select id="${id}-month">${MONTHNAMES_L.map((m,k)=>`<option value="${k}" ${k===pickMonth?"selected":""}>${m}</option>`).join("")}</select>
+      </span>`:""}
+    </div>`;
+  }
+  function wirePeriod(id,redraw){
+    document.querySelectorAll(`#${id}-preset button`).forEach(b=>b.onclick=()=>{
+      if(b.dataset.p==="month")periodMode="month";
+      else{periodMode="preset";presetDays=+b.dataset.p;}
+      redraw();
+    });
+    const y=document.getElementById(`${id}-year`), m=document.getElementById(`${id}-month`);
+    if(y)y.onchange=e=>{pickYear=+e.target.value;redraw();};
+    if(m)m.onchange=e=>{pickMonth=+e.target.value;redraw();};
+  }
   let curS2="sites";
   function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} - ${d.n}</option>`).join("");}
 
@@ -1175,26 +1236,15 @@ DASHBOARDS.rm=(function(){
     if(which==="sites"){
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Active Departmental Sites</div>
-        <div class="psub">Departmental sites with activity in the selected range, ranked by site visits, with each site's most recent activity. Visits are summed from the weekly snapshots the range covers, so the range cannot start before ${HISTORY_START}, the first refresh. Nothing was recorded before then.</div>
+        <div class="psub">Departmental sites ranked by site visits, with each site's most recent activity. A preset window reads one stored figure; By month adds the weekly refreshes that fall in the month. There is no day level picker, because a week is the smallest period the data holds and a part week could only be estimated.</div>
         <div class="toolbar">
-          <div class="drange">Date range
-            <input type="date" id="sites-s" min="${HISTORY_START}" max="${TODAY}" value="${rangeS}"> to
-            <input type="date" id="sites-e" min="${HISTORY_START}" max="${TODAY}" value="${rangeE}"></div>
-          <button class="resetbtn" id="sites-reset">↺ Reset</button>
+          ${periodControl("sites")}
           <div class="ctl">Department<select id="sites-dept">${deptOptions(deptSites)}</select></div></div>
+        <div class="periodnote" id="sites-period"></div>
         <div class="statrow" id="sites-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2">Site visits</span><span class="c3">Last activity</span></div>
         <div id="sites-bars"></div><div id="sites-pager"></div></div>`;
-      const syncRange=()=>{
-        rangeS=document.getElementById("sites-s").value||HISTORY_START;
-        rangeE=document.getElementById("sites-e").value||TODAY;
-        if(rangeE<rangeS)rangeE=rangeS;
-        pageSites=1;renderS2("sites");
-      };
-      document.getElementById("sites-s").onchange=syncRange;
-      document.getElementById("sites-e").onchange=syncRange;
-      document.getElementById("sites-reset").onclick=()=>{
-        rangeS=HISTORY_START;rangeE=TODAY;pageSites=1;renderS2("sites");};
+      wirePeriod("sites",()=>{pageSites=1;renderS2("sites");});
       document.getElementById("sites-dept").onchange=e=>{deptSites=e.target.value;pageSites=1;drawSites();};
       drawSites();
     }else{
@@ -1202,24 +1252,12 @@ DASHBOARDS.rm=(function(){
         <div class="ptitle">Total EDRMS Users</div>
         <div class="psub">Distinct people who opened something in each site. Only two windows exist, last 7 days and all time: SharePoint returns no unique viewer figure at 30 or 90 days, so those are absent rather than approximated. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site.</div>
         <div class="toolbar">
-          <div class="drange">Date range
-            <input type="date" id="users-s" min="${HISTORY_START}" max="${TODAY}" value="${rangeS}"> to
-            <input type="date" id="users-e" min="${HISTORY_START}" max="${TODAY}" value="${rangeE}"></div>
-          <button class="resetbtn" id="users-reset">↺ Reset</button>
+          ${periodControl("users")}
           <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
         <div class="statrow" id="users-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
         <div id="users-bars"></div><div id="users-pager"></div></div>`;
-      const syncU=()=>{
-        rangeS=document.getElementById("users-s").value||HISTORY_START;
-        rangeE=document.getElementById("users-e").value||TODAY;
-        if(rangeE<rangeS)rangeE=rangeS;
-        pageUsers=1;renderS2("users");
-      };
-      document.getElementById("users-s").onchange=syncU;
-      document.getElementById("users-e").onchange=syncU;
-      document.getElementById("users-reset").onclick=()=>{
-        rangeS=HISTORY_START;rangeE=TODAY;pageUsers=1;renderS2("users");};
+      wirePeriod("users",()=>{pageUsers=1;renderS2("users");});
       document.getElementById("users-dept").onchange=e=>{deptUsers=e.target.value;pageUsers=1;drawUsers();};
       drawUsers();
     }
@@ -1228,11 +1266,11 @@ DASHBOARDS.rm=(function(){
     /* Visits over the range are SiteVisits7 summed across the weekly snapshots
        it covers. The 30 and 90 day figures are never summed: their windows
        overlap, so four weekly readings would count most days four times. */
-    const wk=rangeWeeks();
-    const vKey=s=>s.v7*wk;
-    /* A site is in scope if it was active at any point in the range. With a
-       full range that is every site that has ever been touched. */
-    let list=SITES.filter(s=>s.last<=wk*7);
+    const vKey=sitePeriod;
+    const win=periodMode==="preset"?presetDays:180;
+    let list=SITES.filter(s=>s.last<=win);
+    const pn=document.getElementById("sites-period");
+    if(pn)pn.textContent=`Showing ${periodLabel()}.`;
     if(deptSites!=="all")list=list.filter(s=>s.dept===deptSites);
     list=list.map(s=>({...s,v:vKey(s)})).sort((a,b)=>b.v-a.v);
     const visits=list.reduce((a,b)=>a+b.v,0);
@@ -1256,9 +1294,11 @@ DASHBOARDS.rm=(function(){
        them is one person, not four. Per site this shows the distinct viewers
        seen across the range, and the bankwide figure below comes from the User
        Activity Table, counting distinct UserPrincipalName over the same weeks. */
-    const wk=rangeWeeks();
-    const uvKey=s=>wk<=1?s.uv7:s.uvAll;
-    let list=wk<=1?SITES.filter(s=>s.last<=7):SITES.slice();
+    /* Unique viewers exist at 7 days and all time only, so a longer period
+       falls back to all time rather than pretending to a figure Microsoft
+       does not publish. */
+    const uvKey=s=>(periodMode==="preset"&&presetDays===7)?s.uv7:s.uvAll;
+    let list=(periodMode==="preset"&&presetDays===7)?SITES.filter(s=>s.last<=7):SITES.slice();
     if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
     list=list.map(s=>({...s,m:uvKey(s)})).sort((a,b)=>b.m-a.m);
     document.getElementById("users-metric-h").textContent="Unique viewers";
