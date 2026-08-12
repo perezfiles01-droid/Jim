@@ -132,6 +132,24 @@ notes = [
     'SnapshotDate carries one value per run. It is what the Data as of line prints on every dashboard, and it is why every figure on a '
     'dashboard shares a single date rather than each panel being as current as its own source.',
     '',
+    'HISTORY IS KEPT ON THREE TABLES OUT OF FOUR',
+    '',
+    'Site Activity, User Activity and File Plan are RETAINED. Every weekly run inserts a new set of rows rather than replacing the last, and '
+    'SnapshotDate is part of the primary key. That is what makes a date range possible on usage figures, which Microsoft supplies only as '
+    'pre-aggregated windows with no row per visit to filter. It also supplies every trend view in the requirements. The cost is small: about '
+    '55,000 site rows and 490,000 user rows a year.',
+    '',
+    'The Utilization Report Table is REPLACED. At 3.47 million rows a week, a year of history would be 180 million rows, and it is not needed '
+    'because every document row already carries its own dates: CreatedDate, FileCreatedDate, FileModifiedDate and EDRMSDueDateForDisposal all '
+    'support a free date range today with no history at all.',
+    '',
+    'The earliest selectable date is the first run. History that was never captured cannot be recovered, which is why this decision could not '
+    'wait: every week it is deferred is a week the report can never report on.',
+    '',
+    'Two rules the queries must follow. Reports read the LATEST snapshot by default, or 1,057 compliant sites silently becomes 55,000 after a '
+    'year. And a date range sums SiteVisits7 across the weeks in the range, never SiteVisits30 or SiteVisits90: consecutive 7 day windows tile '
+    'exactly, while 30 and 90 day windows overlap and would count most days several times over.',
+    '',
     'Thresholds are not stored. LastActivityDate is a fact; "inactive after 90 days" is a judgement made in the report. Keeping judgements out '
     'of the database means changing 90 to 120 costs one edit in Power BI and no change to the job, the tables or the refresh.',
     '',

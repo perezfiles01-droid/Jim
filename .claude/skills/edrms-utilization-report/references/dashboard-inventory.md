@@ -82,7 +82,28 @@ names two sites apiece.
 **Section 2: SharePoint sites and users governance.** Two KPI cards.
 
 - *Active Departmental Sites*. Green bars ranked by site visits, with last
-  activity. 7 / 30 / 90 day window buttons and a department filter.
+  activity, **a date range** and a department filter.
+
+**The fixed 7 / 30 / 90 buttons were replaced by a date range on 12 August**,
+once the client settled that the refresh keeps every week's rows rather than
+replacing them. Microsoft supplies usage only as pre-aggregated windows with no
+row per visit to filter, so a range is only possible against accumulated
+snapshots.
+
+Three rules the panels follow, and they are not interchangeable:
+
+- **A range sums `SiteVisits7`**, never `SiteVisits30` or `SiteVisits90`.
+  Consecutive 7 day windows tile exactly; 30 and 90 day windows overlap, so four
+  weekly readings would count most days four times.
+- **Distinct people are never summed.** Someone active in four weeks is one
+  person. The bankwide figure counts distinct `UserPrincipalName` across the
+  snapshots in the range, which is the only correct way to answer it.
+- **The range cannot start before `HISTORY_START`**, the first refresh. The date
+  inputs carry `min`, so an earlier date cannot be picked rather than silently
+  returning nothing. History never captured cannot be recovered.
+
+`check_daterange.js` covers all three, including that narrowing the range lowers
+the figure and Reset restores it.
 - *Total EDRMS Users, monthly active*. Deep blue bars of unique viewers per
   site, at 7 or 30 days only. **There is no 90 day option**: Microsoft returns
   no unique viewer total at 90 days, so the button could only ever show

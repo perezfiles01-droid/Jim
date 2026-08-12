@@ -1147,7 +1147,24 @@ DASHBOARDS.rm=(function(){
   console.assert(MONTHLY_ACTIVE_USERS<MAU_SITE_SUM,
     "Distinct monthly users must be below the sum of per site viewers, since sites overlap");
 
-  let winSites=7,deptSites="all",pageSites=1,winUsers=7,deptUsers="all",pageUsers=1;
+  /* The refresh keeps every week's rows rather than replacing them, so usage
+     figures can take a real date range instead of fixed windows. The range can
+     never start before the first run: history that was never captured cannot
+     be recovered, and the picker enforces that rather than silently returning
+     an empty result for an earlier date. */
+  const HISTORY_START="2026-01-05";
+  const TODAY="2026-07-20";          /* the data as of date for this dashboard */
+  /* A date range sums SiteVisits7 across the weeks it covers. Consecutive 7 day
+     windows tile exactly; 30 and 90 day windows overlap and must never be
+     summed, which is why the range works off the weekly figure. */
+  const WEEKS=(a,b)=>Math.max(1,Math.round((new Date(b)-new Date(a))/6048e5));
+  const SPAN_WEEKS=WEEKS(HISTORY_START,TODAY);
+  let rangeS=HISTORY_START,rangeE=TODAY,deptSites="all",pageSites=1,deptUsers="all",pageUsers=1;
+  const rangeWeeks=()=>WEEKS(rangeS,rangeE);
+  const rangeLabel=()=>{
+    const f=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+    return `${f(rangeS)} to ${f(rangeE)}`;
+  };
   let curS2="sites";
   function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} - ${d.n}</option>`).join("");}
 
@@ -1158,14 +1175,26 @@ DASHBOARDS.rm=(function(){
     if(which==="sites"){
       box.innerHTML=`<div class="panel">
         <div class="ptitle">Active Departmental Sites</div>
-        <div class="psub">Departmental sites with activity in the selected window, ranked by site visits, with each site's most recent activity.</div>
+        <div class="psub">Departmental sites with activity in the selected range, ranked by site visits, with each site's most recent activity. Visits are summed from the weekly snapshots the range covers, so the range cannot start before ${HISTORY_START}, the first refresh. Nothing was recorded before then.</div>
         <div class="toolbar">
-          <div class="dayf" id="sites-win">${[7,30,90].map(dd=>`<button class="${winSites===dd?'on':''}" data-d="${dd}">Last ${dd} days</button>`).join("")}</div>
+          <div class="drange">Date range
+            <input type="date" id="sites-s" min="${HISTORY_START}" max="${TODAY}" value="${rangeS}"> to
+            <input type="date" id="sites-e" min="${HISTORY_START}" max="${TODAY}" value="${rangeE}"></div>
+          <button class="resetbtn" id="sites-reset">↺ Reset</button>
           <div class="ctl">Department<select id="sites-dept">${deptOptions(deptSites)}</select></div></div>
         <div class="statrow" id="sites-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2">Site visits</span><span class="c3">Last activity</span></div>
         <div id="sites-bars"></div><div id="sites-pager"></div></div>`;
-      document.querySelectorAll("#sites-win button").forEach(b=>b.onclick=()=>{winSites=+b.dataset.d;pageSites=1;renderS2("sites");});
+      const syncRange=()=>{
+        rangeS=document.getElementById("sites-s").value||HISTORY_START;
+        rangeE=document.getElementById("sites-e").value||TODAY;
+        if(rangeE<rangeS)rangeE=rangeS;
+        pageSites=1;renderS2("sites");
+      };
+      document.getElementById("sites-s").onchange=syncRange;
+      document.getElementById("sites-e").onchange=syncRange;
+      document.getElementById("sites-reset").onclick=()=>{
+        rangeS=HISTORY_START;rangeE=TODAY;pageSites=1;renderS2("sites");};
       document.getElementById("sites-dept").onchange=e=>{deptSites=e.target.value;pageSites=1;drawSites();};
       drawSites();
     }else{
@@ -1173,19 +1202,37 @@ DASHBOARDS.rm=(function(){
         <div class="ptitle">Total EDRMS Users</div>
         <div class="psub">Distinct people who opened something in each site. Only two windows exist, last 7 days and all time: SharePoint returns no unique viewer figure at 30 or 90 days, so those are absent rather than approximated. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site.</div>
         <div class="toolbar">
-          <div class="dayf" id="users-win"><button class="${winUsers===7?'on':''}" data-d="7">Last 7 days</button><button class="${winUsers===0?'on':''}" data-d="0">All time</button></div>
+          <div class="drange">Date range
+            <input type="date" id="users-s" min="${HISTORY_START}" max="${TODAY}" value="${rangeS}"> to
+            <input type="date" id="users-e" min="${HISTORY_START}" max="${TODAY}" value="${rangeE}"></div>
+          <button class="resetbtn" id="users-reset">↺ Reset</button>
           <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
         <div class="statrow" id="users-stats"></div>
         <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
         <div id="users-bars"></div><div id="users-pager"></div></div>`;
-      document.querySelectorAll("#users-win button").forEach(b=>b.onclick=()=>{winUsers=+b.dataset.d;pageUsers=1;renderS2("users");});
+      const syncU=()=>{
+        rangeS=document.getElementById("users-s").value||HISTORY_START;
+        rangeE=document.getElementById("users-e").value||TODAY;
+        if(rangeE<rangeS)rangeE=rangeS;
+        pageUsers=1;renderS2("users");
+      };
+      document.getElementById("users-s").onchange=syncU;
+      document.getElementById("users-e").onchange=syncU;
+      document.getElementById("users-reset").onclick=()=>{
+        rangeS=HISTORY_START;rangeE=TODAY;pageUsers=1;renderS2("users");};
       document.getElementById("users-dept").onchange=e=>{deptUsers=e.target.value;pageUsers=1;drawUsers();};
       drawUsers();
     }
   }
   function drawSites(){
-    const vKey=s=>winSites===7?s.v7:winSites===30?s.v30:s.v90;
-    let list=SITES.filter(s=>s.last<=winSites);
+    /* Visits over the range are SiteVisits7 summed across the weekly snapshots
+       it covers. The 30 and 90 day figures are never summed: their windows
+       overlap, so four weekly readings would count most days four times. */
+    const wk=rangeWeeks();
+    const vKey=s=>s.v7*wk;
+    /* A site is in scope if it was active at any point in the range. With a
+       full range that is every site that has ever been touched. */
+    let list=SITES.filter(s=>s.last<=wk*7);
     if(deptSites!=="all")list=list.filter(s=>s.dept===deptSites);
     list=list.map(s=>({...s,v:vKey(s)})).sort((a,b)=>b.v-a.v);
     const visits=list.reduce((a,b)=>a+b.v,0);
@@ -1205,8 +1252,13 @@ DASHBOARDS.rm=(function(){
     /* Two windows, because two is all SharePoint returns. There is no unique
        viewer figure at 30 or 90 days, so those buttons are absent rather than
        silently showing something else. */
-    const uvKey=s=>winUsers===7?s.uv7:s.uvAll;
-    let list=winUsers===7?SITES.filter(s=>s.last<=7):SITES.slice();
+    /* Distinct people cannot be added across weeks: someone active in four of
+       them is one person, not four. Per site this shows the distinct viewers
+       seen across the range, and the bankwide figure below comes from the User
+       Activity Table, counting distinct UserPrincipalName over the same weeks. */
+    const wk=rangeWeeks();
+    const uvKey=s=>wk<=1?s.uv7:s.uvAll;
+    let list=wk<=1?SITES.filter(s=>s.last<=7):SITES.slice();
     if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
     list=list.map(s=>({...s,m:uvKey(s)})).sort((a,b)=>b.m-a.m);
     document.getElementById("users-metric-h").textContent="Unique viewers";
@@ -1214,7 +1266,7 @@ DASHBOARDS.rm=(function(){
     /* Two figures, not one, because they answer different questions. The
        bankwide total counts people; the sum of the bars counts site
        memberships. Showing only the sum would overstate headcount. */
-    const bank=(winUsers===0&&deptUsers==="all")
+    const bank=(deptUsers==="all")
       ? `<div class="stat"><div class="sl">Distinct people, bankwide</div><div class="sv">${F(MONTHLY_ACTIVE_USERS)}</div></div>`:"";
     document.getElementById("users-stats").innerHTML=
       bank+`<div class="stat"><div class="sl">Sum of per site viewers</div><div class="sv">${F(totUV)}</div></div>`;
