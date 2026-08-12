@@ -217,6 +217,89 @@ for k in ['SOURCE', *ORDER]:
     ws.row_dimensions[r].height = 30 if r == 4 else 62
     r += 1
 
+
+# ---- verification tracker ------------------------------------------------
+# Only columns with hard evidence carry a source. Everything else is left
+# blank on purpose: an expectation written into the source column would be
+# indistinguishable from a verified fact three weeks from now.
+CONFIRMED = {
+ ('SiteActivity','SiteId'):            ('Site Id', 'Site usage CSV, 12 Aug 2026. Populated on all 2,575 rows'),
+ ('SiteActivity','SiteVisits7'):       ('Page View Count', 'Site usage CSV at period D7'),
+ ('SiteActivity','SiteVisits30'):      ('Page View Count', 'Site usage CSV, 12 Aug 2026, period 30'),
+ ('SiteActivity','SiteVisits90'):      ('Page View Count', 'Site usage CSV at period D90'),
+ ('SiteActivity','LastActivityDate'):  ('Last Activity Date', 'Site usage CSV. 381 of 1,918 live sites carry one'),
+ ('SiteActivity','StorageUsed'):       ('Storage Used (Byte)', 'Site usage CSV. Sums to 142.4 GB'),
+ ('SiteActivity','SiteOwner'):         ('Owner Principal Name', 'Site usage CSV. 1,899 of 1,918 have one, 19 do not'),
+ ('SiteActivity','UniqueViewersAllTime'):('actorCount', 'GET /sites/{id}/analytics/allTime returned actorCount 12'),
+ ('SiteActivity','SiteCreatedDate'):   ('createdDateTime', 'GET /sites?search=* returns it on every site'),
+ ('UserActivity','UserPrincipalName'): ('User Principal Name', 'Activity CSV, 12 Aug 2026, 30 rows'),
+ ('UserActivity','LastActivityDate'):  ('Last Activity Date', 'Activity CSV. 25 of 30 rows carry one'),
+ ('UserActivity','ViewedOrEditedFileCount'):('Viewed Or Edited File Count',
+     'Activity CSV. Only 8 of 30 are above zero, which is the real active user count'),
+ ('UtilizationReport','FileSize'):     ('size', 'Graph returns size on every driveItem. Verified 1,506 to 2,338,767 bytes'),
+}
+# Where I expect the rest to come from. Explicitly an expectation, not a finding.
+EXPECT = {
+ 'EDRMS database':    'Query public."Records" or ADBSites in drm-npr',
+ 'Microsoft Graph':   'A Graph call. See the REMARKS column on the table sheet',
+ 'M365 usage report': 'One of the two usage CSVs',
+ 'Site analytics':    'GET /sites/{id}/analytics/{allTime|lastSevenDays}',
+ 'SharePoint list':   'Retention Label Mapping list in app_edrms_data_uat',
+ 'Term store':        'SharePoint admin centre, Content services, Term store',
+ 'Derived at load':   'Nothing to test. Computed by the job',
+ 'Job generated':     'Nothing to test. Written by the job',
+ 'NEEDS A DECISION':  'Nothing to test. Somebody must supply a list or write a rule',
+}
+
+ws = wb.create_sheet('Verification tracker', 2)
+TCOLS = [('#',5),('DATABASE TABLE',22),('COLUMN NAME',30),('FIELD TYPE',22),
+         ('WHERE TO LOOK (my expectation, unverified)',44),
+         ('EXACT SOURCE FIELD (confirmed only)',30),('VERIFIED',11),
+         ('EVIDENCE',50),('YOUR FINDING',40),('DATE TESTED',14)]
+for i,(h,w) in enumerate(TCOLS, start=1):
+    ws.column_dimensions[get_column_letter(i)].width = w
+ws.merge_cells('A1:J1')
+ws['A1'] = 'VERIFICATION TRACKER'
+ws['A1'].font = Font(name=FONT, size=11, bold=True); ws['A1'].fill = YELLOW
+ws.merge_cells('A2:J2')
+ws['A2'] = (f'Every column in the design, with the table it belongs to. EXACT SOURCE FIELD and EVIDENCE are filled only where '
+            f'there is proof. Everything else is blank on purpose: writing an expectation into the source column would be '
+            f'indistinguishable from a verified fact in three weeks. Fill YOUR FINDING as you test, and where it disagrees with '
+            f'the WHERE TO LOOK column, the expectation was wrong. That is how three errors were caught on 12 August.')
+ws['A2'].font = Font(name=FONT, size=11); ws['A2'].fill = YELLOW
+ws['A2'].alignment = Alignment(wrap_text=True, vertical='center')
+ws.row_dimensions[2].height = 60
+
+for i,(h,_w) in enumerate(TCOLS, start=1):
+    c = ws.cell(row=4, column=i, value=h)
+    c.font = Font(name=FONT, size=11, bold=True)
+    c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+ws.row_dimensions[4].height = 40
+ws.freeze_panes = 'D5'
+
+GREEN = PatternFill('solid', fgColor='FFE7F4EC')
+r, n = 5, 0
+for sheet, _t, _b, cols in TABLES:
+    tname = sheet.split(' ',1)[1]
+    for name, typ, *_rest in cols:
+        n += 1
+        src = SOURCE[name]
+        conf = CONFIRMED.get((tname, name))
+        vals = [n, tname, name, typ, EXPECT[src],
+                conf[0] if conf else '', 'Yes' if conf else '',
+                conf[1] if conf else '', '', '']
+        for i, v in enumerate(vals, start=1):
+            c = ws.cell(row=r, column=i, value=v)
+            c.font = Font(name=FONT, size=11, bold=(i == 7 and bool(conf)))
+            c.alignment = Alignment(horizontal='center' if i in (1,7,10) else 'left',
+                                    vertical='top', wrap_text=i in (5,8,9))
+            if conf:
+                c.fill = GREEN
+            elif src == 'NEEDS A DECISION':
+                c.fill = RED
+        r += 1
+print(f'tracker: {n} columns, {sum(1 for k in CONFIRMED)} confirmed')
+
 wb.save(OUT)
 print(f'wrote {OUT}')
 print(f'{len(TABLES)} tables, {total} columns')
