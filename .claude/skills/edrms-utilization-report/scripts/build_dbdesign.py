@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
-from utilization_tables import TABLES, RELEASE, DECL
+from utilization_tables import TABLES, RELEASE, DECL, SOURCE
 
 OUT = '/home/user/Jim/EDRMS_Utilization_Report_Database_Design_v1.xlsx'
 FONT = 'Aptos Narrow'
@@ -22,10 +22,12 @@ YELLOW = PatternFill('solid', fgColor='FFFFFF00')  # ARGB, matching the client's
 
 HEADERS = ['S/N', 'RELEASE EFFECTIVE', 'DECLARATION TYPE EFFECTIVE', 'COLUMN TITLE',
            'DESCRIPTION', 'REFERENCE TABLES', 'FIELD TYPE', 'FIELD VALUES/ CHOICES',
-           'SAMPLE', 'REMARKS', 'ADB Comments']
+           'SAMPLE', 'WHERE THE VALUE COMES FROM', 'REMARKS', 'ADB Comments']
 # Widths copied from the client's sheets so the two sit side by side comfortably.
 WIDTHS = {'A': 6.9, 'B': 18, 'C': 22.9, 'D': 30, 'E': 61.1, 'F': 22.9,
-          'G': 22.9, 'H': 34.4, 'I': 50.1, 'J': 45, 'K': 22.9}
+          'G': 22.9, 'H': 34.4, 'I': 50.1, 'J': 24, 'K': 45, 'L': 22.9}
+# A column nobody can fill is the one thing this workbook must not hide.
+RED = PatternFill('solid', fgColor='FFFBE4E4')
 
 
 def style_sheet(ws, title, blurb):
@@ -60,13 +62,21 @@ def write_table(wb, sheet, title, blurb, cols):
     style_sheet(ws, title, blurb)
     for n, (name, typ, desc, values, sample, ref, remarks) in enumerate(cols, start=1):
         row = 4 + n
-        for i, v in enumerate([n, RELEASE, DECL, name, desc, ref, typ, values, sample, remarks, ''], start=1):
+        src = SOURCE.get(name)
+        if src is None:
+            raise SystemExit(f'{sheet}: {name} has no entry in SOURCE. '
+                             'Every column must say where its value comes from.')
+        blocked = src == 'NEEDS A DECISION'
+        for i, v in enumerate([n, RELEASE, DECL, name, desc, ref, typ, values, sample,
+                               src, remarks, ''], start=1):
             c = ws.cell(row=row, column=i, value=v)
-            c.font = Font(name=FONT, size=11)
+            c.font = Font(name=FONT, size=11, bold=(blocked and i == 10))
             c.alignment = Alignment(
                 horizontal='center' if i in (1, 2, 3) else 'left',
                 vertical='top',
-                wrap_text=i in (5, 8, 9, 10))
+                wrap_text=i in (5, 8, 9, 11))
+            if blocked:
+                c.fill = RED
     return len(cols)
 
 
@@ -152,8 +162,65 @@ total = 0
 for sheet, title, blurb, cols in TABLES:
     total += write_table(wb, sheet, title, blurb, cols)
 
+# ---- one sheet answering "can we actually get all of these?" --------------
+from collections import Counter, defaultdict
+tally = Counter()
+where = defaultdict(list)
+for sheet, _t, _b, cols in TABLES:
+    for name, *_ in cols:
+        src = SOURCE[name]
+        tally[src] += 1
+        where[src].append(f'{sheet.split()[1]}.{name}')
+
+ws = wb.create_sheet('Where the values come from', 1)
+for col, w in {'A': 26, 'B': 10, 'C': 62, 'D': 74}.items():
+    ws.column_dimensions[col].width = w
+ws.merge_cells('A1:D1')
+ws['A1'] = 'CAN WE ACTUALLY GET EVERY COLUMN?'
+ws['A1'].font = Font(name=FONT, size=11, bold=True)
+ws['A1'].fill = YELLOW
+ws.merge_cells('A2:D2')
+ws['A2'] = (f'{total} columns across four tables. {total - tally["NEEDS A DECISION"]} have a source that exists today. '
+            f'{tally["NEEDS A DECISION"]} do not, and those are shaded red on the table sheets. Nothing else is customised: '
+            'every other column is either read from a system, computed from columns already present, or written by the job itself.')
+ws['A2'].font = Font(name=FONT, size=11)
+ws['A2'].fill = YELLOW
+ws['A2'].alignment = Alignment(wrap_text=True, vertical='center')
+ws.row_dimensions[2].height = 46
+
+ORDER = ['EDRMS database', 'Microsoft Graph', 'M365 usage report', 'SharePoint list',
+         'Term store', 'Derived at load', 'Job generated', 'NEEDS A DECISION']
+HOW = {
+ 'EDRMS database': 'Read straight from public."Records" or ADBSites. Populated today for declared records; the scan supplies the same column for the rest.',
+ 'Microsoft Graph': 'One API call per object. GET /sites, /sites/{id}/drives, or the driveItem itself. All verified against the 7rkd12 tenant.',
+ 'M365 usage report': 'getSharePointSiteUsageDetail or getSharePointActivityUserDetail. Needs Reports.Read.All.',
+ 'SharePoint list': 'The Retention Label Mapping list, which RAC already maintains. RISK: it is unproven whether that list identifies libraries by ListId or by name. A name would be a fragile join.',
+ 'Term store': 'Walk the term store through Graph. UNVERIFIED: the categories in the requirement are not in this tenant.',
+ 'Derived at load': 'Computed by the job from columns it already has. No new source, no extra call.',
+ 'Job generated': 'The job writes it. Identity and run stamps.',
+ 'NEEDS A DECISION': 'Nothing supplies this. A person must provide a list, write a rule, or answer a question.',
+}
+r = 4
+for k in ['SOURCE', *ORDER]:
+    if k == 'SOURCE':
+        vals = ['WHERE FROM', 'COLUMNS', 'HOW THE VALUE IS OBTAINED', 'WHICH COLUMNS']
+    else:
+        vals = [k, tally[k], HOW[k], ', '.join(where[k])]
+    for i, v in enumerate(vals, start=1):
+        c = ws.cell(row=r, column=i, value=v)
+        c.font = Font(name=FONT, size=11, bold=(r == 4 or v == 'NEEDS A DECISION'))
+        c.alignment = Alignment(wrap_text=True, vertical='top',
+                                horizontal='center' if i == 2 else 'left')
+        if k == 'NEEDS A DECISION':
+            c.fill = RED
+    ws.row_dimensions[r].height = 30 if r == 4 else 62
+    r += 1
+
 wb.save(OUT)
 print(f'wrote {OUT}')
 print(f'{len(TABLES)} tables, {total} columns')
 for sheet, title, _, cols in TABLES:
     print(f'  {sheet:22} {len(cols):3} columns')
+print()
+for k in ORDER:
+    print(f'  {k:20} {tally[k]:3}')
