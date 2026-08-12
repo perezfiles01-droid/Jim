@@ -49,7 +49,7 @@ Active / Inactive split at 90 days idle, and the disposal figures.
    about 9,400 rows, from `getSharePointActivityUserDetail(period='D30')`. It
    exists because Total EDRMS Users counts **people**, and someone working in
    three sites appears in three rows of the site table, so summing
-   `UniqueViewers30` overstates headcount. The dashboard shows both figures and
+   `UniqueViewersAllTime` overstates headcount. The dashboard shows both figures and
    explains the gap. The File Plan Table followed for the same reason: terms are
    a fourth grain and no other table can hold them.
 2. **The Retention dashboard is built.** It was a placeholder hiding figures that
@@ -154,7 +154,7 @@ required, not merely warranted. See section 9.
 | --- | --- | --- |
 | `rpt.utilization_report` | document | Holds declared AND undeclared together. Without the undeclared there is no denominator and no declaration rate |
 | `rpt.utilization_site_activity` | SharePoint site | A site with no documents would vanish from the site count, and visit counts are per site so repeating them on every document row makes any total nonsense |
-| `rpt.utilization_user_activity` | person | Total EDRMS Users counts people. Someone working in three sites appears in three rows of the site table, so summing `UniqueViewers30` overstates headcount |
+| `rpt.utilization_user_activity` | person | Total EDRMS Users counts people. Someone working in three sites appears in three rows of the site table, so summing `UniqueViewersAllTime` overstates headcount |
 | `rpt.utilization_file_plan` | term | The institutional file plan is the term store. Its terms are the taxonomy that classifies content, so they are neither documents nor sites nor people |
 
 **The grain is one SharePoint item, identified by `ListId` + `ItemId`.** Not

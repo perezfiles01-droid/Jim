@@ -221,7 +221,7 @@ One row per person who used SharePoint in the window. About 9,400 rows.
 **Why a third table.** The client asks for Total EDRMS Users as monthly active
 users. That is a count of **people**, and people cannot be counted from the Site
 Activity Table: someone who works in three sites appears in three rows, so
-summing `UniqueViewers30` counts them three times. A row per person is the only
+summing `UniqueViewersAllTime` counts them three times. A row per person is the only
 shape that answers the question, and it is the same reason the site table exists
 separately from the document table. Three grains, three tables.
 
@@ -243,7 +243,7 @@ which returns one row per user and needs the same `Reports.Read.All` permission
 the site usage feed already requires.
 
 **Monthly active users** is then `COUNT(DISTINCT UserPrincipalName)` over the
-latest snapshot. It will be **lower** than the sum of `UniqueViewers30` across
+latest snapshot. It will be **lower** than the sum of `UniqueViewersAllTime` across
 sites, and that is correct, not a reconciliation failure. The Records Management
 dashboard shows both figures side by side and explains the difference, because a
 reader who adds up the bars will otherwise think the total is broken.
@@ -415,7 +415,7 @@ source.
 | Records Management | Active Departmental Sites | Site Activity Table | Rank sites by SiteVisits7, SiteVisits30 or SiteVisits90 | Needs the usage feed |
 | Records Management | Last activity beside each site | Site Activity Table | Read LastActivityDate | Needs the usage feed |
 | Records Management | Unique viewers per site | Site Activity Table | Rank sites by UniqueViewers7 or UniqueViewersAllTime. **Only those two windows exist**; SharePoint returns no unique viewer figure at 30 or 90 days | Needs site analytics |
-| Records Management | Total EDRMS Users, monthly active | **User Activity Table** | Count distinct UserPrincipalName in the latest snapshot. **Not** the sum of UniqueViewers30, which counts a person once per site | Needs the usage feed |
+| Records Management | Total EDRMS Users, monthly active | **User Activity Table** | Count distinct UserPrincipalName in the latest snapshot. **Not** the sum of UniqueViewersAllTime, which counts a person once per site | Needs the usage feed |
 | Sites and Libraries | Total Compliant Sites Created, 1,057 | Site Activity Table | Count the rows where IsEdrmsCompliant is true | Blocked, Gap 3 |
 | Sites and Libraries | Sites created by department treemap | Site Activity Table | The same count, grouped by ADBDepartmentOwner | Blocked, Gaps 1 and 3 |
 | Sites and Libraries | Date range on the treemap | Site Activity Table | Keep only rows where SiteCreatedDate falls in the range | Blocked, Gap 3 |
