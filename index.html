@@ -345,6 +345,12 @@
   .dash-bw .drow .dn{font-weight:600}
   .dash-bw .drow .dn small{display:block;font-weight:400;color:var(--mut);font-size:11px;margin-top:1px}
   .dash-bw .drow.grp{background:#F6FAFE}
+  /* the division tier, reinstated 13 Aug 2026 */
+  .dash-bw .drow.exp{cursor:pointer}
+  .dash-bw .drow.exp:hover{background:#F7FBFF}
+  .dash-bw .drow.exp .tw{display:inline-block;width:14px;color:var(--blue);font-weight:700}
+  .dash-bw .drow.kid{background:#FAFCFE;font-size:12.5px}
+  .dash-bw .drow.kid .dn{font-weight:400;color:var(--ink2);padding-left:14px}
   .dash-bw .dtot{padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
   .dash-bw .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
   .dash-bw .tile{background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
@@ -420,6 +426,12 @@
   .dash-dp .drow .dn{font-weight:600}
   .dash-dp .drow .dn small{display:block;font-weight:400;color:var(--mut);font-size:11px;margin-top:1px}
   .dash-dp .drow.cat{background:#F6FAFE;font-weight:700}
+  /* the division tier, reinstated 13 Aug 2026 */
+  .dash-dp .drow.exp{cursor:pointer}
+  .dash-dp .drow.exp:hover{background:#F7FBFF}
+  .dash-dp .drow.exp .tw{display:inline-block;width:14px;color:var(--blue);font-weight:700}
+  .dash-dp .drow.kid{background:#FAFCFE;font-size:12.5px}
+  .dash-dp .drow.kid .dn{font-weight:400;color:var(--ink2);padding-left:14px}
   .dash-dp .dtot{padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
   .dash-dp .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
   .dash-dp .tile{background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
@@ -2311,11 +2323,46 @@ DASHBOARDS.bw=(function(){
   console.assert(DEPT_SITES+PROJ_SITES===SL.sitesCreated,
     "Departmental sites plus project sites must total compliant sites created");
 
+  /* ===== divisions =====
+     Reinstated 13 Aug 2026 at the client's instruction, reopening the decision
+     of 10 August. That decision was taken because ADBMeta carries no division
+     for any row and nothing in the tenant supplies one, and none of that has
+     changed: the tier is built here so the client can see the shape they asked
+     for on PPT s41, s42, s54 and s58, and every panel carrying it is marked as
+     having no source. Whoever supplies the site to department list has to
+     supply a division alongside it, or these rows stay empty in production.
+
+     Two to four divisions a department, named from a fixed pool so they are
+     stable between draws, with every measure split from the department total so
+     the divisions always add back up to it. */
+  const DIVPOOL=["Operations","Policy and Planning","Services","Support"];
+  const DIVCACHE={};
+  function divisionsFor(code){
+    if(DIVCACHE[code])return DIVCACHE[code];
+    const d=DEPTS.find(x=>x.code===code);
+    const n=2+(code.length%3);                       /* 2, 3 or 4 */
+    const w=[];for(let i=0;i<n;i++)w.push(1+((i*5+code.length)%6)*0.32);
+    const rec=split(d.rec,w), phys=split(d.phys,w),
+          users=split(d.users,w), declaring=split(d.declaring,w);
+    const rows=[];
+    for(let i=0;i<n;i++)rows.push({
+      name:`${code} ${DIVPOOL[i]} Division`,
+      rec:rec[i], phys:phys[i], users:users[i], declaring:declaring[i]
+    });
+    DIVCACHE[code]=rows;
+    return rows;
+  }
+  console.assert(DEPTS.every(d=>divisionsFor(d.code).reduce((a,v)=>a+v.rec,0)===d.rec),
+    "Division records must total the department they belong to");
+  console.assert(DEPTS.every(d=>divisionsFor(d.code).reduce((a,v)=>a+v.users,0)===d.users),
+    "Division users must total the department they belong to");
+
   /* ===== state ===== */
   let openKpi="users";          /* which drill table is showing */
   let sortDept="rec", dirDept="desc";
   let cmpMode="docsrec";
   let trendDept="all";
+  let expanded={};              /* which department rows have their divisions open */
 
   /* ===== top panel, PPT s15 and s34 ===== */
   const TILES=[
@@ -2374,24 +2421,31 @@ DASHBOARDS.bw=(function(){
                  ["Departments reporting",F(DEPTS.length)]]
     },
     rec:{
-      title:"Total number of records declared in EDRMS, by department",
-      sub:"PPT s41. Every column here is sourceable once departments are known. The division columns the slide also asks for are not built: division was removed from the design on 10 August because nothing populates it, and that decision needs reopening with the client before it can return.",
-      src:["dept","Waiting on the site to department list. Division tier not built, see question 3"],
+      title:"Total number of records declared in EDRMS, by department and division",
+      sub:"PPT s41. Records declared, users declaring and the declaration rate are sourceable once departments are known. Click a department to open its divisions, which is the tier reinstated at the client's instruction on 13 August. Nothing in the tenant populates division today, so whoever supplies the site to department list has to supply a division alongside it.",
+      src:["none","Division: no source. ADBMeta carries no division for any row. The department figures themselves wait only on the department list"],
+      divisions:true,
       cols:["Department","Records declared","Users declaring","Declaration rate","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
                              PCT(d.rec,d.docs).toFixed(2)+"%", PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
+      kids:d=>divisionsFor(d.code).map(v=>[v.name, F(v.rec), F(v.declaring),
+                             PCT(v.rec,Math.max(1,Math.round(d.docs*v.rec/d.rec))).toFixed(2)+"%",
+                             PCT(v.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
                  ["Bank-wide declaration rate",DECL_RATE.toFixed(2)+"%"],
                  ["Departments with zero declarations",F(DEPTS.filter(d=>d.rec===0).length)],
                  ["Users declaring",F(DEPTS.reduce((a,d)=>a+d.declaring,0))]]
     },
     phys:{
-      title:"Total number of physical counterparts identified, by department",
-      sub:"PPT s42. The count of records flagged as having a physical counterpart is sourceable today from HasPhysical, and appears on no current dashboard. The completion rate the slide also asks for compares this against records turned over to RAC, and nothing records a transfer.",
-      src:["part","Counts: sourceable today. Completion rate against RAC turnover: no source"],
+      title:"Total number of physical counterparts identified, by department and division",
+      sub:"PPT s42. The count of records flagged as having a physical counterpart is sourceable today from HasPhysical, and appears on no current dashboard. Click a department to open its divisions. The completion rate the slide also asks for compares this against records turned over to RAC, and nothing records a transfer.",
+      src:["part","Counts: sourceable today. Division: no source. Completion rate against RAC turnover: no source"],
+      divisions:true,
       cols:["Department","Physical counterparts","Records declared","Share with counterpart","Turned over to RAC"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                              PCT(d.phys,d.rec).toFixed(1)+"%", "no source"]),
+      kids:d=>divisionsFor(d.code).map(v=>[v.name, F(v.phys), F(v.rec),
+                             PCT(v.phys,v.rec).toFixed(1)+"%", "no source"]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
                  ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
                  ["Turned over to RAC","no source"],
@@ -2423,6 +2477,23 @@ DASHBOARDS.bw=(function(){
   function drawDrill(){
     const d=DRILL[openKpi];
     const rows=d.rows(), tiles=d.tiles();
+    /* A table with a division tier renders one row per department with a
+       disclosure control, and the division rows beneath it when open. Without
+       the tier it is a flat list, which is every other drill table here. */
+    const bodyRows=rows.map((r,i)=>{
+      if(!d.divisions)
+        return `<div class="drow">${r.map((c,j)=>
+          j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`;
+      const dep=DEPTS[i], open=!!expanded[dep.code];
+      let h=`<div class="drow exp" data-dep="${dep.code}">
+        <div class="dn"><span class="tw">${open?"▾":"▸"}</span>${r[0]}
+          <small>${divisionsFor(dep.code).length} divisions</small></div>
+        ${r.slice(1).map(c=>`<div class="num">${c}</div>`).join("")}</div>`;
+      if(open)h+=d.kids(dep).map(k=>`<div class="drow kid">${k.map((c,j)=>
+        j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
+      return h;
+    }).join("");
+
     document.getElementById("bw-drill").innerHTML=
       `<div class="ptitle">${d.title}</div>
        ${srcTag(d.src[0],d.src[1])}
@@ -2432,9 +2503,14 @@ DASHBOARDS.bw=(function(){
        <div class="scrollx"><div class="dtab" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${rows.map(r=>`<div class="drow">${r.map((c,i)=>
-           i?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+         ${bodyRows}
        </div></div>`;
+
+    document.querySelectorAll("#bw-drill .drow.exp").forEach(el=>el.onclick=()=>{
+      const c=el.dataset.dep;
+      expanded[c]=!expanded[c];
+      drawDrill();
+    });
   }
 
   /* ===== overview of EDRMS sites, PPT s16 and s35 ===== */
@@ -2646,7 +2722,10 @@ DASHBOARDS.bw=(function(){
          Exposed rather than rebuilt so a department's totals are identical
          whichever dashboard the reader arrives from. */
       departments:DEPTS.map(d=>({...d})),
-      idleDays:IDLE_DAYS
+      idleDays:IDLE_DAYS,
+      /* The division tier, so Department Insights uses the same divisions with
+         the same figures rather than inventing a second set. */
+      divisionsFor
     },
     html,init
   };
@@ -2778,6 +2857,7 @@ DASHBOARDS.dp=(function(){
   let openKpi="users";
   let sitePage=1, sortSite="rec", dirSite="desc";
   let libPage=1;
+  let drillOpen={};   /* which site rows have their divisions open, PPT s58 */
 
   const D=()=>DEPTS.find(x=>x.code===dept);
 
@@ -2821,17 +2901,17 @@ DASHBOARDS.dp=(function(){
 
   /* ===== the drill tables behind the tiles, PPT s21 to s23, s54 to s60 ===== */
   function drawDrill(){
-    const d=D(), sites=sitesFor(dept);
-    let title,src,sub,cols,rows,tiles;
+    const d=D(), sites=sitesFor(dept), DIVS=BW.divisionsFor(dept);
+    let title,src,sub,cols,rows,tiles,kids=null;
 
     if(openKpi==="users"){
-      title="Users, by site";
-      src=["none","Staff, contractor and consultant split, training and onboarding: no source in SharePoint. PPT s54 asks the client the same question"];
-      sub="Active user counts read the user activity table and are sourceable. Everything to the right of them is a people record, not a SharePoint one. The division tier the slide also asks for is not built, because division was removed from the design on 10 August and nothing populates it.";
-      cols=["Site","Active users","Staff","Contractors","Consultants","Training complete"];
-      rows=sites.map(s=>{const st=Math.round(s.users*0.62),c=Math.round(s.users*0.24);
-        return [s.name,F(s.users),F(st),F(c),F(Math.max(0,s.users-st-c)),"no source"];});
-      tiles=[["Active users",F(d.users)],["Share of staff","no source"],
+      title="Users, by division";
+      src=["none","Division: no source, nothing in the tenant populates it. Staff, contractor and consultant split, training and onboarding: no source either. PPT s54 asks the client the same question"];
+      sub="This is the table exactly as the client drew it on PPT s54, one row per division. Active user counts read the user activity table and are sourceable once departments and divisions are known. Everything to the right of them is a people record rather than a SharePoint one, which is why the whole panel is marked.";
+      cols=["Division","Active users","Staff","Contractors","Consultants","Training complete"];
+      rows=DIVS.map(v=>{const st=Math.round(v.users*0.62),c=Math.round(v.users*0.24);
+        return [v.name,F(v.users),F(st),F(c),F(Math.max(0,v.users-st-c)),"no source"];});
+      tiles=[["Active users",F(d.users)],["Divisions",F(DIVS.length)],
              ["Never accessed",F(Math.round(d.users*0.11))],["Training completion","no source"]];
     }
     else if(openKpi==="visitors"){
@@ -2855,12 +2935,21 @@ DASHBOARDS.dp=(function(){
              ["Sites holding documents",F(sites.length)],["Migrated documents","not built, see question 8"]];
     }
     else if(openKpi==="rec"){
-      title="Record declaration, by site";
-      src=["dept","Waiting on the department list. Division tier not built, see question 3"];
-      sub="Records declared, users declaring and the declaration rate per site are all sourceable once departments are known. PPT s58 asks for collapsible division rows beneath each site, which is the division decision again.";
+      title="Record declaration, by site and division";
+      src=["none","Division: no source. The site figures themselves wait only on the department list"];
+      sub="Records declared, users declaring and the declaration rate per site are all sourceable once departments are known. Click a site to open its divisions, which is the collapsible tier the client drew on PPT s58 and asked to have reinstated on 13 August. Nothing in the tenant populates division, so the list from RAC has to carry it.";
       cols=["Site","Records declared","Users declaring","Declaration rate","No declaration in "+IDLE+" days"];
       rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
                          PCT(s.rec,s.docs).toFixed(2)+"%", s.idle>IDLE?"yes":"no"]);
+      /* One row per division of this site, split from the site's own total so a
+         site's divisions always add back up to the site, exactly as the sites
+         add back up to the department. */
+      kids=s=>{
+        const w=DIVS.map((v,i)=>1+((i*3+s.name.length)%5)*0.3);
+        const rec=split(s.rec,w), dec=split(Math.max(1,Math.round(s.users*0.34)),w);
+        return DIVS.map((v,i)=>[v.name.replace(dept+" ",""),F(rec[i]),F(dec[i]),
+          PCT(rec[i],Math.max(1,Math.round(s.docs*rec[i]/Math.max(1,s.rec)))).toFixed(2)+"%",""]);
+      };
       tiles=[["Records declared",F(d.rec)],["Declaration rate",PCT(d.rec,d.docs).toFixed(2)+"%"],
              ["Users declaring",F(d.declaring)],
              ["Sites with no declaration in "+IDLE+" days",F(sites.filter(s=>s.idle>IDLE).length)]];
@@ -2879,6 +2968,21 @@ DASHBOARDS.dp=(function(){
 
     const word={dept:"Waiting on the department list",part:"Partly sourceable",
                 none:"No source identified",ref:"Maintained list, not a measurement"}[src[0]];
+    const shown=rows.slice(0,10);
+    const bodyRows=shown.map((r,i)=>{
+      if(!kids)
+        return `<div class="drow">${r.map((c,j)=>
+          j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`;
+      const site=sites[i], open=!!drillOpen[site.name];
+      let h=`<div class="drow exp" data-row="${site.name}">
+        <div class="dn"><span class="tw">${open?"▾":"▸"}</span>${r[0]}
+          <small>${DIVS.length} divisions</small></div>
+        ${r.slice(1).map(c=>`<div class="num">${c}</div>`).join("")}</div>`;
+      if(open)h+=kids(site).map(k=>`<div class="drow kid">${k.map((c,j)=>
+        j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
+      return h;
+    }).join("");
+
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">${title}</div>
        <div class="src ${src[0]}">${word}</div><div class="psub">${src[1]}</div>
@@ -2887,10 +2991,15 @@ DASHBOARDS.dp=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" style="--dc:230px repeat(${cols.length-1},1fr)">
          <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${rows.slice(0,10).map(r=>`<div class="drow">${r.map((c,i)=>
-           i?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+         ${bodyRows}
        </div></div>
        ${rows.length>10?`<div class="psub" style="margin-top:10px">Showing the first 10 of ${F(rows.length)} rows. The full list is on the panel below.</div>`:""}`;
+
+    document.querySelectorAll("#dp-drill .drow.exp").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.row;
+      drillOpen[k]=!drillOpen[k];
+      drawDrill();
+    });
   }
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
@@ -2980,7 +3089,7 @@ DASHBOARDS.dp=(function(){
     document.getElementById("dp-golive").innerHTML=
       `Go-live date <b>${GOLIVE[d.code]||"not recorded"}</b>`;
     document.getElementById("dp-name").textContent=d.code+" - "+d.name;
-    sitePage=1;libPage=1;
+    sitePage=1;libPage=1;drillOpen={};
     drawTiles();drawDrill();drawSites();drawLibs();drawTrend();
   }
 
