@@ -382,6 +382,65 @@
     padding:0 8px;color:#fff;font-size:11px;font-weight:700;min-width:40px}
   .dash-bw .lbar .lp{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
   @media(max-width:700px){.dash-bw .lbar{grid-template-columns:130px 1fr 62px}.dash-bw .cmp{grid-template-columns:120px 1fr}}
+
+/* ================= department.css ================= */
+/* Department Insights: scoped styles. Everything under .dash-dp.
+   Built to PPT s19 to s28 and s53 to s66. Shares the source marker
+   convention introduced with Bank-wide, restated here because the two
+   dashboards must stay independently editable. */
+  .dash-dp .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+  @media(max-width:1180px){.dash-dp .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:640px){.dash-dp .kpis{grid-template-columns:1fr}}
+  .dash-dp .kpi .val{font-size:26px}
+  .dash-dp .src{display:inline-block;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    font-weight:700;border-radius:5px;padding:3px 8px;margin-bottom:8px;border:1px solid}
+  .dash-dp .src.dept{background:#FFF6EC;border-color:#F3D8BC;color:#9C5620}
+  .dash-dp .src.none{background:#FDEDED;border-color:#F0C9C9;color:#9C2B2B}
+  .dash-dp .src.part{background:#F1F7FF;border-color:#CFE0F3;color:#1B5E82}
+  .dash-dp .src.ref{background:#F4F1FB;border-color:#DCD3EE;color:#553F86}
+  /* the department picker sits above everything and drives every panel */
+  .dash-dp .picker{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;
+    gap:12px;flex-wrap:wrap}
+  .dash-dp .picker .lbl{font-size:12px;color:var(--mut)}
+  .dash-dp select{font:inherit;font-size:13px;padding:7px 11px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink);max-width:100%}
+  .dash-dp .golive{font-size:12px;color:var(--ink2);margin-left:auto}
+  .dash-dp .golive b{font-family:var(--serif)}
+  .dash-dp .scrollx{overflow-x:auto}
+  .dash-dp .dtab{--dc:220px repeat(5,1fr);min-width:760px}
+  .dash-dp .dhead,.dash-dp .drow,.dash-dp .dtot{display:grid;grid-template-columns:var(--dc);gap:12px;align-items:center}
+  .dash-dp .dhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);
+    padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .dash-dp .dhead .hd{cursor:pointer;user-select:none}
+  .dash-dp .dhead .hd:hover{color:var(--blue)}
+  .dash-dp .dhead .hd.on{color:var(--blue);font-weight:700}
+  .dash-dp .dhead .num,.dash-dp .drow .num,.dash-dp .dtot .num{text-align:right;font-variant-numeric:tabular-nums}
+  .dash-dp .drow{padding:7px 0;border-bottom:1px solid #F0F4F8;font-size:13px}
+  .dash-dp .drow .dn{font-weight:600}
+  .dash-dp .drow .dn small{display:block;font-weight:400;color:var(--mut);font-size:11px;margin-top:1px}
+  .dash-dp .drow.cat{background:#F6FAFE;font-weight:700}
+  .dash-dp .dtot{padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
+  .dash-dp .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .dash-dp .tile{background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+  .dash-dp .tile.hi{background:#EAF3FB;border-color:#CFE0F3}
+  .dash-dp .tile .tl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
+  .dash-dp .tile .tv{font-size:19px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  /* reference list panels: conventions and programme dates */
+  .dash-dp .reflist{display:grid;gap:9px}
+  .dash-dp .refrow{display:grid;grid-template-columns:1fr 150px 130px;gap:12px;align-items:center;
+    padding:9px 12px;background:#F7FAFD;border:1px solid var(--line);border-radius:8px;font-size:13px}
+  .dash-dp .refrow b{font-weight:600}
+  .dash-dp .refrow .rv{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums}
+  .dash-dp .refrow .rs{text-align:right;font-size:11.5px;font-weight:700}
+  .dash-dp .refrow .rs.done{color:var(--green)}
+  .dash-dp .refrow .rs.due{color:var(--orange)}
+  @media(max-width:700px){.dash-dp .refrow{grid-template-columns:1fr 100px}.dash-dp .refrow .rs{display:none}}
+  .dash-dp .trend{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:12px}
+  .dash-dp .tcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%}
+  .dash-dp .tbar{width:100%;background:var(--teal);border-radius:4px 4px 0 0;min-height:3px}
+  .dash-dp .tlab{font-size:11px;color:var(--mut)}
+  .dash-dp .tval{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
 </style></head>
 <body>
 <aside id="side">
@@ -389,6 +448,7 @@
   <nav id="nav">
     <div class="grp">Executive</div>
     <a data-d="bw"><span class="ic">◉</span>Bank-wide Oversight</a>
+    <a data-d="dp"><span class="ic">▦</span>Department Insights</a>
     <a data-d="ov"><span class="ic">◈</span>Overview</a>
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
@@ -2581,7 +2641,440 @@ DASHBOARDS.bw=(function(){
       physical:TOTAL_PHYS,
       dueForDisposal:TOTAL_DUE,
       declarationRate:DECL_RATE,
-      departmentCount:DEPTS.length
+      departmentCount:DEPTS.length,
+      /* Read by Department Insights, which drills into one of these rows.
+         Exposed rather than rebuilt so a department's totals are identical
+         whichever dashboard the reader arrives from. */
+      departments:DEPTS.map(d=>({...d})),
+      idleDays:IDLE_DAYS
+    },
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   department.js
+   ================================================================= */
+/* ===================================================================
+   Department Insights. Stage 2 of the client redesign of 13 Aug 2026.
+   PPT s19 to s28 for the layout, s53 to s66 for the detail.
+
+   Fourteen of the client's fifty-seven design slides describe this one
+   screen, which makes it the largest single piece of the redesign. It
+   was also the dashboard removed from the prototype on 10 August, so it
+   is built here from nothing rather than restored.
+
+   Every department total is read from Bank-wide Oversight, which reads
+   Records Management, so a department shows the same figures whichever
+   dashboard the reader arrives from. Within a department, sites and
+   libraries are split from that total, so they always add back up to it.
+
+   Source markers as introduced on Bank-wide, plus one more:
+     .src.ref   not a measurement at all. A list somebody has to maintain
+   =================================================================== */
+DASHBOARDS.dp=(function(){
+  const BW=DASHBOARDS.bw.summary, RM=DASHBOARDS.rm.summary;
+  const DEPTS=BW.departments;
+  const IDLE=BW.idleDays;
+
+  function split(total,weights){
+    const s=weights.reduce((a,b)=>a+b,0);
+    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
+    out[0]+=total-out.reduce((a,b)=>a+b,0);
+    if(out[0]<0)out[0]=0;
+    return out;
+  }
+  const GB=v=>v>=1024?(v/1024).toFixed(2)+" TB":v.toFixed(1)+" GB";
+  const PCT=(a,b)=>b?(a/b*100):0;
+
+  /* ===== sites within a department =====
+     A department's site count comes from Bank-wide. The names come from a
+     fixed pool so they are stable between draws, and every measure is split
+     from the department total, so the site rows always sum to the department
+     header figures. */
+  const STEMS=["Records","Operations","Programs","Country Planning","Governance","Knowledge",
+               "Administration","Projects","Advisory","Portfolio","Reporting","Archive"];
+  const OWNERS=["a.mendoza","r.tan","j.cruz","m.reyes","l.fernandez","p.santos","c.delacruz",
+                "s.villanueva","d.ramos","k.aquino","n.bautista","g.ocampo"];
+
+  const SITECACHE={};
+  function sitesFor(code){
+    if(SITECACHE[code])return SITECACHE[code];
+    const d=DEPTS.find(x=>x.code===code);
+    const n=Math.max(1,d.sites);
+    const w=[];for(let i=0;i<n;i++)w.push(1+((i*7+code.length)%9)*0.28);
+    const rec=split(d.rec,w), docs=split(d.docs,w), phys=split(d.phys,w),
+          due=split(d.due,w), users=split(d.users,w);
+    const rows=[];
+    for(let i=0;i<n;i++){
+      const stem=STEMS[i%STEMS.length];
+      const suffix=i<STEMS.length?"":" "+(Math.floor(i/STEMS.length)+1);
+      rows.push({
+        name:`${code} ${stem}${suffix} Site`,
+        owner:OWNERS[(i+code.length)%OWNERS.length]+"@adb.org",
+        rec:rec[i], docs:docs[i], phys:phys[i], due:due[i], users:users[i],
+        /* Days since last activity. The 90 day rule the client asks for on
+           s55 is derived from this, never stored, so changing 90 to 120 is
+           one edit rather than a reload. */
+        idle:((i*13+code.length*5)%210)+1,
+        gb:+(docs[i]/3400).toFixed(1)
+      });
+    }
+    SITECACHE[code]=rows;
+    return rows;
+  }
+
+  /* ===== libraries, grouped by file plan category =====
+     PPT s61 to s66 gives one screen per category. The categories themselves
+     are the client's, from PPT s47 to s52. They exist in neither the term
+     store nor Purview, which is why the panel carries a marker: the grouping
+     is the client's design, not something we can read from the tenant. */
+  const CATS=["Institutional Management","Administration","People Management",
+              "Programs and Operations","Other"];
+  const LIBPOOL={
+    "Institutional Management":["Annual Meetings","Board Papers","Executive Correspondence","Policies"],
+    "Administration":["Budgeting","Facilities","Procurement","Travel"],
+    "People Management":["Learning and Development","Recruitment","Staff Records"],
+    "Programs and Operations":["Portfolio Management","Country Planning","Loan Agreements","Project Completion"],
+    "Other":["Photos and Audiovisual","Legacy Content"]
+  };
+  const LIBCACHE={};
+  function librariesFor(code){
+    if(LIBCACHE[code])return LIBCACHE[code];
+    const d=DEPTS.find(x=>x.code===code);
+    const flat=[];
+    CATS.forEach(c=>LIBPOOL[c].forEach(l=>flat.push({cat:c,lib:l})));
+    const w=flat.map((f,i)=>1+((i*5+code.length)%7)*0.3);
+    const rec=split(d.rec,w), docs=split(d.docs,w), phys=split(d.phys,w);
+    flat.forEach((f,i)=>{f.rec=rec[i];f.docs=docs[i];f.phys=phys[i];
+      f.idle=((i*17+code.length*3)%200)+1;});
+    LIBCACHE[code]=flat;
+    return flat;
+  }
+
+  /* ===== reference lists =====
+     PPT s26, s28 and s53. None of these are measurements: they are lists
+     somebody in the department maintains, and nothing in SharePoint or the
+     database design can generate them. They are laid out here exactly as the
+     client drew them so the question "who maintains this" has something
+     concrete attached to it. */
+  const CONVENTION={link:"Approved SharePoint site, library and folder convention",
+                    approved:"14 Feb 2026", updated:"02 Jun 2026", version:"v2.1"};
+  const PROGRAMME=[
+    {lab:"CSIS-IR audit of EDRMS", date:"08 Aug 2026", status:"Done"},
+    {lab:"Convention review",      date:"30 Sep 2026", status:"Due"},
+    {lab:"Physical records review",date:"15 Oct 2026", status:"Due"},
+    {lab:"Refresher training",     date:"20 Nov 2026", status:"Due"},
+    {lab:"Focals CoP schedule",    date:"04 Dec 2026", status:"Due"},
+  ];
+  const GOLIVE={ITD:"12 Jan 2026",SARD:"02 Feb 2026",OSFG:"16 Feb 2026",FIN:"12 Jan 2026",
+    PARD:"02 Mar 2026",HRD:"16 Mar 2026",SERD:"30 Mar 2026",EARD:"13 Apr 2026",
+    OGC:"26 Jan 2026",CWRD:"27 Apr 2026",PSOD:"11 May 2026",BRM:"25 May 2026",
+    SPD:"08 Jun 2026",SDCC:"22 Jun 2026",OAS:"06 Jul 2026",ERCD:"20 Jul 2026"};
+
+  /* ===== state ===== */
+  let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
+  let openKpi="users";
+  let sitePage=1, sortSite="rec", dirSite="desc";
+  let libPage=1;
+
+  const D=()=>DEPTS.find(x=>x.code===dept);
+
+  function pager(total,page,pages,noun){
+    if(pages<=1)return `<div class="pager"><div class="pinfo">Showing ${F(total)} ${noun}</div></div>`;
+    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
+    let nums="",last=0;
+    win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;
+      nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
+    const from=(page-1)*10+1,to=Math.min(total,page*10);
+    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
+      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>&lsaquo; Prev</button>${nums}
+      <button data-pg="next" ${page===pages?'disabled':''}>Next &rsaquo;</button></div></div>`;
+  }
+
+  /* ===== top panel, PPT s19 and s53 ===== */
+  function drawTiles(){
+    const d=D(), sites=sitesFor(dept);
+    const visitors=Math.round(d.users*1.9);
+    const TILES=[
+      {lab:"Sites Created", val:F(d.sites), stat:"Sourceable once departments are known"},
+      {lab:"Total EDRMS Users", val:F(d.users), k:"users"},
+      {lab:"Total Site Visitors", val:F(visitors), k:"visitors"},
+      {lab:"Documents in EDRMS", val:F(d.docs), k:"docs"},
+      {lab:"Records Declared", val:F(d.rec), k:"rec"},
+      {lab:"Physical Counterparts", val:F(d.phys), stat:"HasPhysical, sourceable today"},
+      {lab:"Records Due for Disposal", val:F(d.due), k:"disp"},
+      {lab:"Sites Inactive over "+IDLE+" Days", val:F(sites.filter(s=>s.idle>IDLE).length),
+       stat:"Derived from LastActivityDate, never stored"},
+    ];
+    document.getElementById("dp-kpis").innerHTML=TILES.map(t=>
+      t.k
+        ? `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
+             <div class="val">${t.val}</div><div class="tap">&#9662; Click to open</div></div>`
+        : `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val}</div>
+             <div class="sub">${t.stat}</div></div>`).join("");
+    document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(el=>{
+      el.onclick=()=>{openKpi=el.dataset.k;drawTiles();drawDrill();};
+    });
+  }
+
+  /* ===== the drill tables behind the tiles, PPT s21 to s23, s54 to s60 ===== */
+  function drawDrill(){
+    const d=D(), sites=sitesFor(dept);
+    let title,src,sub,cols,rows,tiles;
+
+    if(openKpi==="users"){
+      title="Users, by site";
+      src=["none","Staff, contractor and consultant split, training and onboarding: no source in SharePoint. PPT s54 asks the client the same question"];
+      sub="Active user counts read the user activity table and are sourceable. Everything to the right of them is a people record, not a SharePoint one. The division tier the slide also asks for is not built, because division was removed from the design on 10 August and nothing populates it.";
+      cols=["Site","Active users","Staff","Contractors","Consultants","Training complete"];
+      rows=sites.map(s=>{const st=Math.round(s.users*0.62),c=Math.round(s.users*0.24);
+        return [s.name,F(s.users),F(st),F(c),F(Math.max(0,s.users-st-c)),"no source"];});
+      tiles=[["Active users",F(d.users)],["Share of staff","no source"],
+             ["Never accessed",F(Math.round(d.users*0.11))],["Training completion","no source"]];
+    }
+    else if(openKpi==="visitors"){
+      title="Site visitors";
+      src=["none","Internal against external, and access requests granted or declined: no source. PPT s56 asks whether SharePoint or Cloud Governance holds this. Through the reporting APIs, neither does"];
+      sub="A visitor count per site is available from Graph site analytics, in two windows only, seven days and all time. There is no thirty or ninety day window, and no split between internal and external visitors. Access requests are a permission workflow rather than a reporting feed.";
+      cols=["Site","Visitors, all time","Visitors, 7 days","External","Requests granted","Requests declined"];
+      rows=sites.map(s=>[s.name,F(Math.round(s.users*1.9)),F(Math.round(s.users*0.42)),
+                         "no source","no source","no source"]);
+      tiles=[["Visitors, all time",F(Math.round(d.users*1.9))],["Visitors, last 7 days",F(Math.round(d.users*0.42))],
+             ["External visitors","no source"],["Access requests","no source"]];
+    }
+    else if(openKpi==="docs"){
+      title="Documents in EDRMS, by site";
+      src=["part","Documents and storage: sourceable. Users creating documents: needs the scan to capture Author"];
+      sub="Document counts and storage read FileCreatedDate and FileSize. The migration columns on PPT s57 are not built: the client said on PPT s4 and again on PPT s11 that migration is not wanted on this report, so the two slides contradict each other and it is question 8 on the list back to them.";
+      cols=["Site","Documents","Users creating","Storage","Share of department"];
+      rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.gb),
+                         PCT(s.docs,d.docs).toFixed(1)+"%"]);
+      tiles=[["Documents held",F(d.docs)],["Storage consumed",GB(d.gb)],
+             ["Sites holding documents",F(sites.length)],["Migrated documents","not built, see question 8"]];
+    }
+    else if(openKpi==="rec"){
+      title="Record declaration, by site";
+      src=["dept","Waiting on the department list. Division tier not built, see question 3"];
+      sub="Records declared, users declaring and the declaration rate per site are all sourceable once departments are known. PPT s58 asks for collapsible division rows beneath each site, which is the division decision again.";
+      cols=["Site","Records declared","Users declaring","Declaration rate","No declaration in "+IDLE+" days"];
+      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
+                         PCT(s.rec,s.docs).toFixed(2)+"%", s.idle>IDLE?"yes":"no"]);
+      tiles=[["Records declared",F(d.rec)],["Declaration rate",PCT(d.rec,d.docs).toFixed(2)+"%"],
+             ["Users declaring",F(d.declaring)],
+             ["Sites with no declaration in "+IDLE+" days",F(sites.filter(s=>s.idle>IDLE).length)]];
+    }
+    else{
+      title="Disposal, by library";
+      src=["part","Due dates: sourceable today. Approver, the three statuses and records disposed: application change needed, see question 4"];
+      sub="Records due and the next due date are computed from the due date already on the record. The approver and the Approved, Declined and Extended statuses need a field the EDRMS application does not have, which is a development change request rather than a reporting one.";
+      cols=["Library","Records due","Next due date","With counterpart","Approver","Status"];
+      const libs=librariesFor(dept), dues=split(d.due,libs.map(l=>Math.max(1,l.phys)));
+      rows=libs.map((l,i)=>[l.lib,F(dues[i]),DUE_DATES[i%DUE_DATES.length],
+                            F(Math.round(dues[i]*0.31)),"no source","no source"]);
+      tiles=[["Records due, next 12 months",F(d.due)],["Next due date",DUE_DATES[0]],
+             ["Records disposed","no source"],["Disposal backlog","no source"]];
+    }
+
+    const word={dept:"Waiting on the department list",part:"Partly sourceable",
+                none:"No source identified",ref:"Maintained list, not a measurement"}[src[0]];
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">${title}</div>
+       <div class="src ${src[0]}">${word}</div><div class="psub">${src[1]}</div>
+       <div class="psub">${sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" style="--dc:230px repeat(${cols.length-1},1fr)">
+         <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${rows.slice(0,10).map(r=>`<div class="drow">${r.map((c,i)=>
+           i?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       ${rows.length>10?`<div class="psub" style="margin-top:10px">Showing the first 10 of ${F(rows.length)} rows. The full list is on the panel below.</div>`:""}`;
+  }
+  const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
+                   "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
+                   "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
+
+  /* ===== sites list, PPT s20 and s55 ===== */
+  const SCOLS=[{k:"name",lab:"Site"},{k:"owner",lab:"Site owner"},{k:"docs",lab:"Documents",num:1},
+               {k:"rec",lab:"Records",num:1},{k:"phys",lab:"Counterparts",num:1},{k:"due",lab:"Due",num:1}];
+  function drawSites(){
+    const d=D();
+    const all=[...sitesFor(dept)].sort((a,b)=>{
+      const k=sortSite, cmp=(k==="name"||k==="owner")?String(a[k]).localeCompare(String(b[k])):a[k]-b[k];
+      return dirSite==="asc"?cmp:-cmp;
+    });
+    const pages=Math.max(1,Math.ceil(all.length/10));
+    if(sitePage>pages)sitePage=pages;
+    const view=all.slice((sitePage-1)*10,sitePage*10);
+    let h=`<div class="dhead">`+SCOLS.map(c=>
+      `<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${
+        sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):""}</div>`).join("")+`</div>`;
+    h+=view.map(s=>`<div class="drow">
+      <div class="dn">${s.name}<small>${s.idle>IDLE?"No activity for "+s.idle+" days":"Active, last activity "+s.idle+" days ago"}</small></div>
+      <div class="num">${s.owner}</div><div class="num">${F(s.docs)}</div>
+      <div class="num">${F(s.rec)}</div><div class="num">${F(s.phys)}</div>
+      <div class="num">${F(s.due)}</div></div>`).join("");
+    h+=`<div class="dtot"><div>Department total</div><div class="num">${F(all.length)} sites</div>
+      <div class="num">${F(d.docs)}</div><div class="num">${F(d.rec)}</div>
+      <div class="num">${F(d.phys)}</div><div class="num">${F(d.due)}</div></div>`;
+    document.getElementById("dp-sites").innerHTML=h;
+    document.getElementById("dp-sites-pager").innerHTML=pager(all.length,sitePage,pages,"sites");
+    document.querySelectorAll("#dp-sites .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortSite===k)dirSite=dirSite==="asc"?"desc":"asc";
+      else{sortSite=k;dirSite=(k==="name"||k==="owner")?"asc":"desc";}
+      sitePage=1;drawSites();
+    });
+    wirePager("#dp-sites-pager",v=>{
+      sitePage=v==="prev"?Math.max(1,sitePage-1):v==="next"?Math.min(pages,sitePage+1):+v;
+      drawSites();
+    });
+  }
+
+  /* ===== library usage, PPT s25 and s61 to s66 ===== */
+  function drawLibs(){
+    const d=D(), libs=librariesFor(dept);
+    const pages=Math.max(1,Math.ceil(libs.length/10));
+    if(libPage>pages)libPage=pages;
+    const view=libs.slice((libPage-1)*10,libPage*10);
+    let h=`<div class="dhead"><div>Library</div><div class="num">Users</div>
+      <div class="num">Documents</div><div class="num">Records declared</div>
+      <div class="num">Counterparts</div><div class="num">Idle days</div></div>`;
+    let cat="";
+    view.forEach(l=>{
+      if(l.cat!==cat){cat=l.cat;h+=`<div class="drow cat"><div class="dn">${cat}</div>
+        <div></div><div></div><div></div><div></div><div></div></div>`;}
+      h+=`<div class="drow"><div class="dn">${l.lib}<small>${dept}</small></div>
+        <div class="num">no source</div><div class="num">${F(l.docs)}</div>
+        <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
+        <div class="num">${l.idle}</div></div>`;
+    });
+    h+=`<div class="dtot"><div>Department total</div><div class="num">no source</div>
+      <div class="num">${F(d.docs)}</div><div class="num">${F(d.rec)}</div>
+      <div class="num">${F(d.phys)}</div><div class="num"></div></div>`;
+    document.getElementById("dp-libs").innerHTML=h;
+    document.getElementById("dp-libs-pager").innerHTML=pager(libs.length,libPage,pages,"libraries");
+    wirePager("#dp-libs-pager",v=>{
+      libPage=v==="prev"?Math.max(1,libPage-1):v==="next"?Math.min(pages,libPage+1):+v;
+      drawLibs();
+    });
+  }
+
+  /* ===== declaration trend for one department, PPT s24 ===== */
+  function drawTrend(){
+    const d=D(), share=d.rec/RM.declared;
+    const vals=RM.monthValues.map(v=>Math.round(v*share));
+    const mx=Math.max(...vals,1);
+    document.getElementById("dp-trend").innerHTML=RM.monthLabels.map((m,i)=>`
+      <div class="tcol"><div class="tval">${F(vals[i])}</div>
+        <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
+        <div class="tlab">${m}</div></div>`).join("");
+    document.getElementById("dp-trend-sum").textContent=
+      d.code+", "+F(vals.reduce((a,b)=>a+b,0))+" records declared over the last 12 months";
+  }
+
+  function drawAll(){
+    const d=D();
+    document.getElementById("dp-golive").innerHTML=
+      `Go-live date <b>${GOLIVE[d.code]||"not recorded"}</b>`;
+    document.getElementById("dp-name").textContent=d.code+" - "+d.name;
+    sitePage=1;libPage=1;
+    drawTiles();drawDrill();drawSites();drawLibs();drawTrend();
+  }
+
+  const html=`<section class="dash-dp">
+    <div class="band">
+      <h2>Department insights</h2>
+      <div class="bd">How one department, office or resident mission is managing its records: its sites, its people, its declaration performance, its libraries and its disposal readiness. Built to the client design of 13 August 2026, PPT s19 to s28 and s53 to s66. Choose a department below; every panel on the page follows it.</div>
+    </div>
+
+    <div class="picker">
+      <span class="lbl">Department, office or resident mission</span>
+      <select id="dp-sel"></select>
+      <span class="golive" id="dp-golive"></span>
+    </div>
+
+    <div class="kpis" id="dp-kpis"></div>
+    <div class="panel" id="dp-drill"></div>
+
+    <div class="band">
+      <h2>EDRMS sites</h2>
+      <div class="bd">Every site the department owns, with the owner to contact about it, and the four measures the client asked for on PPT s20. Sites with no activity for ${IDLE} days are called out on the row itself, which is the indicator asked for on PPT s55.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Sites owned by <span id="dp-name"></span></div>
+      <div class="src dept">Waiting on the department list</div>
+      <div class="psub">Site names, owners and every measure here are sourceable. The site owner is confirmed present on 1,899 of the 1,918 live sites in the test tenant, so a small number of rows will show no owner at all, and those are the ones worth chasing. Click any column heading to sort.</div>
+      <div class="scrollx"><div class="dtab" id="dp-sites"></div></div>
+      <div id="dp-sites-pager"></div>
+    </div>
+
+    <div class="band">
+      <h2>Library usage</h2>
+      <div class="bd">The department's libraries grouped by institutional file plan category, which is the shape the client gave on PPT s61 to s66, one screen per category.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Libraries by file plan category</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Two separate blockers sit on this panel. The file plan categories are the client's own and exist in neither the term store nor Purview, so the grouping cannot be read from the tenant, and there is no link anywhere from a term to a library. Number of users per library, asked for on PPT s25, is not available at all: SharePoint reports viewers per site and never per library. Document and record counts per library are sourceable today.</div>
+      <div class="scrollx"><div class="dtab" id="dp-libs"></div></div>
+      <div id="dp-libs-pager"></div>
+    </div>
+
+    <div class="band">
+      <h2>Record declaration trend</h2>
+      <div class="bd">The same trend as the bank-wide view, scoped to this department, which is what PPT s24 asks for.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records declared over the last 12 months</div>
+      <div class="src dept">Waiting on the department list</div>
+      <div class="psub">The measure reads CreatedDate on the record and is sourceable today. Attributing it to a department is what waits on the list from RAC.</div>
+      <div class="trend" id="dp-trend"></div>
+      <div class="psub" style="margin-top:12px" id="dp-trend-sum"></div>
+    </div>
+
+    <div class="band">
+      <h2>Conventions and programme dates</h2>
+      <div class="bd">PPT s26 and s28. Neither of these is a measurement. They are lists somebody in the department maintains, laid out here as the client drew them so that the question of who maintains them has something concrete attached to it.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Approved convention</div>
+      <div class="src ref">Maintained list, not a measurement</div>
+      <div class="psub">Nothing in SharePoint or in the database design can generate a convention document, its approval date or its version number. This is question 5 on the list back to the client.</div>
+      <div class="reflist">
+        <div class="refrow"><b>${CONVENTION.link}</b><div class="rv">Approved ${CONVENTION.approved}</div><div class="rs">${CONVENTION.version}</div></div>
+        <div class="refrow"><b>Last updated</b><div class="rv">${CONVENTION.updated}</div><div class="rs"></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records management programme dates</div>
+      <div class="src ref">Maintained list, not a measurement</div>
+      <div class="psub">The five dates the client listed on PPT s28, each with the status shown on PPT s53. Same conclusion as the convention above: somebody has to keep this, and nobody has been named.</div>
+      <div class="reflist">
+        ${PROGRAMME.map(p=>`<div class="refrow"><b>${p.lab}</b><div class="rv">${p.date}</div>
+          <div class="rs ${p.status==="Done"?"done":"due"}">${p.status}</div></div>`).join("")}
+      </div>
+    </div>
+  </section>`;
+
+  function init(){
+    const sel=document.getElementById("dp-sel");
+    sel.innerHTML=DEPTS.map(d=>
+      `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
+    sel.onchange=e=>{dept=e.target.value;drawAll();};
+    drawAll();
+  }
+
+  return {
+    ver:"Department Insights Dashboard",
+    crumb:"Department Insights",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{
+      departmentCount:DEPTS.length,
+      categories:CATS.length,
+      programmeDates:PROGRAMME.length
     },
     html,init
   };
