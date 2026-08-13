@@ -103,7 +103,12 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
   ok(/Most used libraries/.test(body),"most used libraries is shown as asked");
 
-  /* Cutting eleven dashboards to six risked dropping content the requirements
+  /* Site activity trend by month was removed from the page on 13 Aug at the
+     client's request, so it is no longer in this list. It remains a Word
+     document requirement under Site Trends and is recorded as dropped in
+     STATUS.md, rather than being quietly forgotten here.
+
+     Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
      the metrics document heading by heading, and were added back. This block
      is that walk, kept so the same content cannot quietly disappear again in a
@@ -122,7 +127,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Largest libraries by record volume","Library usage",         /record volume/i],
     ["Largest libraries by storage",    "Library usage",           /storage consumed/i],
     ["Libraries dormant over 180 days", "Library usage",           /dormant over 180/i],
-    ["Site activity trend by month",    "Site Trends",             /site activity trend by month/i],
     ["Duplicated records",              "Records Quality",         /duplicated records/i],
     ["Orphaned records",                "Records Quality",         /orphaned records/i],
     ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
@@ -155,8 +159,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(years.length,4,"the by-year chart shows three closed years plus the current window");
   eq(years[3].value,d.DECLARED,
      "the last column equals the declared record count, so it agrees with the monthly chart");
-  const visits=await page.$$eval(".dash-bw #bw-visits .tcol",els=>els.length);
-  eq(visits,12,"the site activity trend shows twelve months");
   const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
   eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
   const libRows=await page.$$eval(".dash-bw #bw-libs .hbar",els=>els.length);

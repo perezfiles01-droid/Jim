@@ -564,13 +564,10 @@ const CHART=(function(){
         const fg=t<0.42?"#10243E":"#fff", sc=t<0.42?"#33475F":"rgba(255,255,255,.82)";
         svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(2,w-3).toFixed(1)}"
           height="${(h-3).toFixed(1)}" rx="7" fill="${shade(r.value)}"><title>${r.label}: ${F(r.value)}</title></rect>`;
-        const roomForSub=h>=92 && w>150 && r.sub;
         const roomForVal=h>=54;
         if(w>72){
           svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+22).toFixed(1)}" font-size="14"
             font-weight="700" fill="${fg}">${r.label}</text>`;
-          if(roomForSub)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+39).toFixed(1)}"
-            font-size="10.5" fill="${sc}">${r.sub}</text>`;
           if(roomForVal)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+h-14).toFixed(1)}"
             font-size="${h<80?15:20}" font-weight="700" fill="${fg}"
             style="font-variant-numeric:tabular-nums">${F(r.value)}</text>`;
@@ -978,7 +975,7 @@ DASHBOARDS.bw=(function(){
   const DRILL={
     users:{
       title:"Total number of EDRMS users, by department",
-      sub:"Active users by department, with the staff split the client asked for.",
+      sub:"Active users by department, split by staff, contractor and consultant.",
       cols:["Department","Active users","Staff","Contractors","Consultants","Never accessed"],
       rows:()=>DEPTS.map(d=>{
         const staff=Math.round(d.users*0.62), con=Math.round(d.users*0.24);
@@ -1143,7 +1140,7 @@ DASHBOARDS.bw=(function(){
       `<span><i style="background:${c.ca}"></i>${c.la}</span><span><i style="background:${c.cb}"></i>${c.lb}</span>`;
     document.getElementById("bw-cmp").innerHTML=rows.map(d=>`
       <div class="cmp">
-        <div class="cl">${d.code}<small>${PCT(d[c.b],d[c.a]).toFixed(1)} ${c.lb.toLowerCase()} per 100 ${c.la.toLowerCase()}</small></div>
+        <div class="cl">${d.code}</div>
         <div class="cbars">
           <div class="cbar" style="width:${Math.max(4,100*d[c.a]/mxa)}%;background:${c.ca}">${F(d[c.a])}</div>
           <div class="cbar" style="width:${Math.max(4,100*d[c.b]/mxb)}%;background:${c.cb}">${F(d[c.b])}</div>
@@ -1161,8 +1158,7 @@ DASHBOARDS.bw=(function(){
         <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
         <div class="tlab">${m}</div></div>`).join("");
     document.getElementById("bw-trend-sum").textContent=
-      (trendDept==="all"?"All departments":trendDept)+", "+F(vals.reduce((a,b)=>a+b,0))+
-      " records declared over the last 12 months";
+      trendDept==="all"?"All departments":trendDept;
   }
 
   function drawFormats(){
@@ -1190,7 +1186,7 @@ DASHBOARDS.bw=(function(){
 
   function drawTree(){
     document.getElementById("bw-tree").innerHTML=CHART.treemap(
-      DEPTS.map(d=>({label:d.code,sub:d.name,value:d.rec})),{height:330});
+      DEPTS.map(d=>({label:d.code,value:d.rec})),{height:330});
   }
 
   function drawFormatDonuts(){
@@ -1227,13 +1223,6 @@ DASHBOARDS.bw=(function(){
       rows.map(l=>({label:l.lib,sub:l.site+", "+l.dept,value:key(l),display:show(l),color:colour})));
   }
 
-  function drawVisits(){
-    const mx=Math.max(...DATA.SITE_VISITS_MONTHLY);
-    document.getElementById("bw-visits").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
-      <div class="tcol"><div class="tval">${F(DATA.SITE_VISITS_MONTHLY[i])}</div>
-        <div class="tbar" style="height:${Math.max(2,100*DATA.SITE_VISITS_MONTHLY[i]/mx)}%;background:var(--teal)"></div>
-        <div class="tlab">${m}</div></div>`).join("");
-  }
 
   function drawSensitivity(){
     const mx=Math.max(...DATA.SENSITIVITY.map(s=>s.count));
@@ -1286,7 +1275,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Sites, documents, records and counterparts by department</div>
-      <div class="psub">Sized by records declared. Click a column heading in the table below to re-sort.</div>
+      <div class="psub">Sized by records declared. Click a column heading in the table to re-sort.</div>
       <div id="bw-tree"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Sites created, last ${IDLE_DAYS} days</div><div class="tv">${F(SITES_CREATED_90)}</div></div>
@@ -1322,7 +1311,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="psub">Choose a department to see its own trend.</div>
+      <div class="psub">Records declared each month, for all departments or one.</div>
       <div class="toolbar">
         <span class="lbl">Show</span>
         <select id="bw-trend-sel"></select>
@@ -1331,7 +1320,6 @@ DASHBOARDS.bw=(function(){
       <div class="tiles">
         <div class="tile"><div class="tl">Records declared this month</div><div class="tv">${F(DATA.DECLARED_THIS_MONTH)}</div></div>
         <div class="tile"><div class="tl">Monthly average, last 12 months</div><div class="tv">${F(DATA.MONTH_AVERAGE)}</div></div>
-        <div class="tile hi"><div class="tl">Against the average</div><div class="tv">${(DATA.DECLARED_THIS_MONTH>=DATA.MONTH_AVERAGE?"+":"")+((DATA.DECLARED_THIS_MONTH-DATA.MONTH_AVERAGE)/DATA.MONTH_AVERAGE*100).toFixed(1)}%</div></div>
         <div class="tile"><div class="tl">Declared, last 12 months</div><div class="tv">${F(TOTAL_REC)}</div></div>
       </div>
       <div class="trend" id="bw-trend"></div>
@@ -1339,17 +1327,17 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records declared by year</div>
-      <div class="psub">The longer view, alongside the monthly trend above. The last column is the same population as that chart, so the two agree by construction.</div>
+      <div class="psub">Records declared in each of the last three years, and in the last twelve months.</div>
       <div id="bw-years"></div>
     </div>
 
     <div class="band">
       <h2>Retention and disposal rollup</h2>
-      <div class="bd">How the declared holding divides between retention that expires and retention that never does.</div>
+      <div class="bd">Permanent and temporary retention as a share of the declared holding.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Permanent and temporary retention</div>
-      <div class="psub">How the declared holding divides between retention that expires and retention that never does.</div>
+      <div class="psub">Permanent and temporary retention as a share of the declared holding.</div>
       <div id="bw-retsplit" style="margin-bottom:16px"></div>
       <div class="scrollx"><div class="dtab" style="--dc:210px repeat(6,1fr)">
         <div class="dhead"><div>Retention</div><div class="num">Departments</div><div class="num">Libraries</div>
@@ -1375,7 +1363,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Declared records by format group</div>
-      <div class="psub">The format that dominates the file count is not the one that dominates storage, which is the whole point of showing both.</div>
+      <div class="psub">Share of files held and share of storage consumed, by format group.</div>
       <div class="crow" style="margin-bottom:16px">
         <div class="chart"><div class="ctitle">Share of files held</div><div id="bw-fmt-files"></div></div>
         <div class="chart"><div class="ctitle">Share of storage consumed</div><div id="bw-fmt-gb"></div></div>
@@ -1395,7 +1383,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Site health</div>
-      <div class="psub">Of the ${F(DATA.SITES_CREATED)} compliant sites, how many are still being used.</div>
+      <div class="psub">Active, inactive and unowned sites across the estate.</div>
       <div id="bw-sitehealth" style="margin-bottom:16px"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Compliant sites</div><div class="tv">${F(DATA.SITES_CREATED)}</div></div>
@@ -1406,7 +1394,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Library health</div>
-      <div class="psub">Which libraries are being used, and which are the biggest.</div>
+      <div class="psub">Library counts, activity, growth and the largest libraries.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">Libraries across sites</div><div class="tv">${F(DATA.SITE_LIBRARIES)}</div></div>
         <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
@@ -1416,7 +1404,7 @@ DASHBOARDS.bw=(function(){
         <div class="tile"><div class="tl">Most used libraries</div><div class="tv">${DATA.TOP_LIBRARIES[0].lib}</div></div>
         <div class="tile"><div class="tl">Orphaned libraries</div><div class="tv">${F(38)}</div></div>
       </div>
-      <div class="psub" style="margin-top:6px">Largest by record volume, largest by storage, highest declaration rate. Each library is shown with its parent site, since library names repeat across sites.</div>
+      <div class="psub" style="margin-top:6px">Ranked by record volume, storage consumed or declaration rate. Each library is shown with its parent site.</div>
       <div class="toolbar">
         <span class="lbl">Rank libraries by</span>
         <select id="bw-librank">
@@ -1427,11 +1415,6 @@ DASHBOARDS.bw=(function(){
       </div>
       <div id="bw-libs"></div>
     </div>
-    <div class="panel">
-      <div class="ptitle">Site activity trend by month</div>
-      <div class="psub">Asked for under Site Trends. This is possible only because history is now kept on the site activity table: before that decision there was nothing to plot, since Microsoft returns a current window rather than a series. One rule governs the arithmetic, and getting it wrong produces a plausible wrong number rather than an error: a range sums the 7 day visit figure and never the 30, 90 or 180 day ones, because consecutive 7 day windows tile exactly while longer ones overlap and would count most days several times over.</div>
-      <div class="trend" id="bw-visits"></div>
-    </div>
 
     <div class="band">
       <h2>Records quality and classification</h2>
@@ -1439,7 +1422,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records quality</div>
-      <div class="psub">Both figures are computable today from columns already on the document row, and neither has appeared on any dashboard before. A duplicate is a repeated filename, which is why the client wrote "with same filenames?" against it: that is the only definition the data supports, and it will overcount legitimately repeated names such as a monthly report. An orphaned record is one whose parent site or library no longer resolves.</div>
+      <div class="psub">Declared records sharing a filename, and records whose parent site or library no longer resolves.</div>
       <div class="tiles">
         <div class="tile hi"><div class="tl">Duplicated records</div><div class="tv">${F(DATA.DUPLICATE_RECORDS)}</div></div>
         <div class="tile"><div class="tl">Share of declared records</div><div class="tv">${(DATA.DUPLICATE_RECORDS/TOTAL_REC*100).toFixed(1)}%</div></div>
@@ -1449,7 +1432,7 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Information classification</div>
-      <div class="psub">SensitivityLabelName is on the document row in the database design and appears on no dashboard until now. Records by classification level, and records with and without a label, all read that one column. The five states below account for every declared record.</div>
+      <div class="psub">Declared records by sensitivity label, and how many carry no label at all.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">With a sensitivity label</div><div class="tv">${F(DATA.SENSITIVITY_TOTAL-DATA.UNLABELLED)}</div></div>
         <div class="tile hi"><div class="tl">Without a sensitivity label</div><div class="tv">${F(DATA.UNLABELLED)}</div></div>
@@ -1497,7 +1480,6 @@ DASHBOARDS.bw=(function(){
     drawRetSplit();
     drawSiteHealth();
     drawLibRank();
-    drawVisits();
     drawSensitivity();
     document.getElementById("bw-librank").onchange=e=>{libRank=e.target.value;drawLibRank();};
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
@@ -1730,7 +1712,7 @@ DASHBOARDS.dp=(function(){
 
     if(openKpi==="users"){
       title="Users, by division";
-      sub="This is the table exactly as the client drew it on PPT s54, one row per division. Active user counts read the user activity table and are sourceable once departments and divisions are known. Everything to the right of them is a people record rather than a SharePoint one, which is why the whole panel is marked.";
+      sub="Active users in each division, split by staff, contractor and consultant.";
       cols=["Division","Active users","Staff","Contractors","Consultants","Training complete"];
       rows=DIVS.map(v=>{const st=Math.round(v.users*0.62),c=Math.round(v.users*0.24);
         return [v.name,F(v.users),F(st),F(c),F(Math.max(0,v.users-st-c)),
@@ -1740,7 +1722,7 @@ DASHBOARDS.dp=(function(){
     }
     else if(openKpi==="visitors"){
       title="Site visitors";
-      sub="A visitor count per site is available from Graph site analytics, in two windows only, seven days and all time. There is no thirty or ninety day window, and no split between internal and external visitors. Access requests are a permission workflow rather than a reporting feed.";
+      sub="Visitors to each site, and access requests granted or declined.";
       cols=["Site","Visitors, all time","Visitors, 7 days","External","Requests granted","Requests declined"];
       rows=sites.map(s=>[s.name,F(Math.round(s.users*1.9)),F(Math.round(s.users*0.42)),
                          F(Math.round(s.users*0.18)),F(Math.round(s.users*0.22)),
@@ -1751,7 +1733,7 @@ DASHBOARDS.dp=(function(){
     }
     else if(openKpi==="docs"){
       title="Documents in EDRMS, by site";
-      sub="Document counts and storage read FileCreatedDate and FileSize.";
+      sub="Documents held, who is creating them, and the storage they consume.";
       cols=["Site","Documents","Users creating","Storage","Share of department"];
       rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.gb),
                          PCT(s.docs,d.docs).toFixed(1)+"%"]);
@@ -1760,7 +1742,7 @@ DASHBOARDS.dp=(function(){
     }
     else if(openKpi==="rec"){
       title="Record declaration, by site and division";
-      sub="Records declared, users declaring and the declaration rate per site are all sourceable once departments are known. Click a site to open its divisions, which is the collapsible tier the client drew on PPT s58 and asked to have reinstated on 13 August. Nothing in the tenant populates division, so the list from RAC has to carry it.";
+      sub="Records declared and the declaration rate for each site. Click a site to open its divisions.";
       cols=["Site","Records declared","Users declaring","Declaration rate","No declaration in "+IDLE+" days"];
       rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
                          PCT(s.rec,s.docs).toFixed(2)+"%", s.idle>IDLE?"yes":"no"]);
@@ -1779,7 +1761,7 @@ DASHBOARDS.dp=(function(){
     }
     else{
       title="Disposal, by library";
-      sub="Records due and the next due date are computed from the due date already on the record. The approver and the Approved, Declined and Extended statuses need a field the EDRMS application does not have, which is a development change request rather than a reporting one.";
+      sub="Records falling due in each library, with the next due date and its approver.";
       cols=["Library","Records due","Next due date","With counterpart","Approver","Status"];
       const libs=librariesFor(dept), dues=split(d.due,libs.map(l=>Math.max(1,l.phys)));
       rows=libs.map((l,i)=>[l.lib,F(dues[i]),DUE_DATES[i%DUE_DATES.length],
@@ -1813,7 +1795,7 @@ DASHBOARDS.dp=(function(){
          <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
          ${bodyRows}
        </div></div>
-       ${rows.length>10?`<div class="psub" style="margin-top:10px">Showing the first 10 of ${F(rows.length)} rows. The full list is on the panel below.</div>`:""}`;
+       ${rows.length>10?`<div class="psub" style="margin-top:10px">The full list is on the panel below.</div>`:""}`;
 
     document.querySelectorAll("#dp-drill .drow.exp").forEach(el=>el.onclick=()=>{
       const k=el.dataset.row;
@@ -1913,8 +1895,7 @@ DASHBOARDS.dp=(function(){
       <div class="tcol"><div class="tval">${F(vals[i])}</div>
         <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
         <div class="tlab">${m}</div></div>`).join("");
-    document.getElementById("dp-trend-sum").textContent=
-      d.code+", "+F(vals.reduce((a,b)=>a+b,0))+" records declared over the last 12 months";
+    document.getElementById("dp-trend-sum").textContent=d.code;
   }
 
   function drawAll(){
@@ -1973,7 +1954,7 @@ DASHBOARDS.dp=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="psub">Records declared each month by this department.</div>
+      <div class="psub">Records declared each month.</div>
       <div class="trend" id="dp-trend"></div>
       <div class="psub" style="margin-top:12px" id="dp-trend-sum"></div>
     </div>
@@ -2155,7 +2136,7 @@ DASHBOARDS.pj=(function(){
     </div>
     <div class="panel">
       <div class="ptitle" id="pj-pname"></div>
-      <div class="psub">Profile, activity and recordkeeping for a single project.</div>
+      <div class="psub">Profile, activity and recordkeeping for one project.</div>
       <div class="toolbar">
         <span class="lbl">Project</span>
         <select id="pj-sel"></select>
@@ -2300,7 +2281,7 @@ DASHBOARDS.fp=(function(){
 
   function drawCatCharts(){
     document.getElementById("fp-tree").innerHTML=CHART.treemap(
-      CATTOT.map(c=>({label:c.cat,sub:c.terms+" terms",value:c.rec})),{height:250});
+      CATTOT.map(c=>({label:c.cat,value:c.rec})),{height:250});
     document.getElementById("fp-donut").innerHTML=CHART.donut(
       CATTOT.map(c=>({label:c.cat,value:c.rec})),
       {centreValue:F(DATA.DECLARED),centreLabel:"declared records",size:150});
@@ -2364,7 +2345,7 @@ DASHBOARDS.fp=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Least used terms</div>
-      <div class="psub">The candidates for review and deletion. Two further indicators the client asked for on the same slides are not laid out at all: new libraries created outside convention needs the naming convention, which nobody has supplied, and requests for new libraries or terms is a request workflow rather than a report.</div>
+      <div class="psub">The least applied terms, as candidates for review or deletion.</div>
       <div id="fp-bottom"></div>
     </div>
 
@@ -2527,7 +2508,7 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">What is computable, and what is not</div>
-      <div class="psub">Anything about a date is computable today. Anything about an action having been taken is not recorded anywhere.</div>
+      <div class="psub">What falls due in each window, what has passed its retention period, and what is waiting on approval.</div>
       <div id="rd-windows" style="margin-bottom:16px"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DATA.DUE_30)}</div></div>
@@ -2547,7 +2528,7 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records with and without a schedule</div>
-      <div class="psub">A record with no schedule has no due date, so it sits outside every disposal figure above.</div>
+      <div class="psub">Declared records with and without a retention schedule.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(DATA.WITH_SCHEDULE)}</div></div>
         <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(DATA.LABEL_TOTAL-DATA.WITH_SCHEDULE)}</div></div>

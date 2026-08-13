@@ -139,9 +139,8 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   await page.selectOption(".dash-dp #dp-sel","ERCD");
   const b=await page.$eval(".dash-dp #dp-trend-sum",e=>e.textContent);
   ok(/ITD/.test(a)&&/ERCD/.test(b),"the trend follows the department picker");
-  const na=+((a.match(/([\d,]+) records/)||[0,"0"])[1].replace(/,/g,""));
-  const nb=+((b.match(/([\d,]+) records/)||[0,"0"])[1].replace(/,/g,""));
-  ok(na>nb,"the larger department shows the larger trend total");
+  ok(!/[0-9]/.test(a)&&!/[0-9]/.test(b),
+     "the trend summary names the department only, with no computed figure");
 
   console.log("\nReference lists, PPT s26 and s28");
   const prog=await page.$$eval(".dash-dp .reflist .refrow",els=>els.length);

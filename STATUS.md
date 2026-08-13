@@ -115,6 +115,21 @@ number. This supersedes the 11 August decision that dashboards carry no caveat
 boxes, which was taken when the prototype was five dashboards that all had a
 source path.
 
+### Captions name the measure, never its provenance
+
+Agreed 13 August. A panel caption says what the figure is, not where it comes
+from or how it was derived. No "sourceable today", no "reads FileCreatedDate",
+no slide references, and **no computed numbers in a caption or a summary line**,
+so a label does not change when the data behind it does. Source status lives in
+this file and in the requirement register, not on the page.
+
+**One requirement was dropped rather than restyled.** Site activity trend by
+month, asked for in the metrics document under Site Trends, was removed from
+Bank-wide at the client's request on 13 August. It is sourceable, and it is the
+only Word requirement with no home on the page. If it is wanted back, the data
+is still in `DATA.SITE_VISITS_MONTHLY` and the rule that governs it is that a
+range sums the 7 day visit figure and never the 30, 90 or 180 day ones.
+
 ### KPI cards: interactive or static, never ambiguous
 
 A card with the `.tap` chevron promises a click. A card without one promises

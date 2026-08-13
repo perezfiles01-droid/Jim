@@ -101,18 +101,13 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
 
 
   console.log("\nTrend, PPT s10 and s18");
-  /* The summary line reads "<scope>, <n> records declared over the last 12
-     months", so a blanket digit strip would swallow the 12 as well. Take the
-     figure that precedes the word records and nothing else. */
-  const trendTotal=t=>num((t.match(/([\d,]+) records declared/)||[0,"0"])[1]);
   await page.selectOption(".dash-bw #bw-trend-sel","ITD");
   const itd=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
   ok(/ITD/.test(itd),"choosing a department relabels the trend summary");
-  const itdTotal=trendTotal(itd);
   await page.selectOption(".dash-bw #bw-trend-sel","all");
   const all=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(trendTotal(all)>itdTotal,"the bank-wide trend is larger than one department's");
-  eq(trendTotal(all),s.d.DECLARED,"the bank-wide trend totals the declared record count");
+  ok(/All departments/.test(all),"the summary names the scope, with no figure in it");
+  ok(!/[0-9]/.test(all),"the summary carries no computed number, per the 13 Aug instruction");
   await page.selectOption(".dash-bw #bw-trend-sel","FIN");
   await page.click(".dash-bw #bw-trend-reset");
   const reset=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
