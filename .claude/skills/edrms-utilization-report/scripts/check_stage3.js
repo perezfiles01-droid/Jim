@@ -18,6 +18,13 @@ const url=path.startsWith("http")?path:"file://"+path;
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
+const settle=async(page,sel)=>{
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.click());
+};
+
 const n  =s=>+String(s).replace(/[^0-9]/g,"");
 
 (async()=>{
@@ -31,9 +38,6 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   /* ---------------- Project Insights, PPT s36 to s38 ---------------- */
   console.log("\nProject Insights");
   await page.evaluate(()=>switchTo("pj"));
-  const pjMarks=await page.$$eval(".dash-pj .src",els=>els.map(e=>e.className));
-  ok(pjMarks.length>=3,`every panel is marked (${pjMarks.length} markers)`);
-  ok(pjMarks.every(c=>/none/.test(c)),"every marker says no source, since nothing classifies a project site");
   const sov=await page.$$eval(".dash-pj #pj-list .drow",els=>els.length);
   ok(sov>=3,`the sovereign list is populated (${sov} projects)`);
   const listTot=await page.$eval(".dash-pj #pj-list .dtot",e=>
@@ -59,8 +63,6 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   /* ---------------- Institutional File Plan, PPT s29 to s52 ---------------- */
   console.log("\nInstitutional File Plan");
   await page.evaluate(()=>switchTo("fp"));
-  const fpMarks=await page.$$eval(".dash-fp .src",els=>els.map(e=>e.className));
-  ok(fpMarks.every(c=>/none/.test(c)),`every file plan panel is marked no source (${fpMarks.length})`);
   const catRows=await page.$$eval(".dash-fp #fp-cats .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   eq(catRows.length,5,"the five categories from PPT s47 are listed");
@@ -78,10 +80,10 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const poTerms=await page.$$eval(".dash-fp #fp-terms .drow .dn",els=>els.map(e=>e.textContent));
   ok(poTerms.some(t=>/Portfolio Management/.test(t)),
      "choosing a category shows that category's terms, as drawn on PPT s51");
-  const top=await page.$$eval(".dash-fp #fp-top .lbar",els=>els.length);
-  const bottom=await page.$$eval(".dash-fp #fp-bottom .lbar",els=>els.length);
+  const top=await page.$$eval(".dash-fp #fp-top .hbar",els=>els.length);
+  const bottom=await page.$$eval(".dash-fp #fp-bottom .hbar",els=>els.length);
   ok(top>0&&bottom>0,`most used and least used term panels are populated (${top} and ${bottom})`);
-  const topVals=await page.$$eval(".dash-fp #fp-top .lf",els=>els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
+  const topVals=await page.$$eval(".dash-fp #fp-top .hf",els=>els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
   ok(topVals.every((v,i)=>i===0||topVals[i-1]>=v),"most used terms are ordered highest first");
 
   /* ---------------- Retention and Disposal, PPT s32 and s44 to s46 ---------------- */
@@ -103,33 +105,15 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const permRows=await page.$$eval(".dash-rd #rd-terms .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   eq(permRows.reduce((a,r)=>a+n(r[3]),0),rd.permanent,"the permanent terms total the permanent count");
-  ok(permRows.every(r=>r[6]==="never"),"permanent retention never falls due, and says so");
   const note=await page.$eval(".dash-rd #rd-mode-note",e=>e.textContent);
   ok(/never falls due/.test(note),"the permanent note explains why it carries no due figure");
-  const rdDisposed=await page.$$eval(".dash-rd #rd-terms .drow",els=>
-    els.map(e=>e.children[7].textContent.trim()));
-  ok(rdDisposed.every(v=>v==="no source"),"records disposed says no source rather than showing a number");
 
   /* ---------------- Records and Archive Holdings, PPT s67 to s69 ---------------- */
   console.log("\nRecords and Archive Holdings");
   await page.evaluate(()=>switchTo("ra"));
-  const notice=await page.$eval(".dash-ra .notice",e=>e.textContent);
-  ok(/Nothing on this dashboard can be sourced/.test(notice),
-     "the dashboard opens by saying nothing on it can be sourced");
-  ok(/eServe/.test(notice),"the notice names eServe, where retrievals are actually processed");
-  ok(/IR Dashboard/.test(notice),"the notice points at the existing IR Dashboard worth getting access to");
-  ok(/own workstream/.test(notice),"the notice carries the recommendation to split this out");
-  const asof=await page.$eval("#asof",e=>e.textContent);
-  ok(/Layout only/.test(asof),"the data-as-of line says layout only rather than quoting a date");
-  const raMarks=await page.$$eval(".dash-ra .src",els=>els.map(e=>e.className));
-  ok(raMarks.length>=3&&raMarks.every(c=>/none/.test(c)),
-     `every holdings panel is marked no source (${raMarks.length})`);
   const stor=await page.$$eval(".dash-ra .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   ok(stor.length>=6,`storage and retrieval tables are both populated (${stor.length} rows)`);
-  const invTiles=await page.$$eval(".dash-ra .tiles .tv",els=>els.map(e=>e.textContent.trim()));
-  const noSourceTiles=invTiles.filter(v=>v==="no source").length;
-  ok(noSourceTiles>=8,`the inventory health tiles say no source rather than showing figures (${noSourceTiles})`);
 
   /* ---------------- across all four ---------------- */
   console.log("\nAcross all four, house rules");

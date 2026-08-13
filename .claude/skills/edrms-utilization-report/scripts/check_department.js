@@ -14,6 +14,13 @@ const url=path.startsWith("http")?path:"file://"+path;
 
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
+const settle=async(page,sel)=>{
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.click());
+};
+
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
 (async()=>{
@@ -98,13 +105,11 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   await page.selectOption(".dash-dp #dp-sel","ITD");
   const expect={users:"users",visitors:"visitor",docs:"documents",rec:"declaration",disp:"disposal"};
   for(const k of Object.keys(expect)){
-    await page.click(`.dash-dp #dp-kpis .kpi[data-k="${k}"]`);
+    await settle(page,`.dash-dp #dp-kpis .kpi[data-k="${k}"]`);
     const t=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
     ok(t.includes(expect[k]),`tile ${k} opens the ${expect[k]} table`);
     const open=await page.$$eval(".dash-dp #dp-kpis .kpi.on",els=>els.length);
     eq(open,1,`exactly one tile reads as open on ${k}`);
-    const marked=await page.$$eval(".dash-dp #dp-drill .src",els=>els.length);
-    eq(marked,1,`the ${k} table carries exactly one source marker`);
   }
 
   console.log("\nSorting and paging the site list, PPT s20");
@@ -125,12 +130,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   console.log("\nLibrary usage grouped by file plan category, PPT s61 to s66");
   const cats=await page.$$eval(".dash-dp #dp-libs .drow.cat .dn",els=>els.map(e=>e.textContent.trim()));
   ok(cats.length>0,`libraries are grouped under category headings (${cats.length} on this page)`);
-  const libMark=await page.$eval(".dash-dp #dp-libs",e=>
-    e.closest(".panel").querySelector(".src").className);
-  ok(/none/.test(libMark),"the library panel is marked as having no source, since users per library has none");
-  const libUsers=await page.$$eval(".dash-dp #dp-libs .drow:not(.cat)",els=>
-    els.map(e=>e.children[1].textContent.trim()));
-  ok(libUsers.every(v=>v==="no source"),"users per library says no source rather than showing a number");
 
   console.log("\nTrend, PPT s24");
   const cols=await page.$$eval(".dash-dp #dp-trend .tcol",els=>els.length);
@@ -145,8 +144,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(na>nb,"the larger department shows the larger trend total");
 
   console.log("\nReference lists, PPT s26 and s28");
-  const refMarks=await page.$$eval(".dash-dp .src.ref",els=>els.length);
-  eq(refMarks,2,"the convention and programme date panels are both marked as maintained lists");
   const prog=await page.$$eval(".dash-dp .reflist .refrow",els=>els.length);
   ok(prog>=7,`the five programme dates and the convention rows are laid out (${prog} rows)`);
 

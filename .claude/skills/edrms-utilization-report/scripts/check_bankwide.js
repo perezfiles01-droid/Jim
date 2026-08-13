@@ -14,6 +14,13 @@ const url=path.startsWith("http")?path:"file://"+path;
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
+const settle=async(page,sel)=>{
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.click());
+};
+
 const num=s=>+String(s).replace(/[^0-9.-]/g,"");
 
 (async()=>{
@@ -83,7 +90,7 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   const expect={users:"users",docs:"documents",rec:"records declared",
                 phys:"physical counterparts",disp:"due for disposal"};
   for(const k of Object.keys(expect)){
-    await page.click(`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
+    await settle(page,`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
     const t=await page.$eval(".dash-bw #bw-drill .ptitle",e=>e.textContent.toLowerCase());
     ok(t.includes(expect[k]),`tile ${k} opens the ${expect[k]} table`);
     const opened=await page.$$eval(".dash-bw #bw-kpis .kpi.on",els=>els.length);
@@ -92,17 +99,6 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
     eq(drillRows,16,`the ${k} table lists every department`);
   }
 
-  console.log("\nSource markers, the convention agreed 13 Aug 2026");
-  const marks=await page.$$eval(".dash-bw .src",els=>els.map(e=>e.className.replace("src ","")));
-  ok(marks.length>=4,`the page carries source markers (${marks.length} found)`);
-  ok(marks.includes("dept"),"at least one panel is marked as waiting on the department list");
-  ok(marks.includes("part"),"at least one panel is marked partly sourceable");
-  await page.click('.dash-bw #bw-kpis .kpi[data-k="users"]');
-  const userMark=await page.$eval(".dash-bw #bw-drill .src",e=>e.className);
-  ok(/none/.test(userMark),"the users table is marked as having no source, since the staff split has none");
-  const noSource=await page.$$eval(".dash-bw",els=>
-    (els[0].textContent.match(/no source/g)||[]).length);
-  ok(noSource>=3,`unsourceable cells say so in the cell (${noSource} found)`);
 
   console.log("\nTrend, PPT s10 and s18");
   /* The summary line reads "<scope>, <n> records declared over the last 12

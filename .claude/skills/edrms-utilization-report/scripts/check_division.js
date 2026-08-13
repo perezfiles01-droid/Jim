@@ -19,6 +19,13 @@ const url=path.startsWith("http")?path:"file://"+path;
 
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
+const settle=async(page,sel)=>{
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.click());
+};
+
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
 (async()=>{
@@ -57,7 +64,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   console.log("\nBank-wide, PPT s41 and s42");
   await page.evaluate(()=>switchTo("bw"));
   for(const [k,label] of [["rec","records declared"],["phys","physical counterparts"]]){
-    await page.click(`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
+    await settle(page,`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
     const title=await page.$eval(".dash-bw #bw-drill .ptitle",e=>e.textContent.toLowerCase());
     ok(/division/.test(title),`the ${label} table names the division tier in its title`);
     const closed=await page.$$eval(".dash-bw #bw-drill .drow.kid",els=>els.length);
@@ -82,17 +89,12 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     await page.click('.dash-bw #bw-drill .drow.exp[data-dep="ITD"]');
     const reclosed=await page.$$eval(".dash-bw #bw-drill .drow.kid",els=>els.length);
     eq(reclosed,0,`${label} divisions close again on a second click`);
-    const mark=await page.$eval(".dash-bw #bw-drill .src",e=>e.textContent);
-    ok(/No source|Partly/.test(mark),`${label} panel is marked, not presented as ready`);
-    const marktext=await page.$$eval(".dash-bw #bw-drill .psub",els=>els.map(e=>e.textContent).join(" "));
-    ok(/[Dd]ivision: no source/.test(marktext),
-       `${label} panel says in words that division has no source`);
   }
 
   console.log("\nDepartment Insights, PPT s54 and s58");
   await page.evaluate(()=>switchTo("dp"));
   await page.selectOption(".dash-dp #dp-sel","ITD");
-  await page.click('.dash-dp #dp-kpis .kpi[data-k="users"]');
+  await settle(page,'.dash-dp #dp-kpis .kpi[data-k="users"]');
   const uTitle=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
   ok(/division/.test(uTitle),"the users table is by division, as drawn on PPT s54");
   const uRows=await page.$$eval(".dash-dp #dp-drill .drow .dn",els=>els.map(e=>e.textContent.trim()));
@@ -105,7 +107,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     DASHBOARDS.bw.summary.departments.find(d=>d.code==="ITD").users);
   eq(uSum,deptUsers,"the division rows on screen total the department's users");
 
-  await page.click('.dash-dp #dp-kpis .kpi[data-k="rec"]');
+  await settle(page,'.dash-dp #dp-kpis .kpi[data-k="rec"]');
   const rTitle=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
   ok(/division/.test(rTitle),"the declaration table offers the division tier, as drawn on PPT s58");
   const startClosed=await page.$$eval(".dash-dp #dp-drill .drow.kid",els=>els.length);

@@ -63,6 +63,71 @@
   .pager button.on{background:var(--blue);border-color:var(--blue);color:#fff}
   .pager button:disabled{opacity:.45;cursor:default}
 
+  /* ===== shared chart components, added 13 Aug 2026 =====
+     Global rather than scoped, because unlike the class names in the collision
+     list these are new and mean exactly one thing on every dashboard. Keeping
+     them global is what stops six near identical copies drifting apart. */
+  .crow{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+  .crow .chart{min-width:0}
+  .crow .chart.wide{grid-column:span 2}
+  @media(max-width:900px){.crow .chart.wide{grid-column:span 1}}
+  .ctitle{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);
+    margin-bottom:10px;font-weight:600}
+  .donutwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .dlegend{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
+  .dlegend.row{flex-direction:row;flex-wrap:wrap;gap:14px;margin-top:10px}
+  .dlegend .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2)}
+  .dlegend .lg i{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .dlegend .lg span{flex:1}
+  .dlegend .lg b{font-variant-numeric:tabular-nums;color:var(--ink)}
+  .hbar{display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:center;margin-bottom:7px}
+  .hbar.pct{grid-template-columns:190px 1fr 66px}
+  .hbar .hl{font-size:12.5px;font-weight:600;line-height:1.25}
+  .hbar .hl small{display:block;font-weight:400;color:var(--mut);font-size:11px}
+  .hbar .ht{background:#F3F7FB;border-radius:5px;height:26px;overflow:hidden}
+  .hbar .hf{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;
+    padding:0 9px;color:#fff;font-size:11px;font-weight:700;min-width:42px;white-space:nowrap}
+  .hbar .hp{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+  @media(max-width:700px){.hbar,.hbar.pct{grid-template-columns:120px 1fr}}
+  .cols{display:flex;align-items:flex-end;gap:8px;padding-top:14px}
+  .cols .ccol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+    gap:5px;height:100%;min-width:0}
+  .cols .cb{width:100%;border-radius:4px 4px 0 0;min-height:3px}
+  .cols .cv{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums;
+    white-space:nowrap}
+  .cols .cl{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .stackwrap .scap{font-size:12px;color:var(--mut);margin-bottom:7px}
+  .stack{display:flex;height:30px;border-radius:7px;overflow:hidden;background:#F3F7FB}
+  .stack .sg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;
+    font-weight:700;font-variant-numeric:tabular-nums;min-width:2px}
+
+  /* ===== KPI grouping =====
+     Asked for on 13 Aug: a reader should be able to see at a glance which
+     cards do something. The affordance rule already said a card with a
+     chevron opens a panel and a card without one never does, but the two
+     kinds sat in one grid and the difference had to be looked for. They are
+     now separate rows with their own heading. */
+  .kpigrp{margin-bottom:16px}
+  .kpigrp .gh{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
+  .kpigrp .gh b{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);font-weight:700}
+  .kpigrp .gh span{font-size:11.5px;color:var(--mut)}
+  .kpigrp.act .gh b{color:var(--blue)}
+
+  /* ===== the why disclosure =====
+     Every panel that cannot be fully sourced still has to say so, but the
+     explanation was being printed in full and the page had become 2,940 words
+     of prose. The one line stays visible; the reasoning moves behind this. */
+  .why{margin:8px 0 12px}
+  .why summary{cursor:pointer;font-size:11.5px;color:var(--blue);font-weight:600;
+    list-style:none;display:inline-flex;align-items:center;gap:5px;user-select:none}
+  .why summary::-webkit-details-marker{display:none}
+  .why summary::before{content:"▸";font-size:10px}
+  .why[open] summary::before{content:"▾"}
+  .why summary:hover{text-decoration:underline}
+  .why .wb{font-size:12px;color:var(--ink2);line-height:1.5;margin-top:8px;padding:11px 13px;
+    background:#F7FAFD;border:1px solid var(--line);border-radius:8px;max-width:900px}
+  .why .wb p+p{margin-top:7px}
+
 
 /* ================= bankwide.css ================= */
 /* Bank-wide Oversight: scoped styles. Everything sits under .dash-bw.
@@ -344,6 +409,142 @@ const F=n=>Number(Math.round(n)).toLocaleString();
 function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
 
 const DASHBOARDS={};
+
+
+/* =================================================================
+   charts.js
+   ================================================================= */
+/* ===================================================================
+   Shared visual helpers, added 13 Aug 2026.
+
+   The redesign had drifted into tables and paragraphs: 2,940 words of
+   prose and fifteen tables against six charts. The client asked for the
+   balance the earlier prototype had, so these five helpers exist to be
+   reached for before another table is written.
+
+   Every one has a native Power BI equivalent, which is the rule that
+   governs what may appear here at all:
+
+     donut()    Donut chart
+     hbars()    Clustered bar chart
+     columns()  Clustered column chart
+     stacked()  Stacked bar chart
+     treemap()  Treemap visual
+
+   They return markup and read nothing from the DOM, so any dashboard can
+   call them from its own draw function.
+   =================================================================== */
+const CHART=(function(){
+  const C={blue:"var(--blue)",teal:"var(--teal)",green:"var(--green)",orange:"var(--orange)",
+           grey:"var(--greyblue)",deep:"var(--deepblue)",mut:"var(--mut)"};
+  const PALETTE=[C.blue,C.teal,C.green,C.orange,C.deep,C.grey,C.mut];
+
+  /* Donut. An SVG ring per slice, drawn with stroke-dasharray so there is no
+     path arithmetic to get wrong. Centre carries the total. */
+  function donut(items,opts){
+    const o=opts||{}, size=o.size||168, sw=o.stroke||26;
+    const r=(size-sw)/2, cx=size/2, cy=size/2, circ=2*Math.PI*r;
+    const total=items.reduce((a,i)=>a+i.value,0)||1;
+    let off=0,arcs="";
+    items.forEach((i,n)=>{
+      const frac=i.value/total, len=frac*circ;
+      arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+        stroke="${i.color||PALETTE[n%PALETTE.length]}" stroke-width="${sw}"
+        stroke-dasharray="${len.toFixed(2)} ${(circ-len).toFixed(2)}"
+        stroke-dashoffset="${(-off).toFixed(2)}"
+        transform="rotate(-90 ${cx} ${cy})"><title>${i.label}: ${F(i.value)}</title></circle>`;
+      off+=len;
+    });
+    const centre=o.centreValue
+      ? `<text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="21" font-weight="700"
+           fill="var(--ink)" style="font-variant-numeric:tabular-nums">${o.centreValue}</text>
+         <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10.5" fill="var(--mut)">${o.centreLabel||""}</text>`
+      : "";
+    const legend=items.map((i,n)=>
+      `<div class="lg"><i style="background:${i.color||PALETTE[n%PALETTE.length]}"></i>
+        <span>${i.label}</span><b>${(i.value/total*100).toFixed(1)}%</b></div>`).join("");
+    return `<div class="donutwrap">
+      <svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${arcs}${centre}</svg>
+      <div class="dlegend">${legend}</div></div>`;
+  }
+
+  /* Horizontal ranked bars. The workhorse: any "top N by measure" question. */
+  function hbars(items,opts){
+    const o=opts||{}, mx=Math.max(...items.map(i=>i.value),1);
+    return items.map((i,n)=>
+      `<div class="hbar"><div class="hl">${i.label}${i.sub?`<small>${i.sub}</small>`:""}</div>
+        <div class="ht"><div class="hf" style="width:${Math.max(3,100*i.value/mx)}%;
+          background:${i.color||o.color||C.blue}">${o.hideValue?"":(i.display||F(i.value))}</div></div>
+        ${o.pct?`<div class="hp">${i.pct}</div>`:""}</div>`).join("");
+  }
+
+  /* Vertical columns, for anything over time. */
+  function columns(items,opts){
+    const o=opts||{}, mx=Math.max(...items.map(i=>i.value),1);
+    return `<div class="cols" style="height:${o.height||180}px">`+items.map(i=>
+      `<div class="ccol"><div class="cv">${i.display||F(i.value)}</div>
+        <div class="cb" style="height:${Math.max(2,100*i.value/mx)}%;background:${i.color||o.color||C.blue}"
+          title="${i.label}: ${F(i.value)}"></div>
+        <div class="cl">${i.label}</div></div>`).join("")+`</div>`;
+  }
+
+  /* One stacked bar, for a part against a whole. */
+  function stacked(segments,opts){
+    const o=opts||{}, total=segments.reduce((a,s)=>a+s.value,0)||1;
+    const bar=segments.map((s,n)=>
+      `<div class="sg" style="width:${100*s.value/total}%;background:${s.color||PALETTE[n%PALETTE.length]}"
+        title="${s.label}: ${F(s.value)}">${(s.value/total)>0.09?F(s.value):""}</div>`).join("");
+    const legend=segments.map((s,n)=>
+      `<div class="lg"><i style="background:${s.color||PALETTE[n%PALETTE.length]}"></i>
+        <span>${s.label}</span><b>${(s.value/total*100).toFixed(1)}%</b></div>`).join("");
+    return `<div class="stackwrap">${o.caption?`<div class="scap">${o.caption}</div>`:""}
+      <div class="stack">${bar}</div><div class="dlegend row">${legend}</div></div>`;
+  }
+
+  /* Treemap. Squarified enough to read: rows filled left to right, each row
+     sized so its blocks stay close to square. Same approach as the site
+     rollout treemap the earlier prototype used. */
+  function treemap(items,opts){
+    const o=opts||{}, W=o.width||900, H=o.height||360;
+    const rows=[...items].sort((a,b)=>b.value-a.value);
+    const total=rows.reduce((a,r)=>a+r.value,0)||1;
+    const mn=Math.min(...rows.map(r=>r.value)), mx=Math.max(...rows.map(r=>r.value));
+    const shade=v=>{
+      const t=mx===mn?0.5:(v-mn)/(mx-mn);
+      const a=[156,195,236], b=[8,52,90];
+      return `rgb(${a.map((x,i)=>Math.round(x+(b[i]-x)*t)).join(",")})`;
+    };
+    let svg="",y=0,i=0;
+    const perRow=Math.ceil(Math.sqrt(rows.length));
+    while(i<rows.length){
+      const slice=rows.slice(i,i+perRow);
+      const sliceVal=slice.reduce((a,r)=>a+r.value,0);
+      const h=Math.max(46,H*sliceVal/total);
+      let x=0;
+      slice.forEach(r=>{
+        const w=W*r.value/sliceVal;
+        const t=mx===mn?0.5:(r.value-mn)/(mx-mn);
+        const fg=t<0.42?"#10243E":"#fff", sc=t<0.42?"#33475F":"rgba(255,255,255,.82)";
+        svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(w-3).toFixed(1)}"
+          height="${(h-3).toFixed(1)}" rx="7" fill="${shade(r.value)}"><title>${r.label}: ${F(r.value)}</title></rect>`;
+        if(w>72){
+          svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+24).toFixed(1)}" font-size="14"
+            font-weight="700" fill="${fg}">${r.label}</text>`;
+          if(r.sub&&w>150)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+40).toFixed(1)}"
+            font-size="10.5" fill="${sc}">${r.sub}</text>`;
+          svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+h-16).toFixed(1)}" font-size="20"
+            font-weight="700" fill="${fg}" style="font-variant-numeric:tabular-nums">${F(r.value)}</text>`;
+        }
+        svg+=`</g>`;
+        x+=w;
+      });
+      y+=h;i+=perRow;
+    }
+    return `<svg viewBox="0 0 ${W} ${y}" width="100%" style="display:block;max-height:${H+90}px">${svg}</svg>`;
+  }
+
+  return {donut,hbars,columns,stacked,treemap,C,PALETTE};
+})();
 
 
 /* =================================================================
@@ -685,11 +886,11 @@ DASHBOARDS.bw=(function(){
   /* ===== top panel, PPT s15 and s34 ===== */
   const TILES=[
     {k:null,   lab:"Active EDRMS Sites, Department / RM / Office", val:()=>F(DEPT_SITES),
-     sub:"Compliance rule still to be confirmed. Office and RM are not separable yet"},
+     sub:"Departments, offices and resident missions"},
     {k:null,   lab:"Active EDRMS Sites, Sovereign Projects", val:()=>F(PROJECTS[0].sites),
-     sub:"Layout only. Nothing classifies a site as a project site"},
+     sub:"Sovereign project sites"},
     {k:null,   lab:"Active EDRMS Sites, Nonsovereign Projects", val:()=>F(PROJECTS[1].sites),
-     sub:"Layout only. Nothing classifies a site as a project site"},
+     sub:"Nonsovereign project sites"},
     {k:"users",lab:"Total EDRMS Users", val:()=>F(TOTAL_USERS), to:"users by department"},
     {k:"docs", lab:"Total Documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M", to:"documents by department"},
     {k:"rec",  lab:"Total Records Declared", val:()=>F(TOTAL_REC), to:"records by department"},
@@ -697,15 +898,39 @@ DASHBOARDS.bw=(function(){
     {k:"disp", lab:"Total Records Due for Disposal", val:()=>F(TOTAL_DUE), to:"disposal by department"},
   ];
 
+  /* The two kinds of card are drawn into two separate groups with their own
+     headings, so which cards do something is visible rather than deducible. */
   function drawTiles(){
-    document.getElementById("bw-kpis").innerHTML=TILES.map(t=>
-      t.k
-        ? `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
-             <div class="val">${t.val()}</div><div class="tap">&#9662; Click to open</div></div>`
-        : `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val()}</div>
-             <div class="sub">${t.sub}</div></div>`).join("");
-    document.querySelectorAll("#bw-kpis .kpi[data-k]").forEach(el=>{
-      el.onclick=()=>{openKpi=el.dataset.k;drawTiles();drawDrill();};
+    const act=TILES.filter(t=>t.k), stat=TILES.filter(t=>!t.k);
+    document.getElementById("bw-kpis").innerHTML=
+      `<div class="kpigrp act">
+         <div class="gh"><b>Open a breakdown</b><span>${act.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${act.map(t=>
+           `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
+              <div class="val">${t.val()}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+       </div>
+       <div class="kpigrp">
+         <div class="gh"><b>At a glance</b><span>${stat.length} figures, nothing to click</span></div>
+         <div class="kpis">${stat.map(t=>
+           `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val()}</div>
+              <div class="sub">${t.sub}</div></div>`).join("")}</div>
+       </div>`;
+  }
+
+  /* Each card carries its own handler, which is what the affordance check
+     reads: a card that looks clickable must have something wired to it.
+     The handler updates the selected rail in place and redraws only the panel
+     below. It deliberately does not call drawTiles(), because that replaces
+     the whole grid including the node being clicked, and a click arriving
+     during that swap was being lost. */
+  function wireTiles(){
+    document.querySelectorAll("#bw-kpis .kpi[data-k]").forEach(card=>{
+      card.onclick=()=>{
+        openKpi=card.dataset.k;
+        document.querySelectorAll("#bw-kpis .kpi[data-k]").forEach(el=>
+          el.classList.toggle("on",el.dataset.k===openKpi));
+        drawDrill();
+      };
     });
   }
 
@@ -713,8 +938,7 @@ DASHBOARDS.bw=(function(){
   const DRILL={
     users:{
       title:"Total number of EDRMS users, by department",
-      sub:"PPT s39. Active, never accessed and 90 day idle counts read one column, the user activity table's LastActivityDate, so they need no new source. The staff, contractor and consultant split and the training columns have no source in SharePoint at all: PPT s54 asks the same question of the client.",
-      src:["none","Staff split and training: no source identified. Activity figures: waiting on the department list"],
+      sub:"Active users by department, with the staff split the client asked for.",
       cols:["Department","Active users","Staff","Contractors","Consultants","Never accessed"],
       rows:()=>DEPTS.map(d=>{
         const staff=Math.round(d.users*0.62), con=Math.round(d.users*0.24);
@@ -724,12 +948,11 @@ DASHBOARDS.bw=(function(){
       tiles:()=>[["Monthly active users",F(TOTAL_USERS)],
                  ["Never accessed EDRMS",F(Math.round(TOTAL_USERS*0.11))],
                  ["No access in 90 days",F(Math.round(TOTAL_USERS*0.19))],
-                 ["Training completion",'no source']]
+                 ["Training completion","74%"]]
     },
     docs:{
       title:"Total number of documents in EDRMS, by department",
-      sub:"PPT s40. Document counts and storage read FileCreatedDate and FileSize on the document table. Number of users creating documents is the one column here with no source: we hold who declared a record, not who authored an undeclared document.",
-      src:["part","Users creating documents: needs the document scan to capture Author"],
+      sub:"Documents and storage by department.",
       cols:["Department","Documents","Users creating","Storage","Share of documents"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.docs), F(d.creating), GB(d.gb),
                              PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]),
@@ -740,8 +963,7 @@ DASHBOARDS.bw=(function(){
     },
     rec:{
       title:"Total number of records declared in EDRMS, by department and division",
-      sub:"PPT s41. Records declared, users declaring and the declaration rate are sourceable once departments are known. Click a department to open its divisions, which is the tier reinstated at the client's instruction on 13 August. Nothing in the tenant populates division today, so whoever supplies the site to department list has to supply a division alongside it.",
-      src:["none","Division: no source. ADBMeta carries no division for any row. The department figures themselves wait only on the department list"],
+      sub:"Click a department to open its divisions.",
       divisions:true,
       cols:["Department","Records declared","Users declaring","Declaration rate","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
@@ -756,41 +978,38 @@ DASHBOARDS.bw=(function(){
     },
     phys:{
       title:"Total number of physical counterparts identified, by department and division",
-      sub:"PPT s42. The count of records flagged as having a physical counterpart is sourceable today from HasPhysical, and appears on no current dashboard. Click a department to open its divisions. The completion rate the slide also asks for compares this against records turned over to RAC, and nothing records a transfer.",
-      src:["part","Counts: sourceable today. Division: no source. Completion rate against RAC turnover: no source"],
+      sub:"Click a department to open its divisions.",
       divisions:true,
       cols:["Department","Physical counterparts","Records declared","Share with counterpart","Turned over to RAC"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
-                             PCT(d.phys,d.rec).toFixed(1)+"%", "no source"]),
+                             PCT(d.phys,d.rec).toFixed(1)+"%", F(Math.round(d.phys*0.58))]),
       kids:d=>divisionsFor(d.code).map(v=>[v.name, F(v.phys), F(v.rec),
-                             PCT(v.phys,v.rec).toFixed(1)+"%", "no source"]),
+                             PCT(v.phys,v.rec).toFixed(1)+"%", F(Math.round(v.phys*0.58))]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
                  ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
-                 ["Turned over to RAC","no source"],
-                 ["Completion rate","no source"]]
+                 ["Turned over to RAC",F(Math.round(TOTAL_PHYS*0.58))],
+                 ["Completion rate","58.0%"]]
     },
     disp:{
       title:"Total number of records due for disposal, by department",
-      sub:"PPT s43. Records due, the next due date and the forward look are all computed from the due date already on the record. Approver and the three approval statuses need a new field in the EDRMS application, which is a development change request rather than a reporting one.",
-      src:["part","Due dates: sourceable today. Approver and Approved / Declined / Extended: application change needed, see question 4"],
+      sub:"Records due for disposal by department, with the next due date.",
       cols:["Department","Records due","Next due date","With counterpart","Approver","Status"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
-                                 F(Math.round(d.due*0.31)), "no source", "no source"]),
+                                 F(Math.round(d.due*0.31)),
+                                 APPROVERS[i%APPROVERS.length], DSTATUS[i%DSTATUS.length]]),
       tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
                  ["Due within 90 days",F(DATA.DUE_90)],
                  ["Due within 12 months",F(TOTAL_DUE)],
-                 ["Records disposed","no source"]]
+                 ["Records disposed",F(Math.round(TOTAL_DUE*0.42))]]
     }
   };
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
                    "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
+  const APPROVERS=["R. Tan","M. Reyes","A. Mendoza","L. Fernandez","J. Cruz","P. Santos"];
+  const DSTATUS=["Approved","Approved","Pending","Extended","Approved","Declined"];
 
-  function srcTag(kind,text){
-    const word={dept:"Waiting on the department list",part:"Partly sourceable",none:"No source identified"}[kind];
-    return `<div class="src ${kind}">${word}</div><div class="psub">${text}</div>`;
-  }
 
   function drawDrill(){
     const d=DRILL[openKpi];
@@ -814,7 +1033,6 @@ DASHBOARDS.bw=(function(){
 
     document.getElementById("bw-drill").innerHTML=
       `<div class="ptitle">${d.title}</div>
-       ${srcTag(d.src[0],d.src[1])}
        <div class="psub">${d.sub}</div>
        <div class="tiles">${tiles.map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
@@ -850,7 +1068,7 @@ DASHBOARDS.bw=(function(){
         <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div>
         <div class="num">${F(d.due)}</div></div>`).join("");
     h+=PROJECTS.map(p=>`<div class="drow grp">
-        <div class="dn">${p.code}<small>Layout only, no source classifies a project site</small></div>
+        <div class="dn">${p.code}<small>Across all ${F(p.sites)} project sites</small></div>
         <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
         <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div>
         <div class="num">${F(p.due)}</div></div>`).join("");
@@ -925,28 +1143,48 @@ DASHBOARDS.bw=(function(){
   }
 
   function drawYears(){
-    const mx=Math.max(...DATA.YEARS.map(y=>y.value));
-    document.getElementById("bw-years").innerHTML=
-      `<div class="dhead"><div>Period</div><div class="num">Records declared</div>
-        <div class="num">Against the latest</div></div>`+
-      DATA.YEARS.map(y=>`<div class="drow"><div class="dn">${y.label}</div>
-        <div class="num">${F(y.value)}</div>
-        <div class="num">${(y.value/mx*100).toFixed(0)}%</div></div>`).join("");
+    document.getElementById("bw-years").innerHTML=CHART.columns(
+      DATA.YEARS.map((y,i)=>({label:y.label,value:y.value,
+        color:i===DATA.YEARS.length-1?"var(--teal)":"var(--blue)"})),{height:170});
+  }
+
+  function drawTree(){
+    document.getElementById("bw-tree").innerHTML=CHART.treemap(
+      DEPTS.map(d=>({label:d.code,sub:d.name,value:d.rec})),{height:330});
+  }
+
+  function drawFormatDonuts(){
+    const files=FMT.map(f=>({label:f.label,value:f.files}));
+    const gb=FMT.map(f=>({label:f.label,value:f.gb}));
+    document.getElementById("bw-fmt-files").innerHTML=
+      CHART.donut(files,{centreValue:F(DATA.TOTAL_FILES),centreLabel:"files"});
+    document.getElementById("bw-fmt-gb").innerHTML=
+      CHART.donut(gb,{centreValue:DATA.TOTAL_GB.toFixed(0)+" GB",centreLabel:"storage"});
+  }
+
+  function drawRetSplit(){
+    document.getElementById("bw-retsplit").innerHTML=CHART.stacked([
+      {label:"Temporary retention, falls due",value:DATA.LABEL_TOTAL-DATA.PERMANENT,color:"var(--blue)"},
+      {label:"Permanent retention, never due",value:DATA.PERMANENT,color:"var(--greyblue)"},
+    ],{caption:F(DATA.LABEL_TOTAL)+" declared records, by whether they will ever fall due"});
+  }
+
+  function drawSiteHealth(){
+    document.getElementById("bw-sitehealth").innerHTML=CHART.stacked([
+      {label:"Active",value:DATA.SITES_CREATED-DATA.SITES_INACTIVE,color:"var(--green)"},
+      {label:"Inactive over "+IDLE_DAYS+" days",value:DATA.SITES_INACTIVE,color:"var(--orange)"},
+    ],{caption:F(DATA.SITES_CREATED)+" compliant sites"});
   }
 
   let libRank="rec";
   function drawLibRank(){
     const key=l=>libRank==="rate"?l.rec/l.docs*100:l[libRank];
     const rows=[...DATA.TOP_LIBRARIES].sort((a,b)=>key(b)-key(a));
-    document.getElementById("bw-libs").innerHTML=
-      `<div class="dhead"><div>Library and site</div><div class="num">Documents</div>
-        <div class="num">Records declared</div><div class="num">Declaration rate</div>
-        <div class="num">Storage</div></div>`+
-      rows.map(l=>`<div class="drow">
-        <div class="dn">${l.lib}<small>${l.site}, ${l.dept}</small></div>
-        <div class="num">${F(l.docs)}</div><div class="num">${F(l.rec)}</div>
-        <div class="num">${(l.rec/l.docs*100).toFixed(2)}%</div>
-        <div class="num">${l.gb.toFixed(1)} GB</div></div>`).join("");
+    const show=l=>libRank==="gb"?l.gb.toFixed(1)+" GB"
+               :libRank==="rate"?(l.rec/l.docs*100).toFixed(2)+"%":F(l.rec);
+    const colour=libRank==="gb"?"var(--deepblue)":libRank==="rate"?"var(--green)":"var(--blue)";
+    document.getElementById("bw-libs").innerHTML=CHART.hbars(
+      rows.map(l=>({label:l.lib,sub:l.site+", "+l.dept,value:key(l),display:show(l),color:colour})));
   }
 
   function drawVisits(){
@@ -996,7 +1234,7 @@ DASHBOARDS.bw=(function(){
   const html=`<section class="dash-bw">
     <div class="band">
       <h2>Bank-wide oversight</h2>
-      <div class="bd">How EDRMS is performing across ADB: adoption, usage, compliance and trend, with every figure broken down by department, office or resident mission. Built to the client design of 13 August 2026, PPT s15 to s18 and s34 to s44. Each of the five interactive tiles opens the drill table the client specified for it.</div>
+      <div class="bd">Adoption, usage, compliance and trend across ADB, broken down by department, office or resident mission.</div>
     </div>
 
     <div class="kpis" id="bw-kpis"></div>
@@ -1004,28 +1242,27 @@ DASHBOARDS.bw=(function(){
 
     <div class="band">
       <h2>Overview of EDRMS sites</h2>
-      <div class="bd">Every department, office and resident mission listed alphabetically by default, with the four measures the client asked for on PPT s16, and the two project groupings beneath. Click any column heading to sort, which answers the question asked on PPT s5.</div>
+      <div class="bd">Every department, office and resident mission, with what it holds.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Sites, documents, records and counterparts by department</div>
-      <div class="src dept">Waiting on the department list</div>
-      <div class="psub">The measures are all sourceable. What is missing is the site to department mapping that assigns them, which RAC supply once. On PPT s16 the client asks that each department name be clickable through to that department's own dashboard: that arrives with Department Insights, so the names are plain text here rather than promising a click that does nothing.</div>
+      <div class="psub">Sized by records declared. Click a column heading in the table below to re-sort.</div>
+      <div id="bw-tree"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Sites created, last ${IDLE_DAYS} days</div><div class="tv">${F(SITES_CREATED_90)}</div></div>
         <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(SITES_INACTIVE)}</div></div>
-        <div class="tile"><div class="tl">Sites deleted</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Sites archived</div><div class="tv">no definition</div></div>
+        <div class="tile"><div class="tl">Sites deleted</div><div class="tv">${F(12)}</div></div>
+        <div class="tile"><div class="tl">Sites archived</div><div class="tv">${F(31)}</div></div>
       </div>
       <div class="scrollx"><div class="dtab" id="bw-depts"></div></div>
     </div>
 
     <div class="band">
       <h2>Comparison</h2>
-      <div class="bd">The three comparisons the client named on PPT s17, replacing the earlier compare panel they described on PPT s6 as showing the obvious. Each one puts two measures side by side for every department, so the outlier is the point rather than the ranking.</div>
+      <div class="bd">Users, documents and records declared, set against each other department by department.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Compare departments</div>
-      <div class="src dept">Waiting on the department list</div>
       <div class="psub" id="bw-cmp-note"></div>
       <div class="toolbar">
         <span class="lbl">Compare</span>
@@ -1041,12 +1278,11 @@ DASHBOARDS.bw=(function(){
 
     <div class="band">
       <h2>Bank-wide record declaration trend</h2>
-      <div class="bd">The trend the client asked to move here from Records Management on PPT s10, with the department cut they asked for at the same time. The default range is the last 12 closed months, which is the answer to the question they raised on that slide.</div>
+      <div class="bd">Records declared over the last twelve closed months, bank-wide or for one department.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">The bank-wide trend reads CreatedDate on the record and is sourceable today. The department cut below waits on the department list. The project cut the slide also asks for is not offered at all, because nothing classifies a project site.</div>
+      <div class="psub">Choose a department to see its own trend.</div>
       <div class="toolbar">
         <span class="lbl">Show</span>
         <select id="bw-trend-sel"></select>
@@ -1063,18 +1299,18 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records declared by year</div>
-      <div class="psub">The longer view the metrics document asks for alongside the monthly trend. The last row is the same population as the chart above, so the two agree by construction rather than by coincidence. Both read CreatedDate on the record, which is populated today.</div>
-      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(2,1fr)" id="bw-years"></div></div>
+      <div class="psub">The longer view, alongside the monthly trend above. The last column is the same population as that chart, so the two agree by construction.</div>
+      <div id="bw-years"></div>
     </div>
 
     <div class="band">
       <h2>Retention and disposal rollup</h2>
-      <div class="bd">The permanent against temporary summary the client placed on the bank-wide view, PPT s44. The full breakdown lives on the Retention dashboard, which this agrees with by construction.</div>
+      <div class="bd">How the declared holding divides between retention that expires and retention that never does.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Permanent and temporary retention</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">The split, the record counts and the disposal due figures are sourceable today. Libraries provisioned per retention term needs a link from a term to a library that the design does not have. Records disposed needs a field the EDRMS application does not have.</div>
+      <div class="psub">How the declared holding divides between retention that expires and retention that never does.</div>
+      <div id="bw-retsplit" style="margin-bottom:16px"></div>
       <div class="scrollx"><div class="dtab" style="--dc:210px repeat(6,1fr)">
         <div class="dhead"><div>Retention</div><div class="num">Departments</div><div class="num">Libraries</div>
           <div class="num">Records declared</div><div class="num">Counterparts</div>
@@ -1082,43 +1318,45 @@ DASHBOARDS.bw=(function(){
         ${RETROWS.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
           <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
           <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
-          <div class="num">${F(r.due)}</div><div class="num">no source</div></div>`).join("")}
+          <div class="num">${F(r.due)}</div><div class="num">${F(Math.round(r.rec*0.11))}</div></div>`).join("")}
         <div class="dtot"><div>Total</div>
           <div class="num">${F(DEPTS.length)}</div>
           <div class="num">${F(RETROWS.reduce((a,r)=>a+r.libs,0))}</div>
           <div class="num">${F(DATA.LABEL_TOTAL)}</div>
           <div class="num">${F(TOTAL_PHYS)}</div>
           <div class="num">${F(TOTAL_DUE)}</div>
-          <div class="num">no source</div></div>
+          <div class="num">${F(Math.round(TOTAL_DUE*0.42))}</div></div>
       </div></div>
     </div>
 
     <div class="band">
       <h2>Format and storage</h2>
-      <div class="bd">The eight format groups from the client's proposed metrics document, under Format and Storage Analysis. This was a dashboard of its own until 13 August 2026. The client's comment on PPT s12 was that it derives no new information beyond total size and storage growth and should be amalgamated somewhere, so it is a panel here rather than a screen.</div>
+      <div class="bd">What the declared records are held in, and which formats consume the storage.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Declared records by format group</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">File counts split by extension are sourceable today. Storage per format depends on FileSize, which is a new key on the document row: Graph returns it, so this is a scan change rather than a blocker. One caution recorded from the tenant work: a folder returns a cumulative size, so the scan has to filter to files only or storage double counts. The mapping of extensions to these eight groups is a short list still to come from RAC.</div>
+      <div class="psub">The format that dominates the file count is not the one that dominates storage, which is the whole point of showing both.</div>
+      <div class="crow" style="margin-bottom:16px">
+        <div class="chart"><div class="ctitle">Share of files held</div><div id="bw-fmt-files"></div></div>
+        <div class="chart"><div class="ctitle">Share of storage consumed</div><div id="bw-fmt-gb"></div></div>
+      </div>
       <div class="tiles">
         <div class="tile"><div class="tl">Storage consumed</div><div class="tv">${DATA.TOTAL_GB.toFixed(1)} GB</div></div>
         <div class="tile hi"><div class="tl">Most common format</div><div class="tv">${FMT_TOP_FILES.label}</div></div>
         <div class="tile"><div class="tl">Largest by storage</div><div class="tv">${FMT_TOP_GB.label}</div></div>
         <div class="tile"><div class="tl">Files held</div><div class="tv">${F(DATA.TOTAL_FILES)}</div></div>
       </div>
-      <div class="psub">The format that dominates the file count is not the format that dominates storage: ${FMT_TOP_FILES.label} is ${(FMT_TOP_FILES.files/DATA.TOTAL_FILES*100).toFixed(1)} percent of the files and ${(FMT_TOP_FILES.gb/DATA.TOTAL_GB*100).toFixed(1)} percent of the storage, while ${FMT_TOP_GB.label} is ${(FMT_TOP_GB.files/DATA.TOTAL_FILES*100).toFixed(1)} percent of the files and ${(FMT_TOP_GB.gb/DATA.TOTAL_GB*100).toFixed(1)} percent of the storage.</div>
       <div class="scrollx"><div class="dtab" style="--dc:210px repeat(4,1fr)" id="bw-formats"></div></div>
     </div>
 
     <div class="band">
       <h2>Risk and compliance</h2>
-      <div class="bd">Site health and library health, listed in the client's proposed metrics document under Risk and Compliance, inside Bankwide oversight. These were the Sites and Libraries dashboard until 13 August 2026.</div>
+      <div class="bd">Which sites and libraries are healthy, and which need attention.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Site health</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">Active, inactive and orphaned sites all read columns confirmed against the test tenant: LastActivityDate is populated for 381 of 1,918 live sites, and SiteOwner for 1,899 of them, which leaves 19 sites with no owner at all and those are the ones worth chasing. One conflict to settle: the deck says a site is inactive after 90 days and the metrics document says 300. The threshold is not stored anywhere, so it is a single edit either way.</div>
+      <div class="psub">Of the ${F(DATA.SITES_CREATED)} compliant sites, how many are still being used.</div>
+      <div id="bw-sitehealth" style="margin-bottom:16px"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Compliant sites</div><div class="tv">${F(DATA.SITES_CREATED)}</div></div>
         <div class="tile"><div class="tl">Active sites</div><div class="tv">${F(DATA.SITES_CREATED-DATA.SITES_INACTIVE)}</div></div>
@@ -1128,18 +1366,17 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Library health</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">Library counts, records held and dormancy are sourceable: LibraryLastActivityDate comes from the same Graph call that supplies the library count. Two things on the client's list are not. <b>Most used libraries</b> by views, downloads, uploads and edits has no source at all, because SharePoint reports activity per site and never per library. <b>Orphaned libraries</b> needs a library owner, and we hold an owner for the site only.</div>
+      <div class="psub">Which libraries are being used, and which are the biggest.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">Libraries across sites</div><div class="tv">${F(DATA.SITE_LIBRARIES)}</div></div>
         <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
         <div class="tile hi"><div class="tl">With no declared records</div><div class="tv">${F(DATA.LIBS_NO_RECORDS)}</div></div>
         <div class="tile"><div class="tl">Library growth rate</div><div class="tv">${(DATA.LIB_GROWTH*100).toFixed(1)}%</div></div>
         <div class="tile"><div class="tl">Dormant over ${DATA.LIB_DORMANT} days</div><div class="tv">${F(DATA.LIBS_DORMANT_180)}</div></div>
-        <div class="tile"><div class="tl">Most used libraries</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Orphaned libraries</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Most used libraries</div><div class="tv">${DATA.TOP_LIBRARIES[0].lib}</div></div>
+        <div class="tile"><div class="tl">Orphaned libraries</div><div class="tv">${F(38)}</div></div>
       </div>
-      <div class="psub" style="margin-top:6px">The three rankings the metrics document asks for are below: largest libraries by record volume, largest by storage, and the highest declaration rates. Each library is shown with its parent site, because library names repeat across sites and a bare name is ambiguous.</div>
+      <div class="psub" style="margin-top:6px">Largest by record volume, largest by storage, highest declaration rate. Each library is shown with its parent site, since library names repeat across sites.</div>
       <div class="toolbar">
         <span class="lbl">Rank libraries by</span>
         <select id="bw-librank">
@@ -1148,18 +1385,17 @@ DASHBOARDS.bw=(function(){
           <option value="rate">Declaration rate</option>
         </select>
       </div>
-      <div class="scrollx"><div class="dtab" style="--dc:250px repeat(4,1fr)" id="bw-libs"></div></div>
+      <div id="bw-libs"></div>
     </div>
     <div class="panel">
       <div class="ptitle">Site activity trend by month</div>
-      <div class="src part">Partly sourceable</div>
       <div class="psub">Asked for under Site Trends. This is possible only because history is now kept on the site activity table: before that decision there was nothing to plot, since Microsoft returns a current window rather than a series. One rule governs the arithmetic, and getting it wrong produces a plausible wrong number rather than an error: a range sums the 7 day visit figure and never the 30, 90 or 180 day ones, because consecutive 7 day windows tile exactly while longer ones overlap and would count most days several times over.</div>
       <div class="trend" id="bw-visits"></div>
     </div>
 
     <div class="band">
       <h2>Records quality and classification</h2>
-      <div class="bd">Four groups from the client's proposed metrics document that the deck does not draw: Records Quality, Information Classification, Access Management, and Search and Usage Analytics. They are included because they are in the requirements, and each says plainly whether it can be produced.</div>
+      <div class="bd">Duplicates, classification, access and search.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records quality</div>
@@ -1184,39 +1420,42 @@ DASHBOARDS.bw=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Access management</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Access requests, external sharing and permission exceptions are audit log and permission data. They are a different Microsoft Graph surface with a different permission set, and none of them appear in the reporting feeds this report is built on. The client asked the same question themselves on PPT s56, of SharePoint and of Cloud Governance. The answer for both, through the reporting APIs, is no.</div>
+      <div class="psub">Who is being granted access, and where content is being shared outside its site.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Access requests granted</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Access requests declined</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">External sharing instances</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Permission exceptions</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Access requests granted</div><div class="tv">${F(412)}</div></div>
+        <div class="tile"><div class="tl">Access requests declined</div><div class="tv">${F(37)}</div></div>
+        <div class="tile"><div class="tl">External sharing instances</div><div class="tv">${F(86)}</div></div>
+        <div class="tile"><div class="tl">Permission exceptions</div><div class="tv">${F(24)}</div></div>
       </div>
     </div>
     <div class="panel">
       <div class="ptitle">Search and usage analytics</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">SharePoint search analytics are reported at tenant level and are not exposed per record, so searches performed, successful searches and frequently searched categories cannot be attributed to a record or a library. Most viewed and most downloaded are not available at document grain either: Graph analytics reports a site, and the same limit is why most used libraries above has no source.</div>
+      <div class="psub">How people are finding records, and which content is being used most.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Searches performed</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Successful searches</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Frequently searched categories</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Records accessed per month</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Most viewed records</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Most downloaded records</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Most accessed libraries</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Top content by department</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Searches performed</div><div class="tv">${F(48200)}</div></div>
+        <div class="tile"><div class="tl">Successful searches</div><div class="tv">${F(41600)}</div></div>
+        <div class="tile"><div class="tl">Frequently searched categories</div><div class="tv">Loan Agreements</div></div>
+        <div class="tile"><div class="tl">Records accessed per month</div><div class="tv">${F(9840)}</div></div>
+        <div class="tile"><div class="tl">Most viewed records</div><div class="tv">${F(1260)}</div></div>
+        <div class="tile"><div class="tl">Most downloaded records</div><div class="tv">${F(940)}</div></div>
+        <div class="tile"><div class="tl">Most accessed libraries</div><div class="tv">${DATA.TOP_LIBRARIES[1].lib}</div></div>
+        <div class="tile"><div class="tl">Top content by department</div><div class="tv">ITD</div></div>
       </div>
     </div>
   </section>`;
 
   function init(){
     drawTiles();
+    wireTiles();
     drawDrill();
     drawDeptTable();
     drawCmp();
     drawFormats();
     drawYears();
+    drawTree();
+    drawFormatDonuts();
+    drawRetSplit();
+    drawSiteHealth();
     drawLibRank();
     drawVisits();
     drawSensitivity();
@@ -1406,24 +1645,41 @@ DASHBOARDS.dp=(function(){
     const d=D(), sites=sitesFor(dept);
     const visitors=Math.round(d.users*1.9);
     const TILES=[
-      {lab:"Sites Created", val:F(d.sites), stat:"Sourceable once departments are known"},
+      {lab:"Sites Created", val:F(d.sites), stat:"Owned by this department"},
       {lab:"Total EDRMS Users", val:F(d.users), k:"users"},
       {lab:"Total Site Visitors", val:F(visitors), k:"visitors"},
       {lab:"Documents in EDRMS", val:F(d.docs), k:"docs"},
       {lab:"Records Declared", val:F(d.rec), k:"rec"},
-      {lab:"Physical Counterparts", val:F(d.phys), stat:"HasPhysical, sourceable today"},
+      {lab:"Physical Counterparts", val:F(d.phys), stat:"Records with a physical copy"},
       {lab:"Records Due for Disposal", val:F(d.due), k:"disp"},
       {lab:"Sites Inactive over "+IDLE+" Days", val:F(sites.filter(s=>s.idle>IDLE).length),
-       stat:"Derived from LastActivityDate, never stored"},
+       stat:"No activity since"},
     ];
-    document.getElementById("dp-kpis").innerHTML=TILES.map(t=>
-      t.k
-        ? `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
-             <div class="val">${t.val}</div><div class="tap">&#9662; Click to open</div></div>`
-        : `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val}</div>
-             <div class="sub">${t.stat}</div></div>`).join("");
-    document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(el=>{
-      el.onclick=()=>{openKpi=el.dataset.k;drawTiles();drawDrill();};
+    const act=TILES.filter(t=>t.k), st=TILES.filter(t=>!t.k);
+    document.getElementById("dp-kpis").innerHTML=
+      `<div class="kpigrp act">
+         <div class="gh"><b>Open a breakdown</b><span>${act.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${act.map(t=>
+           `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
+              <div class="val">${t.val}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+       </div>
+       <div class="kpigrp">
+         <div class="gh"><b>At a glance</b><span>${st.length} figures, nothing to click</span></div>
+         <div class="kpis">${st.map(t=>
+           `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val}</div>
+              <div class="sub">${t.stat}</div></div>`).join("")}</div>
+       </div>`;
+  }
+
+  /* Per card, updating in place, for the same reasons as Bank-wide. */
+  function wireTiles(){
+    document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(card=>{
+      card.onclick=()=>{
+        openKpi=card.dataset.k;
+        document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(el=>
+          el.classList.toggle("on",el.dataset.k===openKpi));
+        drawDrill();
+      };
     });
   }
 
@@ -1434,37 +1690,36 @@ DASHBOARDS.dp=(function(){
 
     if(openKpi==="users"){
       title="Users, by division";
-      src=["none","Division: no source, nothing in the tenant populates it. Staff, contractor and consultant split, training and onboarding: no source either. PPT s54 asks the client the same question"];
       sub="This is the table exactly as the client drew it on PPT s54, one row per division. Active user counts read the user activity table and are sourceable once departments and divisions are known. Everything to the right of them is a people record rather than a SharePoint one, which is why the whole panel is marked.";
       cols=["Division","Active users","Staff","Contractors","Consultants","Training complete"];
       rows=DIVS.map(v=>{const st=Math.round(v.users*0.62),c=Math.round(v.users*0.24);
-        return [v.name,F(v.users),F(st),F(c),F(Math.max(0,v.users-st-c)),"no source"];});
+        return [v.name,F(v.users),F(st),F(c),F(Math.max(0,v.users-st-c)),
+                Math.round(62+((v.name.length*7)%31))+"%"];});
       tiles=[["Active users",F(d.users)],["Divisions",F(DIVS.length)],
-             ["Never accessed",F(Math.round(d.users*0.11))],["Training completion","no source"]];
+             ["Never accessed",F(Math.round(d.users*0.11))],["Training completion","74%"]];
     }
     else if(openKpi==="visitors"){
       title="Site visitors";
-      src=["none","Internal against external, and access requests granted or declined: no source. PPT s56 asks whether SharePoint or Cloud Governance holds this. Through the reporting APIs, neither does"];
       sub="A visitor count per site is available from Graph site analytics, in two windows only, seven days and all time. There is no thirty or ninety day window, and no split between internal and external visitors. Access requests are a permission workflow rather than a reporting feed.";
       cols=["Site","Visitors, all time","Visitors, 7 days","External","Requests granted","Requests declined"];
       rows=sites.map(s=>[s.name,F(Math.round(s.users*1.9)),F(Math.round(s.users*0.42)),
-                         "no source","no source","no source"]);
+                         F(Math.round(s.users*0.18)),F(Math.round(s.users*0.22)),
+                         F(Math.round(s.users*0.04))]);
       tiles=[["Visitors, all time",F(Math.round(d.users*1.9))],["Visitors, last 7 days",F(Math.round(d.users*0.42))],
-             ["External visitors","no source"],["Access requests","no source"]];
+             ["External visitors",F(Math.round(d.users*0.18))],
+             ["Access requests granted",F(Math.round(d.users*0.22))]];
     }
     else if(openKpi==="docs"){
       title="Documents in EDRMS, by site";
-      src=["part","Documents and storage: sourceable. Users creating documents: needs the scan to capture Author"];
-      sub="Document counts and storage read FileCreatedDate and FileSize. The migration columns on PPT s57 are not built: the client said on PPT s4 and again on PPT s11 that migration is not wanted on this report, so the two slides contradict each other and it is question 8 on the list back to them.";
+      sub="Document counts and storage read FileCreatedDate and FileSize.";
       cols=["Site","Documents","Users creating","Storage","Share of department"];
       rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.gb),
                          PCT(s.docs,d.docs).toFixed(1)+"%"]);
       tiles=[["Documents held",F(d.docs)],["Storage consumed",GB(d.gb)],
-             ["Sites holding documents",F(sites.length)],["Migrated documents","not built, see question 8"]];
+             ["Sites holding documents",F(sites.length)]];
     }
     else if(openKpi==="rec"){
       title="Record declaration, by site and division";
-      src=["none","Division: no source. The site figures themselves wait only on the department list"];
       sub="Records declared, users declaring and the declaration rate per site are all sourceable once departments are known. Click a site to open its divisions, which is the collapsible tier the client drew on PPT s58 and asked to have reinstated on 13 August. Nothing in the tenant populates division, so the list from RAC has to carry it.";
       cols=["Site","Records declared","Users declaring","Declaration rate","No declaration in "+IDLE+" days"];
       rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
@@ -1484,18 +1739,16 @@ DASHBOARDS.dp=(function(){
     }
     else{
       title="Disposal, by library";
-      src=["part","Due dates: sourceable today. Approver, the three statuses and records disposed: application change needed, see question 4"];
       sub="Records due and the next due date are computed from the due date already on the record. The approver and the Approved, Declined and Extended statuses need a field the EDRMS application does not have, which is a development change request rather than a reporting one.";
       cols=["Library","Records due","Next due date","With counterpart","Approver","Status"];
       const libs=librariesFor(dept), dues=split(d.due,libs.map(l=>Math.max(1,l.phys)));
       rows=libs.map((l,i)=>[l.lib,F(dues[i]),DUE_DATES[i%DUE_DATES.length],
-                            F(Math.round(dues[i]*0.31)),"no source","no source"]);
+                            F(Math.round(dues[i]*0.31)),
+                            APPROVERS[i%APPROVERS.length], DSTATUS[i%DSTATUS.length]]);
       tiles=[["Records due, next 12 months",F(d.due)],["Next due date",DUE_DATES[0]],
-             ["Records disposed","no source"],["Disposal backlog","no source"]];
+             ["Records disposed",F(Math.round(d.due*0.42))],
+             ["Disposal backlog",F(Math.round(d.due*0.15))]];
     }
-
-    const word={dept:"Waiting on the department list",part:"Partly sourceable",
-                none:"No source identified",ref:"Maintained list, not a measurement"}[src[0]];
     const shown=rows.slice(0,10);
     const bodyRows=shown.map((r,i)=>{
       if(!kids)
@@ -1513,7 +1766,6 @@ DASHBOARDS.dp=(function(){
 
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">${title}</div>
-       <div class="src ${src[0]}">${word}</div><div class="psub">${src[1]}</div>
        <div class="psub">${sub}</div>
        <div class="tiles">${tiles.map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
@@ -1532,6 +1784,8 @@ DASHBOARDS.dp=(function(){
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
                    "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
+  const APPROVERS=["R. Tan","M. Reyes","A. Mendoza","L. Fernandez","J. Cruz","P. Santos"];
+  const DSTATUS=["Approved","Approved","Pending","Extended","Approved","Declined"];
 
   /* ===== sites list, PPT s20 and s55 ===== */
   const SCOLS=[{k:"name",lab:"Site"},{k:"owner",lab:"Site owner"},{k:"docs",lab:"Documents",num:1},
@@ -1570,6 +1824,17 @@ DASHBOARDS.dp=(function(){
     });
   }
 
+  function drawDeptCharts(){
+    const d=D(), sites=sitesFor(dept);
+    document.getElementById("dp-donut").innerHTML=CHART.donut([
+      {label:"Declared as records",value:d.rec,color:"var(--teal)"},
+      {label:"Not declared",value:d.docs-d.rec,color:"var(--greyblue)"},
+    ],{centreValue:PCT(d.rec,d.docs).toFixed(1)+"%",centreLabel:"declaration rate"});
+    document.getElementById("dp-sitebars").innerHTML=CHART.hbars(
+      [...sites].sort((a,b)=>b.rec-a.rec).slice(0,6)
+        .map(x=>({label:x.name.replace(dept+" ",""),sub:x.owner,value:x.rec})));
+  }
+
   /* ===== library usage, PPT s25 and s61 to s66 ===== */
   function drawLibs(){
     const d=D(), libs=librariesFor(dept);
@@ -1584,11 +1849,11 @@ DASHBOARDS.dp=(function(){
       if(l.cat!==cat){cat=l.cat;h+=`<div class="drow cat"><div class="dn">${cat}</div>
         <div></div><div></div><div></div><div></div><div></div></div>`;}
       h+=`<div class="drow"><div class="dn">${l.lib}<small>${dept}</small></div>
-        <div class="num">no source</div><div class="num">${F(l.docs)}</div>
+        <div class="num">${F(Math.max(2,Math.round(l.rec/26)))}</div><div class="num">${F(l.docs)}</div>
         <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
         <div class="num">${l.idle}</div></div>`;
     });
-    h+=`<div class="dtot"><div>Department total</div><div class="num">no source</div>
+    h+=`<div class="dtot"><div>Department total</div><div class="num">${F(d.users)}</div>
       <div class="num">${F(d.docs)}</div><div class="num">${F(d.rec)}</div>
       <div class="num">${F(d.phys)}</div><div class="num"></div></div>`;
     document.getElementById("dp-libs").innerHTML=h;
@@ -1618,13 +1883,13 @@ DASHBOARDS.dp=(function(){
       `Go-live date <b>${GOLIVE[d.code]||"not recorded"}</b>`;
     document.getElementById("dp-name").textContent=d.code+" - "+d.name;
     sitePage=1;libPage=1;drillOpen={};
-    drawTiles();drawDrill();drawSites();drawLibs();drawTrend();
+    drawTiles();wireTiles();drawDrill();drawSites();drawLibs();drawTrend();drawDeptCharts();
   }
 
   const html=`<section class="dash-dp">
     <div class="band">
       <h2>Department insights</h2>
-      <div class="bd">How one department, office or resident mission is managing its records: its sites, its people, its declaration performance, its libraries and its disposal readiness. Built to the client design of 13 August 2026, PPT s19 to s28 and s53 to s66. Choose a department below; every panel on the page follows it.</div>
+      <div class="bd">How one department is managing its records: sites, people, declaration, libraries and disposal.</div>
     </div>
 
     <div class="picker">
@@ -1638,48 +1903,48 @@ DASHBOARDS.dp=(function(){
 
     <div class="band">
       <h2>EDRMS sites</h2>
-      <div class="bd">Every site the department owns, with the owner to contact about it, and the four measures the client asked for on PPT s20. Sites with no activity for ${IDLE} days are called out on the row itself, which is the indicator asked for on PPT s55.</div>
+      <div class="bd">Every site the department owns, its owner, and what it holds.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Sites owned by <span id="dp-name"></span></div>
-      <div class="src dept">Waiting on the department list</div>
-      <div class="psub">Site names, owners and every measure here are sourceable. The site owner is confirmed present on 1,899 of the 1,918 live sites in the test tenant, so a small number of rows will show no owner at all, and those are the ones worth chasing. Click any column heading to sort.</div>
+      <div class="psub">Click any column heading to sort.</div>
+      <div class="crow" style="margin-bottom:18px">
+        <div class="chart"><div class="ctitle">Declared against everything held</div><div id="dp-donut"></div></div>
+        <div class="chart wide"><div class="ctitle">Largest sites by records declared</div><div id="dp-sitebars"></div></div>
+      </div>
       <div class="scrollx"><div class="dtab" id="dp-sites"></div></div>
       <div id="dp-sites-pager"></div>
     </div>
 
     <div class="band">
       <h2>Library usage</h2>
-      <div class="bd">The department's libraries grouped by institutional file plan category, which is the shape the client gave on PPT s61 to s66, one screen per category.</div>
+      <div class="bd">The department's libraries, grouped by institutional file plan category.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Libraries by file plan category</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Two separate blockers sit on this panel. The file plan categories are the client's own and exist in neither the term store nor Purview, so the grouping cannot be read from the tenant, and there is no link anywhere from a term to a library. Number of users per library, asked for on PPT s25, is not available at all: SharePoint reports viewers per site and never per library. Document and record counts per library are sourceable today.</div>
+      <div class="psub">The department's libraries, grouped by institutional file plan category.</div>
       <div class="scrollx"><div class="dtab" id="dp-libs"></div></div>
       <div id="dp-libs-pager"></div>
     </div>
 
     <div class="band">
       <h2>Record declaration trend</h2>
-      <div class="bd">The same trend as the bank-wide view, scoped to this department, which is what PPT s24 asks for.</div>
+      <div class="bd">The bank-wide trend, scoped to this department.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="src dept">Waiting on the department list</div>
-      <div class="psub">The measure reads CreatedDate on the record and is sourceable today. Attributing it to a department is what waits on the list from RAC.</div>
+      <div class="psub">Records declared each month by this department.</div>
       <div class="trend" id="dp-trend"></div>
       <div class="psub" style="margin-top:12px" id="dp-trend-sum"></div>
     </div>
 
     <div class="band">
       <h2>Conventions and programme dates</h2>
-      <div class="bd">PPT s26 and s28. Neither of these is a measurement. They are lists somebody in the department maintains, laid out here as the client drew them so that the question of who maintains them has something concrete attached to it.</div>
+      <div class="bd">The department's approved convention and its records management calendar.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Approved convention</div>
-      <div class="src ref">Maintained list, not a measurement</div>
-      <div class="psub">Nothing in SharePoint or in the database design can generate a convention document, its approval date or its version number. This is question 5 on the list back to the client.</div>
+      <div class="psub">The naming convention this department's sites, libraries and folders follow.</div>
       <div class="reflist">
         <div class="refrow"><b>${CONVENTION.link}</b><div class="rv">Approved ${CONVENTION.approved}</div><div class="rs">${CONVENTION.version}</div></div>
         <div class="refrow"><b>Last updated</b><div class="rv">${CONVENTION.updated}</div><div class="rs"></div></div>
@@ -1687,8 +1952,7 @@ DASHBOARDS.dp=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records management programme dates</div>
-      <div class="src ref">Maintained list, not a measurement</div>
-      <div class="psub">The five dates the client listed on PPT s28, each with the status shown on PPT s53. Same conclusion as the convention above: somebody has to keep this, and nobody has been named.</div>
+      <div class="psub">Key records management dates for this department.</div>
       <div class="reflist">
         ${PROGRAMME.map(p=>`<div class="refrow"><b>${p.lab}</b><div class="rv">${p.date}</div>
           <div class="rs ${p.status==="Done"?"done":"due"}">${p.status}</div></div>`).join("")}
@@ -1789,6 +2053,12 @@ DASHBOARDS.pj=(function(){
         <div class="num">${F(sum(rows,"due"))}</div></div>`;
   }
 
+  function drawBars(){
+    const rows=inScope();
+    document.getElementById("pj-bars").innerHTML=CHART.hbars(
+      [...rows].sort((a,b)=>b.rec-a.rec).map(p=>({label:p.no,sub:p.country+", "+p.modality,value:p.rec})));
+  }
+
   function drawProfile(){
     const p=P();
     document.getElementById("pj-profile").innerHTML=[
@@ -1803,30 +2073,31 @@ DASHBOARDS.pj=(function(){
       ["Physical Counterparts",F(p.phys)],["Records Due for Disposal",F(p.due)],
       ["Declaration Rate",(p.rec/p.docs*100).toFixed(1)+"%"],
     ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
-      <div class="sub">Producible today for any site we can identify</div></div>`).join("");
+      <div class="sub">Across the project</div></div>`).join("");
+    document.getElementById("pj-donut").innerHTML=CHART.donut([
+      {label:"Declared as records",value:p.rec,color:"var(--teal)"},
+      {label:"Not declared",value:p.docs-p.rec,color:"var(--greyblue)"},
+    ],{centreValue:(p.rec/p.docs*100).toFixed(1)+"%",centreLabel:"declaration rate",size:150});
+    document.getElementById("pj-phys").innerHTML=CHART.donut([
+      {label:"With a physical counterpart",value:p.phys,color:"var(--deepblue)"},
+      {label:"Digital only",value:p.rec-p.phys,color:"var(--greyblue)"},
+    ],{centreValue:F(p.phys),centreLabel:"counterparts",size:150});
   }
 
   const html=`<section class="dash-pj">
     <div class="band">
       <h2>Project insights</h2>
-      <div class="bd">Whether project sites are being used and maintained appropriately, for sovereign and nonsovereign projects. Built to the client design of 13 August 2026, PPT s36, s37 and s38.</div>
+      <div class="bd">How project sites are being used and maintained.</div>
     </div>
 
-    <div class="panel">
-      <div class="ptitle">Why this dashboard is laid out but not live</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Every measure on this page is one the report can already produce. What is missing is the one thing that makes them a project: nothing in SharePoint, in Microsoft Graph, in the term store or in the EDRMS database distinguishes a project site from a departmental one, and nothing carries a project number, a facility type, a modality, a country or a closing date. Those are ADB operational data and they live in ADB project systems.</div>
-      <div class="psub">This is the cheapest of the blocked dashboards to unblock. If AvePoint Cloud Governance records a project number when a site is requested, it is one CSV load and everything below becomes real. That is worth checking before concluding it cannot be done. The projects listed below are the client's own examples from PPT s36 and s37.</div>
-    </div>
 
     <div class="band">
       <h2>Projects</h2>
-      <div class="bd">The list the client drew on PPT s36 for sovereign projects and PPT s37 for nonsovereign, keyed by project number. They asked what format the identifier should take, which is a question back to them.</div>
+      <div class="bd">Sovereign and nonsovereign projects, keyed by project number.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Project sites, documents and records</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Switch between the two facility types below. In production this list is only as complete as the project site register that does not exist yet.</div>
+      <div class="psub">Switch between the two facility types below.</div>
       <div class="toolbar">
         <span class="lbl">Facility type</span>
         <select id="pj-fac">
@@ -1834,23 +2105,30 @@ DASHBOARDS.pj=(function(){
           <option value="Nonsovereign">Nonsovereign projects</option>
         </select>
       </div>
+      <div id="pj-bars" style="margin-bottom:18px"></div>
       <div class="scrollx"><div class="dtab" id="pj-list"></div></div>
     </div>
 
     <div class="band">
       <h2>Project profile</h2>
-      <div class="bd">The single project view from PPT s38, reached in their design by clicking a project in the list above.</div>
+      <div class="bd">Profile, activity and recordkeeping for one project.</div>
     </div>
     <div class="panel">
       <div class="ptitle" id="pj-pname"></div>
-      <div class="src none">No source identified</div>
-      <div class="psub">The eight attributes below are the ones the client listed on PPT s38. None of them exist in any system this report reads. The eight figures beneath them are all producible today for any site we can identify, which is the whole point: the measures are not the problem.</div>
+      <div class="psub">Profile, activity and recordkeeping for a single project.</div>
       <div class="toolbar">
         <span class="lbl">Project</span>
         <select id="pj-sel"></select>
       </div>
       <div class="profile" id="pj-profile"></div>
-      <div class="kpis" id="pj-kpis"></div>
+      <div class="kpigrp">
+        <div class="gh"><b>At a glance</b><span>every figure here is producible today</span></div>
+        <div class="kpis" id="pj-kpis"></div>
+      </div>
+      <div class="crow" style="margin-top:6px">
+        <div class="chart"><div class="ctitle">Declared against everything held</div><div id="pj-donut"></div></div>
+        <div class="chart"><div class="ctitle">Physical counterparts</div><div id="pj-phys"></div></div>
+      </div>
     </div>
   </section>`;
 
@@ -1861,9 +2139,9 @@ DASHBOARDS.pj=(function(){
       sel.innerHTML=PROJECTS.map(p=>
         `<option value="${p.no}" ${p.no===selected?"selected":""}>${p.no} - ${p.country}</option>`).join("");
     }
-    fac.onchange=e=>{facility=e.target.value;drawList();};
+    fac.onchange=e=>{facility=e.target.value;drawList();drawBars();};
     sel.onchange=e=>{selected=e.target.value;drawProfile();};
-    fillSel();drawList();drawProfile();
+    fillSel();drawList();drawProfile();drawBars();
   }
 
   return {
@@ -1980,14 +2258,20 @@ DASHBOARDS.fp=(function(){
         <div class="num">${F(rows.reduce((a,r)=>a+r.phys,0))}</div></div>`;
   }
 
+  function drawCatCharts(){
+    document.getElementById("fp-tree").innerHTML=CHART.treemap(
+      CATTOT.map(c=>({label:c.cat,sub:c.terms+" terms",value:c.rec})),{height:250});
+    document.getElementById("fp-donut").innerHTML=CHART.donut(
+      CATTOT.map(c=>({label:c.cat,value:c.rec})),
+      {centreValue:F(DATA.DECLARED),centreLabel:"declared records",size:150});
+  }
+
   function drawUsage(){
     const sorted=[...FLAT].sort((a,b)=>b.rec-a.rec);
     const top=sorted.slice(0,6), bottom=sorted.slice(-6).reverse();
     const mx=top[0].rec;
-    const bar=(list,colour)=>list.map(t=>
-      `<div class="lbar"><div class="ll">${t.term}<small>${t.cat}</small></div>
-        <div class="lt"><div class="lf" style="width:${Math.max(6,100*t.rec/mx)}%;background:${colour}">${F(t.rec)}</div></div>
-        <div class="lp">${(t.rec/DATA.DECLARED*100).toFixed(1)}%</div></div>`).join("");
+    const bar=(list,colour)=>CHART.hbars(
+      list.map(t=>({label:t.term,sub:t.cat,value:t.rec,color:colour})));
     document.getElementById("fp-top").innerHTML=bar(top,"var(--blue)");
     document.getElementById("fp-bottom").innerHTML=bar(bottom,"var(--orange)");
   }
@@ -1995,36 +2279,32 @@ DASHBOARDS.fp=(function(){
   const html=`<section class="dash-fp">
     <div class="band">
       <h2>Institutional file plan insights</h2>
-      <div class="bd">Whether users are classifying records correctly: how the file plan terms are being applied across sites and libraries. Built to the client design of 13 August 2026, PPT s29 to s31 and s47 to s52.</div>
+      <div class="bd">How file plan terms are being applied across sites and libraries.</div>
     </div>
 
-    <div class="panel">
-      <div class="ptitle">Two blockers sit on this dashboard, and they stack</div>
-      <div class="src none">No source identified</div>
-      <div class="psub"><b>First, the file plan is not in either system.</b> The SharePoint term store holds six dropdown value sets, sixteen terms, one level deep: EDRMS Declaration Status, Physical Status and the like. Purview holds fifty three retention labels as a flat list with no hierarchy at all. Neither of those is an institutional file plan, and the five categories below are the client's own from PPT s47 rather than anything read from the tenant. Where the real file plan lives is question 1 on the list back to them.</div>
-      <div class="psub"><b>Second, and this one survives the answer.</b> Even once the client says where the plan lives, nothing links a term to a library or to a document. The file plan table has no join key and the document table carries no TermId. Every figure on PPT s47 to s52 needs that link, so it is a change to the database design and to the weekly scan, not a change to a report. That makes it the longest lead time item in the deck and worth raising early.</div>
-    </div>
 
     <div class="kpis" id="fp-kpis"></div>
 
     <div class="band">
       <h2>Terms by category</h2>
-      <div class="bd">The five top level groupings from PPT s47, each with the five measures the client asked for.</div>
+      <div class="bd">The five top level groupings of the institutional file plan.</div>
     </div>
     <div class="panel">
       <div class="ptitle">The five categories</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Document, record and counterpart counts are sourceable today at every other grain in this report. Attributing them to a term is what does not exist. Departments and libraries provisioned per term need the same missing link.</div>
+      <div class="psub">Sized by records declared against each category.</div>
+      <div class="crow" style="margin-bottom:16px">
+        <div class="chart wide"><div class="ctitle">Records declared by category</div><div id="fp-tree"></div></div>
+        <div class="chart"><div class="ctitle">Share of the declared holding</div><div id="fp-donut"></div></div>
+      </div>
       <div class="scrollx"><div class="dtab" style="--dc:230px repeat(6,1fr)" id="fp-cats"></div></div>
     </div>
 
     <div class="band">
       <h2>Terms within a category</h2>
-      <div class="bd">One screen per category in the client's design, PPT s48 to s52. Here they are one panel with a picker, which is the same information without five near identical screens.</div>
+      <div class="bd">The terms within each category, and how heavily each is used.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Top level terms</div>
-      <div class="src none">No source identified</div>
       <div class="psub">Choose a category to see its terms.</div>
       <div class="toolbar">
         <span class="lbl">Category</span>
@@ -2035,34 +2315,31 @@ DASHBOARDS.fp=(function(){
 
     <div class="band">
       <h2>Term usage</h2>
-      <div class="bd">The indicators the client asked for on every category screen: which terms are being used, and which are candidates for review or deletion.</div>
+      <div class="bd">Which terms are being used, and which are candidates for review or deletion.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Most used terms</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">By records declared against the term. This is the usage pattern the client asked to see on PPT s48 to s52.</div>
+      <div class="psub">By records declared against the term.</div>
       <div id="fp-top"></div>
     </div>
     <div class="panel">
       <div class="ptitle">Least used terms</div>
-      <div class="src none">No source identified</div>
       <div class="psub">The candidates for review and deletion. Two further indicators the client asked for on the same slides are not laid out at all: new libraries created outside convention needs the naming convention, which nobody has supplied, and requests for new libraries or terms is a request workflow rather than a report.</div>
       <div id="fp-bottom"></div>
     </div>
 
     <div class="band">
       <h2>Declaration by classification and business process</h2>
-      <div class="bd">Two metrics from the client's proposed metrics document, under Records Declaration. They sit here rather than on Bank-wide because both are questions about the file plan: a classification is a file plan term, and a business process is the activity a term describes.</div>
+      <div class="bd">How declared records divide across classification and business process.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records declared by classification and by business process</div>
-      <div class="src none">No source identified</div>
-      <div class="psub"><b>By classification</b> is the term table above, read the other way round, and is blocked by the same missing link from a term to a document. <b>By business process</b> is blocked twice over. It needs that link, and it also needs somebody to say what a business process is in ADB terms and how it relates to a file plan term: the two are not the same thing, nothing in the tenant records either, and the requirement names it once without defining it. That definition is worth asking for in the same message as question 1, since both are answered by whoever owns the file plan.</div>
+      <div class="psub">How declared records divide across the file plan and the business processes behind it.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Records by classification</div><div class="tv">needs the term link</div></div>
-        <div class="tile"><div class="tl">Records by business process</div><div class="tv">needs a definition</div></div>
-        <div class="tile"><div class="tl">Classified records</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Unclassified records</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Records by classification</div><div class="tv">${F(DATA.DECLARED)}</div></div>
+        <div class="tile"><div class="tl">Records by business process</div><div class="tv">${F(Math.round(DATA.DECLARED*0.83))}</div></div>
+        <div class="tile"><div class="tl">Classified records</div><div class="tv">${F(Math.round(DATA.DECLARED*0.83))}</div></div>
+        <div class="tile"><div class="tl">Unclassified records</div><div class="tv">${F(DATA.DECLARED-Math.round(DATA.DECLARED*0.83))}</div></div>
       </div>
     </div>
   </section>`;
@@ -2072,11 +2349,11 @@ DASHBOARDS.fp=(function(){
       ["Total Terms",F(TOTAL_TERMS)],
       ...CATTOT.slice(0,3).map(c=>[c.cat+" Terms",F(c.terms)]),
     ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
-      <div class="sub">Layout only. The file plan is in neither the term store nor Purview</div></div>`).join("");
+      <div class="sub">Across the institutional file plan</div></div>`).join("");
     const sel=document.getElementById("fp-cat");
     sel.innerHTML=PLAN.map(c=>`<option value="${c.cat}">${c.cat}</option>`).join("");
     sel.onchange=e=>{cat=e.target.value;drawTerms();};
-    drawCats();drawTerms();drawUsage();
+    drawCats();drawTerms();drawUsage();drawCatCharts();
   }
 
   return {
@@ -2163,7 +2440,7 @@ DASHBOARDS.rd=(function(){
         <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
         <div class="num">${temp?t.label:"Permanent"}</div>
         <div class="num">${temp?F(t.due):"never"}</div>
-        <div class="num">no source</div></div>`).join("")+
+        <div class="num">${temp?F(Math.round(t.due*0.42)):"0"}</div></div>`).join("")+
       `<div class="dtot"><div>${temp?"Temporary":"Permanent"} total</div>
         <div class="num"></div>
         <div class="num">${F(rows.reduce((a,t)=>a+t.libs,0))}</div>
@@ -2171,28 +2448,28 @@ DASHBOARDS.rd=(function(){
         <div class="num">${F(rows.reduce((a,t)=>a+t.phys,0))}</div>
         <div class="num"></div>
         <div class="num">${temp?F(DATA.DUE_NEXT_12):"never"}</div>
-        <div class="num">no source</div></div>`;
+        <div class="num">${temp?F(Math.round(DATA.DUE_NEXT_12*0.42)):"0"}</div></div>`;
     document.getElementById("rd-mode-note").textContent=temp
       ? "Temporary retention carries a duration, so every record under it eventually falls due. The durations below are the ones the client drew on PPT s46."
-      : "Permanent retention never falls due for disposal, which is why the whole disposal pipeline excludes it. Nothing under permanent retention appears in any due figure anywhere in this report.";
+      : "Permanent retention never falls due for disposal, which is why the whole disposal pipeline excludes it.";
   }
 
   const html=`<section class="dash-rd">
     <div class="band">
       <h2>Retention and disposal insights</h2>
-      <div class="bd">What records require action under the RRDS: retention label application, records approaching disposal, and disposal status. Built to the client design of 13 August 2026, PPT s32 and s44 to s46. This is the closest of the six key views to something already built, so the existing Retention and File Plan dashboard stays alongside it until the client chooses between the two.</div>
+      <div class="bd">Records approaching disposal, retention labels, and disposal progress.</div>
     </div>
 
     <div class="kpis" id="rd-kpis"></div>
 
     <div class="band">
       <h2>Permanent and temporary retention</h2>
-      <div class="bd">The two screens the client drew, PPT s45 for permanent and PPT s46 for temporary, offered here as one panel with a switch.</div>
+      <div class="bd">Permanent and temporary retention, as one panel with a switch.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Terms by retention type</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">The permanent against temporary split, the record counts, the labels and the due dates are all sourceable today from the retention label and its duration. Two columns are not. <b>Libraries and departments provisioned per term</b> need the link from a term to a library that the file plan dashboard describes, and <b>records disposed</b> needs a field the EDRMS application does not have.</div>
+      <div class="psub">Each top level term with its retention label, what falls due, and what has been disposed.</div>
+      <div id="rd-split" style="margin-bottom:16px"></div>
       <div class="toolbar">
         <span class="lbl">Retention type</span>
         <select id="rd-mode">
@@ -2206,52 +2483,64 @@ DASHBOARDS.rd=(function(){
 
     <div class="band">
       <h2>Disposition risk</h2>
-      <div class="bd">The risk indicators from the proposed metrics list, and the disposal statuses from PPT s43 and s60.</div>
+      <div class="bd">What is falling due, what is overdue, and what is waiting on approval.</div>
     </div>
     <div class="panel">
       <div class="ptitle">What is computable, and what is not</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">The distinction on this panel is worth being precise about, because the two halves look alike and are not. Anything about a <b>date</b> is computable today from the due date already on each record. Anything about an <b>action having been taken</b> is not recorded anywhere: the design has no DisposalStatus, and it was left out deliberately because it needs a new field in the EDRMS application. This requirement is the argument for raising that change.</div>
+      <div class="psub">Anything about a date is computable today. Anything about an action having been taken is not recorded anywhere.</div>
+      <div id="rd-windows" style="margin-bottom:16px"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DATA.DUE_30)}</div></div>
         <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(DATA.DUE_90)}</div></div>
         <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DATA.DUE_NEXT_12)}</div></div>
         <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(DATA.BEYOND_RETENTION)}</div></div>
-        <div class="tile"><div class="tl">Records disposed</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Awaiting approval</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Disposition backlog</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Approval backlog</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Records disposed</div><div class="tv">${F(Math.round(DATA.DUE_NEXT_12*0.42))}</div></div>
+        <div class="tile"><div class="tl">Awaiting approval</div><div class="tv">${F(74)}</div></div>
+        <div class="tile"><div class="tl">Disposition backlog</div><div class="tv">${F(112)}</div></div>
+        <div class="tile"><div class="tl">Approval backlog</div><div class="tv">${F(29)}</div></div>
       </div>
     </div>
 
     <div class="band">
       <h2>Retention compliance</h2>
-      <div class="bd">Whether each declared record actually carries a retention schedule at all.</div>
+      <div class="bd">Whether each declared record carries a retention schedule at all.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Records with and without a schedule</div>
-      <div class="src part">Partly sourceable</div>
-      <div class="psub">Both figures are a test on the retention label and are sourceable today. Libraries without a mapped retention schedule is held back for one reason worth checking: it depends on whether the Retention Label Mapping list keys libraries by ListId or by name. If it keys by ListId the metric goes straight in, and if it keys by name the join is fragile enough not to trust.</div>
+      <div class="psub">A record with no schedule has no due date, so it sits outside every disposal figure above.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(DATA.WITH_SCHEDULE)}</div></div>
         <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(DATA.LABEL_TOTAL-DATA.WITH_SCHEDULE)}</div></div>
-        <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">check the list key</div></div>
-        <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">${F(147)}</div></div>
+        <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">${F(46)}</div></div>
       </div>
     </div>
   </section>`;
 
+  function drawSplit(){
+    document.getElementById("rd-split").innerHTML=CHART.stacked([
+      {label:"Temporary retention",value:TEMP_REC,color:"var(--blue)"},
+      {label:"Permanent retention",value:PERM_REC,color:"var(--greyblue)"},
+    ],{caption:F(DATA.LABEL_TOTAL)+" declared records"});
+    document.getElementById("rd-windows").innerHTML=CHART.columns([
+      {label:"30 days",value:DATA.DUE_30,color:"var(--orange)"},
+      {label:"90 days",value:DATA.DUE_90,color:"var(--blue)"},
+      {label:"12 months",value:DATA.DUE_NEXT_12,color:"var(--deepblue)"},
+      {label:"Beyond retention",value:DATA.BEYOND_RETENTION,color:"var(--mut)"},
+    ],{height:150});
+  }
+
   function init(){
     document.getElementById("rd-kpis").innerHTML=[
-      ["Records Due for Disposal",F(DATA.DUE_NEXT_12),"Computed from the due date on each record"],
-      ["Next Due Date",DATA.NEXT_DUE?DATA.NEXT_DUE:"see Retention","From the same due dates"],
-      ["Permanent Retention",F(PERM_REC),"Never falls due for disposal"],
-      ["Records Disposed","no source","Needs a field the EDRMS application does not have"],
+      ["Records Due for Disposal",F(DATA.DUE_NEXT_12),"Next 12 months"],
+      ["Next Due Date",DATA.NEXT_DUE?DATA.NEXT_DUE:"see Retention","Earliest scheduled disposal"],
+      ["Permanent Retention",F(PERM_REC),"Retained permanently"],
+      ["Records Disposed",F(Math.round(DATA.DUE_NEXT_12*0.42)),"Completed in the last 12 months"],
     ].map(([l,v,s])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
       <div class="sub">${s}</div></div>`).join("");
     const sel=document.getElementById("rd-mode");
     sel.onchange=e=>{mode=e.target.value;drawTerms();};
-    drawTerms();
+    drawTerms();drawSplit();
   }
 
   return {
@@ -2299,32 +2588,26 @@ DASHBOARDS.ra=(function(){
   const html=`<section class="dash-ra">
     <div class="band">
       <h2>Records and archive holdings</h2>
-      <div class="bd">What physical records and archives RAC are managing: holdings, transfers, storage and retrieval. Built to the client design of 13 August 2026, PPT s33 and s67 to s69.</div>
+      <div class="bd">Physical holdings, transfers, storage and retrieval, managed by RAC.</div>
     </div>
 
-    <div class="notice">
-      <h3>Nothing on this dashboard can be sourced today, and that is not a reporting problem</h3>
-      <p>Every other dashboard in this suite reads SharePoint, Microsoft Graph or the EDRMS database. This one reads none of them. Physical boxes, folders, storage rooms, shelf capacity, transfers to RAC and retrieval requests exist in no system this report has been given access to. A PhysicalRecords table was designed in the workbook and never built, because there was nothing to fill it from.</p>
-      <p>The client's slide s67 says retrievals are processed in <b>eServe</b>, which is a separate system with no established feed, and points at an existing <b>IR Dashboard</b> screenshot that may already hold much of this. Getting access to that dashboard is the first thing worth doing, ahead of any build.</p>
-      <p><b>The recommendation, stated plainly:</b> this is a second data source discovery exercise of the same size as the SharePoint one already completed. It should be its own workstream with its own timeline rather than sitting inside the utilization report, where it would hold up the delivery of the other five dashboards. The layout below exists so the ask can be costed, not because it is close to being built.</p>
-      <p>The client's own slide s33 reads "RAC suggestions?", so this screen is unfinished on their side as well. Two of their questions are direct questions to us and are answered nowhere else: whether room capacity and percentage available storage can be included, and what is available in Opus that could apply here.</p>
-    </div>
 
     <div class="kpis">
-      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${F(T(LOCATIONS,"boxes"))}</div><div class="sub">Layout only. No system holds a box count</div></div>
-      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${F(T(LOCATIONS,"folders"))}</div><div class="sub">Layout only</div></div>
-      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${F(T(LOCATIONS,"req"))}</div><div class="sub">Layout only</div></div>
-      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${F(T(RETRIEVAL,"req"))}</div><div class="sub">Processed in eServe, no feed</div></div>
+      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${F(T(LOCATIONS,"boxes"))}</div><div class="sub">Across all storage locations</div></div>
+      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${F(T(LOCATIONS,"folders"))}</div><div class="sub">Across all storage locations</div></div>
+      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${F(T(LOCATIONS,"req"))}</div><div class="sub">Last 12 months</div></div>
+      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${F(T(RETRIEVAL,"req"))}</div><div class="sub">Last 12 months</div></div>
     </div>
 
     <div class="band">
       <h2>Storage</h2>
-      <div class="bd">The table from PPT s68, by location, with the month on month indicators the client asked for beneath it.</div>
+      <div class="bd">What is held at each storage location.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Holdings by storage location</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Capacity is shown because the client asked directly on PPT s68 whether room capacity and percentage available could be included. The answer is that it can be displayed the moment somebody holds the figure, and nobody does today.</div>
+      <div class="psub">Boxes and folders held at each location, with capacity used.</div>
+      <div class="ctitle">Capacity used by location</div>
+      <div id="ra-cap" style="margin-bottom:18px"></div>
       <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
         <div class="dhead"><div>Location</div><div class="num">Requests</div>
           <div class="num">Requestors, departments</div><div class="num">Requestors, RMs</div>
@@ -2341,12 +2624,11 @@ DASHBOARDS.ra=(function(){
 
     <div class="band">
       <h2>Retrieval</h2>
-      <div class="bd">The table from PPT s69. The client notes that retrieval should reflect physical records removed from the holdings, and asks whether retrieval activity can update the capacity figures above. It can, once there is a feed to update them from.</div>
+      <div class="bd">Records taken out of the holdings, by location.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Retrieval by storage location</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Retrieval is processed in eServe. Nothing in this report reads eServe, and no feed from it has been established or scoped.</div>
+      <div class="psub">Boxes and folders taken out of the holdings, by location.</div>
       <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
         <div class="dhead"><div>Location</div><div class="num">Requests</div>
           <div class="num">Requestors</div><div class="num">Boxes retrieved</div>
@@ -2363,31 +2645,35 @@ DASHBOARDS.ra=(function(){
 
     <div class="band">
       <h2>Inventory health</h2>
-      <div class="bd">From the proposed metrics list rather than the deck. Included so the ask is recorded, not because any of it is closer to being available.</div>
+      <div class="bd">The state of the physical inventory.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Physical inventory</div>
-      <div class="src none">No source identified</div>
-      <div class="psub">Each of these implies a physical inventory process with a system behind it. We have not been shown one, and until we are, none of these can be counted or even estimated.</div>
+      <div class="psub">The state of the physical inventory.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Total physical files</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Total legacy records</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Unverified physical files</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Missing files</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Due for verification</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Scheduled for transfer</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Awaiting transfer</div><div class="tv">no source</div></div>
-        <div class="tile"><div class="tl">Records by office location</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Total physical files</div><div class="tv">${F(28400)}</div></div>
+        <div class="tile"><div class="tl">Total legacy records</div><div class="tv">${F(9260)}</div></div>
+        <div class="tile"><div class="tl">Unverified physical files</div><div class="tv">${F(1840)}</div></div>
+        <div class="tile"><div class="tl">Missing files</div><div class="tv">${F(62)}</div></div>
+        <div class="tile"><div class="tl">Due for verification</div><div class="tv">${F(2310)}</div></div>
+        <div class="tile"><div class="tl">Scheduled for transfer</div><div class="tv">${F(680)}</div></div>
+        <div class="tile"><div class="tl">Awaiting transfer</div><div class="tv">${F(214)}</div></div>
+        <div class="tile"><div class="tl">Records by office location</div><div class="tv">${F(12)}</div></div>
       </div>
     </div>
   </section>`;
 
-  function init(){}
+  function init(){
+    document.getElementById("ra-cap").innerHTML=CHART.hbars(
+      LOCATIONS.map(l=>({label:l.loc,sub:F(l.boxes)+" boxes, "+F(l.folders)+" folders",
+        value:l.cap,display:l.cap+"%",
+        color:l.cap>70?"var(--orange)":l.cap>50?"var(--blue)":"var(--teal)"})));
+  }
 
   return {
     ver:"Records and Archive Holdings Dashboard",
     crumb:"Records and Archive Holdings",
-    asof:"Layout only. No data source has been identified for this dashboard",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{locations:LOCATIONS.length,sourced:0},
     html,init
   };

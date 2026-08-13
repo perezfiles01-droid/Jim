@@ -25,6 +25,13 @@ const url=path.startsWith("http")?path:"file://"+path;
 
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
+const settle=async(page,sel)=>{
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
+  await page.waitForTimeout(120);
+  await page.$eval(sel,e=>e.click());
+};
+
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
 (async()=>{
@@ -94,7 +101,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(/Site health/.test(body),"site health survives as a panel, per the Risk and Compliance metrics");
   ok(/Library health/.test(body),"library health survives as a panel");
   ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
-  ok(/Most used libraries/.test(body),"most used libraries is shown as asked, marked no source");
+  ok(/Most used libraries/.test(body),"most used libraries is shown as asked");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
@@ -142,31 +149,30 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nThe absorbed content works, not merely present");
   await page.evaluate(()=>switchTo("bw"));
-  const years=await page.$$eval(".dash-bw #bw-years .drow",els=>els.map(e=>
-    [...e.children].map(c=>c.textContent.trim())));
-  eq(years.length,4,"the by-year table carries three closed years plus the current window");
-  eq(+years[3][1].replace(/[^0-9]/g,""),d.DECLARED,
-     "the last by-year row equals the declared record count, so it agrees with the monthly chart");
+  const years=await page.$$eval(".dash-bw #bw-years .ccol",els=>els.map(e=>
+    ({label:e.querySelector(".cl").textContent.trim(),
+      value:+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"")})));
+  eq(years.length,4,"the by-year chart shows three closed years plus the current window");
+  eq(years[3].value,d.DECLARED,
+     "the last column equals the declared record count, so it agrees with the monthly chart");
   const visits=await page.$$eval(".dash-bw #bw-visits .tcol",els=>els.length);
   eq(visits,12,"the site activity trend shows twelve months");
   const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
   eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
-  const libRows=await page.$$eval(".dash-bw #bw-libs .drow",els=>els.length);
+  const libRows=await page.$$eval(".dash-bw #bw-libs .hbar",els=>els.length);
   eq(libRows,d.TOP_LIBRARIES.length,"the library ranking lists every library");
-  const withSite=await page.$$eval(".dash-bw #bw-libs .drow .dn small",els=>els.map(e=>e.textContent));
+  const withSite=await page.$$eval(".dash-bw #bw-libs .hbar .hl small",els=>els.map(e=>e.textContent));
   ok(withSite.length===libRows&&withSite.every(t=>t.trim().length>0),
      "every library is shown with its parent site, since library names repeat across sites");
   /* the ranking must actually re-rank, not merely redraw */
-  const byRec=await page.$$eval(".dash-bw #bw-libs .drow",els=>
-    els.map(e=>+e.children[2].textContent.replace(/[^0-9]/g,"")));
+  const byRec=await page.$$eval(".dash-bw #bw-libs .hf",els=>
+    els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
   ok(byRec.every((v,i)=>i===0||byRec[i-1]>=v),"ranking by record volume orders highest first");
   await page.selectOption(".dash-bw #bw-librank","gb");
-  const rankGB=await page.$$eval(".dash-bw #bw-libs .drow",els=>
-    els.map(e=>parseFloat(e.children[4].textContent)));
+  const rankGB=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
   ok(rankGB.every((v,i)=>i===0||rankGB[i-1]>=v),"ranking by storage orders highest first");
   await page.selectOption(".dash-bw #bw-librank","rate");
-  const byRate=await page.$$eval(".dash-bw #bw-libs .drow",els=>
-    els.map(e=>parseFloat(e.children[3].textContent)));
+  const byRate=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
   ok(byRate.every((v,i)=>i===0||byRate[i-1]>=v),"ranking by declaration rate orders highest first");
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
