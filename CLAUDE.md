@@ -1,30 +1,43 @@
 # Project context
 
-**Read `STATUS.md` first.** It is where the EDRMS Utilization Report actually
-stands: what is buildable today, what is blocked and on whom, the evidence
-gathered from the test tenant, the key identifiers, and what to do next. It is
-the file that changes every session.
+## Read `STATUS.md` first. Before anything else, every time.
+
+It is the complete record of the EDRMS Utilization Report: what is built, what is
+proven against the test tenant, what is assumed, what is blocked and on whom, the
+decisions already settled, and the mistakes made and corrected so they are not
+repeated.
+
+**It is written to be read in one pass and answer most questions without opening
+another file.** Do that before reading the prototype, the database design or the
+workbooks, and before asking the user to re-explain anything. Almost everything
+asked in a new session is already answered there.
 
 Then read **`BACKGROUND.md`** for the durable context: what ADB and the EDRMS
-Utilization Report are, the tech stack, the data model, the deliverable's
-internal structure, the ADB palette and the hard rules (including no em dashes in
-visible text), and how to run and verify. It is still correct on all of that, but
-it was written on 4 August 2026 and predates the database design work and the
-test tenant investigation. Where the two disagree, `STATUS.md` wins.
+Utilization Report are, the tech stack, the ADB palette and the hard rules. It is
+still correct on those, but it was written on 4 August 2026 and predates the
+database design, the test tenant investigation and the August revisions.
+**Where the two disagree, `STATUS.md` wins.**
 
-There is also a skill at **`.claude/skills/edrms-utilization-report/`** that
-covers how to build, extend, and verify the dashboard suite. It should trigger on
-its own for any work on the Reporting Suite. It bundles a verification script,
-the workbook generators, and reference files on the design system, the data
-sources, and what each dashboard currently contains.
+There is also a skill at **`.claude/skills/edrms-utilization-report/`** covering
+how to build, extend and verify the dashboards. It should trigger on its own for
+any work on the Reporting Suite.
 
 ## Current deliverables
 
 | File | What it is |
 | --- | --- |
-| `index.html` | The prototype. One self contained file, 6 dashboards |
-| `utilizationdb.md` | The database design, two tables and 58 columns, in the client's workbook format |
-| `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | The working document. Every element mapped to its source, plus gaps, actions and 25 findings |
+| `index.html` | The prototype. One self contained file, 5 dashboards |
+| `EDRMS_Utilization_Report_Database_Design_v1.xlsx` | The database design in the client's workbook format. 4 tables, 73 columns, with a verification tracker |
+| `utilizationdb.md` | The same design as prose, no code |
+| `evidence_*.csv` | Real tenant exports, kept so claims can be checked rather than trusted |
+| `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | Element to source mapping. **Stale**, predates the August cut |
 
-v1 to v3 of the workbook are kept for the audit trail. **v4 is current, and a v5
-is warranted** for the reason given in `STATUS.md` section 9.
+## The habit that has caught every real error
+
+Do not trust an expected column name, an assumed API window, or a plausible
+figure. Export the real file and read it. `STATUS.md` section 8 lists eleven
+errors found that way, several of which had survived for weeks looking correct.
+
+When something cannot be verified, say so and leave the cell blank. An
+expectation written into a source column is indistinguishable from a verified
+fact three weeks later.
