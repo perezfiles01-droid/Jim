@@ -1,9 +1,23 @@
 ---
 name: edrms-utilization-report
-description: Build, extend, and verify the ADB EDRMS Utilization Report prototype (the "Reporting Suite"), a single self-contained HTML file published on GitHub Pages that specifies a future Power BI report, with one banner marked block per dashboard. Use this skill whenever the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite, the live site, or any of its dashboards (Overview, Records Management, Department Performance, Sites and Libraries, Format and Storage, Retention), and whenever they ask to add, copy, clone, restyle, fix, publish, or check a dashboard, KPI card, treemap, stacked bar, drill-down, sortable table, or date range filter in it. Use it even when the request sounds like a one-line tweak, because this deliverable carries hard rules (no em dashes in visible text, a fixed ADB palette, figures that must reconcile across dashboards, and visuals restricted to what Power BI can reproduce natively) that are very easy to break by accident and expensive to catch later.
+description: Orient in the ADB EDRMS Utilization Report project and its deliverables: the prototype, the database design workbook, the requirement register and the checker workbook. Use this skill when the user mentions ADB, EDRMS, the Utilization Report, the Reporting Suite or the live site and the request is about the project as a whole rather than one side of it: what exists, what was decided, what the client asked for, what to deliver next, or how the pieces fit together. For building or changing what the report looks like, use edrms-frontend instead. For whether a figure can actually be produced, which column carries it, or any SQL, Graph call or table design question, use edrms-backend instead. Use this one when it is unclear which of those applies, because it carries the project context both of them assume.
 ---
 
 # ADB EDRMS Utilization Report
+
+## Which skill to use
+
+Three skills cover this project, and they do not overlap.
+
+| The request is about | Use |
+| --- | --- |
+| What the report looks like or how it behaves. Panels, charts, layout, captions, clicks | `edrms-frontend` |
+| Whether a figure can be produced, where it comes from, SQL, Graph, table or column design | `edrms-backend` |
+| The project itself. What exists, what was decided, what the client asked for, what is next | this one |
+
+When a request needs both, answer the sourcing question first with
+`edrms-backend`. A panel built on a figure that cannot be produced is worse than
+no panel, and that order is what stops it being built.
 
 ## What this is
 
