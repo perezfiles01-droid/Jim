@@ -34,7 +34,18 @@ if(seen.bars!==r.cats) fail.push(`rendered ${seen.bars} category bars for ${r.ca
 if(!seen.scope) fail.push('retention section missing its .dash-rt scope class');
 if(!seen.labels) fail.push('the retention label profile was lost when the file plan moved in');
 if(sl.libRows!==15) fail.push(`library table rows ${sl.libRows}`);
-if(r.navLive.includes('fp')) fail.push('a standalone File Plan nav entry survives; it should live inside Retention');
+/* Until 13 Aug 2026 this asserted the opposite: that no standalone File Plan
+   nav entry existed, because on 10 Aug two cards and five bars were judged not
+   to earn one and the file plan was folded into Retention.
+
+   The client's own design of 13 Aug reverses that. PPT s13 and s14 name
+   Institutional File Plan Insights as one of six key views, and PPT s29 to s31
+   and s47 to s52 give it six screens of its own. So the standalone dashboard
+   is now required, and what has to be protected instead is that promoting it
+   did not strip the file plan panel back out of Retention: both exist, and the
+   Retention one is still the summary the disposal figures sit beside. */
+if(!r.navLive.includes('fp')) fail.push('the Institutional File Plan dashboard is missing from the nav; the client asked for it as a key view on PPT s13');
+if(!seen.bars) fail.push('the file plan panel inside Retention was lost when the standalone dashboard was added');
 const states=new Set(sl.pills);
 if(!(states.has('Active')&&states.has('Inactive')&&states.has('Long dormant')))
   fail.push('library table does not show all three states: '+[...states].join(', '));

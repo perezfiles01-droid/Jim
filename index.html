@@ -453,6 +453,95 @@
   .dash-dp .tbar{width:100%;background:var(--teal);border-radius:4px 4px 0 0;min-height:3px}
   .dash-dp .tlab{font-size:11px;color:var(--mut)}
   .dash-dp .tval{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+/* ================= stage3.css ================= */
+/* Project Insights, Institutional File Plan, Retention and Disposal, and
+   Records and Archive Holdings. Stage 3 of the client redesign.
+
+   These four share one style block rather than four near identical ones,
+   because unlike the five original dashboards they were built together to a
+   single design and none of them redefines a class the others use. The scope
+   selector lists all four, so a later change to one still cannot reach the
+   others' markup. */
+  .dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+  @media(max-width:1180px){.dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:640px){.dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
+    grid-template-columns:1fr}}
+  .dash-pj .kpi .val,.dash-fp .kpi .val,.dash-rd .kpi .val,.dash-ra .kpi .val{font-size:26px}
+  .dash-pj .src,.dash-fp .src,.dash-rd .src,.dash-ra .src{
+    display:inline-block;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    font-weight:700;border-radius:5px;padding:3px 8px;margin-bottom:8px;border:1px solid}
+  .dash-pj .src.dept,.dash-fp .src.dept,.dash-rd .src.dept,.dash-ra .src.dept{
+    background:#FFF6EC;border-color:#F3D8BC;color:#9C5620}
+  .dash-pj .src.none,.dash-fp .src.none,.dash-rd .src.none,.dash-ra .src.none{
+    background:#FDEDED;border-color:#F0C9C9;color:#9C2B2B}
+  .dash-pj .src.part,.dash-fp .src.part,.dash-rd .src.part,.dash-ra .src.part{
+    background:#F1F7FF;border-color:#CFE0F3;color:#1B5E82}
+  .dash-pj .src.ref,.dash-fp .src.ref,.dash-rd .src.ref,.dash-ra .src.ref{
+    background:#F4F1FB;border-color:#DCD3EE;color:#553F86}
+  .dash-pj .scrollx,.dash-fp .scrollx,.dash-rd .scrollx,.dash-ra .scrollx{overflow-x:auto}
+  .dash-pj .dtab,.dash-fp .dtab,.dash-rd .dtab,.dash-ra .dtab{--dc:230px repeat(5,1fr);min-width:780px}
+  .dash-pj .dhead,.dash-pj .drow,.dash-pj .dtot,
+  .dash-fp .dhead,.dash-fp .drow,.dash-fp .dtot,
+  .dash-rd .dhead,.dash-rd .drow,.dash-rd .dtot,
+  .dash-ra .dhead,.dash-ra .drow,.dash-ra .dtot{
+    display:grid;grid-template-columns:var(--dc);gap:12px;align-items:center}
+  .dash-pj .dhead,.dash-fp .dhead,.dash-rd .dhead,.dash-ra .dhead{
+    font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);
+    padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .dash-pj .dhead .num,.dash-pj .drow .num,.dash-pj .dtot .num,
+  .dash-fp .dhead .num,.dash-fp .drow .num,.dash-fp .dtot .num,
+  .dash-rd .dhead .num,.dash-rd .drow .num,.dash-rd .dtot .num,
+  .dash-ra .dhead .num,.dash-ra .drow .num,.dash-ra .dtot .num{
+    text-align:right;font-variant-numeric:tabular-nums}
+  .dash-pj .drow,.dash-fp .drow,.dash-rd .drow,.dash-ra .drow{
+    padding:7px 0;border-bottom:1px solid #F0F4F8;font-size:13px}
+  .dash-pj .drow .dn,.dash-fp .drow .dn,.dash-rd .drow .dn,.dash-ra .drow .dn{font-weight:600}
+  .dash-pj .drow .dn small,.dash-fp .drow .dn small,.dash-rd .drow .dn small,.dash-ra .drow .dn small{
+    display:block;font-weight:400;color:var(--mut);font-size:11px;margin-top:1px}
+  .dash-fp .drow.cat,.dash-rd .drow.cat,.dash-ra .drow.cat{background:#F6FAFE;font-weight:700}
+  .dash-pj .dtot,.dash-fp .dtot,.dash-rd .dtot,.dash-ra .dtot{
+    padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
+  .dash-pj .tiles,.dash-fp .tiles,.dash-rd .tiles,.dash-ra .tiles{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .dash-pj .tile,.dash-fp .tile,.dash-rd .tile,.dash-ra .tile{
+    background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+  .dash-pj .tile.hi,.dash-fp .tile.hi,.dash-rd .tile.hi,.dash-ra .tile.hi{
+    background:#EAF3FB;border-color:#CFE0F3}
+  .dash-pj .tile .tl,.dash-fp .tile .tl,.dash-rd .tile .tl,.dash-ra .tile .tl{
+    font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
+  .dash-pj .tile .tv,.dash-fp .tile .tv,.dash-rd .tile .tv,.dash-ra .tile .tv{
+    font-size:19px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  .dash-pj .toolbar,.dash-fp .toolbar,.dash-rd .toolbar,.dash-ra .toolbar{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-pj .toolbar .lbl,.dash-fp .toolbar .lbl,.dash-rd .toolbar .lbl,.dash-ra .toolbar .lbl{
+    font-size:12px;color:var(--mut)}
+  .dash-pj select,.dash-fp select,.dash-rd select,.dash-ra select{
+    font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink);max-width:100%}
+  /* project profile header, PPT s38 */
+  .dash-pj .profile{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:14px}
+  .dash-pj .pf{background:#F7FAFD;border:1px solid var(--line);border-radius:9px;padding:10px 13px}
+  .dash-pj .pf .k{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+  .dash-pj .pf .v{font-size:13.5px;font-weight:600;margin-top:4px}
+  /* ranked bars, used by the file plan term usage panel */
+  .dash-fp .lbar{display:grid;grid-template-columns:230px 1fr 74px;gap:12px;align-items:center;margin-bottom:7px}
+  .dash-fp .lbar .ll{font-size:12.5px;font-weight:600}
+  .dash-fp .lbar .ll small{display:block;font-weight:400;color:var(--mut);font-size:11px}
+  .dash-fp .lbar .lt{background:#F3F7FB;border-radius:5px;height:23px;overflow:hidden}
+  .dash-fp .lbar .lf{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;
+    padding:0 8px;color:#fff;font-size:11px;font-weight:700;min-width:40px}
+  .dash-fp .lbar .lp{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+  @media(max-width:700px){.dash-fp .lbar{grid-template-columns:140px 1fr 62px}}
+  /* the holdings dashboard is almost entirely unsourced, so it says so once,
+     loudly, rather than repeating a marker on every panel */
+  .dash-ra .notice{background:#FDF4F4;border:1px solid #F0C9C9;border-radius:12px;
+    padding:16px 18px;margin-bottom:18px}
+  .dash-ra .notice h3{font-family:var(--serif);font-size:15px;color:#8E2A2A;margin-bottom:6px}
+  .dash-ra .notice p{font-size:12.5px;color:var(--ink2);line-height:1.5;max-width:900px}
+  .dash-ra .notice p+p{margin-top:8px}
 </style></head>
 <body>
 <aside id="side">
@@ -461,6 +550,10 @@
     <div class="grp">Executive</div>
     <a data-d="bw"><span class="ic">◉</span>Bank-wide Oversight</a>
     <a data-d="dp"><span class="ic">▦</span>Department Insights</a>
+    <a data-d="pj"><span class="ic">◇</span>Project Insights</a>
+    <a data-d="fp"><span class="ic">☰</span>Institutional File Plan</a>
+    <a data-d="rd"><span class="ic">⏲</span>Retention &amp; Disposal</a>
+    <a data-d="ra"><span class="ic">▩</span>Records &amp; Archive Holdings</a>
     <a data-d="ov"><span class="ic">◈</span>Overview</a>
     <div class="grp">Operations</div>
     <a data-d="rm"><span class="ic">▤</span>Records Management</a>
@@ -3185,6 +3278,666 @@ DASHBOARDS.dp=(function(){
       categories:CATS.length,
       programmeDates:PROGRAMME.length
     },
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   project.js
+   ================================================================= */
+/* ===================================================================
+   Project Insights. PPT s36, s37 and s38.
+
+   The cleanest single ask in the client's deck, and the one that hinges
+   entirely on one missing thing: nothing anywhere classifies a site as a
+   project site, let alone as sovereign or nonsovereign. Every figure on
+   PPT s38 is one this report can already produce. It is purely the
+   classification that is absent, so the whole dashboard is marked.
+
+   If AvePoint Cloud Governance captures a project number when a site is
+   requested, this becomes one CSV load and the dashboard is real. That is
+   worth checking before telling the client it cannot be done.
+   =================================================================== */
+DASHBOARDS.pj=(function(){
+  const BW=DASHBOARDS.bw.summary;
+
+  /* The three examples are the client's own, taken from PPT s36 and s37 so the
+     format question they raised there has something concrete attached to it. */
+  const PROJECTS=[
+    {no:"57318-001", name:"Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project",
+     facility:"Sovereign", modality:"Grant", modNo:"0923", country:"Vanuatu", status:"Closed",
+     effective:"13 Dec 2023", closing:"10 Sep 2024",
+     sites:3, users:46, visitors:19, docs:10684, rec:9596, phys:156, due:2},
+    {no:"54461-003", name:"Loan 4723-INO: Boosting Productivity Through Human Capital Development (Subprogram 3)",
+     facility:"Sovereign", modality:"Loan", modNo:"4723", country:"Indonesia", status:"Active",
+     effective:"04 Mar 2024", closing:"31 Dec 2027",
+     sites:5, users:88, visitors:41, docs:24310, rec:19844, phys:402, due:7},
+    {no:"58499-001", name:"Grant 0998-NEP: 2024 Floods and Landslides Emergency Response",
+     facility:"Sovereign", modality:"Grant", modNo:"0998", country:"Nepal", status:"Active",
+     effective:"22 Nov 2024", closing:"30 Jun 2026",
+     sites:2, users:31, visitors:12, docs:6120, rec:4988, phys:71, due:1},
+    {no:"57298-002", name:"TA 10304-PAK: Bio Tech Energy Sustainable Aviation Fuel Project",
+     facility:"Nonsovereign", modality:"TA", modNo:"10304", country:"Pakistan", status:"Active",
+     effective:"18 Jan 2025", closing:"17 Jan 2028",
+     sites:2, users:24, visitors:9, docs:4380, rec:3402, phys:44, due:1},
+    {no:"56189-001", name:"Tiger Digital Infrastructure for Rural Connectivity Project",
+     facility:"Nonsovereign", modality:"Loan", modNo:"4811", country:"Regional", status:"Active",
+     effective:"09 Sep 2024", closing:"08 Sep 2029",
+     sites:3, users:37, visitors:16, docs:7920, rec:6144, phys:88, due:2},
+    {no:"55106-001", name:"ECOM COVID-19 Smallholder Farmer Climate Resilience and Livelihood Support Project",
+     facility:"Nonsovereign", modality:"Loan", modNo:"4402", country:"Regional", status:"Closed",
+     effective:"14 Jun 2022", closing:"13 Jun 2025",
+     sites:2, users:19, visitors:7, docs:3640, rec:2810, phys:36, due:1},
+  ];
+
+  let facility="Sovereign";
+  let selected=PROJECTS[0].no;
+
+  const inScope=()=>PROJECTS.filter(p=>p.facility===facility);
+  const P=()=>PROJECTS.find(p=>p.no===selected);
+  const sum=(list,k)=>list.reduce((a,p)=>a+p[k],0);
+
+  function drawList(){
+    const rows=inScope();
+    document.getElementById("pj-list").innerHTML=
+      `<div class="dhead"><div>Project number and name</div><div class="num">Sites</div>
+        <div class="num">Documents</div><div class="num">Records declared</div>
+        <div class="num">Counterparts</div><div class="num">Due for disposal</div></div>`+
+      rows.map(p=>`<div class="drow"><div class="dn">${p.no}<small>${p.name}</small></div>
+        <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
+        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div>
+        <div class="num">${F(p.due)}</div></div>`).join("")+
+      `<div class="dtot"><div>${facility} total, ${rows.length} projects</div>
+        <div class="num">${F(sum(rows,"sites"))}</div><div class="num">${F(sum(rows,"docs"))}</div>
+        <div class="num">${F(sum(rows,"rec"))}</div><div class="num">${F(sum(rows,"phys"))}</div>
+        <div class="num">${F(sum(rows,"due"))}</div></div>`;
+  }
+
+  function drawProfile(){
+    const p=P();
+    document.getElementById("pj-profile").innerHTML=[
+      ["Facility type",p.facility],["Project number",p.no],["Modality",p.modality],
+      ["Modality number",p.modNo],["Country or economy",p.country],["Project status",p.status],
+      ["Effectivity date",p.effective],["Closing date, actual",p.closing],
+    ].map(([k,v])=>`<div class="pf"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    document.getElementById("pj-pname").textContent=p.name;
+    document.getElementById("pj-kpis").innerHTML=[
+      ["Sites Created",F(p.sites)],["EDRMS Users",F(p.users)],["Site Visitors",F(p.visitors)],
+      ["Documents in EDRMS",F(p.docs)],["Records Declared",F(p.rec)],
+      ["Physical Counterparts",F(p.phys)],["Records Due for Disposal",F(p.due)],
+      ["Declaration Rate",(p.rec/p.docs*100).toFixed(1)+"%"],
+    ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
+      <div class="sub">Producible today for any site we can identify</div></div>`).join("");
+  }
+
+  const html=`<section class="dash-pj">
+    <div class="band">
+      <h2>Project insights</h2>
+      <div class="bd">Whether project sites are being used and maintained appropriately, for sovereign and nonsovereign projects. Built to the client design of 13 August 2026, PPT s36, s37 and s38.</div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Why this dashboard is laid out but not live</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Every measure on this page is one the report can already produce. What is missing is the one thing that makes them a project: nothing in SharePoint, in Microsoft Graph, in the term store or in the EDRMS database distinguishes a project site from a departmental one, and nothing carries a project number, a facility type, a modality, a country or a closing date. Those are ADB operational data and they live in ADB project systems.</div>
+      <div class="psub">This is the cheapest of the blocked dashboards to unblock. If AvePoint Cloud Governance records a project number when a site is requested, it is one CSV load and everything below becomes real. That is worth checking before concluding it cannot be done. The projects listed below are the client's own examples from PPT s36 and s37.</div>
+    </div>
+
+    <div class="band">
+      <h2>Projects</h2>
+      <div class="bd">The list the client drew on PPT s36 for sovereign projects and PPT s37 for nonsovereign, keyed by project number. They asked what format the identifier should take, which is a question back to them.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Project sites, documents and records</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Switch between the two facility types below. In production this list is only as complete as the project site register that does not exist yet.</div>
+      <div class="toolbar">
+        <span class="lbl">Facility type</span>
+        <select id="pj-fac">
+          <option value="Sovereign">Sovereign projects</option>
+          <option value="Nonsovereign">Nonsovereign projects</option>
+        </select>
+      </div>
+      <div class="scrollx"><div class="dtab" id="pj-list"></div></div>
+    </div>
+
+    <div class="band">
+      <h2>Project profile</h2>
+      <div class="bd">The single project view from PPT s38, reached in their design by clicking a project in the list above.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle" id="pj-pname"></div>
+      <div class="src none">No source identified</div>
+      <div class="psub">The eight attributes below are the ones the client listed on PPT s38. None of them exist in any system this report reads. The eight figures beneath them are all producible today for any site we can identify, which is the whole point: the measures are not the problem.</div>
+      <div class="toolbar">
+        <span class="lbl">Project</span>
+        <select id="pj-sel"></select>
+      </div>
+      <div class="profile" id="pj-profile"></div>
+      <div class="kpis" id="pj-kpis"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    const fac=document.getElementById("pj-fac");
+    const sel=document.getElementById("pj-sel");
+    function fillSel(){
+      sel.innerHTML=PROJECTS.map(p=>
+        `<option value="${p.no}" ${p.no===selected?"selected":""}>${p.no} - ${p.country}</option>`).join("");
+    }
+    fac.onchange=e=>{facility=e.target.value;drawList();};
+    sel.onchange=e=>{selected=e.target.value;drawProfile();};
+    fillSel();drawList();drawProfile();
+  }
+
+  return {
+    ver:"Project Insights Dashboard",
+    crumb:"Project Insights",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{projects:PROJECTS.length,
+      sovereign:PROJECTS.filter(p=>p.facility==="Sovereign").length,
+      nonsovereign:PROJECTS.filter(p=>p.facility==="Nonsovereign").length},
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   fileplan.js
+   ================================================================= */
+/* ===================================================================
+   Institutional File Plan Insights. PPT s29 to s31 and s47 to s52.
+
+   Two blockers stacked on each other, which is why this is the longest
+   lead time item in the client's deck.
+
+   First, the five categories exist in neither system. The SharePoint term
+   store holds six dropdown value sets, sixteen terms, one level deep.
+   Purview holds fifty three retention labels as a flat list. Neither is
+   an institutional file plan.
+
+   Second, and worse, even if the client says tomorrow where the file plan
+   lives, nothing links a term to a library or to a document. The file plan
+   table has no join key and the document table carries no TermId. Every
+   figure on PPT s47 to s52 needs that join, so it is a design change and a
+   scan change rather than a report change.
+   =================================================================== */
+DASHBOARDS.fp=(function(){
+  const BW=DASHBOARDS.bw.summary, RM=DASHBOARDS.rm.summary;
+
+  /* The five categories are the client's, from PPT s47. The terms under them
+     are their own examples from s48 to s52, extended so each category has
+     enough rows to read as a list rather than a placeholder. */
+  const PLAN=[
+    {cat:"Institutional Management", terms:["Annual Meetings","Board Papers","Executive Correspondence",
+      "Governance and Oversight","Institutional Policies"]},
+    {cat:"Administration", terms:["Budgeting","Facilities","Procurement","Travel","Records and Archives"]},
+    {cat:"People Management", terms:["Learning and Development","Recruitment","Staff Records",
+      "Benefits and Payroll"]},
+    {cat:"Programs and Operations", terms:["Portfolio Management","Country Planning","Loan Agreements",
+      "Project Completion","Safeguards","Technical Assistance"]},
+    {cat:"Other", terms:["Photos and Audiovisual","Legacy Content","Unclassified"]},
+  ];
+
+  function split(total,weights){
+    const s=weights.reduce((a,b)=>a+b,0);
+    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
+    out[0]+=total-out.reduce((a,b)=>a+b,0);
+    return out;
+  }
+
+  /* Every term gets a share of the bank-wide totals, so the categories sum to
+     the whole and the panel cannot quietly disagree with Records Management. */
+  const FLAT=[];
+  PLAN.forEach(c=>c.terms.forEach(t=>FLAT.push({cat:c.cat,term:t})));
+  const w=FLAT.map((f,i)=>1+((i*7+f.term.length)%9)*0.34);
+  const recS=split(RM.declared,w), docS=split(RM.documents,w),
+        physS=split(RM.withPhysical,w), libS=split(267,w), depS=split(96,w);
+  FLAT.forEach((f,i)=>{f.rec=recS[i];f.docs=docS[i];f.phys=physS[i];f.libs=libS[i];f.depts=depS[i];});
+  const CATTOT=PLAN.map(c=>{
+    const rows=FLAT.filter(f=>f.cat===c.cat);
+    return {cat:c.cat, terms:rows.length,
+      rec:rows.reduce((a,r)=>a+r.rec,0), docs:rows.reduce((a,r)=>a+r.docs,0),
+      phys:rows.reduce((a,r)=>a+r.phys,0), libs:rows.reduce((a,r)=>a+r.libs,0),
+      depts:Math.max(...rows.map(r=>r.depts))};
+  });
+  console.assert(CATTOT.reduce((a,c)=>a+c.rec,0)===RM.declared,
+    "File plan categories must total the declared record count");
+  console.assert(CATTOT.reduce((a,c)=>a+c.docs,0)===RM.documents,
+    "File plan categories must total the document count");
+
+  const TOTAL_TERMS=FLAT.length;
+  let cat=PLAN[0].cat;
+
+  function drawCats(){
+    document.getElementById("fp-cats").innerHTML=
+      `<div class="dhead"><div>Category</div><div class="num">Terms</div>
+        <div class="num">Departments</div><div class="num">Libraries</div>
+        <div class="num">Documents</div><div class="num">Records declared</div>
+        <div class="num">Counterparts</div></div>`+
+      CATTOT.map(c=>`<div class="drow"><div class="dn">${c.cat}</div>
+        <div class="num">${F(c.terms)}</div><div class="num">${F(c.depts)}</div>
+        <div class="num">${F(c.libs)}</div><div class="num">${F(c.docs)}</div>
+        <div class="num">${F(c.rec)}</div><div class="num">${F(c.phys)}</div></div>`).join("")+
+      `<div class="dtot"><div>Total</div><div class="num">${F(TOTAL_TERMS)}</div>
+        <div class="num">${F(96)}</div>
+        <div class="num">${F(CATTOT.reduce((a,c)=>a+c.libs,0))}</div>
+        <div class="num">${F(RM.documents)}</div><div class="num">${F(RM.declared)}</div>
+        <div class="num">${F(RM.withPhysical)}</div></div>`;
+  }
+
+  function drawTerms(){
+    const rows=FLAT.filter(f=>f.cat===cat);
+    document.getElementById("fp-terms").innerHTML=
+      `<div class="dhead"><div>Term, top level</div><div class="num">Departments</div>
+        <div class="num">Libraries</div><div class="num">Documents</div>
+        <div class="num">Records declared</div><div class="num">Counterparts</div></div>`+
+      rows.map(t=>`<div class="drow"><div class="dn">${t.term}<small>${cat}</small></div>
+        <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
+        <div class="num">${F(t.docs)}</div><div class="num">${F(t.rec)}</div>
+        <div class="num">${F(t.phys)}</div></div>`).join("")+
+      `<div class="dtot"><div>${cat} total</div>
+        <div class="num"></div>
+        <div class="num">${F(rows.reduce((a,r)=>a+r.libs,0))}</div>
+        <div class="num">${F(rows.reduce((a,r)=>a+r.docs,0))}</div>
+        <div class="num">${F(rows.reduce((a,r)=>a+r.rec,0))}</div>
+        <div class="num">${F(rows.reduce((a,r)=>a+r.phys,0))}</div></div>`;
+  }
+
+  function drawUsage(){
+    const sorted=[...FLAT].sort((a,b)=>b.rec-a.rec);
+    const top=sorted.slice(0,6), bottom=sorted.slice(-6).reverse();
+    const mx=top[0].rec;
+    const bar=(list,colour)=>list.map(t=>
+      `<div class="lbar"><div class="ll">${t.term}<small>${t.cat}</small></div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*t.rec/mx)}%;background:${colour}">${F(t.rec)}</div></div>
+        <div class="lp">${(t.rec/RM.declared*100).toFixed(1)}%</div></div>`).join("");
+    document.getElementById("fp-top").innerHTML=bar(top,"var(--blue)");
+    document.getElementById("fp-bottom").innerHTML=bar(bottom,"var(--orange)");
+  }
+
+  const html=`<section class="dash-fp">
+    <div class="band">
+      <h2>Institutional file plan insights</h2>
+      <div class="bd">Whether users are classifying records correctly: how the file plan terms are being applied across sites and libraries. Built to the client design of 13 August 2026, PPT s29 to s31 and s47 to s52.</div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Two blockers sit on this dashboard, and they stack</div>
+      <div class="src none">No source identified</div>
+      <div class="psub"><b>First, the file plan is not in either system.</b> The SharePoint term store holds six dropdown value sets, sixteen terms, one level deep: EDRMS Declaration Status, Physical Status and the like. Purview holds fifty three retention labels as a flat list with no hierarchy at all. Neither of those is an institutional file plan, and the five categories below are the client's own from PPT s47 rather than anything read from the tenant. Where the real file plan lives is question 1 on the list back to them.</div>
+      <div class="psub"><b>Second, and this one survives the answer.</b> Even once the client says where the plan lives, nothing links a term to a library or to a document. The file plan table has no join key and the document table carries no TermId. Every figure on PPT s47 to s52 needs that link, so it is a change to the database design and to the weekly scan, not a change to a report. That makes it the longest lead time item in the deck and worth raising early.</div>
+    </div>
+
+    <div class="kpis" id="fp-kpis"></div>
+
+    <div class="band">
+      <h2>Terms by category</h2>
+      <div class="bd">The five top level groupings from PPT s47, each with the five measures the client asked for.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">The five categories</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Document, record and counterpart counts are sourceable today at every other grain in this report. Attributing them to a term is what does not exist. Departments and libraries provisioned per term need the same missing link.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(6,1fr)" id="fp-cats"></div></div>
+    </div>
+
+    <div class="band">
+      <h2>Terms within a category</h2>
+      <div class="bd">One screen per category in the client's design, PPT s48 to s52. Here they are one panel with a picker, which is the same information without five near identical screens.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Top level terms</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Choose a category to see its terms.</div>
+      <div class="toolbar">
+        <span class="lbl">Category</span>
+        <select id="fp-cat"></select>
+      </div>
+      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(5,1fr)" id="fp-terms"></div></div>
+    </div>
+
+    <div class="band">
+      <h2>Term usage</h2>
+      <div class="bd">The indicators the client asked for on every category screen: which terms are being used, and which are candidates for review or deletion.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Most used terms</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">By records declared against the term. This is the usage pattern the client asked to see on PPT s48 to s52.</div>
+      <div id="fp-top"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Least used terms</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">The candidates for review and deletion. Two further indicators the client asked for on the same slides are not laid out at all: new libraries created outside convention needs the naming convention, which nobody has supplied, and requests for new libraries or terms is a request workflow rather than a report.</div>
+      <div id="fp-bottom"></div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("fp-kpis").innerHTML=[
+      ["Total Terms",F(TOTAL_TERMS)],
+      ...CATTOT.slice(0,3).map(c=>[c.cat+" Terms",F(c.terms)]),
+    ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
+      <div class="sub">Layout only. The file plan is in neither the term store nor Purview</div></div>`).join("");
+    const sel=document.getElementById("fp-cat");
+    sel.innerHTML=PLAN.map(c=>`<option value="${c.cat}">${c.cat}</option>`).join("");
+    sel.onchange=e=>{cat=e.target.value;drawTerms();};
+    drawCats();drawTerms();drawUsage();
+  }
+
+  return {
+    ver:"Institutional File Plan Dashboard",
+    crumb:"Institutional File Plan Insights",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{totalTerms:TOTAL_TERMS,categories:PLAN.length},
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   retentiondisposal.js
+   ================================================================= */
+/* ===================================================================
+   Retention and Disposal Insights. PPT s32 and s44 to s46.
+
+   The closest match of the six to something already built, and the one
+   needing the least surgery. The existing Retention and File Plan
+   dashboard stays mounted until the client chooses between them.
+
+   Split into a permanent screen and a temporary screen, which is the
+   client's shape. Everything about due dates is sourceable today.
+   Everything about a disposal having happened is not, because the design
+   has no DisposalStatus and the EDRMS application has no field to fill it.
+   =================================================================== */
+DASHBOARDS.rd=(function(){
+  const RT=DASHBOARDS.rt.summary, RM=DASHBOARDS.rm.summary, BW=DASHBOARDS.bw.summary;
+
+  function split(total,weights){
+    const s=weights.reduce((a,b)=>a+b,0);
+    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
+    out[0]+=total-out.reduce((a,b)=>a+b,0);
+    return out;
+  }
+
+  const PERM_REC=RT.permanent;
+  const TEMP_REC=RT.labelTotal-RT.permanent;
+  const PERM_PHYS=Math.round(RM.withPhysical*0.21);
+  const TEMP_PHYS=RM.withPhysical-PERM_PHYS;
+
+  /* Temporary retention terms carry a duration, which is what the client drew
+     on PPT s46 as "5, 10, 20, 5 etc years". Permanent carries none. */
+  const TEMP=[
+    {term:"Programs and Operations",label:"10 years after declaration",years:10},
+    {term:"Administration",         label:"5 years after declaration", years:5},
+    {term:"People Management",      label:"7 years after separation",  years:7},
+    {term:"Institutional Management",label:"20 years after closure",   years:20},
+    {term:"Other",                  label:"3 years after declaration", years:3},
+  ];
+  const PERM=[
+    {term:"Institutional Management",note:"Board and governance records"},
+    {term:"Programs and Operations", note:"Completed project records"},
+    {term:"Administration",          note:"Approved policies"},
+  ];
+  const tw=TEMP.map((t,i)=>1+((i*5+t.term.length)%7)*0.3);
+  const tRec=split(TEMP_REC,tw), tPhys=split(TEMP_PHYS,tw),
+        tDue=split(RT.dueNext12,tw), tLibs=split(203,tw), tDept=split(64,tw);
+  TEMP.forEach((t,i)=>{t.rec=tRec[i];t.phys=tPhys[i];t.due=tDue[i];t.libs=tLibs[i];t.depts=tDept[i];});
+  const pw=PERM.map((t,i)=>1+((i*4+t.term.length)%5)*0.4);
+  const pRec=split(PERM_REC,pw), pPhys=split(PERM_PHYS,pw), pLibs=split(64,pw), pDept=split(32,pw);
+  PERM.forEach((t,i)=>{t.rec=pRec[i];t.phys=pPhys[i];t.libs=pLibs[i];t.depts=pDept[i];});
+
+  console.assert(PERM_REC+TEMP_REC===RT.labelTotal,
+    "Permanent plus temporary must total every labelled record");
+  console.assert(TEMP.reduce((a,t)=>a+t.due,0)===RT.dueNext12,
+    "Temporary retention terms must carry every record due for disposal");
+  console.assert(PERM.reduce((a,t)=>a+t.rec,0)===PERM_REC,
+    "Permanent terms must total the permanent record count");
+
+  let mode="temporary";
+
+  function drawTerms(){
+    const temp=mode==="temporary";
+    const rows=temp?TEMP:PERM;
+    document.getElementById("rd-terms").innerHTML=
+      `<div class="dhead"><div>Term, top level</div><div class="num">Departments</div>
+        <div class="num">Libraries</div><div class="num">Records declared</div>
+        <div class="num">Counterparts</div><div class="num">${temp?"Retention label":"Retention"}</div>
+        <div class="num">${temp?"Due for disposal":"Due"}</div><div class="num">Disposed</div></div>`+
+      rows.map(t=>`<div class="drow"><div class="dn">${t.term}${t.note?`<small>${t.note}</small>`:""}</div>
+        <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
+        <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
+        <div class="num">${temp?t.label:"Permanent"}</div>
+        <div class="num">${temp?F(t.due):"never"}</div>
+        <div class="num">no source</div></div>`).join("")+
+      `<div class="dtot"><div>${temp?"Temporary":"Permanent"} total</div>
+        <div class="num"></div>
+        <div class="num">${F(rows.reduce((a,t)=>a+t.libs,0))}</div>
+        <div class="num">${F(rows.reduce((a,t)=>a+t.rec,0))}</div>
+        <div class="num">${F(rows.reduce((a,t)=>a+t.phys,0))}</div>
+        <div class="num"></div>
+        <div class="num">${temp?F(RT.dueNext12):"never"}</div>
+        <div class="num">no source</div></div>`;
+    document.getElementById("rd-mode-note").textContent=temp
+      ? "Temporary retention carries a duration, so every record under it eventually falls due. The durations below are the ones the client drew on PPT s46."
+      : "Permanent retention never falls due for disposal, which is why the whole disposal pipeline excludes it. Nothing under permanent retention appears in any due figure anywhere in this report.";
+  }
+
+  const html=`<section class="dash-rd">
+    <div class="band">
+      <h2>Retention and disposal insights</h2>
+      <div class="bd">What records require action under the RRDS: retention label application, records approaching disposal, and disposal status. Built to the client design of 13 August 2026, PPT s32 and s44 to s46. This is the closest of the six key views to something already built, so the existing Retention and File Plan dashboard stays alongside it until the client chooses between the two.</div>
+    </div>
+
+    <div class="kpis" id="rd-kpis"></div>
+
+    <div class="band">
+      <h2>Permanent and temporary retention</h2>
+      <div class="bd">The two screens the client drew, PPT s45 for permanent and PPT s46 for temporary, offered here as one panel with a switch.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Terms by retention type</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">The permanent against temporary split, the record counts, the labels and the due dates are all sourceable today from the retention label and its duration. Two columns are not. <b>Libraries and departments provisioned per term</b> need the link from a term to a library that the file plan dashboard describes, and <b>records disposed</b> needs a field the EDRMS application does not have.</div>
+      <div class="toolbar">
+        <span class="lbl">Retention type</span>
+        <select id="rd-mode">
+          <option value="temporary">Temporary retention</option>
+          <option value="permanent">Permanent retention</option>
+        </select>
+      </div>
+      <div class="psub" id="rd-mode-note"></div>
+      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(7,1fr)" id="rd-terms"></div></div>
+    </div>
+
+    <div class="band">
+      <h2>Disposition risk</h2>
+      <div class="bd">The risk indicators from the proposed metrics list, and the disposal statuses from PPT s43 and s60.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">What is computable, and what is not</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">The distinction on this panel is worth being precise about, because the two halves look alike and are not. Anything about a <b>date</b> is computable today from the due date already on each record. Anything about an <b>action having been taken</b> is not recorded anywhere: the design has no DisposalStatus, and it was left out deliberately because it needs a new field in the EDRMS application. This requirement is the argument for raising that change.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(RT.due30)}</div></div>
+        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(RT.due90)}</div></div>
+        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(RT.dueNext12)}</div></div>
+        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(RT.beyondRetention)}</div></div>
+        <div class="tile"><div class="tl">Records disposed</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Awaiting approval</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Disposition backlog</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Approval backlog</div><div class="tv">no source</div></div>
+      </div>
+    </div>
+
+    <div class="band">
+      <h2>Retention compliance</h2>
+      <div class="bd">Whether each declared record actually carries a retention schedule at all.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records with and without a schedule</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">Both figures are a test on the retention label and are sourceable today. Libraries without a mapped retention schedule is held back for one reason worth checking: it depends on whether the Retention Label Mapping list keys libraries by ListId or by name. If it keys by ListId the metric goes straight in, and if it keys by name the join is fragile enough not to trust.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(RT.withSchedule)}</div></div>
+        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(RT.labelTotal-RT.withSchedule)}</div></div>
+        <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">check the list key</div></div>
+        <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">no source</div></div>
+      </div>
+    </div>
+  </section>`;
+
+  function init(){
+    document.getElementById("rd-kpis").innerHTML=[
+      ["Records Due for Disposal",F(RT.dueNext12),"Computed from the due date on each record"],
+      ["Next Due Date",RT.nextDue?RT.nextDue:"see Retention","From the same due dates"],
+      ["Permanent Retention",F(PERM_REC),"Never falls due for disposal"],
+      ["Records Disposed","no source","Needs a field the EDRMS application does not have"],
+    ].map(([l,v,s])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
+      <div class="sub">${s}</div></div>`).join("");
+    const sel=document.getElementById("rd-mode");
+    sel.onchange=e=>{mode=e.target.value;drawTerms();};
+    drawTerms();
+  }
+
+  return {
+    ver:"Retention and Disposal Dashboard",
+    crumb:"Retention and Disposal Insights",
+    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
+    summary:{permanent:PERM_REC,temporary:TEMP_REC,due:RT.dueNext12},
+    html,init
+  };
+})();
+
+
+/* =================================================================
+   holdings.js
+   ================================================================= */
+/* ===================================================================
+   Records and Archive Holdings. PPT s33, s67, s68 and s69.
+
+   The client's own slide s33 says "RAC suggestions?", so this screen is
+   unfinished on their side too. Nothing on it can be sourced: physical
+   boxes, folders, storage rooms, transfers and retrievals exist in no
+   system this report reads, and s67 says retrievals are processed in
+   eServe, which is a separate system with no established feed.
+
+   It is laid out so the shape of the ask is visible and can be costed,
+   and it carries one loud notice rather than a marker on every panel,
+   because a marker repeated eight times stops being read.
+
+   Recommendation recorded on the page: split this into its own workstream
+   rather than letting it block the other five dashboards.
+   =================================================================== */
+DASHBOARDS.ra=(function(){
+  const LOCATIONS=[
+    {loc:"Archives Room",  req:34, deptReq:12, rmReq:4, boxes:1840, folders:9260, cap:78},
+    {loc:"Records Center", req:61, deptReq:19, rmReq:7, boxes:3220, folders:16400, cap:64},
+    {loc:"Offsite Storage",req:18, deptReq:8,  rmReq:2, boxes:5410, folders:22800, cap:41},
+  ];
+  const RETRIEVAL=[
+    {loc:"Archives Room",  req:22, dept:9,  boxes:64,  folders:210, status:"Loan"},
+    {loc:"Records Center", req:39, dept:14, boxes:118, folders:470, status:"Return to owner"},
+    {loc:"Offsite Storage",req:11, dept:5,  boxes:41,  folders:160, status:"For disposal"},
+  ];
+  const T=(list,k)=>list.reduce((a,r)=>a+r[k],0);
+
+  const html=`<section class="dash-ra">
+    <div class="band">
+      <h2>Records and archive holdings</h2>
+      <div class="bd">What physical records and archives RAC are managing: holdings, transfers, storage and retrieval. Built to the client design of 13 August 2026, PPT s33 and s67 to s69.</div>
+    </div>
+
+    <div class="notice">
+      <h3>Nothing on this dashboard can be sourced today, and that is not a reporting problem</h3>
+      <p>Every other dashboard in this suite reads SharePoint, Microsoft Graph or the EDRMS database. This one reads none of them. Physical boxes, folders, storage rooms, shelf capacity, transfers to RAC and retrieval requests exist in no system this report has been given access to. A PhysicalRecords table was designed in the workbook and never built, because there was nothing to fill it from.</p>
+      <p>The client's slide s67 says retrievals are processed in <b>eServe</b>, which is a separate system with no established feed, and points at an existing <b>IR Dashboard</b> screenshot that may already hold much of this. Getting access to that dashboard is the first thing worth doing, ahead of any build.</p>
+      <p><b>The recommendation, stated plainly:</b> this is a second data source discovery exercise of the same size as the SharePoint one already completed. It should be its own workstream with its own timeline rather than sitting inside the utilization report, where it would hold up the delivery of the other five dashboards. The layout below exists so the ask can be costed, not because it is close to being built.</p>
+      <p>The client's own slide s33 reads "RAC suggestions?", so this screen is unfinished on their side as well. Two of their questions are direct questions to us and are answered nowhere else: whether room capacity and percentage available storage can be included, and what is available in Opus that could apply here.</p>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${F(T(LOCATIONS,"boxes"))}</div><div class="sub">Layout only. No system holds a box count</div></div>
+      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${F(T(LOCATIONS,"folders"))}</div><div class="sub">Layout only</div></div>
+      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${F(T(LOCATIONS,"req"))}</div><div class="sub">Layout only</div></div>
+      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${F(T(RETRIEVAL,"req"))}</div><div class="sub">Processed in eServe, no feed</div></div>
+    </div>
+
+    <div class="band">
+      <h2>Storage</h2>
+      <div class="bd">The table from PPT s68, by location, with the month on month indicators the client asked for beneath it.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Holdings by storage location</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Capacity is shown because the client asked directly on PPT s68 whether room capacity and percentage available could be included. The answer is that it can be displayed the moment somebody holds the figure, and nobody does today.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
+        <div class="dhead"><div>Location</div><div class="num">Requests</div>
+          <div class="num">Requestors, departments</div><div class="num">Requestors, RMs</div>
+          <div class="num">Boxes stored</div><div class="num">Folders stored</div></div>
+        ${LOCATIONS.map(l=>`<div class="drow"><div class="dn">${l.loc}<small>${l.cap}% of capacity used</small></div>
+          <div class="num">${F(l.req)}</div><div class="num">${F(l.deptReq)}</div>
+          <div class="num">${F(l.rmReq)}</div><div class="num">${F(l.boxes)}</div>
+          <div class="num">${F(l.folders)}</div></div>`).join("")}
+        <div class="dtot"><div>Total</div><div class="num">${F(T(LOCATIONS,"req"))}</div>
+          <div class="num">${F(T(LOCATIONS,"deptReq"))}</div><div class="num">${F(T(LOCATIONS,"rmReq"))}</div>
+          <div class="num">${F(T(LOCATIONS,"boxes"))}</div><div class="num">${F(T(LOCATIONS,"folders"))}</div></div>
+      </div></div>
+    </div>
+
+    <div class="band">
+      <h2>Retrieval</h2>
+      <div class="bd">The table from PPT s69. The client notes that retrieval should reflect physical records removed from the holdings, and asks whether retrieval activity can update the capacity figures above. It can, once there is a feed to update them from.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Retrieval by storage location</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Retrieval is processed in eServe. Nothing in this report reads eServe, and no feed from it has been established or scoped.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
+        <div class="dhead"><div>Location</div><div class="num">Requests</div>
+          <div class="num">Requestors</div><div class="num">Boxes retrieved</div>
+          <div class="num">Folders retrieved</div><div class="num">Status</div></div>
+        ${RETRIEVAL.map(r=>`<div class="drow"><div class="dn">${r.loc}</div>
+          <div class="num">${F(r.req)}</div><div class="num">${F(r.dept)}</div>
+          <div class="num">${F(r.boxes)}</div><div class="num">${F(r.folders)}</div>
+          <div class="num">${r.status}</div></div>`).join("")}
+        <div class="dtot"><div>Total</div><div class="num">${F(T(RETRIEVAL,"req"))}</div>
+          <div class="num">${F(T(RETRIEVAL,"dept"))}</div><div class="num">${F(T(RETRIEVAL,"boxes"))}</div>
+          <div class="num">${F(T(RETRIEVAL,"folders"))}</div><div class="num"></div></div>
+      </div></div>
+    </div>
+
+    <div class="band">
+      <h2>Inventory health</h2>
+      <div class="bd">From the proposed metrics list rather than the deck. Included so the ask is recorded, not because any of it is closer to being available.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Physical inventory</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Each of these implies a physical inventory process with a system behind it. We have not been shown one, and until we are, none of these can be counted or even estimated.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Total physical files</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Total legacy records</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Unverified physical files</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Missing files</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Due for verification</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Scheduled for transfer</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Awaiting transfer</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Records by office location</div><div class="tv">no source</div></div>
+      </div>
+    </div>
+  </section>`;
+
+  function init(){}
+
+  return {
+    ver:"Records and Archive Holdings Dashboard",
+    crumb:"Records and Archive Holdings",
+    asof:"Layout only. No data source has been identified for this dashboard",
+    summary:{locations:LOCATIONS.length,sourced:0},
     html,init
   };
 })();
