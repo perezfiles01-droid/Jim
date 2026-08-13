@@ -15,8 +15,13 @@
   /* ===== shared shell tokens (union of both dashboards) ===== */
   :root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--blue-d:#005A96;--teal:#00A5A8;--green:#5CA943;--orange:#E8763C;--greyblue:#9DB8D2;--deepblue:#1B5E82;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--nav-hi:#16304F;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif;--shadow:0 1px 2px rgba(16,36,62,.06),0 4px 14px rgba(16,36,62,.06)}
   *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+  html,body{max-width:100%;overflow-x:hidden}
+  #main{overflow-x:hidden}
+  section{max-width:100%}
   body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;display:flex}
-  #side{width:236px;min-width:236px;background:var(--nav);color:#C7D3E0;display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+  #side{width:236px;min-width:236px;background:var(--nav);color:#C7D3E0;display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto}
+  @media(max-width:900px){#side{width:190px;min-width:190px}}
+  @media(max-width:640px){body{display:block}#side{width:100%;min-width:0;height:auto;position:static}nav{display:flex;flex-wrap:wrap}}
   #side .brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08)}
   #side .t1{font-family:var(--serif);font-size:18px;color:#fff;line-height:1.25}
   #side .t2{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7FA8CC;margin-top:4px}
@@ -35,7 +40,7 @@
   .spacer{flex:1}
   #asof{font-size:11.5px;color:var(--mut)}
   section{padding:20px 22px 46px}
-  .band{background:#E9F0F7;border:1px solid #DAE5F0;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .band{background:#E9F0F7;border:1px solid #DAE5F0;border-radius:12px;padding:16px 18px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
   .band h2{font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.3}
   .band .bd{font-size:12.5px;color:var(--ink2);margin-top:6px;max-width:900px}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s,box-shadow .1s;border-left:4px solid transparent}
@@ -48,10 +53,16 @@
   .kpi.stat:hover{transform:none}
   .kpi.stat .val{color:var(--ink)}
   .kpi.stat .sub{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.35}
-  .kpi .lab{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
-  .kpi .val{font-size:30px;font-weight:700;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .kpi{min-width:0}
+  .kpi .lab{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3;
+    overflow-wrap:anywhere}
+  /* clamp() so a long number shrinks instead of overflowing its card when the
+     grid narrows or the browser is zoomed in */
+  .kpi .val{font-size:clamp(19px,2.1vw,30px);font-weight:700;margin-top:8px;
+    font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
+  .kpi .sub{overflow-wrap:anywhere}
   .kpi .tap{font-size:11px;color:var(--blue);margin-top:8px;font-weight:600}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:26px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:26px;min-width:0;overflow-wrap:anywhere}
   .ptitle{font-size:16px;font-weight:700;font-family:var(--serif);margin-bottom:3px}
   .psub{font-size:12px;color:var(--mut);margin-bottom:14px;max-width:900px}
   .muted{color:var(--mut);font-style:italic;font-size:12px}
@@ -73,30 +84,35 @@
   @media(max-width:900px){.crow .chart.wide{grid-column:span 1}}
   .ctitle{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);
     margin-bottom:10px;font-weight:600}
-  .donutwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .donutwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;min-width:0}
+  .donutwrap>svg{flex:0 0 auto;max-width:100%;height:auto}
   .dlegend{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
   .dlegend.row{flex-direction:row;flex-wrap:wrap;gap:14px;margin-top:10px}
   .dlegend .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2)}
   .dlegend .lg i{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
-  .dlegend .lg span{flex:1}
+  .dlegend .lg span{flex:1;min-width:0;overflow-wrap:anywhere}
   .dlegend .lg b{font-variant-numeric:tabular-nums;color:var(--ink)}
-  .hbar{display:grid;grid-template-columns:190px 1fr;gap:12px;align-items:center;margin-bottom:7px}
-  .hbar.pct{grid-template-columns:190px 1fr 66px}
-  .hbar .hl{font-size:12.5px;font-weight:600;line-height:1.25}
+  .hbar{display:grid;grid-template-columns:minmax(96px,190px) 1fr;gap:12px;align-items:center;margin-bottom:7px}
+  .hbar.pct{grid-template-columns:minmax(96px,190px) 1fr 66px}
+  .hbar .hl{font-size:12.5px;font-weight:600;line-height:1.25;min-width:0;overflow-wrap:anywhere}
   .hbar .hl small{display:block;font-weight:400;color:var(--mut);font-size:11px}
   .hbar .ht{background:#F3F7FB;border-radius:5px;height:26px;overflow:hidden}
   .hbar .hf{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;
     padding:0 9px;color:#fff;font-size:11px;font-weight:700;min-width:42px;white-space:nowrap}
   .hbar .hp{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
-  @media(max-width:700px){.hbar,.hbar.pct{grid-template-columns:120px 1fr}}
-  .cols{display:flex;align-items:flex-end;gap:8px;padding-top:14px}
+  @media(max-width:700px){.hbar,.hbar.pct{grid-template-columns:96px 1fr}}
+  .cols{display:flex;align-items:flex-end;gap:8px;padding-top:14px;overflow-x:auto}
+  .cols .ccol{min-width:34px}
   .cols .ccol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
     gap:5px;height:100%;min-width:0}
   .cols .cb{width:100%;border-radius:4px 4px 0 0;min-height:3px}
   .cols .cv{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums;
     white-space:nowrap}
-  .cols .cl{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .stackwrap .scap{font-size:12px;color:var(--mut);margin-bottom:7px}
+  .cols .cl{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    max-width:100%;line-height:1.35;min-height:16px;flex:0 0 auto}
+  .cols .cv{flex:0 0 auto}
+  .stackwrap{min-width:0}
+  .stackwrap .scap{font-size:12px;color:var(--mut);margin-bottom:7px;overflow-wrap:anywhere}
   .stack{display:flex;height:30px;border-radius:7px;overflow:hidden;background:#F3F7FB}
   .stack .sg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;
     font-weight:700;font-variant-numeric:tabular-nums;min-width:2px}
@@ -107,7 +123,20 @@
      chevron opens a panel and a card without one never does, but the two
      kinds sat in one grid and the difference had to be looked for. They are
      now separate rows with their own heading. */
+  /* A treemap has a floor below which its labels stop fitting. Let it scroll
+     sideways at that point rather than crushing the blocks. */
+  .tmwrap{overflow-x:auto}
+  @media(max-width:760px){
+    section{padding:14px 14px 36px}
+    .panel{padding:14px 14px}
+    .kpi{padding:13px 14px}
+    .kpi .val{font-size:22px}
+  }
   .kpigrp{margin-bottom:16px}
+  /* The group is a block in its own right. It used to be injected into a
+     container that was itself a four column grid, which turned each group into
+     one narrow column and crushed every card inside it. */
+  .kpigrp>.kpis{width:100%}
   .kpigrp .gh{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
   .kpigrp .gh b{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);font-weight:700}
   .kpigrp .gh span{font-size:11.5px;color:var(--mut)}
@@ -132,7 +161,7 @@
 /* ================= bankwide.css ================= */
 /* Bank-wide Oversight: scoped styles. Everything sits under .dash-bw.
    Built to the client's own design, PPT s15 to s18 and s34 to s44. */
-  .dash-bw .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+  .dash-bw .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:16px}
   @media(max-width:1180px){.dash-bw .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:640px){.dash-bw .kpis{grid-template-columns:1fr}}
   .dash-bw .kpi .val{font-size:26px}
@@ -169,6 +198,7 @@
   .dash-bw .drow.kid .dn{font-weight:400;color:var(--ink2);padding-left:14px}
   .dash-bw .dtot{padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
   .dash-bw .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+  .dash-bw .tile,.dash-dp .tile{min-width:0;overflow-wrap:anywhere}
   .dash-bw .tile{background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
   .dash-bw .tile.hi{background:#EAF3FB;border-color:#CFE0F3}
   .dash-bw .tile .tl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
@@ -183,7 +213,8 @@
   .dash-bw .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--ink2)}
   .dash-bw .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
   /* trend columns */
-  .dash-bw .trend{display:flex;align-items:flex-end;gap:8px;height:190px;padding-top:12px}
+  .dash-bw .trend{display:flex;align-items:flex-end;gap:8px;height:190px;padding-top:12px;overflow-x:auto}
+  .dash-bw .tcol{min-width:34px}
   .dash-bw .tcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%}
   .dash-bw .tbar{width:100%;background:var(--blue);border-radius:4px 4px 0 0;min-height:3px}
   .dash-bw .tlab{font-size:11px;color:var(--mut)}
@@ -210,7 +241,7 @@
    Built to PPT s19 to s28 and s53 to s66. Shares the source marker
    convention introduced with Bank-wide, restated here because the two
    dashboards must stay independently editable. */
-  .dash-dp .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+  .dash-dp .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:16px}
   @media(max-width:1180px){.dash-dp .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:640px){.dash-dp .kpis{grid-template-columns:1fr}}
   .dash-dp .kpi .val{font-size:26px}
@@ -264,7 +295,8 @@
   .dash-dp .refrow .rs.done{color:var(--green)}
   .dash-dp .refrow .rs.due{color:var(--orange)}
   @media(max-width:700px){.dash-dp .refrow{grid-template-columns:1fr 100px}.dash-dp .refrow .rs{display:none}}
-  .dash-dp .trend{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:12px}
+  .dash-dp .trend{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:12px;overflow-x:auto}
+  .dash-dp .tcol{min-width:34px}
   .dash-dp .tcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%}
   .dash-dp .tbar{width:100%;background:var(--teal);border-radius:4px 4px 0 0;min-height:3px}
   .dash-dp .tlab{font-size:11px;color:var(--mut)}
@@ -280,7 +312,7 @@
    selector lists all four, so a later change to one still cannot reach the
    others' markup. */
   .dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
-    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:16px}
   @media(max-width:1180px){.dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
     grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:640px){.dash-pj .kpis,.dash-fp .kpis,.dash-rd .kpis,.dash-ra .kpis{
@@ -516,31 +548,39 @@ const CHART=(function(){
     };
     let svg="",y=0,i=0;
     const perRow=Math.ceil(Math.sqrt(rows.length));
+    /* A block only gets a line of text if it is tall enough to hold it without
+       colliding with the line below. Before this, a short row printed its name
+       at y+24, its sub at y+40 and its value at y+h-16, and once h fell under
+       about 78 the value landed on top of the sub. */
+    const MINH=64;
     while(i<rows.length){
       const slice=rows.slice(i,i+perRow);
       const sliceVal=slice.reduce((a,r)=>a+r.value,0);
-      const h=Math.max(46,H*sliceVal/total);
+      const h=Math.max(MINH,H*sliceVal/total);
       let x=0;
       slice.forEach(r=>{
         const w=W*r.value/sliceVal;
         const t=mx===mn?0.5:(r.value-mn)/(mx-mn);
         const fg=t<0.42?"#10243E":"#fff", sc=t<0.42?"#33475F":"rgba(255,255,255,.82)";
-        svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(w-3).toFixed(1)}"
+        svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(2,w-3).toFixed(1)}"
           height="${(h-3).toFixed(1)}" rx="7" fill="${shade(r.value)}"><title>${r.label}: ${F(r.value)}</title></rect>`;
+        const roomForSub=h>=92 && w>150 && r.sub;
+        const roomForVal=h>=54;
         if(w>72){
-          svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+24).toFixed(1)}" font-size="14"
+          svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+22).toFixed(1)}" font-size="14"
             font-weight="700" fill="${fg}">${r.label}</text>`;
-          if(r.sub&&w>150)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+40).toFixed(1)}"
+          if(roomForSub)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+39).toFixed(1)}"
             font-size="10.5" fill="${sc}">${r.sub}</text>`;
-          svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+h-16).toFixed(1)}" font-size="20"
-            font-weight="700" fill="${fg}" style="font-variant-numeric:tabular-nums">${F(r.value)}</text>`;
+          if(roomForVal)svg+=`<text x="${(x+12).toFixed(1)}" y="${(y+h-14).toFixed(1)}"
+            font-size="${h<80?15:20}" font-weight="700" fill="${fg}"
+            style="font-variant-numeric:tabular-nums">${F(r.value)}</text>`;
         }
         svg+=`</g>`;
         x+=w;
       });
       y+=h;i+=perRow;
     }
-    return `<svg viewBox="0 0 ${W} ${y}" width="100%" style="display:block;max-height:${H+90}px">${svg}</svg>`;
+    return `<div class="tmwrap"><svg viewBox="0 0 ${W} ${y}" width="100%" preserveAspectRatio="xMidYMin meet" style="display:block;min-width:520px">${svg}</svg></div>`;
   }
 
   return {donut,hbars,columns,stacked,treemap,C,PALETTE};
@@ -1237,7 +1277,7 @@ DASHBOARDS.bw=(function(){
       <div class="bd">Adoption, usage, compliance and trend across ADB, broken down by department, office or resident mission.</div>
     </div>
 
-    <div class="kpis" id="bw-kpis"></div>
+    <div id="bw-kpis"></div>
     <div class="panel" id="bw-drill"></div>
 
     <div class="band">
@@ -1898,7 +1938,7 @@ DASHBOARDS.dp=(function(){
       <span class="golive" id="dp-golive"></span>
     </div>
 
-    <div class="kpis" id="dp-kpis"></div>
+    <div id="dp-kpis"></div>
     <div class="panel" id="dp-drill"></div>
 
     <div class="band">
