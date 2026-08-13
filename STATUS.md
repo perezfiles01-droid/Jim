@@ -123,12 +123,18 @@ no slide references, and **no computed numbers in a caption or a summary line**,
 so a label does not change when the data behind it does. Source status lives in
 this file and in the requirement register, not on the page.
 
-**One requirement was dropped rather than restyled.** Site activity trend by
-month, asked for in the metrics document under Site Trends, was removed from
-Bank-wide at the client's request on 13 August. It is sourceable, and it is the
-only Word requirement with no home on the page. If it is wanted back, the data
-is still in `DATA.SITE_VISITS_MONTHLY` and the rule that governs it is that a
-range sums the 7 day visit figure and never the 30, 90 or 180 day ones.
+**Site activity trend by month** was removed on 13 August and restored the same
+day, now filterable by department and by period (3, 6 or 12 months). The cut it
+offers is the one the source supports: the site activity table carries a visit
+count and a department owner on the same row, so department is a real filter
+rather than an invented one. Each month is split across departments by their
+share of sites, so a department series always adds back up to the bank-wide one,
+and `check_data.js` walks all sixteen to prove it.
+
+**The rule that governs the arithmetic:** a range sums `SiteVisits7` and never
+the 30, 90 or 180 day figures. Consecutive 7 day windows tile exactly, longer
+ones overlap and would count most days several times over. Getting it wrong
+produces a plausible wrong number, not an error.
 
 ### KPI cards: interactive or static, never ambiguous
 

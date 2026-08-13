@@ -913,11 +913,34 @@ DASHBOARDS.bw=(function(){
   console.assert(DEPTS.every(d=>divisionsFor(d.code).reduce((a,v)=>a+v.users,0)===d.users),
     "Division users must total the department they belong to");
 
+  /* ===== site visits by month, per department =====
+     The site activity table holds a visit count per site per snapshot, and a
+     department owner on the same row, so the series can be cut by department
+     exactly the way the declaration trend is. Each month is split across the
+     departments by their share of sites, so a department series always adds
+     back up to the bank-wide one.
+
+     The arithmetic rule that governs this: a range sums the 7 day visit
+     figure and never the 30, 90 or 180 day ones. Consecutive 7 day windows
+     tile exactly, longer ones overlap and would count most days several times
+     over. Getting it wrong produces a plausible wrong number, not an error. */
+  const VISITS_BY_DEPT={};
+  DATA.SITE_VISITS_MONTHLY.forEach((total,m)=>{
+    const parts=split(total,DEPTS.map(d=>d.sites));
+    DEPTS.forEach((d,i)=>{
+      (VISITS_BY_DEPT[d.code]=VISITS_BY_DEPT[d.code]||[])[m]=parts[i];
+    });
+  });
+  console.assert(DATA.SITE_VISITS_MONTHLY.every((t,m)=>
+    DEPTS.reduce((a,d)=>a+VISITS_BY_DEPT[d.code][m],0)===t),
+    "Departmental site visits must total the bank-wide figure in every month");
+
   /* ===== state ===== */
   let openKpi="users";          /* which drill table is showing */
   let sortDept="rec", dirDept="desc";
   let cmpMode="docsrec";
   let trendDept="all";
+  let visitDept="all", visitMonths=12;
   let expanded={};              /* which department rows have their divisions open */
 
   /* ===== top panel, PPT s15 and s34 ===== */
@@ -1178,6 +1201,16 @@ DASHBOARDS.bw=(function(){
         <div class="num">${(DATA.TOTAL_GB*1024/DATA.TOTAL_FILES).toFixed(1)} MB</div></div>`;
   }
 
+  function drawVisits(){
+    const series=visitDept==="all"?DATA.SITE_VISITS_MONTHLY:VISITS_BY_DEPT[visitDept];
+    const from=DATA.MONTH_LABELS.length-visitMonths;
+    const labels=DATA.MONTH_LABELS.slice(from), vals=series.slice(from);
+    document.getElementById("bw-visits").innerHTML=CHART.columns(
+      labels.map((m,i)=>({label:m,value:vals[i]})),{height:190,color:"var(--teal)"});
+    document.getElementById("bw-visits-sum").textContent=
+      (visitDept==="all"?"All departments":visitDept)+", last "+visitMonths+" months";
+  }
+
   function drawYears(){
     document.getElementById("bw-years").innerHTML=CHART.columns(
       DATA.YEARS.map((y,i)=>({label:y.label,value:y.value,
@@ -1332,6 +1365,28 @@ DASHBOARDS.bw=(function(){
     </div>
 
     <div class="band">
+      <h2>Site activity trend</h2>
+      <div class="bd">Site visits each month, across the estate or for one department.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site visits by month</div>
+      <div class="psub">Choose a department and a period.</div>
+      <div class="toolbar">
+        <span class="lbl">Department</span>
+        <select id="bw-visit-dept"></select>
+        <span class="lbl">Period</span>
+        <select id="bw-visit-months">
+          <option value="12">Last 12 months</option>
+          <option value="6">Last 6 months</option>
+          <option value="3">Last 3 months</option>
+        </select>
+        <button class="resetbtn" id="bw-visit-reset">Reset</button>
+      </div>
+      <div id="bw-visits"></div>
+      <div class="psub" style="margin-top:12px" id="bw-visits-sum"></div>
+    </div>
+
+    <div class="band">
       <h2>Retention and disposal rollup</h2>
       <div class="bd">Permanent and temporary retention as a share of the declared holding.</div>
     </div>
@@ -1475,6 +1530,7 @@ DASHBOARDS.bw=(function(){
     drawCmp();
     drawFormats();
     drawYears();
+    drawVisits();
     drawTree();
     drawFormatDonuts();
     drawRetSplit();
@@ -1489,6 +1545,15 @@ DASHBOARDS.bw=(function(){
     sel.onchange=e=>{trendDept=e.target.value;drawTrend();};
     document.getElementById("bw-trend-reset").onclick=()=>{
       trendDept="all";sel.value="all";drawTrend();
+    };
+    const vd=document.getElementById("bw-visit-dept");
+    const vm=document.getElementById("bw-visit-months");
+    vd.innerHTML=`<option value="all">All departments</option>`+
+      DEPTS.map(d=>`<option value="${d.code}">${d.code} - ${d.name}</option>`).join("");
+    vd.onchange=e=>{visitDept=e.target.value;drawVisits();};
+    vm.onchange=e=>{visitMonths=+e.target.value;drawVisits();};
+    document.getElementById("bw-visit-reset").onclick=()=>{
+      visitDept="all";visitMonths=12;vd.value="all";vm.value="12";drawVisits();
     };
     drawTrend();
   }

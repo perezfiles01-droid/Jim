@@ -103,12 +103,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
   ok(/Most used libraries/.test(body),"most used libraries is shown as asked");
 
-  /* Site activity trend by month was removed from the page on 13 Aug at the
-     client's request, so it is no longer in this list. It remains a Word
-     document requirement under Site Trends and is recorded as dropped in
-     STATUS.md, rather than being quietly forgotten here.
-
-     Cutting eleven dashboards to six risked dropping content the requirements
+  /* Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
      the metrics document heading by heading, and were added back. This block
      is that walk, kept so the same content cannot quietly disappear again in a
@@ -127,6 +122,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Largest libraries by record volume","Library usage",         /record volume/i],
     ["Largest libraries by storage",    "Library usage",           /storage consumed/i],
     ["Libraries dormant over 180 days", "Library usage",           /dormant over 180/i],
+    ["Site activity trend by month",    "Site Trends",             /site visits by month/i],
     ["Duplicated records",              "Records Quality",         /duplicated records/i],
     ["Orphaned records",                "Records Quality",         /orphaned records/i],
     ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
@@ -176,6 +172,44 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   await page.selectOption(".dash-bw #bw-librank","rate");
   const byRate=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
   ok(byRate.every((v,i)=>i===0||byRate[i-1]>=v),"ranking by declaration rate orders highest first");
+
+  console.log("\nSite activity trend, restored filterable 13 Aug");
+  await page.evaluate(()=>switchTo("bw"));
+  const vcols=async()=>await page.$$eval(".dash-bw #bw-visits .ccol",els=>els.map(e=>
+    ({l:e.querySelector(".cl").textContent.trim(),
+      v:+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"")})));
+  let vc=await vcols();
+  eq(vc.length,12,"the trend opens on twelve months");
+  eq(vc[11].v,d.SITE_VISITS_MONTHLY[11],"the last column is the latest month's visits");
+  await page.selectOption(".dash-bw #bw-visit-months","3");
+  vc=await vcols();
+  eq(vc.length,3,"the period filter narrows the series");
+  ok(vc[2].l===d.MONTH_LABELS[11],"a shorter period keeps the most recent months, not the earliest");
+  await page.selectOption(".dash-bw #bw-visit-months","12");
+  /* the reconciliation worth having: every department series must add back up
+     to the bank-wide one, month by month. A split that drifts here would show
+     a department with more visits than the whole estate. */
+  const drift=await page.evaluate(()=>{
+    const sel=document.getElementById("bw-visit-dept");
+    const months=DATA.MONTH_LABELS.length, totals=new Array(months).fill(0);
+    const codes=DATA.DEPTS.map(x=>x.code);
+    for(const c of codes){
+      sel.value=c; sel.dispatchEvent(new Event("change"));
+      [...document.querySelectorAll("#bw-visits .ccol")].forEach((e,i)=>{
+        totals[i]+=+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"");
+      });
+    }
+    sel.value="all"; sel.dispatchEvent(new Event("change"));
+    return totals.map((t,i)=>t-DATA.SITE_VISITS_MONTHLY[i]).filter(x=>x!==0).length;
+  });
+  eq(drift,0,"every department's visits sum to the bank-wide series, in all twelve months");
+  await page.selectOption(".dash-bw #bw-visit-dept","ITD");
+  const oneDept=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
+  ok(/ITD/.test(oneDept),"the summary names the department in scope");
+  ok(!/[0-9]{3,}/.test(oneDept),"the summary carries no computed total");
+  await page.click(".dash-bw #bw-visit-reset");
+  const back=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
+  ok(/All departments/.test(back)&&/12 months/.test(back),"Reset restores all departments and twelve months");
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
   ok(errors.length===0,"no console errors, which is how the DATA reconciliation asserts surface");
