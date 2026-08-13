@@ -96,6 +96,79 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
   ok(/Most used libraries/.test(body),"most used libraries is shown as asked, marked no source");
 
+  /* Cutting eleven dashboards to six risked dropping content the requirements
+     still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
+     the metrics document heading by heading, and were added back. This block
+     is that walk, kept so the same content cannot quietly disappear again in a
+     later edit. Each entry names the document heading it comes from. */
+  console.log("\nEvery metrics document heading has somewhere to live");
+  const pages={};
+  for(const k of ["bw","dp","pj","fp","rd","ra"]){
+    await page.evaluate(key=>switchTo(key),k);
+    pages[k]=await page.$eval(`.dash-${k}`,e=>e.textContent.replace(/\s+/g," "));
+  }
+  const all=Object.values(pages).join(" ");
+  const required=[
+    ["Records declared by year",        "Records Declaration",     /declared by year/i],
+    ["Records declared this month",     "Records Declaration",     /declared this month/i],
+    ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
+    ["Largest libraries by record volume","Library usage",         /record volume/i],
+    ["Largest libraries by storage",    "Library usage",           /storage consumed/i],
+    ["Libraries dormant over 180 days", "Library usage",           /dormant over 180/i],
+    ["Site activity trend by month",    "Site Trends",             /site activity trend by month/i],
+    ["Duplicated records",              "Records Quality",         /duplicated records/i],
+    ["Orphaned records",                "Records Quality",         /orphaned records/i],
+    ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
+    ["Restricted records",              "Access Management",       /restricted records/i],
+    ["Confidential records",            "Access Management",       /confidential records/i],
+    ["External sharing instances",      "Access Management",       /external sharing/i],
+    ["Permission exceptions",           "Access Management",       /permission exceptions/i],
+    ["Searches performed",              "Information Retrieval",   /searches performed/i],
+    ["Most viewed records",             "Top Content",             /most viewed/i],
+    ["Most downloaded records",         "Top Content",             /most downloaded/i],
+    ["Most accessed libraries",         "Top Content",             /most accessed libraries/i],
+    ["Records declared by classification","Records Declaration",   /by classification/i],
+    ["Records declared by business process","Records Declaration", /business process/i],
+    ["Format groups",                   "Format and Storage Analysis",/format group/i],
+    ["Orphaned sites",                  "Risk Indicators",         /orphaned, no owner/i],
+    ["Physical records overdue for transfer","Risk and Compliance",/overdue for transfer/i],
+    ["Inventory health",                "Inventory Health",        /unverified physical files/i],
+    ["Storage locations",               "Storage Location Dashboard",/offsite storage/i],
+  ];
+  const missing=required.filter(([,,re_])=>!re_.test(all));
+  ok(missing.length===0,
+     `every metrics document heading is represented somewhere${
+       missing.length?": missing "+missing.map(m=>m[0]).join(", "):` (${required.length} checked)`}`);
+
+  console.log("\nThe absorbed content works, not merely present");
+  await page.evaluate(()=>switchTo("bw"));
+  const years=await page.$$eval(".dash-bw #bw-years .drow",els=>els.map(e=>
+    [...e.children].map(c=>c.textContent.trim())));
+  eq(years.length,4,"the by-year table carries three closed years plus the current window");
+  eq(+years[3][1].replace(/[^0-9]/g,""),d.DECLARED,
+     "the last by-year row equals the declared record count, so it agrees with the monthly chart");
+  const visits=await page.$$eval(".dash-bw #bw-visits .tcol",els=>els.length);
+  eq(visits,12,"the site activity trend shows twelve months");
+  const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
+  eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
+  const libRows=await page.$$eval(".dash-bw #bw-libs .drow",els=>els.length);
+  eq(libRows,d.TOP_LIBRARIES.length,"the library ranking lists every library");
+  const withSite=await page.$$eval(".dash-bw #bw-libs .drow .dn small",els=>els.map(e=>e.textContent));
+  ok(withSite.length===libRows&&withSite.every(t=>t.trim().length>0),
+     "every library is shown with its parent site, since library names repeat across sites");
+  /* the ranking must actually re-rank, not merely redraw */
+  const byRec=await page.$$eval(".dash-bw #bw-libs .drow",els=>
+    els.map(e=>+e.children[2].textContent.replace(/[^0-9]/g,"")));
+  ok(byRec.every((v,i)=>i===0||byRec[i-1]>=v),"ranking by record volume orders highest first");
+  await page.selectOption(".dash-bw #bw-librank","gb");
+  const rankGB=await page.$$eval(".dash-bw #bw-libs .drow",els=>
+    els.map(e=>parseFloat(e.children[4].textContent)));
+  ok(rankGB.every((v,i)=>i===0||rankGB[i-1]>=v),"ranking by storage orders highest first");
+  await page.selectOption(".dash-bw #bw-librank","rate");
+  const byRate=await page.$$eval(".dash-bw #bw-libs .drow",els=>
+    els.map(e=>parseFloat(e.children[3].textContent)));
+  ok(byRate.every((v,i)=>i===0||byRate[i-1]>=v),"ranking by declaration rate orders highest first");
+
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
   ok(errors.length===0,"no console errors, which is how the DATA reconciliation asserts surface");
 

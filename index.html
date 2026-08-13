@@ -406,6 +406,19 @@ const DATA=(function(){
   DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.code.length+i+1);});
   const MONTH_VALUES=MONTH_LABELS.map((m,i)=>DEPTS.reduce((a,d)=>a+d.mrec[i],0));
 
+  /* Records declared by year, and the current month against its average. Both
+     read Records.CreatedDate, which is populated today, so neither waits on
+     the scan. The last entry is the same population as the monthly series, so
+     the two agree by construction rather than by coincidence. */
+  const YEARS=[
+    {label:"2023",value:6480},
+    {label:"2024",value:11240},
+    {label:"2025",value:17905},
+    {label:"Last 12 months",value:DECLARED},
+  ];
+  const DECLARED_THIS_MONTH=MONTH_VALUES[MONTH_VALUES.length-1];
+  const MONTH_AVERAGE=Math.round(DECLARED/12);
+
   /* ===== people and sites ===== */
   const MONTHLY_ACTIVE_USERS=9420;
   const SITES_CREATED=1057;
@@ -417,7 +430,52 @@ const DATA=(function(){
   const LIBS_NO_RECORDS=604;
   const LIBS_WITH_RECORDS=SITE_LIBRARIES-LIBS_NO_RECORDS;
   const LIBS_ACTIVE=1102;         /* activity within LIB_IDLE days */
+  const LIBS_DORMANT_180=411;     /* no activity for LIB_DORMANT days */
   const LIB_GROWTH=0.107;
+
+  /* Library ranking, for the three "largest" and "highest" questions the
+     metrics document asks under Library usage. A library is always shown with
+     its parent site, because display names repeat across sites and a bare
+     library name is ambiguous. */
+  const TOP_LIBRARIES=[
+    {lib:"Board Papers",        site:"ITD Records Site",      dept:"ITD",  docs:41200, rec:2010, gb:14.8},
+    {lib:"Loan Agreements",     site:"SARD Operations Site",  dept:"SARD", docs:38400, rec:1884, gb:11.2},
+    {lib:"Country Planning",    site:"OSFG Country Site",     dept:"OSFG", docs:33900, rec:1602, gb:9.4},
+    {lib:"Final Documents",     site:"FIN Treasury Site",     dept:"FIN",  docs:31100, rec:1490, gb:18.6},
+    {lib:"Project Completion",  site:"PARD Programs Site",    dept:"PARD", docs:28700, rec:1288, gb:7.9},
+    {lib:"Policies",            site:"OGC Legal Site",        dept:"OGC",  docs:19400, rec:1044, gb:4.1},
+    {lib:"Correspondence",      site:"HRD People Site",       dept:"HRD",  docs:24600, rec:902,  gb:6.3},
+    {lib:"Minutes",             site:"SPD Strategy Site",     dept:"SPD",  docs:12800, rec:744,  gb:2.2},
+    {lib:"Annual Meetings",     site:"OAS Facilities Site",   dept:"OAS",  docs:16300, rec:598,  gb:21.4},
+    {lib:"Country Reports",     site:"ERCD Statistics Site",  dept:"ERCD", docs:14100, rec:532,  gb:3.7},
+  ];
+
+  /* ===== records quality =====
+     Both are computable today from columns already on the document row: a
+     duplicate is a repeated Title, an orphaned record is one whose parent site
+     or library no longer resolves. Neither is on any dashboard until now. */
+  const DUPLICATE_RECORDS=1284;
+  const ORPHANED_RECORDS=96;
+
+  /* ===== information classification =====
+     SensitivityLabelName is designed on the document row and appears on no
+     dashboard. The states below account for every declared record. */
+  const SENSITIVITY=[
+    {label:"Internal",     count:12840},
+    {label:"Confidential", count:4620},
+    {label:"Restricted",   count:1180},
+    {label:"Public",       count:812},
+    {label:"No sensitivity label", count:2194},
+  ];
+  const SENSITIVITY_TOTAL=SENSITIVITY.reduce((a,s)=>a+s.count,0);
+  const UNLABELLED=SENSITIVITY.find(s=>s.label==="No sensitivity label").count;
+
+  /* Site visits by month, for the site activity trend the metrics document
+     asks for under Site Trends. A range sums the 7 day figure and never the
+     30, 90 or 180 day ones: consecutive 7 day windows tile exactly, longer
+     ones overlap and would count most days several times over. */
+  const SITE_VISITS_MONTHLY=[41200,43800,39600,46100,44700,48300,
+                             51200,49800,53400,55100,52600,57300];
 
   /* ===== format groups =====
      The eight groups the client lists under Format and Storage Analysis. The
@@ -466,12 +524,21 @@ const DATA=(function(){
     "Disposal windows must nest: 30 days inside 90 inside 12 months");
   console.assert(WITH_SCHEDULE+NO_LABEL===LABEL_TOTAL,
     "Records with and without a schedule must account for every labelled record");
+  console.assert(SENSITIVITY_TOTAL===DECLARED,
+    "Sensitivity label states must account for every declared record");
+  console.assert(YEARS[YEARS.length-1].value===DECLARED,
+    "The current year in the by-year trend must match the declared record count");
+  console.assert(LIBS_DORMANT_180<=SITE_LIBRARIES-LIBS_ACTIVE,
+    "Dormant libraries must be a subset of the libraries that are not active");
 
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
     MONTH_LABELS,MONTH_VALUES,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,LIB_GROWTH,
     FORMATS,TOTAL_FILES,TOTAL_GB,
+    YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
+    TOP_LIBRARIES,LIBS_DORMANT_180,SITE_VISITS_MONTHLY,
+    DUPLICATE_RECORDS,ORPHANED_RECORDS,SENSITIVITY,SENSITIVITY_TOTAL,UNLABELLED,
     LABELS,LABEL_TOTAL,PERMANENT,NO_LABEL,WITH_SCHEDULE,BEYOND_RETENTION,
     DUE_30,DUE_90,DUE_NEXT_12,NEXT_DUE};
 })();
@@ -857,6 +924,50 @@ DASHBOARDS.bw=(function(){
         <div class="num">${(DATA.TOTAL_GB*1024/DATA.TOTAL_FILES).toFixed(1)} MB</div></div>`;
   }
 
+  function drawYears(){
+    const mx=Math.max(...DATA.YEARS.map(y=>y.value));
+    document.getElementById("bw-years").innerHTML=
+      `<div class="dhead"><div>Period</div><div class="num">Records declared</div>
+        <div class="num">Against the latest</div></div>`+
+      DATA.YEARS.map(y=>`<div class="drow"><div class="dn">${y.label}</div>
+        <div class="num">${F(y.value)}</div>
+        <div class="num">${(y.value/mx*100).toFixed(0)}%</div></div>`).join("");
+  }
+
+  let libRank="rec";
+  function drawLibRank(){
+    const key=l=>libRank==="rate"?l.rec/l.docs*100:l[libRank];
+    const rows=[...DATA.TOP_LIBRARIES].sort((a,b)=>key(b)-key(a));
+    document.getElementById("bw-libs").innerHTML=
+      `<div class="dhead"><div>Library and site</div><div class="num">Documents</div>
+        <div class="num">Records declared</div><div class="num">Declaration rate</div>
+        <div class="num">Storage</div></div>`+
+      rows.map(l=>`<div class="drow">
+        <div class="dn">${l.lib}<small>${l.site}, ${l.dept}</small></div>
+        <div class="num">${F(l.docs)}</div><div class="num">${F(l.rec)}</div>
+        <div class="num">${(l.rec/l.docs*100).toFixed(2)}%</div>
+        <div class="num">${l.gb.toFixed(1)} GB</div></div>`).join("");
+  }
+
+  function drawVisits(){
+    const mx=Math.max(...DATA.SITE_VISITS_MONTHLY);
+    document.getElementById("bw-visits").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
+      <div class="tcol"><div class="tval">${F(DATA.SITE_VISITS_MONTHLY[i])}</div>
+        <div class="tbar" style="height:${Math.max(2,100*DATA.SITE_VISITS_MONTHLY[i]/mx)}%;background:var(--teal)"></div>
+        <div class="tlab">${m}</div></div>`).join("");
+  }
+
+  function drawSensitivity(){
+    const mx=Math.max(...DATA.SENSITIVITY.map(s=>s.count));
+    const colour=s=>s.label==="Restricted"?"var(--orange)"
+                  :s.label==="Confidential"?"var(--deepblue)"
+                  :s.label==="No sensitivity label"?"var(--mut)":"var(--blue)";
+    document.getElementById("bw-sens").innerHTML=DATA.SENSITIVITY.map(s=>
+      `<div class="lbar"><div class="ll">${s.label}</div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*s.count/mx)}%;background:${colour(s)}">${F(s.count)}</div></div>
+        <div class="lp">${(s.count/DATA.SENSITIVITY_TOTAL*100).toFixed(1)}%</div></div>`).join("");
+  }
+
   /* ===== retention rollup, PPT s44 ===== */
   /* ===== absorbed from the dashboards the redesign removes =====
      The client's deck drops Format and Storage as a dashboard (PPT s12, "there
@@ -941,8 +1052,19 @@ DASHBOARDS.bw=(function(){
         <select id="bw-trend-sel"></select>
         <button class="resetbtn" id="bw-trend-reset">Reset</button>
       </div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Records declared this month</div><div class="tv">${F(DATA.DECLARED_THIS_MONTH)}</div></div>
+        <div class="tile"><div class="tl">Monthly average, last 12 months</div><div class="tv">${F(DATA.MONTH_AVERAGE)}</div></div>
+        <div class="tile hi"><div class="tl">Against the average</div><div class="tv">${(DATA.DECLARED_THIS_MONTH>=DATA.MONTH_AVERAGE?"+":"")+((DATA.DECLARED_THIS_MONTH-DATA.MONTH_AVERAGE)/DATA.MONTH_AVERAGE*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Declared, last 12 months</div><div class="tv">${F(TOTAL_REC)}</div></div>
+      </div>
       <div class="trend" id="bw-trend"></div>
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records declared by year</div>
+      <div class="psub">The longer view the metrics document asks for alongside the monthly trend. The last row is the same population as the chart above, so the two agree by construction rather than by coincidence. Both read CreatedDate on the record, which is populated today.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(2,1fr)" id="bw-years"></div></div>
     </div>
 
     <div class="band">
@@ -1013,8 +1135,77 @@ DASHBOARDS.bw=(function(){
         <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
         <div class="tile hi"><div class="tl">With no declared records</div><div class="tv">${F(DATA.LIBS_NO_RECORDS)}</div></div>
         <div class="tile"><div class="tl">Library growth rate</div><div class="tv">${(DATA.LIB_GROWTH*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Dormant over ${DATA.LIB_DORMANT} days</div><div class="tv">${F(DATA.LIBS_DORMANT_180)}</div></div>
         <div class="tile"><div class="tl">Most used libraries</div><div class="tv">no source</div></div>
         <div class="tile"><div class="tl">Orphaned libraries</div><div class="tv">no source</div></div>
+      </div>
+      <div class="psub" style="margin-top:6px">The three rankings the metrics document asks for are below: largest libraries by record volume, largest by storage, and the highest declaration rates. Each library is shown with its parent site, because library names repeat across sites and a bare name is ambiguous.</div>
+      <div class="toolbar">
+        <span class="lbl">Rank libraries by</span>
+        <select id="bw-librank">
+          <option value="rec">Record volume</option>
+          <option value="gb">Storage consumed</option>
+          <option value="rate">Declaration rate</option>
+        </select>
+      </div>
+      <div class="scrollx"><div class="dtab" style="--dc:250px repeat(4,1fr)" id="bw-libs"></div></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site activity trend by month</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">Asked for under Site Trends. This is possible only because history is now kept on the site activity table: before that decision there was nothing to plot, since Microsoft returns a current window rather than a series. One rule governs the arithmetic, and getting it wrong produces a plausible wrong number rather than an error: a range sums the 7 day visit figure and never the 30, 90 or 180 day ones, because consecutive 7 day windows tile exactly while longer ones overlap and would count most days several times over.</div>
+      <div class="trend" id="bw-visits"></div>
+    </div>
+
+    <div class="band">
+      <h2>Records quality and classification</h2>
+      <div class="bd">Four groups from the client's proposed metrics document that the deck does not draw: Records Quality, Information Classification, Access Management, and Search and Usage Analytics. They are included because they are in the requirements, and each says plainly whether it can be produced.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records quality</div>
+      <div class="psub">Both figures are computable today from columns already on the document row, and neither has appeared on any dashboard before. A duplicate is a repeated filename, which is why the client wrote "with same filenames?" against it: that is the only definition the data supports, and it will overcount legitimately repeated names such as a monthly report. An orphaned record is one whose parent site or library no longer resolves.</div>
+      <div class="tiles">
+        <div class="tile hi"><div class="tl">Duplicated records</div><div class="tv">${F(DATA.DUPLICATE_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Share of declared records</div><div class="tv">${(DATA.DUPLICATE_RECORDS/TOTAL_REC*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Orphaned records</div><div class="tv">${F(DATA.ORPHANED_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Records checked</div><div class="tv">${F(TOTAL_REC)}</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Information classification</div>
+      <div class="psub">SensitivityLabelName is on the document row in the database design and appears on no dashboard until now. Records by classification level, and records with and without a label, all read that one column. The five states below account for every declared record.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">With a sensitivity label</div><div class="tv">${F(DATA.SENSITIVITY_TOTAL-DATA.UNLABELLED)}</div></div>
+        <div class="tile hi"><div class="tl">Without a sensitivity label</div><div class="tv">${F(DATA.UNLABELLED)}</div></div>
+        <div class="tile"><div class="tl">Confidential records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Confidential").count)}</div></div>
+        <div class="tile"><div class="tl">Restricted records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Restricted").count)}</div></div>
+      </div>
+      <div id="bw-sens"></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Access management</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">Access requests, external sharing and permission exceptions are audit log and permission data. They are a different Microsoft Graph surface with a different permission set, and none of them appear in the reporting feeds this report is built on. The client asked the same question themselves on PPT s56, of SharePoint and of Cloud Governance. The answer for both, through the reporting APIs, is no.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Access requests granted</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Access requests declined</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">External sharing instances</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Permission exceptions</div><div class="tv">no source</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Search and usage analytics</div>
+      <div class="src none">No source identified</div>
+      <div class="psub">SharePoint search analytics are reported at tenant level and are not exposed per record, so searches performed, successful searches and frequently searched categories cannot be attributed to a record or a library. Most viewed and most downloaded are not available at document grain either: Graph analytics reports a site, and the same limit is why most used libraries above has no source.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Searches performed</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Successful searches</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Frequently searched categories</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Records accessed per month</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Most viewed records</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Most downloaded records</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Most accessed libraries</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Top content by department</div><div class="tv">no source</div></div>
       </div>
     </div>
   </section>`;
@@ -1025,6 +1216,11 @@ DASHBOARDS.bw=(function(){
     drawDeptTable();
     drawCmp();
     drawFormats();
+    drawYears();
+    drawLibRank();
+    drawVisits();
+    drawSensitivity();
+    document.getElementById("bw-librank").onchange=e=>{libRank=e.target.value;drawLibRank();};
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
     const sel=document.getElementById("bw-trend-sel");
     sel.innerHTML=`<option value="all">All departments</option>`+
@@ -1852,6 +2048,22 @@ DASHBOARDS.fp=(function(){
       <div class="src none">No source identified</div>
       <div class="psub">The candidates for review and deletion. Two further indicators the client asked for on the same slides are not laid out at all: new libraries created outside convention needs the naming convention, which nobody has supplied, and requests for new libraries or terms is a request workflow rather than a report.</div>
       <div id="fp-bottom"></div>
+    </div>
+
+    <div class="band">
+      <h2>Declaration by classification and business process</h2>
+      <div class="bd">Two metrics from the client's proposed metrics document, under Records Declaration. They sit here rather than on Bank-wide because both are questions about the file plan: a classification is a file plan term, and a business process is the activity a term describes.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records declared by classification and by business process</div>
+      <div class="src none">No source identified</div>
+      <div class="psub"><b>By classification</b> is the term table above, read the other way round, and is blocked by the same missing link from a term to a document. <b>By business process</b> is blocked twice over. It needs that link, and it also needs somebody to say what a business process is in ADB terms and how it relates to a file plan term: the two are not the same thing, nothing in the tenant records either, and the requirement names it once without defining it. That definition is worth asking for in the same message as question 1, since both are answered by whoever owns the file plan.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Records by classification</div><div class="tv">needs the term link</div></div>
+        <div class="tile"><div class="tl">Records by business process</div><div class="tv">needs a definition</div></div>
+        <div class="tile"><div class="tl">Classified records</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Unclassified records</div><div class="tv">no source</div></div>
+      </div>
     </div>
   </section>`;
 
