@@ -8,7 +8,8 @@ what is assumed, what is blocked, and what was got wrong along the way.
 the no em dashes rule) but was written on 4 August and predates all of this.
 **Where the two disagree, this file wins.**
 
-Last updated 12 August 2026.
+Last updated 13 August 2026, after the client's dashboard requirements arrived
+and the prototype was rebuilt around them.
 
 ---
 
@@ -18,6 +19,7 @@ Last updated 12 August 2026.
 | --- | --- |
 | The single most important fact | Section 1 |
 | What is built and where | Sections 2 and 3 |
+| **The client requirements of 13 Aug** | Section 3a, and the register workbook |
 | The database design | Section 4 |
 | What is actually proven against the tenant | Section 5 |
 | What is blocked and on whom | Section 6 |
@@ -48,7 +50,9 @@ yet. That single fact explains most of what is still open.
 
 | File | What it is | State |
 | --- | --- | --- |
-| `index.html` | The prototype. One self contained file, 5 dashboards | Current |
+| `index.html` | The prototype. One self contained file, **6 dashboards** | Current |
+| `REQUIREMENTS_2026-08-13.md` | The client requirement assessment as prose | Current |
+| `EDRMS_Utilization_Report_Requirements_2026-08-13.xlsx` | **The requirement register.** 123 requirements, each with its slide reference and a verdict | Current |
 | `EDRMS_Utilization_Report_Database_Design_v1.xlsx` | **The database design**, in the client's own workbook format. 4 tables, 73 columns | Current |
 | `utilizationdb.md` | The same design as prose, no code | Current |
 | `evidence_SharePointSiteUsageDetail_2026-08-12.csv` | Real tenant export, 2,575 rows | Evidence |
@@ -61,49 +65,85 @@ Everything is on `main` and served at
 
 ---
 
-## 3. THE PROTOTYPE: 5 DASHBOARDS
+## 3. THE PROTOTYPE: 6 DASHBOARDS
 
-Nav order is fixed. **No placeholders remain.**
+Nav order is fixed and is **the client's own order from PPT s13**. No
+placeholders remain.
+
+**On 13 August 2026 the prototype was rebuilt around the client's dashboard
+requirements.** The five dashboards below replaced the five that had stood since
+July. This is the single most important thing to know about the current state:
+if you are looking for Records Management or Sites and Libraries, they are gone
+on purpose, and their content was absorbed rather than dropped.
 
 | Dashboard | Key | What is on it |
 | --- | --- | --- |
-| Overview | `ov` | Executive summary. Every figure read from the other modules' `summary` objects, never restated |
-| Records Management | `rm` | Declared records vs total documents, site and user governance, declaration over time |
-| Sites and Libraries | `sl` | Compliant site rollout, library adoption, site inventory, library health and growth |
-| Format and Storage | `fs` | Storage and file counts across 8 format groups |
-| Retention and File Plan | `rt` | Disposal pipeline, retention compliance, the file plan, retention profile |
+| Bank-wide Oversight | `bw` | 8 top tiles, 5 drill tables, department table, 3 comparisons, declaration trend by month and by year, retention rollup, format groups, site and library health, records quality, classification, access and search |
+| Department Insights | `dp` | Department picker driving everything. 8 tiles, 5 drills, site list, library usage by file plan category, trend, conventions, programme dates |
+| Project Insights | `pj` | Sovereign and nonsovereign lists, single project profile. Layout only |
+| Institutional File Plan | `fp` | 5 categories, terms per category, most and least used terms, classification and business process |
+| Retention and Disposal | `rd` | Permanent and temporary screens, disposition risk, retention compliance |
+| Records and Archive Holdings | `ra` | Storage, retrieval, inventory health. Layout only |
 
-**Removed on 10 to 12 August, deliberately:**
+**Removed on 13 August**, because the client specified six key views and
+eleven would have presented four superseded screens as current: `ov`, `rm`,
+`sl`, `fs`, `rt`. What the requirements still ask for was absorbed onto
+Bank-wide: the 8 format groups (PPT s12 said amalgamate), site health, library
+health and the library rankings.
 
-- **Department Performance** placeholder. Most of its data now lives elsewhere
-- **Data Design** reference page. `utilizationdb.md` holds all of it; the
-  prototype is reports only now. `gen_dd.py` and `build_dd.py` went with it
-- **Division**, the whole drill tier. Drill is Department, Site, Library
-- **A standalone File Plan dashboard.** Two cards and five bars did not earn a
-  nav entry, and the file plan belongs beside retention anyway
+**Removed earlier, on 10 to 12 August:** the Department Performance placeholder,
+the Data Design reference page (`utilizationdb.md` holds all of it), and the
+standalone File Plan dashboard. **The last of those has since been reversed**,
+see section 7.
+
+### The source marker convention, agreed 13 August
+
+The redesign put roughly four fifths of the page beyond what any source can
+fill, so a reader cannot tell a real figure from an aspiration by looking. Every
+panel therefore carries one of four markers, or none at all:
+
+| Marker | Meaning |
+| --- | --- |
+| no marker | Sourceable from the 73 column design as it stands |
+| `.src.part` | Partly sourceable, and the marker says which half is not |
+| `.src.dept` | Waiting only on the site to department list from RAC |
+| `.src.none` | No source identified anywhere |
+| `.src.ref` | Not a measurement at all. A list somebody must maintain |
+
+An unsourceable cell prints the words **no source** rather than a plausible
+number. This supersedes the 11 August decision that dashboards carry no caveat
+boxes, which was taken when the prototype was five dashboards that all had a
+source path.
 
 ### KPI cards: interactive or static, never ambiguous
 
 A card with the `.tap` chevron promises a click. A card without one promises
 nothing. **They must never disagree**, and `check_affordance.js` fails the build
-when they do. 11 are interactive, 13 are static (`.kpi.stat`).
+when they do. 36 cards across the 6 dashboards.
 
 Before 10 August every static card said "Opened below" and carried the selected
 rail, so readers clicked and thought the page had hung.
 
-### The period control on the usage panels
+### The base figures live in one place
 
-Five choices: **Last 7 / 30 / 90 / 180 days**, and **By month** with year and
-month pickers.
+`DATA`, in the `data.js` block, holds the departments, the declaration series,
+the retention labels, the format groups and the site and library health figures.
+Before 13 August each of these was owned by whichever dashboard displayed it and
+read out of that dashboard's `summary`, so deleting a dashboard would have taken
+the data with it. A figure that appears on three dashboards is now defined once
+and read three times, and everything that must reconcile is asserted on load.
 
-**There is deliberately no day level calendar.** A week is the smallest period
-the data holds. Asked for 8 to 15 January, the stored weeks are 4 to 10 and 11 to
-17: the range cuts both and neither can be split. The options are 134 (which
-really covers 4 to 17), 0, or 78 (pro-rated, invented). Constraining the input
-means nobody can ask a question the data cannot answer.
+### The period control is gone with the usage panels
 
-Document panels keep their day level range, because `CreatedDate` is on every row
-there and any date is exact.
+Until 13 August the usage panels offered **Last 7 / 30 / 90 / 180 days** and
+**By month**, with deliberately **no day level calendar**: a week is the
+smallest period the data holds, so asking for 8 to 15 January could only be
+answered with 134 (which really covers 4 to 17), 0, or 78 (pro-rated, invented).
+Constraining the input meant nobody could ask a question the data cannot answer.
+
+The client's redesign carries no usage panels, so the control went with them.
+**If usage panels ever return, that rule returns with them.** It is recorded
+here because it is the kind of reasoning that is expensive to rediscover.
 
 ---
 
@@ -278,7 +318,12 @@ term store does not hold it either. **This is a question for the client.**
 | Date range starts at the first job run | 12 Aug | History never captured cannot be recovered |
 | No day level picker on usage panels | 12 Aug | A week is the smallest unit the data holds |
 | Department is a **filter**, not a column | 11 Aug | The row is about a site |
-| No amber caveat boxes on dashboards | 11 Aug | Those belong in this file and the workbook |
+| No amber caveat boxes on dashboards | 11 Aug | **SUPERSEDED 13 Aug.** See the source marker convention in section 3 |
+| **Six dashboards, the client's own list** | 13 Aug | PPT s13 and s14. Not five, not eleven |
+| **Division is back** | 13 Aug | Client instruction, reopening the 10 Aug removal. Still nothing populates it, so every panel carrying it is marked no source |
+| **A standalone File Plan dashboard is back** | 13 Aug | Client instruction. PPT s13 names it a key view and s47 to s52 give it six screens |
+| Base figures live in `DATA`, not in a dashboard | 13 Aug | Defined once, read six times, asserted on load |
+| Unsourceable cells print "no source" | 13 Aug | Never a plausible number |
 
 **AvePoint is an export, not an integration.** Cloud Governance cannot write to
 the database. If it holds the requesting department, that is a CSV loaded once.
@@ -354,15 +399,20 @@ Permissions the job will need: `Sites.Read.All`, `Reports.Read.All`, and
 ### Verification, run from the repo root
 
 ```
-verify.js                    structural floor, 51 checks. Needs a path argument
-check_affordance.js          every KPI card looks like what it is
-check_metrics.js             the section 5 and 8 figures reconcile
-check_retention.js           labels total the declared count, permanent excluded
-check_retention_fileplan.js  file plan sits inside Retention, categories sum
-check_sitefilter.js          department filters, tiles follow, Reset restores
-check_period.js              presets nest, By month sums, no day picker survives
-check_tree.py                drill depth and every total matches its parent
+verify.js              structural floor. Every dashboard mounts, no console errors
+check_affordance.js    every KPI card looks like what it is
+check_data.js          the DATA reconciliations, and that all 25 metrics document
+                       headings still have somewhere to live
+check_bankwide.js      Bank-wide: tiles, drills, department table, comparisons, trend
+check_department.js    Department: walks all 16 departments, sites sum to the header
+check_division.js      the division tier: children sum to parent, on screen
+check_stage3.js        Project, File Plan, Retention and Disposal, Holdings
+check_tree.py          drill depth and every total matches its parent
 ```
+
+**Retired on 13 Aug** with the dashboards they tested: `check_metrics.js`,
+`check_retention.js`, `check_retention_fileplan.js`, `check_sitefilter.js`,
+`check_period.js`. Their figure assertions live on in `check_data.js`.
 
 `verify.js` is a **floor**. It passes on a page whose numbers are wrong. The
 others check the numbers.
@@ -397,23 +447,49 @@ classification, so nothing can arrive without saying how it gets a value.
 
 ## 11. NEXT STEPS
 
-1. **Fill the verification tracker.** 36 columns left. Start with the 24 EDRMS
-   database ones: one query to Mihal confirms them in a single pass
-2. **Ask the client where the institutional file plan lives.** It is in neither
-   the term store nor Purview. Everything in section 3 of the requirements waits
-   on this
-3. **Ask Mihal how to detect the EDRMS app per site.** The last thing between
-   Gap 3b and being built. 4 KPIs depend on it
-4. **Get the site to department list from RAC.** Check AvePoint Cloud Governance
-   first; it may be an export rather than data entry
-5. **Rebuild the source data workbook as v5.** `elements.py` still holds the
-   pre-cut 52 elements, so v4 describes a design that no longer exists. This is
-   the only deliverable still out of step
-6. **Check the Retention Label Mapping list's columns.** If it keys libraries by
-   `ListId` the two held-back metrics (5.1.5, 8.2.3) go straight in. If it keys
-   by name, the join is fragile and they stay out
-7. **Confirm the report privacy setting.** `Site URL` blank on every row may be
-   Settings, Org settings, Reports rather than Microsoft dropping the column
+**The prototype is no longer the bottleneck.** It now shows the client exactly
+what they designed, with every gap labelled. What is missing is answers, and
+seven of them unblock most of the register.
+
+### Send the seven questions. In this order
+
+The full versions are in `REQUIREMENTS_2026-08-13.md` section 9 and on the
+`Questions to client` sheet of the register workbook.
+
+1. **Where does the Institutional File Plan actually live?** It is in neither
+   the term store nor Purview. Blocks a whole dashboard
+2. **Is there a project site register?** Site URL to project number, sovereign
+   or nonsovereign. Check AvePoint Cloud Governance first. Cheapest unblock in
+   the whole deck: one CSV would make Project Insights real
+3. **Division: who supplies it?** The client asked for the tier back on 13 Aug
+   and it is built, but nothing populates it. The department list must carry it
+4. **Disposal status, approver and disposed records** need a field in the EDRMS
+   application. A development change request for Mihal Le, not a report change
+5. **Who maintains the three reference lists?** Go-live dates, conventions,
+   programme dates
+6. **Is an inactive site 90 days or 300?** The deck says 90, the metrics
+   document says 300
+7. **Which system owns staff, contractor and consultant, and training?** The
+   client's own PPT s54 asks the same question
+
+### Then, in parallel
+
+8. **Get the site to department list from RAC.** 29 of the 123 requirements wait
+   only on this, and all of Department Insights
+9. **Ask Mihal how to detect the EDRMS app per site.** Gap 3b, 4 KPIs
+10. **Fill the verification tracker.** 36 columns left, 24 of them settled by
+    one query to Mihal
+11. **Rebuild the source data workbook as v5.** `elements.py` still holds the
+    pre-cut 52 elements, so v4 describes a design that no longer exists
+
+### The one design change the requirements imply
+
+**The file plan needs a join to a document.** Nothing links a term to a library
+or a document: table 4 has no join key and table 1 carries no `TermId`. Every
+figure on PPT s47 to s52 needs it, so it is a change to the design and to the
+weekly scan rather than a report change. **It is the longest lead time item in
+the deck** and it survives the answer to question 1, so it is worth raising now
+rather than after the file plan is located.
 
 ---
 
