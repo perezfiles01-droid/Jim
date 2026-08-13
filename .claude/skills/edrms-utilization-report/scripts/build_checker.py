@@ -53,10 +53,15 @@ STATUS_MEANING = {
 }
 
 HDR = ["S/N", "Section", "Element", "Type", "What the figure is",
-       "Source system", "Database table", "Database column", "How it is produced",
-       "In the design?", "In the tenant today?", "Testable in the tenant, and how",
+       "Source system", "Report or file to open",
+       "Step by step: how to get that file",
+       "Exact column heading in that file",
+       "How the number is worked out",
+       "Database table", "Database column",
+       "In the design?", "In the tenant today?",
        "Effort", "Status", "Question to ask the client, and why"]
-WID = [5, 26, 30, 9, 40, 20, 22, 30, 48, 13, 15, 46, 9, 24, 60]
+WID = [5, 24, 28, 9, 34, 18, 30, 62, 40, 60, 20, 28, 13, 15, 9, 24, 58]
+COL_STATUS = 16          # P, the column the Summary counts and the filter uses
 
 # Shorthands used a lot below.
 T1, T2, T3, T4 = "1 Utilization Report", "2 Site Activity", "3 User Activity", "4 File Plan"
@@ -67,6 +72,69 @@ BUILD, DEPT, JOIN, APPCH, REFL, NEWSRC, DECIDE = (
     "Buildable now", "Needs department list", "Needs new column or join",
     "Needs application change", "Needs reference list", "Needs new data source",
     "Decision needed")
+
+# ---------------------------------------------------------------------------
+# RECIPES. One per real export or system. The steps are click by click, with
+# the link, because the whole point of this workbook is that somebody can
+# verify a number without asking anyone how.
+#
+# The column headings quoted below were read off the two evidence exports in
+# this repo, not remembered:
+#   evidence_SharePointSiteUsageDetail_2026-08-12.csv   2,575 rows, 23 columns
+#   evidence_SharePointActivityUserDetail_2026-08-12.csv   30 rows, 12 columns
+# ---------------------------------------------------------------------------
+RC = {}
+RC["usage"] = (USAGE, "SharePoint site usage report, exported as CSV",
+ "1. Go to https://admin.microsoft.com/#/reportsUsage/SharePointSiteUsage\n"
+ "2. Sign in as a Microsoft 365 reports reader or global reader\n"
+ "3. Set the period selector to 30 days\n"
+ "4. Click Export, top right. A CSV downloads, named like "
+ "SharePointSiteUsageDetail_2026-08-12.csv\n"
+ "5. Open it in Excel. It has 23 columns and one row per site, 2,575 rows in the test tenant\n"
+ "6. WARNING: the Site URL column is EMPTY on every row. Use Site Id and match it to a "
+ "site list from Graph if you need the address")
+RC["user"] = (USAGE, "SharePoint activity user detail report, exported as CSV",
+ "1. Go to https://admin.microsoft.com/#/reportsUsage/SharePointActivity\n"
+ "2. Sign in as a Microsoft 365 reports reader or global reader\n"
+ "3. Set the period selector to 30 days\n"
+ "4. Click Export. A CSV downloads, named like "
+ "SharePointActivityUserDetail_2026-08-12.csv\n"
+ "5. Open it in Excel. It has 12 columns and one row per LICENSED user, 30 rows in the "
+ "test tenant. It is NOT a list of active users, which is the mistake to avoid")
+RC["db"] = (EDRMS, "The EDRMS database, drm-npr, table public.\"Records\"",
+ "1. Connect to the drm-npr PostgreSQL database with any SQL client\n"
+ "2. The table is public.\"Records\", quoted because of the capital R\n"
+ "3. It holds DECLARED RECORDS ONLY, about 1,990 rows in UAT. There is no row for a "
+ "document that was never declared, which is why every rate needs the scan built first")
+RC["graph"] = (GRAPH, "Microsoft Graph, run interactively",
+ "1. Go to https://aka.ms/ge, the Graph Explorer\n"
+ "2. Sign in with a tenant account and consent to the scope named in the next column\n"
+ "3. Paste the call from the Exact column heading cell into the address bar and click Run query\n"
+ "4. Read the field named in that same cell out of the JSON response")
+RC["spadmin"] = (USAGE, "SharePoint admin centre, Active sites",
+ "1. Go to https://7rkd12-admin.sharepoint.com\n"
+ "2. Open Sites, then Active sites\n"
+ "3. Use the column chooser to add the columns you need, then Export to CSV")
+RC["purview"] = (LIST, "Purview file plan",
+ "1. Go to https://purview.microsoft.com\n"
+ "2. Open Solutions, Records management, then File plan\n"
+ "3. Click Export to download the label list. 53 labels in the test tenant, a flat list "
+ "with no hierarchy")
+RC["terms"] = (TERMS, "SharePoint term store",
+ "1. Go to https://7rkd12-admin.sharepoint.com\n"
+ "2. Open Content services, then Term store\n"
+ "3. Expand the groups. The tenant holds 6 value sets and 16 terms, one level deep, "
+ "which is NOT an institutional file plan")
+RC["maplist"] = (LIST, "Retention Label Mapping list, a SharePoint list",
+ "1. Open the EDRMS site that holds the Retention Label Mapping list\n"
+ "2. Open the list and check its columns first: does it key a library by ListId or by name?\n"
+ "3. Export to CSV from the list toolbar")
+RC["none"] = (NONE, "No file exists",
+ "There is nothing to open. No system this report can reach holds this figure. "
+ "See the question column for who to ask")
+RC["derived"] = (EDRMS, "No single file. Computed from the tables above",
+ "Produced by the refresh job from the sources above rather than read from one export. "
+ "Verify it by checking the inputs named in the next two columns")
 
 # Test recipes reused across rows, so a tester reads the same words each time.
 TEST_DECL = ("Yes. Query public.\"Records\" in drm-npr and count rows. "
@@ -130,259 +198,376 @@ Q_REF = ("Ask who maintains this list and where it will live. Why: it is not a "
          "stays empty")
 
 
-def R(section, element, typ, measure, source, table, column, formula,
-      design, tenant, test, effort, status, question=""):
-    return (section, element, typ, measure, source, table, column, formula,
-            design, tenant, test, effort, status, question)
+def R(section, element, typ, measure, recipe, cols, compute,
+      table, column, design, tenant, effort, status, question=""):
+    """One checkable figure.
+
+    recipe  a key into RC, which supplies the source system, the file to open
+            and the click by click steps to get it
+    cols    the exact column heading in that file, or the exact Graph field
+    compute the arithmetic, written with those exact headings so a reader can
+            reproduce the number in Excel without translating anything
+    """
+    src, report, steps = RC[recipe]
+    return (section, element, typ, measure, src, report, steps, cols, compute,
+            table, column, design, tenant, effort, status, question)
 
 
 # =====================================================================
 # 01 BANK-WIDE OVERSIGHT
 # =====================================================================
 BW = [
- R("Top panel", "Total EDRMS Users", "KPI", "Distinct people who used SharePoint in the window",
-   USAGE, T3, "UserPrincipalName, ViewedOrEditedFileCount",
-   "COUNT(DISTINCT UserPrincipalName) WHERE ViewedOrEditedFileCount > 0, over the latest snapshot",
-   "Yes", "Yes", TEST_USER, "Easy", BUILD,
-   "None. Warn the client that the export lists every licensed user, so the row count is not the active count"),
- R("Top panel", "Total Documents in EDRMS", "KPI", "All documents in compliant sites, declared or not",
-   EDRMS + " plus scan", T1, "All rows WHERE IsEdrmsCompliant AND NOT IsDeleted",
-   "COUNT(*). The undeclared rows are the denominator for every rate",
-   "Yes", "Partly", TEST_DOCS, "Medium", BUILD,
-   "None, but flag that the weekly scan must be built before this is real"),
+ R("Top panel", "Total EDRMS Users", "KPI", "People who actually used SharePoint",
+   "user", "Two columns: 'User Principal Name' and 'Viewed Or Edited File Count'",
+   "Filter the sheet to rows where 'Viewed Or Edited File Count' is greater than 0, then count "
+   "the remaining rows. In the test tenant the file has 30 rows but only 8 survive that filter, "
+   "so the answer is 8, not 30. Do NOT just count rows: the export lists every licensed user",
+   T3, "UserPrincipalName, ViewedOrEditedFileCount", "Yes", "Yes", "Easy", BUILD,
+   "None. Warn the client the export lists every licensed user, so a row count overstates adoption"),
+ R("Top panel", "Total Documents in EDRMS", "KPI", "Every document held, declared or not",
+   "usage", "'File Count', and 'Site Id' to identify the site",
+   "Sum the 'File Count' column across the sites that are EDRMS compliant. In the test tenant "
+   "the full sum is 32,833 across 1,071 sites that hold anything. This is the interim answer: "
+   "the real figure needs the weekly scan, because the usage export counts files rather than "
+   "the documents the report defines",
+   T1, "All rows WHERE IsEdrmsCompliant", "Yes", "Partly", "Medium", BUILD,
+   "None, but flag that the scan must be built before this is exact"),
  R("Top panel", "Total Records Declared", "KPI", "Documents formally declared as records",
-   EDRMS, T1, "IsDeclaredRecord", "COUNT(*) WHERE IsDeclaredRecord = true",
-   "Yes", "Yes", TEST_DECL, "Easy", BUILD),
- R("Top panel", "Total Physical Counterparts", "KPI", "Declared records with a paper counterpart",
-   EDRMS, T1, "HasPhysical", "COUNT(*) WHERE HasPhysical = true",
-   "Yes", "Yes", "Yes. Query Records and count where the EDRMSMeta HasPhysical key is true",
-   "Easy", BUILD),
- R("Top panel", "Total Records Due for Disposal", "KPI", "Records reaching the end of retention in 12 months",
-   EDRMS, T1, "EDRMSDueDateForDisposal",
-   "COUNT(*) WHERE EDRMSDueDateForDisposal BETWEEN today AND today + 12 months",
-   "Yes", "Yes", "Yes. The due date is already computed in the source database",
-   "Easy", BUILD),
- R("Top panel", "Active EDRMS Sites, Department / RM / Office", "KPI", "Compliant departmental sites still in use",
-   USAGE + " plus " + GRAPH, T2, "IsEdrmsCompliant, LastActivityDate, ADBDepartmentOwner",
-   "COUNT(*) WHERE IsEdrmsCompliant AND LastActivityDate >= today - 90",
-   "Yes, 2 columns need a rule", "Partly", TEST_USAGE, "Medium", DEPT,
-   Q_COMPLIANT + ". Also " + Q_IDLE),
- R("Top panel", "Active EDRMS Sites, Sovereign Projects", "KPI", "Compliant sites belonging to sovereign projects",
-   NONE, T2, "No column exists", "Would be COUNT(*) WHERE facility type = Sovereign",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
- R("Top panel", "Active EDRMS Sites, Nonsovereign Projects", "KPI", "Compliant sites belonging to nonsovereign projects",
-   NONE, T2, "No column exists", "Would be COUNT(*) WHERE facility type = Nonsovereign",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
+   "db", "The whole table, and the IsDeleted flag",
+   "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE NOT \"IsDeleted\". About 1,990 in UAT. "
+   "Every declared record is one row, so the count is the answer with no arithmetic",
+   T1, "IsDeclaredRecord", "Yes", "Yes", "Easy", BUILD),
+ R("Top panel", "Total Physical Counterparts", "KPI", "Declared records with a paper copy",
+   "db", "The EDRMSMeta JSON column, key HasPhysical",
+   "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE \"EDRMSMeta\"->>'HasPhysical' = 'true'. "
+   "The answer is a subset of Total Records Declared, so it must always be the smaller number",
+   T1, "HasPhysical", "Yes", "Yes", "Easy", BUILD),
+ R("Top panel", "Total Records Due for Disposal", "KPI", "Records reaching end of retention in 12 months",
+   "db", "'EDRMSDueDateForDisposal'",
+   "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE \"EDRMSDueDateForDisposal\" BETWEEN "
+   "CURRENT_DATE AND CURRENT_DATE + INTERVAL '12 months'. The date is already computed in the "
+   "source database, so nothing needs adding up",
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD),
+ R("Top panel", "Active EDRMS Sites, Department / RM / Office", "KPI", "Compliant sites still in use",
+   "usage", "'Last Activity Date', 'Is Deleted', and the compliance rule",
+   "Filter out rows where 'Is Deleted' is True, then keep rows where 'Last Activity Date' is "
+   "within the last 90 days, then count them. In the test tenant 'Last Activity Date' is filled "
+   "on only 381 of the 1,918 live sites, so the rest cannot be judged either way. The compliance "
+   "filter cannot be applied at all yet, see the question column",
+   T2, "IsEdrmsCompliant, LastActivityDate, ADBDepartmentOwner", "Yes, 2 need a rule",
+   "Partly", "Medium", DEPT, Q_COMPLIANT + ". Also " + Q_IDLE),
+ R("Top panel", "Active EDRMS Sites, Sovereign Projects", "KPI", "Sites belonging to sovereign projects",
+   "none", "No column in any export identifies a project site",
+   "Cannot be worked out. Once a project register exists, it would be: count the sites whose "
+   "project number is a sovereign facility",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_PROJ),
+ R("Top panel", "Active EDRMS Sites, Nonsovereign Projects", "KPI", "Sites belonging to nonsovereign projects",
+   "none", "No column in any export identifies a project site",
+   "Cannot be worked out. Same as the row above, filtered to nonsovereign",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_PROJ),
 
- R("Users drill", "Active users, Never accessed, No access in 90 days", "Tile",
-   "Adoption split of the user population", USAGE, T3, "LastActivityDate, ViewedOrEditedFileCount",
-   "Active: ViewedOrEditedFileCount > 0. Never accessed: LastActivityDate IS NULL. "
-   "Idle: LastActivityDate < today - 90",
-   "Yes", "Yes", TEST_USER, "Easy", BUILD),
- R("Users drill", "Staff, Contractors, Consultants", "Table column",
-   "Employment class of each user", NONE, T3, "No column exists",
-   "Would be a GROUP BY over an employment type carried on the user row",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_STAFF),
- R("Users drill", "Training completion", "Tile", "Share of users who completed EDRMS training",
-   NONE, "None", "No column exists", "Would come from an HR or LMS extract joined on UPN",
-   "No", "No", TEST_NO, "Blocked", REFL, Q_STAFF),
+ R("Users drill", "Never accessed EDRMS", "Tile", "Licensed users who have never opened anything",
+   "user", "'Last Activity Date'",
+   "Count the rows where 'Last Activity Date' is BLANK. In the test tenant that is 5 of the 30 "
+   "rows. A blank means the person has a licence but has never touched SharePoint",
+   T3, "LastActivityDate", "Yes", "Yes", "Easy", BUILD),
+ R("Users drill", "No access in 90 days", "Tile", "Users who have gone quiet",
+   "user", "'Last Activity Date'",
+   "Count rows where 'Last Activity Date' is not blank AND is older than 90 days from the "
+   "'Report Refresh Date' at the top of the same row. Use the refresh date, not today, because "
+   "Microsoft's figures lag by about two days",
+   T3, "LastActivityDate", "Yes", "Yes", "Easy", BUILD),
+ R("Users drill", "Staff, Contractors, Consultants", "Table column", "Employment class of each user",
+   "none", "Nothing in the user export gives employment type. 'Assigned Products' gives the "
+   "licence name only, such as MICROSOFT 365 E5 DEVELOPER",
+   "Cannot be worked out from any Microsoft export. It would be a join from an HR or LMS extract "
+   "on 'User Principal Name'",
+   T3, "No column exists", "No", "No", "Blocked", NEWSRC, Q_STAFF),
+ R("Users drill", "Training completion", "Tile", "Share of users who completed training",
+   "none", "No column exists in any Microsoft export",
+   "Cannot be worked out. Would be completed / total, both from a training system",
+   "None", "No column exists", "No", "No", "Blocked", REFL, Q_STAFF),
  R("Users drill", "By department", "Table column", "Every user figure cut by department",
-   NONE, T2 + " to " + T3, "ADBDepartmentOwner", "JOIN on site, then GROUP BY ADBDepartmentOwner",
-   "Column exists, unpopulated", "No", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+   "none", "No department column exists in the user export",
+   "Cannot be worked out yet. Once the RAC list exists: match the user to their sites, then to "
+   "the department that owns those sites",
+   T3, "ADBDepartmentOwner", "Column exists, unpopulated", "No", "Easy", DEPT, Q_DEPT),
 
- R("Documents drill", "Documents, Storage", "Table column", "Documents held and the space they use",
-   EDRMS + " plus " + GRAPH, T1, "FileCreatedDate, FileSize",
-   "COUNT(*) and SUM(FileSize)/1024^3 for GB, grouped by department",
-   "Yes, FileSize is a new key", "Partly", TEST_GRAPH + ": GET /sites/{id}/drive/items, the size field",
-   "Medium", DEPT,
-   "None, but note that a folder returns a cumulative size, so the scan must filter to files only"),
- R("Documents drill", "Users creating documents", "Table column", "Distinct authors of documents",
-   NONE, T1, "CreatedBy covers declarers only",
-   "Would be COUNT(DISTINCT Author). The scan does not capture Author today",
-   "Partly", "No", "No. We hold who declared a record, not who authored an undeclared document",
-   "Medium", JOIN,
-   "Ask the development team to capture Author on the document scan. Why: without it, "
-   "creation activity can only be measured for records, not for documents"),
+ R("Documents drill", "Documents held per department", "Table column", "Volume of content",
+   "usage", "'File Count' and 'Site Id'",
+   "Sum 'File Count' grouped by the department that owns each site. The department comes from "
+   "the RAC list matched on site, it is not in the export",
+   T1, "FileCreatedDate, SiteUrl", "Yes", "Partly", "Medium", DEPT, Q_DEPT),
+ R("Documents drill", "Storage per department", "Table column", "Space consumed",
+   "usage", "'Storage Used (Byte)'",
+   "Sum 'Storage Used (Byte)' then divide by 1,073,741,824 to get GB. The test tenant totals "
+   "142.4 GB. NOTE this includes version history, so it reads higher than the sum of file sizes, "
+   "which is expected and not an error",
+   T2, "StorageUsed", "Yes", "Yes", "Easy", DEPT, Q_DEPT),
+ R("Documents drill", "Users creating documents", "Table column", "Distinct authors",
+   "none", "No author column exists in any export, and the scan does not capture one",
+   "Cannot be worked out for undeclared documents. For declared records only, it would be "
+   "COUNT(DISTINCT \"CreatedBy\") on the Records table, which counts declarers not authors",
+   T1, "CreatedBy covers declarers only", "Partly", "No", "Medium", JOIN,
+   "Ask the development team to capture Author on the document scan. Why: without it, creation "
+   "activity can only be measured for records, not for documents"),
 
- R("Records drill", "Records declared, Users declaring, Declaration rate", "Table column",
-   "Declaration volume and coverage per department", EDRMS, T1,
-   "IsDeclaredRecord, CreatedBy, ADBDepartmentOwner",
-   "Rate = COUNT(IsDeclaredRecord = true) / COUNT(*), grouped by ADBDepartmentOwner",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+ R("Records drill", "Records declared per department", "Table column", "Declaration volume",
+   "db", "The whole table, plus SiteUrl to attach a department",
+   "SELECT COUNT(*) FROM public.\"Records\" GROUP BY the department that owns \"SiteUrl\". "
+   "The department itself comes from the RAC list, matched on site URL",
+   T1, "IsDeclaredRecord, ADBDepartmentOwner", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
+ R("Records drill", "Users declaring records", "Table column", "How many people are declaring",
+   "db", "'CreatedBy'",
+   "SELECT COUNT(DISTINCT \"CreatedBy\") FROM public.\"Records\". Distinct, not a row count, "
+   "or one person declaring 400 records counts 400 times",
+   T1, "CreatedBy", "Yes", "Yes", "Easy", DEPT, Q_DEPT),
+ R("Records drill", "Declaration rate", "Table column", "Share of content formally declared",
+   "derived", "Two numbers: declared records, and total documents",
+   "Records Declared divided by Total Documents, times 100. The numerator comes from the Records "
+   "table, the denominator from the scan. Until the scan exists this rate CANNOT be produced, "
+   "because the denominator does not exist anywhere",
+   T1, "IsDeclaredRecord over all rows", "Yes", "No", "Medium", DEPT,
+   "None, but be explicit with the client that every rate waits on the scan"),
  R("Records drill", "By division", "Drill tier", "The same figures one level below department",
-   NONE, T1 + " and " + T2, "No division column exists",
-   "Would be GROUP BY a division carried alongside department",
-   "No, removed 10 Aug and rebuilt as layout 13 Aug", "No", TEST_NO, "Easy once supplied", NEWSRC, Q_DIV),
+   "none", "No division column exists anywhere",
+   "Cannot be worked out. The RAC list would have to carry a division alongside department",
+   T1, "No division column exists", "No", "No", "Easy once supplied", NEWSRC, Q_DIV),
 
  R("Counterparts drill", "Physical counterparts by department", "Table column",
-   "Records flagged as having a paper copy", EDRMS, T1, "HasPhysical, ADBDepartmentOwner",
-   "COUNT(*) WHERE HasPhysical, grouped by department", "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+   "Records with a paper copy", "db", "EDRMSMeta key HasPhysical, plus SiteUrl",
+   "Count rows where the HasPhysical key is true, grouped by the department that owns the site",
+   T1, "HasPhysical, ADBDepartmentOwner", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Counterparts drill", "Turned over to RAC, Completion rate", "Table column",
-   "Counterparts physically transferred to RAC", NONE, "None", "No column exists",
-   "Would be transferred / flagged as having a counterpart",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+   "Counterparts physically transferred", "none", "No column exists in any system",
+   "Cannot be worked out. Would be transferred divided by flagged as having a counterpart",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
 
  R("Disposal drill", "Records due, Next due date", "Table column", "What falls due and when",
-   EDRMS, T1, "EDRMSDueDateForDisposal", "COUNT and MIN over the due date, grouped by department",
-   "Yes", "Yes", "Yes. Query the due date column directly", "Easy", DEPT, Q_DEPT),
+   "db", "'EDRMSDueDateForDisposal'",
+   "COUNT(*) for the number due, and MIN(\"EDRMSDueDateForDisposal\") for the next date, "
+   "grouped by department. Exclude anything whose duration is Permanent, which never falls due",
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", DEPT, Q_DEPT),
  R("Disposal drill", "Approver, Status, Records disposed", "Table column",
-   "Who approves a disposal and what happened", NONE, T1, "DisposalStatus was removed from the design",
-   "Would be GROUP BY status. Nothing records that a disposal occurred",
-   "No, deliberately", "No", TEST_NO, "Blocked", APPCH, Q_DISPOSAL),
+   "Who approved and what happened", "none", "No column exists in the application or the database",
+   "Cannot be worked out. Nothing anywhere records that a disposal was carried out",
+   T1, "DisposalStatus was removed from the design", "No, deliberately", "No", "Blocked",
+   APPCH, Q_DISPOSAL),
 
- R("Overview of sites", "Department table", "Table",
-   "Sites, documents, records and counterparts for every department",
-   EDRMS + " plus " + USAGE, T1 + " and " + T2, "ADBDepartmentOwner and the measures above",
-   "GROUP BY ADBDepartmentOwner over both tables, joined on SiteUrl",
-   "Yes", "Partly", TEST_DEPT, "Medium", DEPT, Q_DEPT),
- R("Overview of sites", "Department treemap", "Chart", "Departments sized by records declared",
-   EDRMS, T1, "IsDeclaredRecord, ADBDepartmentOwner", "Same query as the table, rendered as a treemap",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
- R("Overview of sites", "Sites created, last 90 days", "Tile", "New compliant sites in the period",
-   GRAPH, T2, "SiteCreatedDate", "COUNT(*) WHERE SiteCreatedDate >= today - 90",
-   "Yes", "Yes", TEST_GRAPH + ": GET /sites?search=*&$select=createdDateTime", "Easy", BUILD),
- R("Overview of sites", "Inactive over 90 days", "Tile", "Sites with no activity since the threshold",
-   USAGE, T2, "LastActivityDate", "COUNT(*) WHERE LastActivityDate < today - 90. Threshold is not stored",
-   "Yes", "Yes", TEST_USAGE + ". Populated on 381 of 1,918 live sites", "Easy", BUILD, Q_IDLE),
+ R("Overview of sites", "Department table and treemap", "Table and chart",
+   "Sites, documents, records and counterparts per department",
+   "derived", "Combines the site usage export, the Records table and the RAC department list",
+   "For each department: count its sites from the usage export, sum 'File Count' for documents, "
+   "count Records rows for declared, count HasPhysical for counterparts. Join everything on the "
+   "site, and the department onto the site from the RAC list",
+   T1 + " and " + T2, "ADBDepartmentOwner and the measures above", "Yes", "Partly",
+   "Medium", DEPT, Q_DEPT),
+ R("Overview of sites", "Sites created, last 90 days", "Tile", "New compliant sites",
+   "graph", "GET /sites?search=*&$select=id,displayName,webUrl,createdDateTime&$top=999, "
+   "then the createdDateTime field",
+   "Count the sites whose createdDateTime falls in the last 90 days. Graph returns this on "
+   "every site, confirmed against the tenant",
+   T2, "SiteCreatedDate", "Yes", "Yes", "Easy", BUILD),
+ R("Overview of sites", "Inactive over 90 days", "Tile", "Sites with no recent activity",
+   "usage", "'Last Activity Date' and 'Is Deleted'",
+   "Filter out 'Is Deleted' True, then count rows where 'Last Activity Date' is older than 90 "
+   "days before 'Report Refresh Date'. Only 381 of 1,918 live sites carry a date at all",
+   T2, "LastActivityDate", "Yes", "Yes", "Easy", BUILD, Q_IDLE),
  R("Overview of sites", "Sites deleted", "Tile", "Sites removed since the last snapshot",
-   USAGE, T2, "IsDeleted", "A site present last week and absent this week is the delete signal",
-   "Yes, unpopulated", "Partly", "Partly. Needs two snapshots to compare, so it needs the job running weekly",
-   "Medium", JOIN,
-   "Confirm that a deleted site should be counted from its disappearance between two snapshots, "
-   "rather than from a deletion event. Why: nothing raises an event to us, so absence is the only "
-   "signal available, and it cannot distinguish a deletion from a permissions change that hides "
-   "the site from the export"),
+   "usage", "'Is Deleted'",
+   "Count rows where 'Is Deleted' is True. To count deletions in a period instead, compare two "
+   "weekly exports and count the Site Ids present in the older one and absent from the newer",
+   T2, "IsDeleted", "Yes, unpopulated", "Partly", "Medium", JOIN,
+   "Confirm that a deleted site should be counted from its disappearance between two exports. "
+   "Why: absence cannot distinguish a deletion from a permissions change that hides the site"),
  R("Overview of sites", "Sites archived", "Tile", "Sites moved to an archived state",
-   NONE, T2, "No column exists", "No rule exists to compute it",
-   "No", "No", TEST_NO, "Blocked", DECIDE, Q_ARCHIVE),
+   "none", "No column in any export marks a site as archived",
+   "Cannot be worked out. No rule exists to compute it",
+   T2, "No column exists", "No", "No", "Blocked", DECIDE, Q_ARCHIVE),
 
- R("Comparison", "Users against documents, users against records, documents against records", "Chart",
-   "Three ratios per department", EDRMS + " plus " + USAGE, T1 + " and " + T3,
-   "UserPrincipalName, IsDeclaredRecord, all document rows",
-   "Two measures per department drawn side by side. The third pair is the declaration rate",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+ R("Comparison", "Users against documents, users against records, documents against records",
+   "Chart", "Three ratios per department", "derived",
+   "Combines 'Viewed Or Edited File Count' from the user export, 'File Count' from the site "
+   "export, and the Records row count",
+   "Each pair is drawn side by side per department. The third pair, documents against records, "
+   "is the declaration rate expressed as two bars rather than a percentage",
+   T1 + ", " + T3, "UserPrincipalName, IsDeclaredRecord", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
 
- R("Declaration trend", "Records declared by month", "Chart", "Declarations in each of the last 12 months",
-   EDRMS, T1, "CreatedDate, IsDeclaredRecord",
-   "COUNT(*) GROUP BY month of CreatedDate, last 12 closed months",
-   "Yes", "Yes", TEST_DECL + ", grouped by month of CreatedDate", "Easy", BUILD),
- R("Declaration trend", "Department filter", "Filter", "The same trend for one department",
-   EDRMS, T1, "ADBDepartmentOwner", "Add WHERE ADBDepartmentOwner = selection",
-   "Column exists, unpopulated", "No", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+ R("Declaration trend", "Records declared by month", "Chart", "Declarations in each of 12 months",
+   "db", "'CreatedDate'",
+   "SELECT date_trunc('month', \"CreatedDate\"), COUNT(*) FROM public.\"Records\" GROUP BY 1 "
+   "ORDER BY 1, then take the last 12 closed months. Use CreatedDate, which is when the record "
+   "was declared, NOT EDRMSRetentionLabelApplied, which can be set on an undeclared document",
+   T1, "CreatedDate", "Yes", "Yes", "Easy", BUILD),
  R("Declaration trend", "Records declared this month, Monthly average", "Tile",
-   "Current month against its 12 month average", EDRMS, T1, "CreatedDate",
-   "Latest month value, and total / 12", "Yes", "Yes", TEST_DECL, "Easy", BUILD),
- R("Declaration trend", "Records declared by year", "Chart", "Declarations per calendar year",
-   EDRMS, T1, "CreatedDate", "COUNT(*) GROUP BY year of CreatedDate",
-   "Yes", "Yes", TEST_DECL + ", grouped by year", "Easy", BUILD),
+   "Current month against its average", "db", "'CreatedDate'",
+   "This month is the last bar of the same query. The average is the 12 month total divided by 12",
+   T1, "CreatedDate", "Yes", "Yes", "Easy", BUILD),
+ R("Declaration trend", "Records declared by year", "Chart", "Declarations per year",
+   "db", "'CreatedDate'",
+   "The same query grouped by year instead of month. The final bar is the last 12 months, so it "
+   "must equal the total of the monthly chart above it",
+   T1, "CreatedDate", "Yes", "Yes", "Easy", BUILD),
+ R("Declaration trend", "Department filter", "Filter", "The same trend for one department",
+   "none", "No department column exists in the Records table yet",
+   "Add a filter on the department that owns the site in \"SiteUrl\", once the RAC list exists",
+   T1, "ADBDepartmentOwner", "Column exists, unpopulated", "No", "Easy", DEPT, Q_DEPT),
 
- R("Site activity trend", "Site visits by month", "Chart", "Page views across the estate each month",
-   USAGE, T2, "SiteVisits7, ReportRefreshDate",
-   "SUM(SiteVisits7) over the snapshots in each month. NEVER sum the 30, 90 or 180 day "
-   "columns: 7 day windows tile exactly, longer ones overlap",
-   "Yes", "Partly", "Partly. One snapshot is testable today. A series needs the job running weekly, "
-   "and history that was never captured cannot be recovered",
-   "Medium", BUILD,
-   "None. Confirm the job start date with the client, because the trend can only begin there"),
- R("Site activity trend", "Department and period filters", "Filter", "The series cut by department and window",
-   USAGE, T2, "ADBDepartmentOwner, ReportRefreshDate",
-   "WHERE ADBDepartmentOwner = selection, and last N months on ReportRefreshDate",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+ R("Site activity trend", "Site visits by month", "Chart", "Page views across the estate",
+   "usage", "'Page View Count' and 'Report Refresh Date'",
+   "Export the report weekly at the 7 day period. For each month, SUM 'Page View Count' across "
+   "the weekly exports whose 'Report Refresh Date' falls in that month. CRITICAL: use the 7 DAY "
+   "period only. Summing the 30, 90 or 180 day exports counts most days several times over, "
+   "because those windows overlap while consecutive 7 day windows tile exactly",
+   T2, "SiteVisits7, ReportRefreshDate", "Yes", "Partly", "Medium", BUILD,
+   "Confirm the job start date with the client. Why: the trend can only begin when weekly "
+   "capture begins, and history never captured cannot be recovered"),
+ R("Site activity trend", "Department and period filters", "Filter", "The series cut two ways",
+   "usage", "'Report Refresh Date', plus the RAC department list",
+   "Period: keep only the exports whose 'Report Refresh Date' falls in the last N months. "
+   "Department: keep only the sites the RAC list assigns to that department",
+   T2, "ADBDepartmentOwner, ReportRefreshDate", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
 
  R("Retention rollup", "Permanent and temporary split", "Chart and table",
-   "How the holding divides by retention type", EDRMS, T1, "EDRMSDuration, EDRMSRetentionLabel",
-   "Permanent WHERE EDRMSDuration = 'Permanent', temporary otherwise. Duration is text, cast before arithmetic",
-   "Yes", "Yes", "Yes. Query the retention label and duration columns", "Easy", BUILD),
+   "How the holding divides by retention type", "db", "'EDRMSDuration' and 'EDRMSRetentionLabel'",
+   "Permanent is WHERE \"EDRMSDuration\" = 'Permanent'. Temporary is everything else that has "
+   "a label. The two must add up to the labelled record count. The column is TEXT, so it can "
+   "hold Permanent alongside 10, and must be cast before any arithmetic",
+   T1, "EDRMSDuration, EDRMSRetentionLabel", "Yes", "Yes", "Easy", BUILD),
  R("Retention rollup", "Departments and libraries provisioned per term", "Table column",
-   "Reach of each retention term", NONE, T4, "No join from a term to a library exists",
-   "Would need a term reference on the document or library row",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN),
+   "Reach of each retention term", "none", "No column links a term to a library or a document",
+   "Cannot be worked out. The file plan table has no join key and the document row carries no term",
+   T4, "No join exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN),
  R("Retention rollup", "Disposed", "Table column", "Records actually disposed of",
-   NONE, T1, "No column exists", "Would be COUNT WHERE disposal completed",
-   "No", "No", TEST_NO, "Blocked", APPCH, Q_DISPOSAL),
+   "none", "No column exists", "Cannot be worked out. Nothing records that a disposal happened",
+   T1, "No column exists", "No", "No", "Blocked", APPCH, Q_DISPOSAL),
 
- R("Format and storage", "Files and storage by format group", "Chart and table",
-   "The eight format families", EDRMS + " plus " + GRAPH, T1, "FormatGroup, FileType, FileSize",
-   "COUNT(*) and SUM(FileSize) GROUP BY FormatGroup. FormatGroup is derived from FileType by a mapping list",
-   "Yes, mapping outstanding", "Partly", TEST_GRAPH + " for size, the database for extension",
-   "Medium", DECIDE, Q_FORMAT),
- R("Format and storage", "Average file size", "Table column", "Mean size within a format group",
-   GRAPH, T1, "FileSize", "SUM(FileSize) / COUNT(*), converted to MB",
-   "Yes", "Partly", TEST_GRAPH, "Easy", BUILD),
+ R("Format and storage", "Files by format group", "Chart and table", "The eight format families",
+   "db", "The FileMeta JSON column, key FileType",
+   "Take the extension from the FileType key, map it to one of the eight groups using the RAC "
+   "mapping list (doc and docx both become Word), then COUNT(*) per group. The eight groups must "
+   "add up to Total Records Declared exactly, which is the check that the mapping missed nothing",
+   T1, "FormatGroup, FileType", "Yes, mapping outstanding", "Partly", "Medium", DECIDE, Q_FORMAT),
+ R("Format and storage", "Storage by format group, Average file size", "Chart and table",
+   "Space each format consumes", "graph",
+   "GET /sites/{siteId}/drive/items, then the size field on each item",
+   "SUM the size field per format group for storage, and SUM(size)/COUNT(*) for the average. "
+   "WARNING: a folder returns a CUMULATIVE size in Graph, so filter to files only or storage "
+   "double counts",
+   T1, "FileSize", "Yes, new key", "Partly", "Medium", BUILD),
 
  R("Risk and compliance", "Compliant, active and inactive sites", "Tile and chart",
-   "Site health across the estate", USAGE, T2, "IsEdrmsCompliant, LastActivityDate",
-   "COUNT over the compliance flag and the activity threshold",
-   "Yes", "Partly", TEST_USAGE, "Easy", DECIDE, Q_COMPLIANT + ". Also " + Q_IDLE),
+   "Site health across the estate", "usage", "'Last Activity Date', 'Is Deleted'",
+   "Live sites are rows where 'Is Deleted' is False, 1,918 in the test tenant. Active is those "
+   "with 'Last Activity Date' inside 90 days, inactive is the rest. The compliant subset cannot "
+   "be filtered yet",
+   T2, "IsEdrmsCompliant, LastActivityDate", "Yes", "Partly", "Easy", DECIDE,
+   Q_COMPLIANT + ". Also " + Q_IDLE),
  R("Risk and compliance", "Orphaned sites, no owner", "Tile", "Sites with no administrator",
-   USAGE, T2, "SiteOwner", "COUNT(*) WHERE SiteOwner IS NULL",
-   "Yes", "Yes", TEST_USAGE + ". Verified: 19 of 1,918 live sites have no owner", "Easy", BUILD),
+   "usage", "'Owner Principal Name'",
+   "Count rows where 'Owner Principal Name' is BLANK. In the test tenant that is exactly 19 of "
+   "the 1,918 live sites, and those 19 are the ones worth chasing",
+   T2, "SiteOwner", "Yes", "Yes", "Easy", BUILD),
  R("Risk and compliance", "Libraries across sites, active, dormant", "Tile",
-   "Library counts and their activity", GRAPH, T2 + " and " + T1, "LibraryCount, LibraryLastActivityDate",
-   "SUM(LibraryCount). Active WHERE LibraryLastActivityDate >= today - 90, dormant at 180",
-   "Yes", "Yes", TEST_GRAPH + ": GET /sites/{id}/drives, lastModifiedDateTime", "Easy", BUILD),
- R("Risk and compliance", "Libraries with no declared records", "Tile", "Provisioned but unused libraries",
-   EDRMS + " plus " + GRAPH, T1, "ListId, IsDeclaredRecord",
-   "Library list from Graph MINUS the distinct ListId values present in Records",
-   "Yes", "Yes", "Yes. Compare the Graph drive list against distinct ListId in Records", "Easy", BUILD),
+   "Library counts and their activity", "graph",
+   "GET /sites/{siteId}/drives, then count the drives and read lastModifiedDateTime on each",
+   "Count the drives returned per site and sum across sites. A library is active if "
+   "lastModifiedDateTime is inside 90 days, dormant at 180. The drive's list.id is the ListId "
+   "that joins back to the records",
+   T2 + " and " + T1, "LibraryCount, LibraryLastActivityDate", "Yes", "Yes", "Easy", BUILD),
+ R("Risk and compliance", "Libraries with no declared records", "Tile", "Provisioned but unused",
+   "derived", "The Graph drive list, and 'ListId' on the Records table",
+   "List every drive from Graph, list the DISTINCT \"ListId\" values in Records, and count the "
+   "drives that appear in the first list and not the second. Group on ListId, never on library "
+   "name, because names repeat across sites and change on rename",
+   T1, "ListId, IsDeclaredRecord", "Yes", "Yes", "Easy", BUILD),
  R("Risk and compliance", "Library growth rate", "Tile", "New records against the opening balance",
-   EDRMS, T1, "CreatedDate, ListId",
-   "Records created in the period / records held at the start of the period",
-   "Yes", "Yes", TEST_DECL, "Easy", BUILD),
+   "db", "'CreatedDate' and 'ListId'",
+   "Records created inside the period, divided by records already held at the start of it, "
+   "times 100",
+   T1, "CreatedDate, ListId", "Yes", "Yes", "Easy", BUILD),
  R("Risk and compliance", "Library ranking, three measures", "Chart",
-   "Largest by volume, largest by storage, highest declaration rate",
-   EDRMS + " plus " + GRAPH, T1, "ListId, LibraryName, SiteName, FileSize, IsDeclaredRecord",
-   "GROUP BY ListId, ordered by the chosen measure. Always show the library with its parent site, "
-   "because library names repeat across sites",
-   "Yes", "Partly", TEST_GRAPH + " for size", "Easy", BUILD),
+   "Largest by volume, by storage, and highest declaration rate", "derived",
+   "'ListId' and 'LibraryName' from Records, the size field from Graph, and the site name",
+   "Group on ListId. Volume is COUNT(*), storage is SUM of the Graph size field, rate is "
+   "records divided by documents. Always display the library with its parent site, because a "
+   "bare library name is ambiguous across sites",
+   T1, "ListId, LibraryName, SiteName, FileSize", "Yes", "Partly", "Easy", BUILD),
  R("Risk and compliance", "Most used libraries", "Tile", "Libraries ranked by views and edits",
-   NONE, "None", "No column exists", "SharePoint reports activity per site and never per library",
-   "No", "No", TEST_NO, "Blocked", NEWSRC,
+   "none", "No export reports activity below site level",
+   "Cannot be worked out. The site usage export has 'Page View Count' per SITE only, and Graph "
+   "analytics also reports per site. There is no per library activity feed at all",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC,
    "Tell the client this cannot be produced and offer records created per library instead. "
-   "Why: Microsoft exposes no per library activity feed at all"),
+   "Why: Microsoft exposes no per library activity anywhere"),
  R("Risk and compliance", "Orphaned libraries", "Tile", "Libraries with no owner",
-   NONE, "None", "No library owner column exists", "We hold an owner for the site only",
-   "No", "No", TEST_NO, "Blocked", JOIN,
-   "Ask whether a library owner is maintained anywhere. Why: the site owner is the only "
-   "owner the tenant returns"),
+   "none", "'Owner Principal Name' exists for SITES only",
+   "Cannot be worked out. The tenant returns an owner for a site, never for a library inside it",
+   "None", "No library owner column exists", "No", "No", "Blocked", JOIN,
+   "Ask whether a library owner is maintained anywhere. Why: the site owner is the only one the "
+   "tenant returns"),
 
  R("Records quality", "Duplicated records", "Tile", "Declared records sharing a filename",
-   EDRMS, T1, "Title", "COUNT over Title HAVING COUNT(*) > 1. A repeated filename is the only "
-   "definition the data supports, and it will overcount legitimate repeats such as a monthly report",
-   "Yes", "Yes", "Yes. GROUP BY Title on Records and count the groups above one", "Easy", BUILD,
+   "db", "'Title'",
+   "SELECT \"Title\", COUNT(*) FROM public.\"Records\" GROUP BY \"Title\" HAVING COUNT(*) > 1. "
+   "Sum those counts for the total. It WILL overcount legitimate repeats such as a monthly "
+   "report filed each month under the same name",
+   T1, "Title", "Yes", "Yes", "Easy", BUILD,
    "Confirm the definition. Why: the client wrote 'with same filenames?' themselves, so they "
    "already suspect it is imprecise"),
  R("Records quality", "Orphaned records", "Tile", "Records whose parent no longer resolves",
-   EDRMS, T1, "ListId, SiteUrl", "Records whose ListId or SiteUrl no longer appears in the site or library list",
-   "Yes", "Yes", "Yes. Left join Records against the Graph site and drive lists", "Easy", BUILD,
-   "Confirm what counts as orphaned. Why: it could mean a missing site, a missing library or a "
-   "missing owner, and the three give different numbers"),
+   "derived", "'ListId' and 'SiteUrl' on Records, against the Graph site and drive lists",
+   "Left join Records to the Graph lists on ListId and on site. Count the records that find no "
+   "match, meaning their library or site no longer exists",
+   T1, "ListId, SiteUrl", "Yes", "Yes", "Easy", BUILD,
+   "Confirm what counts as orphaned. Why: a missing site, a missing library and a missing owner "
+   "give three different numbers"),
 
  R("Classification", "Records by sensitivity label", "Chart and tile",
-   "Protection applied to declared records", EDRMS, T1, "SensitivityLabelName",
-   "COUNT(*) GROUP BY SensitivityLabelName, with NULL counted as unlabelled",
-   "Yes", "Yes", "Yes. The column is on the document row in the design and readable from Records",
-   "Easy", BUILD),
- R("Classification", "Restricted and Confidential records", "Tile", "Counts at each classification level",
-   EDRMS, T1, "SensitivityLabelName", "COUNT(*) WHERE SensitivityLabelName IN the chosen levels",
-   "Yes", "Yes", "Yes, provided the label set actually uses those names", "Easy", BUILD,
-   "Confirm the label names in use. Why: the tile names must match the tenant's own labels"),
+   "Protection applied to records", "db", "The FileMeta JSON column, key SensitivityLabelName",
+   "COUNT(*) grouped by the SensitivityLabelName key, counting NULL as unlabelled. NOTE the site "
+   "usage export also has a 'Site Sensitivity Label Id' column, but it is EMPTY on all 2,575 "
+   "rows in the test tenant, so site level labels are not available and this must come from the "
+   "record",
+   T1, "SensitivityLabelName", "Yes", "Yes", "Easy", BUILD),
+ R("Classification", "Restricted and Confidential records", "Tile", "Counts per level",
+   "db", "The FileMeta key SensitivityLabelName",
+   "COUNT(*) where the label equals each level name. The tile names must match the label names "
+   "actually in use in the tenant",
+   T1, "SensitivityLabelName", "Yes", "Yes", "Easy", BUILD,
+   "Confirm the label names in use. Why: the tiles must carry the tenant's own wording"),
 
- R("Access management", "Access requests granted and declined", "Tile", "Permission requests on sites",
-   NONE, "None", "No column exists", "Would come from the audit log, not a reporting feed",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_ACCESS),
- R("Access management", "External sharing, Permission exceptions", "Tile", "Content shared outside its site",
-   NONE, "None", "No column exists", "Audit log and permission data, a different Graph surface",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_ACCESS),
+ R("Access management", "External sharing", "Tile", "Where content leaves its site",
+   "usage", "'External Sharing', plus 'Anonymous Link Count', 'Company Link Count', "
+   "'Secure Link For Guest Count' and 'Secure Link For Member Count'",
+   "'External Sharing' is True or False per site and IS populated on all 2,575 rows, so count "
+   "the True rows for sites where sharing is permitted. The four link count columns would give "
+   "actual sharing instances, but every one of them is ZERO on every row in the test tenant, so "
+   "confirm on production before promising a number",
+   T2, "New column, not yet in the design", "No", "Yes, the policy flag", "Medium", JOIN,
+   "Add External Sharing to the site table, and check the four link count columns on production. "
+   "Why: they are all zero in the test tenant, which may mean no sharing or may mean not "
+   "populated, and those are very different answers"),
+ R("Access management", "Access requests granted and declined", "Tile", "Permission requests",
+   "none", "No column in either export",
+   "Cannot be worked out. These live in the audit log, a different Graph surface with a "
+   "different permission set",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_ACCESS),
+ R("Access management", "Permission exceptions", "Tile", "Access outside the standard grants",
+   "none", "No column in either export", "Cannot be worked out. Audit log data",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_ACCESS),
 
- R("Search analytics", "Searches performed, Successful searches", "Tile", "How people look for records",
-   NONE, "None", "No column exists", "SharePoint search analytics are tenant level and not exposed per record",
-   "No", "No", TEST_NO, "Blocked", NEWSRC,
-   "Tell the client search analytics cannot be attributed to a record or a library. "
-   "Why: Microsoft reports them at tenant level only"),
+ R("Search analytics", "Searches performed, Successful searches", "Tile", "How people find records",
+   "none", "No column in any export",
+   "Cannot be worked out. SharePoint search analytics are reported at tenant level and are never "
+   "attributed to a record or a library",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC,
+   "Tell the client search analytics cannot be attributed to a record. Why: Microsoft reports "
+   "them at tenant level only"),
  R("Search analytics", "Most viewed and most downloaded records", "Tile", "Top content",
-   NONE, "None", "No column exists", "Graph analytics reports a site, never a document",
-   "No", "No", TEST_NO, "Blocked", NEWSRC,
+   "none", "The nearest is 'Page View Count', which is per site",
+   "Cannot be worked out at document level. Graph analytics reports a site, never a document",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC,
    "Offer most active sites instead. Why: document grain analytics do not exist"),
 ]
 
@@ -390,154 +575,191 @@ BW = [
 # 02 DEPARTMENT INSIGHTS
 # =====================================================================
 DP = [
- R("Scope", "Department picker", "Filter", "Every panel follows the chosen department",
-   NONE, T2, "ADBDepartmentOwner", "WHERE ADBDepartmentOwner = selection, inherited by documents through SiteUrl",
-   "Column exists, unpopulated", "No", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+ R("Scope", "Department picker", "Filter", "Every panel follows one department",
+   "none", "No department column exists in any Microsoft export",
+   "Once RAC supply the list: match each site URL to its department, then every document "
+   "inherits that department through its site. No per document lookup is needed",
+   T2, "ADBDepartmentOwner", "Column exists, unpopulated", "No", "Easy", DEPT, Q_DEPT),
  R("Top panel", "Go-live date", "Label", "When the department started on EDRMS",
-   NONE, "None", "No column exists", "A maintained list, one date per department",
-   "No", "No", TEST_NO, "Blocked", REFL, Q_REF),
+   "none", "No column exists", "Cannot be worked out. A maintained list, one date per department",
+   "None", "No column exists", "No", "No", "Blocked", REFL, Q_REF),
  R("Top panel", "Sites, Users, Documents, Records, Counterparts, Due", "KPI",
-   "The department's totals", EDRMS + " plus " + USAGE, T1 + ", " + T2 + ", " + T3,
-   "Same columns as Bank-wide, filtered", "Every bank-wide measure with a department filter applied",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
+   "The department's totals", "derived",
+   "The same columns as Bank-wide: 'File Count', 'Storage Used (Byte)', the Records row count, "
+   "the HasPhysical key and 'EDRMSDueDateForDisposal'",
+   "Take each Bank-wide figure and add one filter: keep only the sites the RAC list assigns to "
+   "this department. The arithmetic does not change, only the population",
+   T1 + ", " + T2 + ", " + T3, "As Bank-wide, filtered", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Top panel", "Sites Inactive over 90 Days", "KPI", "Idle sites in this department",
-   USAGE, T2, "LastActivityDate", "COUNT(*) WHERE LastActivityDate < today - 90",
-   "Yes", "Yes", TEST_USAGE, "Easy", DEPT, Q_IDLE),
-
+   "usage", "'Last Activity Date' and 'Is Deleted'",
+   "Filter to this department's sites, drop 'Is Deleted' True, then count those whose "
+   "'Last Activity Date' is more than 90 days before 'Report Refresh Date'",
+   T2, "LastActivityDate", "Yes", "Yes", "Easy", DEPT, Q_IDLE),
  R("Users", "Active users by division", "Table", "Adoption inside the department",
-   USAGE, T3, "UserPrincipalName, LastActivityDate", "COUNT(DISTINCT UPN) grouped by division",
-   "Division does not exist", "No", TEST_NO, "Easy once supplied", NEWSRC, Q_DIV),
- R("Users", "Staff, Contractors, Consultants, Training", "Table column", "Employment class and training",
-   NONE, "None", "No column exists", "Would come from an HR or LMS extract joined on UPN",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_STAFF),
-
+   "none", "'User Principal Name' exists, but nothing carries a division",
+   "The user count is COUNT(DISTINCT 'User Principal Name') where 'Viewed Or Edited File Count' "
+   "is above zero. Splitting it by division cannot be done, because no division exists",
+   T3, "UserPrincipalName", "Division does not exist", "No", "Easy once supplied", NEWSRC, Q_DIV),
+ R("Users", "Staff, Contractors, Consultants, Training", "Table column", "Employment class",
+   "none", "'Assigned Products' gives the licence name only, not an employment type",
+   "Cannot be worked out from any Microsoft export. Needs an HR or LMS extract joined on "
+   "'User Principal Name'",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_STAFF),
  R("Visitors", "Visitors per site", "Table", "People opening content in each site",
-   ANALYTICS, T2, "UniqueViewers7, UniqueViewersAllTime",
-   "GET /sites/{id}/analytics/allTime and /lastSevenDays, the actorCount field. "
-   "Two windows only, there is no 30 or 90 day window",
-   "Yes", "Yes", TEST_GRAPH + ". Returned actorCount 12 on a test site", "Easy", BUILD,
+   "graph", "GET /sites/{siteId}/analytics/allTime, then the actorCount field. Also "
+   "/analytics/lastSevenDays for the 7 day window",
+   "actorCount is the number of distinct people. Confirmed against the tenant, which returned "
+   "actionCount 5535 and actorCount 12 on a test site. Only these TWO windows exist, all time "
+   "and seven days. There is no 30 or 90 day window, so do not promise a monthly visitor figure",
+   T2, "UniqueViewers7, UniqueViewersAllTime", "Yes", "Yes", "Easy", BUILD,
    "Warn the client only 7 day and all time windows exist. Why: their slide implies a monthly figure"),
  R("Visitors", "Internal against external visitors", "Table column", "Where visitors come from",
-   NONE, T2, "No column exists", "Graph returns a count with no internal or external split",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_ACCESS),
- R("Visitors", "Access requests granted and declined", "Table column", "Permission requests per site",
-   NONE, "None", "No column exists", "Audit log data, not a reporting feed",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_ACCESS),
-
+   "none", "Graph analytics returns actorCount with no internal or external split",
+   "Cannot be worked out. The count is a single number with no breakdown",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_ACCESS),
+ R("Visitors", "Access requests granted and declined", "Table column", "Permission requests",
+   "none", "No column in either export", "Cannot be worked out. Audit log data",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_ACCESS),
  R("Sites", "Site list with owners", "Table", "Every site the department owns",
-   USAGE, T2, "SiteName, SiteOwner, SiteUrl", "All sites WHERE ADBDepartmentOwner = selection",
-   "Yes", "Partly", TEST_USAGE + ". SiteOwner present on 1,899 of 1,918 live sites",
-   "Easy", DEPT, Q_DEPT),
+   "usage", "'Site Id', 'Owner Principal Name', 'Owner Display Name'",
+   "List the department's sites and read the owner from 'Owner Principal Name'. It is filled on "
+   "1,899 of the 1,918 live sites, so a few rows will legitimately show no owner. The 'Site URL' "
+   "column is EMPTY on every row, so match 'Site Id' to a Graph site list to get the address",
+   T2, "SiteName, SiteOwner, SiteUrl", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Sites", "Documents, records, counterparts, due per site", "Table column", "What each site holds",
-   EDRMS, T1, "SiteUrl, IsDeclaredRecord, HasPhysical, EDRMSDueDateForDisposal",
-   "GROUP BY SiteUrl over the document table",
-   "Yes", "Partly", TEST_DOCS, "Easy", DEPT, Q_DEPT),
+   "derived", "'File Count' from the usage export, and the Records table grouped by SiteUrl",
+   "Documents come from 'File Count' on the site row. Records, counterparts and due dates come "
+   "from the Records table grouped by SiteUrl. The site rows must sum to the department total",
+   T1, "SiteUrl, IsDeclaredRecord, HasPhysical", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Sites", "No activity in 90 days", "Table column", "Sites that have gone quiet",
-   USAGE, T2, "LastActivityDate", "LastActivityDate < today - 90, derived not stored",
-   "Yes", "Yes", TEST_USAGE, "Easy", BUILD, Q_IDLE),
-
- R("Documents", "Documents, users creating, storage", "Table", "Content produced by each site",
-   EDRMS + " plus " + GRAPH, T1, "FileCreatedDate, FileSize, CreatedBy",
-   "COUNT and SUM per site. Users creating is unavailable for undeclared documents",
-   "Partly", "Partly", TEST_DOCS, "Medium", DEPT, Q_DEPT),
-
+   "usage", "'Last Activity Date'",
+   "Mark the row if 'Last Activity Date' is more than 90 days before 'Report Refresh Date'. "
+   "Derived in the report, never stored, so the threshold is one edit to change",
+   T2, "LastActivityDate", "Yes", "Yes", "Easy", BUILD, Q_IDLE),
+ R("Documents", "Documents, storage, users creating", "Table", "Content produced per site",
+   "usage", "'File Count' and 'Storage Used (Byte)'",
+   "Sum both per site. Divide bytes by 1,073,741,824 for GB. Users creating cannot be produced "
+   "for undeclared documents, because no export carries an author",
+   T1, "FileCreatedDate, FileSize, CreatedBy", "Partly", "Partly", "Medium", DEPT, Q_DEPT),
  R("Declaration", "Records declared and rate per site", "Table", "Declaration performance",
-   EDRMS, T1, "IsDeclaredRecord, SiteUrl", "COUNT(IsDeclaredRecord) / COUNT(*) per site",
-   "Yes", "Partly", TEST_DECL, "Easy", DEPT, Q_DEPT),
+   "derived", "The Records row count per SiteUrl, over 'File Count' from the usage export",
+   "Rate is records declared divided by documents held, times 100, per site. The numerator is "
+   "the Records table, the denominator the usage export until the scan exists",
+   T1, "IsDeclaredRecord, SiteUrl", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Declaration", "Division rows under each site", "Drill tier", "The same figures per division",
-   NONE, T1, "No division column exists", "Would be GROUP BY division within site",
-   "No", "No", TEST_NO, "Easy once supplied", NEWSRC, Q_DIV),
+   "none", "No division column exists anywhere",
+   "Cannot be worked out until the RAC list carries a division",
+   T1, "No division column exists", "No", "No", "Easy once supplied", NEWSRC, Q_DIV),
  R("Declaration", "Declaration donut and site ranking", "Chart", "Declared against everything held",
-   EDRMS, T1, "IsDeclaredRecord", "Declared and undeclared as two slices, sites ranked by records",
-   "Yes", "Partly", TEST_DOCS, "Easy", DEPT, Q_DEPT),
-
+   "derived", "The Records count, and 'File Count'",
+   "Two slices: declared records, and documents minus declared records. The ranking is the same "
+   "counts ordered highest first",
+   T1, "IsDeclaredRecord", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Library usage", "Libraries by file plan category", "Table", "Content by classification",
-   EDRMS + " plus " + TERMS, T1 + " and " + T4, "LibraryName, ListId, CategoryName",
-   "GROUP BY ListId, grouped under the file plan category the library maps to",
-   "No join exists", "No", TEST_NO, "Blocked", JOIN, Q_FILEPLAN + ". Also " + Q_TERMJOIN),
+   "none", "'LibraryName' and 'ListId' exist on Records, but nothing maps a library to a term",
+   "The library counts are producible by grouping Records on ListId. Grouping those under a "
+   "file plan category is not, because no column links a library to a term",
+   T1 + " and " + T4, "LibraryName, ListId, CategoryName", "No join exists", "No", "Blocked",
+   JOIN, Q_FILEPLAN + ". Also " + Q_TERMJOIN),
  R("Library usage", "Users per library", "Table column", "People working in each library",
-   NONE, "None", "No column exists", "SharePoint reports viewers per site, never per library",
-   "No", "No", TEST_NO, "Blocked", NEWSRC,
-   "Tell the client this is not available at library grain. Why: Microsoft exposes no per library viewer feed"),
-
+   "none", "No export reports below site level",
+   "Cannot be worked out. Viewer counts are per site, never per library",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC,
+   "Tell the client this is not available at library grain. Why: Microsoft exposes no per "
+   "library viewer feed"),
  R("Trend", "Records declared by month", "Chart", "The department's declaration trend",
-   EDRMS, T1, "CreatedDate, ADBDepartmentOwner", "COUNT GROUP BY month, filtered to the department",
-   "Yes", "Partly", TEST_DEPT, "Easy", DEPT, Q_DEPT),
-
+   "db", "'CreatedDate', filtered to the department's sites",
+   "Group Records by month of CreatedDate, keeping only rows whose SiteUrl belongs to this "
+   "department",
+   T1, "CreatedDate, ADBDepartmentOwner", "Yes", "Partly", "Easy", DEPT, Q_DEPT),
  R("Disposal", "Records due by library, approver, status", "Table", "Disposal readiness",
-   EDRMS, T1, "EDRMSDueDateForDisposal, LibraryName", "COUNT and MIN per library. Approver and status have no source",
-   "Partly", "Partly", "Partly. Due dates yes, approver and status no", "Medium", APPCH, Q_DISPOSAL),
-
- R("Conventions", "Convention link, approval date, version", "Panel", "The department's naming convention",
-   NONE, "None", "No column exists", "A maintained list, one row per department",
-   "No", "No", TEST_NO, "Blocked", REFL, Q_REF),
- R("Programme dates", "Audit, review, training, CoP dates", "Panel", "The records management calendar",
-   NONE, "None", "No column exists", "A maintained list, five dates per department",
-   "No", "No", TEST_NO, "Blocked", REFL, Q_REF),
+   "db", "'EDRMSDueDateForDisposal' and 'LibraryName'",
+   "COUNT and MIN of the due date grouped by library. Approver and status cannot be produced: "
+   "no field records them",
+   T1, "EDRMSDueDateForDisposal, LibraryName", "Partly", "Partly", "Medium", APPCH, Q_DISPOSAL),
+ R("Conventions", "Convention link, approval date, version", "Panel", "The naming convention",
+   "none", "No column exists", "Cannot be worked out. A maintained list, one row per department",
+   "None", "No column exists", "No", "No", "Blocked", REFL, Q_REF),
+ R("Programme dates", "Audit, review, training, CoP dates", "Panel", "The RM calendar",
+   "none", "No column exists", "Cannot be worked out. A maintained list, five dates per department",
+   "None", "No column exists", "No", "No", "Blocked", REFL, Q_REF),
 ]
 
 # =====================================================================
 # 03 PROJECT INSIGHTS
 # =====================================================================
 PJ = [
- R("Classification", "Which sites are project sites", "Filter", "The population this dashboard reports on",
-   NONE, T2, "No column exists",
-   "Would be a project register loaded onto the site row, the same way department will be",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
- R("Classification", "Sovereign against nonsovereign", "Filter", "Facility type of each project",
-   NONE, T2, "No column exists", "Would come with the project register",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
+ R("Classification", "Which sites are project sites", "Filter", "The population this reports on",
+   "none", "No column in any export identifies a project site",
+   "Cannot be worked out. Once a register exists it loads onto the site row, exactly the way "
+   "department will, and everything else here follows",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_PROJ),
+ R("Classification", "Sovereign against nonsovereign", "Filter", "Facility type",
+   "none", "No column exists", "Cannot be worked out. Comes with the project register",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_PROJ),
  R("Projects", "Project number and name", "Table", "The list of projects",
-   NONE, T2, "No column exists", "ADB operational data, held in ADB project systems",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
+   "none", "No column exists in any Microsoft export",
+   "Cannot be worked out. ADB operational data, held in ADB project systems",
+   T2, "No column exists", "No", "No", "Blocked", NEWSRC, Q_PROJ),
  R("Projects", "Sites, documents, records, counterparts, due", "Table column",
-   "What each project holds", EDRMS, T1 + " and " + T2, "All the standard measures",
-   "Every one of these is producible today for any site we can identify. Only the classification is missing",
-   "Yes", "Partly", "Yes, once a site can be identified as belonging to a project",
-   "Easy", NEWSRC, Q_PROJ),
- R("Profile", "Facility type, modality, country, status, dates", "Panel",
-   "The project's own attributes", NONE, "None", "No column exists",
-   "ADB operational data. ProjectEndDate on the site table is the only project field held",
-   "One field of eight", "No", TEST_NO, "Blocked", NEWSRC, Q_PROJ),
+   "What each project holds", "derived",
+   "'File Count' and 'Storage Used (Byte)' from the usage export, and the Records table",
+   "Identical arithmetic to the department figures, grouped by project instead. EVERY one of "
+   "these is producible today for any site we can identify. Only the classification is missing",
+   T1 + " and " + T2, "All the standard measures", "Yes", "Partly", "Easy", NEWSRC, Q_PROJ),
+ R("Profile", "Facility type, modality, country, status, dates", "Panel", "Project attributes",
+   "none", "No column exists. ProjectEndDate on ADBSites is the only project field held",
+   "Cannot be worked out. Seven of the eight attributes exist in no system this report reads",
+   T2, "ProjectEndDate only", "One field of eight", "No", "Blocked", NEWSRC, Q_PROJ),
  R("Profile", "Declaration and counterpart donuts", "Chart", "Recordkeeping for one project",
-   EDRMS, T1, "IsDeclaredRecord, HasPhysical", "Two slice donuts over the project's documents",
-   "Yes", "Partly", "Yes, once the project's sites are known", "Easy", NEWSRC, Q_PROJ),
+   "derived", "The Records count and the HasPhysical key, over 'File Count'",
+   "Two slice donuts over the project's documents, the same arithmetic as the department view",
+   T1, "IsDeclaredRecord, HasPhysical", "Yes", "Partly", "Easy", NEWSRC, Q_PROJ),
 ]
 
 # =====================================================================
 # 04 INSTITUTIONAL FILE PLAN
 # =====================================================================
 FP = [
- R("Structure", "The five categories", "KPI and table", "Top level groups of the file plan",
-   TERMS, T4, "CategoryName, TermName, TermSetName, Depth",
-   "GET /termStore/groups, then /sets, then /children, walking one level at a time",
-   "Yes, unverified", "No", "Partly. The term store is readable, but it does not hold this file plan. "
-   "It holds 6 dropdown value sets, 16 terms, one level deep",
-   "Medium", DECIDE, Q_FILEPLAN),
+ R("Structure", "The five categories", "KPI and table", "Top level groups of the plan",
+   "terms", "The group names returned by GET /termStore/groups",
+   "Walk the tree: groups, then sets inside each, then children one level at a time. The API "
+   "returns ONE LEVEL PER CALL, so counting the terms under a category means looping. In the "
+   "test tenant this returns 6 value sets and 16 terms one level deep, which is NOT the "
+   "institutional file plan the client is describing",
+   T4, "CategoryName, TermName, TermSetName, Depth", "Yes, unverified", "No", "Medium",
+   DECIDE, Q_FILEPLAN),
  R("Structure", "Total terms, terms per category", "KPI", "Size of the plan",
-   TERMS, T4, "TermId, CategoryName", "COUNT(*) GROUP BY CategoryName",
-   "Yes", "No", "Yes for whatever the term store holds, which is not the file plan",
-   "Easy", DECIDE, Q_FILEPLAN),
+   "terms", "The term names returned while walking the tree",
+   "COUNT the terms found, grouped by the group they sit under. Whatever the term store holds "
+   "today is countable, it is simply not the file plan being asked for",
+   T4, "TermId, CategoryName", "Yes", "No", "Easy", DECIDE, Q_FILEPLAN),
  R("Term tables", "Documents, records, counterparts per term", "Table column",
-   "How heavily each term is used", NONE, T1 + " to " + T4, "No join key exists",
-   "Would be COUNT over documents GROUP BY term. Table 4 has no join key and Table 1 carries no TermId",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN),
+   "How heavily each term is used", "none",
+   "No column links a term to a document. Records has no term column, the file plan has no "
+   "document key",
+   "Cannot be worked out. Even once the file plan is located, this needs a new column on the "
+   "document row or a term to library mapping list",
+   T1 + " to " + T4, "No join key exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN),
  R("Term tables", "Libraries and departments provisioned per term", "Table column",
-   "Reach of each term", NONE, T4, "No join key exists", "Same missing link, plus the department list",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN + ". Also " + Q_DEPT),
+   "Reach of each term", "none", "No join key, and no department list",
+   "Cannot be worked out. Two blockers at once",
+   T4, "No join key exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN + ". Also " + Q_DEPT),
  R("Term usage", "Most used and least used terms", "Chart", "Usage pattern across the plan",
-   NONE, T1 + " to " + T4, "No join key exists", "Ordered COUNT per term, once the join exists",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN),
- R("Classification", "Records by classification", "Tile", "Declared records by file plan term",
-   NONE, T1, "No term reference exists", "The term table read the other way round",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN),
- R("Classification", "Records by business process", "Tile", "Declared records by business activity",
-   NONE, "None", "No column exists, and no definition exists",
-   "Needs both the term join and a definition of what a business process is in ADB terms",
-   "No", "No", TEST_NO, "Blocked", DECIDE,
-   "Ask what a business process is and how it relates to a file plan term. The two are not the "
-   "same thing and the requirement names it once without defining it. Why: it cannot be counted "
-   "until somebody says what it counts"),
+   "none", "No join key exists",
+   "Cannot be worked out. Once the join exists it is COUNT per term, ordered",
+   T1 + " to " + T4, "No join key exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN),
+ R("Classification", "Records by classification", "Tile", "Records by file plan term",
+   "none", "No term column on the record",
+   "Cannot be worked out. The term table read the other way round, and blocked by the same join",
+   T1, "No term reference exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN),
+ R("Classification", "Records by business process", "Tile", "Records by business activity",
+   "none", "No column exists, and no definition exists either",
+   "Cannot be worked out, for two separate reasons: the term join is missing, and nobody has "
+   "said what a business process is in ADB terms",
+   "None", "No column exists", "No", "No", "Blocked", DECIDE,
+   "Ask what a business process is and how it relates to a file plan term. Why: the two are not "
+   "the same thing, and it cannot be counted until somebody says what it counts"),
 ]
 
 # =====================================================================
@@ -545,74 +767,91 @@ FP = [
 # =====================================================================
 RD = [
  R("Structure", "Permanent and temporary screens", "Filter", "The two retention types",
-   EDRMS, T1, "EDRMSDuration", "Permanent WHERE EDRMSDuration = 'Permanent', temporary otherwise",
-   "Yes", "Yes", "Yes. Query the duration column on Records", "Easy", BUILD),
+   "db", "'EDRMSDuration'",
+   "Permanent is WHERE EDRMSDuration = 'Permanent'. Temporary is every other labelled record. "
+   "The column is TEXT so it can hold Permanent next to 10, and must be cast before any "
+   "arithmetic on the number",
+   T1, "EDRMSDuration", "Yes", "Yes", "Easy", BUILD),
  R("Retention", "Records due, 30, 90 and 12 month windows", "Tile and chart",
-   "What falls due in each window", EDRMS, T1, "EDRMSDueDateForDisposal",
-   "COUNT(*) WHERE the due date falls in each window. The windows must nest",
-   "Yes", "Yes", "Yes. The due date is already computed in the source database", "Easy", BUILD),
- R("Retention", "Retention label and duration per term", "Table column", "How long each class is kept",
-   EDRMS, T1, "EDRMSRetentionLabel, EDRMSDuration", "GROUP BY label. Duration is text, cast before arithmetic",
-   "Yes", "Yes", "Yes. Purview holds 53 labels, and the label is on the record row", "Easy", BUILD),
+   "What falls due in each window", "db", "'EDRMSDueDateForDisposal'",
+   "COUNT(*) where the due date falls inside each window from today. The three windows must "
+   "NEST: the 30 day count cannot exceed the 90, which cannot exceed the 12 month. If they do "
+   "not nest, the query is wrong",
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD),
+ R("Retention", "Retention label and duration per term", "Table column",
+   "How long each class is kept", "purview",
+   "The label name and its retention period from the file plan export",
+   "Group the records by EDRMSRetentionLabel and read the duration from EDRMSDuration. Purview "
+   "holds 53 labels in the test tenant, as a flat list with no hierarchy",
+   T1, "EDRMSRetentionLabel, EDRMSDuration", "Yes", "Yes", "Easy", BUILD),
  R("Retention", "Beyond retention period", "Tile", "Records past their disposal date",
-   EDRMS, T1, "EDRMSDueDateForDisposal", "COUNT(*) WHERE the due date is in the past",
-   "Yes", "Yes", "Yes", "Easy", BUILD,
-   "Warn that this means the date has passed, not that action is outstanding. "
-   "Why: nothing records whether a disposal was carried out"),
+   "db", "'EDRMSDueDateForDisposal'",
+   "COUNT(*) where the due date is earlier than today. This means the date has PASSED, not that "
+   "action is outstanding, because nothing records whether a disposal was carried out",
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD,
+   "Warn that this counts dates passed, not action outstanding. Why: the two read alike and are "
+   "not the same"),
  R("Compliance", "Records with and without a retention schedule", "Tile",
-   "Whether a record can be scheduled at all", EDRMS, T1, "EDRMSRetentionLabel",
-   "COUNT WHERE the label IS NULL against NOT NULL", "Yes", "Yes", "Yes", "Easy", BUILD),
+   "Whether a record can be scheduled", "db", "'EDRMSRetentionLabel'",
+   "COUNT where the label IS NULL against IS NOT NULL. The two must add up to the total declared "
+   "record count. A record with no label has no due date and sits outside every disposal figure",
+   T1, "EDRMSRetentionLabel", "Yes", "Yes", "Easy", BUILD),
  R("Compliance", "Libraries without a mapped retention schedule", "Tile", "Unmapped libraries",
-   LIST, T1, "ADBLibraryCategory, ListId",
-   "Library list MINUS the libraries present in the Retention Label Mapping list",
-   "Yes", "Unknown", "Yes, and worth doing first: open the Retention Label Mapping list and check "
-   "whether it keys libraries by ListId or by name",
-   "Easy", DECIDE,
-   "Check the mapping list's key yourself before asking anyone. Why: if it keys by ListId this "
-   "metric goes straight in, and if it keys by name the join is too fragile to trust"),
- R("Terms", "Departments and libraries provisioned per term", "Table column",
-   "Reach of each retention term", NONE, T4, "No join key exists", "Same missing link as the file plan",
-   "No", "No", TEST_NO, "Blocked", JOIN, Q_TERMJOIN),
- R("Disposal", "Records disposed, awaiting approval, backlog", "Tile",
-   "What has actually happened", NONE, T1, "DisposalStatus was removed from the design",
-   "Would be COUNT GROUP BY disposal status", "No, deliberately", "No", TEST_NO, "Blocked",
+   "maplist", "Whatever key the list uses for a library, either ListId or a name",
+   "List every library from Graph, list the libraries present in the mapping list, and count the "
+   "difference. DO THIS CHECK FIRST: open the list and see whether it keys by ListId or by name. "
+   "By ListId the metric goes straight in. By name the join is too fragile to trust, because "
+   "library names repeat across sites",
+   T1, "ADBLibraryCategory, ListId", "Yes", "Unknown", "Easy", DECIDE,
+   "Check the mapping list's key yourself before asking anyone. Why: it decides whether this "
+   "metric is safe or fragile, and it is a five minute check"),
+ R("Terms", "Departments and libraries provisioned per term", "Table column", "Reach of each term",
+   "none", "No join key exists", "Cannot be worked out. Same missing link as the file plan",
+   T4, "No join key exists", "No", "No", "Blocked", JOIN, Q_TERMJOIN),
+ R("Disposal", "Records disposed, awaiting approval, backlog", "Tile", "What has happened",
+   "none", "No column exists in the application or the database",
+   "Cannot be worked out. Nothing records that a disposal was carried out",
+   T1, "DisposalStatus was removed from the design", "No, deliberately", "No", "Blocked",
    APPCH, Q_DISPOSAL),
  R("Disposal", "Physical records overdue for transfer", "Tile", "Counterparts not yet with RAC",
-   NONE, "None", "No column exists", "Needs the RAC holdings system",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+   "none", "No column exists", "Cannot be worked out. Needs the RAC holdings system",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
 ]
 
 # =====================================================================
 # 06 RECORDS AND ARCHIVE HOLDINGS
 # =====================================================================
 RA = [
- R("Storage", "Boxes and folders by location", "Table", "Physical holdings at each location",
-   NONE, "None, a PhysicalRecords table was designed and never built", "No column exists",
-   "Would come from a physical holdings register",
-   "Designed, not built", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+ R("Storage", "Boxes and folders by location", "Table", "Physical holdings per location",
+   "none", "No file exists. A PhysicalRecords table was designed and never built",
+   "Cannot be worked out. There is nothing to open and nothing to count",
+   "None, designed not built", "No column exists", "Designed, not built", "No", "Blocked",
+   NEWSRC, Q_RAC),
  R("Storage", "Requests and requestors", "Table column", "Who is depositing records",
-   NONE, "None", "No column exists", "Would come from the same register",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+   "none", "No file exists", "Cannot be worked out",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
  R("Storage", "Capacity used per location", "Chart", "How full each room is",
-   NONE, "None", "No column exists", "Facility data. The client asks directly whether it can be included",
-   "No", "No", TEST_NO, "Blocked", NEWSRC,
-   Q_RAC + ". Answer their direct question: capacity can be displayed the moment somebody holds the figure"),
- R("Retrieval", "Boxes and folders retrieved, status", "Table", "Records taken out of the holdings",
-   NONE, "None", "No column exists", "Slide 67 says retrieval is processed in eServe",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
- R("Inventory health", "Unverified, missing, due for verification", "Tile",
-   "State of the physical inventory", NONE, "None", "No column exists",
-   "Implies a physical inventory process with a system behind it",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+   "none", "No file exists", "Cannot be worked out. Facility data, held by whoever runs the rooms",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC,
+   Q_RAC + ". Answer their direct question: capacity can be displayed the moment somebody holds "
+   "the figure"),
+ R("Retrieval", "Boxes and folders retrieved, status", "Table", "Records taken out",
+   "none", "No file exists. Slide 67 says retrieval is processed in eServe",
+   "Cannot be worked out. eServe is a separate system with no established feed",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
+ R("Inventory health", "Unverified, missing, due for verification", "Tile", "Inventory state",
+   "none", "No file exists",
+   "Cannot be worked out. Implies a physical inventory process with a system behind it",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
  R("Inventory health", "Total physical files, legacy records", "Tile", "Size of the holding",
-   NONE, "None", "No column exists", "Same register",
-   "No", "No", TEST_NO, "Blocked", NEWSRC, Q_RAC),
+   "none", "No file exists", "Cannot be worked out",
+   "None", "No column exists", "No", "No", "Blocked", NEWSRC, Q_RAC),
  R("Whole dashboard", "Recommendation", "Note", "How to run this piece of work",
-   NONE, "None", "n/a",
+   "none", "n/a",
    "Run as its own workstream. It is a second data source discovery exercise of the same size as "
    "the SharePoint one already completed, and inside the utilization report it would hold up the "
    "other five dashboards",
-   "n/a", "n/a", "n/a", "n/a", DECIDE,
+   "n/a", "n/a", "n/a", "n/a", "n/a", DECIDE,
    "Ask for access to the IR Dashboard shown on slide 67, and ask what is available in Opus. "
    "Why: both are their own questions to us, and the IR Dashboard may already hold most of this"),
 ]
@@ -663,6 +902,45 @@ def body(ws, first, last, ncols):
             cell.alignment = Alignment(vertical="top", wrap_text=True)
             cell.border = BORDER
 
+
+# ---------------------------------------------------------------------------
+# Build time check: every column heading quoted against a Microsoft export must
+# actually exist in that export. The evidence CSVs in this repo are the real
+# thing, 2,575 and 30 rows, so this is a check against reality rather than
+# against a recollection. It is the single most valuable assertion in this
+# file: a workbook that tells somebody to filter on a column that does not
+# exist is worse than one that says nothing.
+# ---------------------------------------------------------------------------
+def _headings(path):
+    import csv, io, os
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8-sig") as fh:
+        return set(next(csv.reader(fh)))
+
+_SITE = _headings("evidence_SharePointSiteUsageDetail_2026-08-12.csv")
+_USER = _headings("evidence_SharePointActivityUserDetail_2026-08-12.csv")
+
+if _SITE and _USER:
+    import re as _re
+    _known = _SITE | _USER
+    _bad = []
+    for _name, _t, _sl, _rows in [(n, t, sl, rws) for n, t, sl, rws in
+                                  [("01", "", "", BW), ("02", "", "", DP), ("03", "", "", PJ),
+                                   ("04", "", "", FP), ("05", "", "", RD), ("06", "", "", RA)]]:
+        for _row in _rows:
+            _report, _cols, _element = _row[5], _row[7], _row[1]
+            if "usage report" in _report or "activity user detail" in _report:
+                for _q in _re.findall(r"'([^']+)'", _cols):
+                    if _q not in _known:
+                        _bad.append("%s / %s: '%s' is not a column in that export"
+                                    % (_name, _element, _q))
+    if _bad:
+        raise SystemExit("Refusing to build. Column headings that do not exist:\n  "
+                         + "\n  ".join(_bad))
+    print("checked every quoted export column heading against the evidence CSVs: all real")
+else:
+    print("WARNING: evidence CSVs not found, column headings were NOT checked")
 
 wb = Workbook()
 
@@ -749,10 +1027,13 @@ for sheet_name, title, slides, rows in SHEETS:
     last = 4 + len(rows)
     body(ws, 5, last, len(HDR))
     for r in range(5, last + 1):
-        st = ws.cell(row=r, column=14).value
+        st = ws.cell(row=r, column=COL_STATUS).value
         if st in STATUS_FILL:
-            ws.cell(row=r, column=14).fill = STATUS_FILL[st]
-            ws.cell(row=r, column=14).font = Font(name=FONT, size=9, bold=True)
+            ws.cell(row=r, column=COL_STATUS).fill = STATUS_FILL[st]
+            ws.cell(row=r, column=COL_STATUS).font = Font(name=FONT, size=9, bold=True)
+        # the step by step cell holds newlines and must show them
+        ws.cell(row=r, column=8).alignment = Alignment(vertical="top", wrap_text=True)
+        ws.row_dimensions[r].height = None
         ws.cell(row=r, column=1).alignment = Alignment(vertical="top", horizontal="center")
     ws.auto_filter.ref = f"A4:{get_column_letter(len(HDR))}{last}"
     ws.freeze_panes = "C5"
@@ -858,13 +1139,14 @@ order = list(STATUS_FILL)
 counts = {k: 0 for k in order}
 for _, _, _, rows in SHEETS:
     for row in rows:
-        counts[row[13]] = counts.get(row[13], 0) + 1
+        counts[row[COL_STATUS - 1]] = counts.get(row[COL_STATUS - 1], 0) + 1
 
 r = 6
 for st in order:
     ws.cell(row=r, column=2, value=st).fill = STATUS_FILL[st]
     ws.cell(row=r, column=2).font = Font(name=FONT, size=9, bold=True)
-    parts = "+".join("COUNTIF('%s'!$N:$N,$B%d)" % (s[0], r) for s in SHEETS)
+    L = get_column_letter(COL_STATUS)
+    parts = "+".join("COUNTIF('%s'!$%s:$%s,$B%d)" % (sh[0], L, L, r) for sh in SHEETS)
     ws.cell(row=r, column=3, value="=" + parts)
     ws.cell(row=r, column=4, value="=IF($C$%d=0,0,C%d/$C$%d)" % (6 + len(order), r, 6 + len(order)))
     ws.cell(row=r, column=5, value=STATUS_MEANING[st])
@@ -891,8 +1173,10 @@ style_header(ws, start, 5)
 r = start + 1
 for name, title, _, rows in SHEETS:
     ws.cell(row=r, column=2, value=title)
-    ws.cell(row=r, column=3, value="=COUNTA('%s'!$N$5:$N$200)" % name)
-    ws.cell(row=r, column=4, value="=COUNTIF('%s'!$N$5:$N$200,\"Buildable now\")" % name)
+    L = get_column_letter(COL_STATUS)
+    ws.cell(row=r, column=3, value="=COUNTA('%s'!$%s$5:$%s$200)" % (name, L, L))
+    ws.cell(row=r, column=4,
+            value="=COUNTIF('%s'!$%s$5:$%s$200,\"Buildable now\")" % (name, L, L))
     ws.cell(row=r, column=5, value="=C%d-D%d" % (r, r))
     r += 1
 vtot = r
