@@ -64,255 +64,6 @@
   .pager button:disabled{opacity:.45;cursor:default}
 
 
-/* ================= overview.css ================= */
-/* Overview: scoped styles. Only loaded shapes under .dash-ov. */
-  .dash-ov .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
-  .dash-ov .kpi .tap{display:flex;align-items:center;gap:4px}
-
-  /* panel header carries the link through to the detailed dashboard */
-  .dash-ov .phead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
-  .dash-ov .phead .ptitle{margin-bottom:3px}
-  .dash-ov .phead .psub{margin-bottom:0}
-  .dash-ov .golink{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:7px 13px;cursor:pointer;white-space:nowrap}
-  .dash-ov .golink:hover{background:var(--blue);color:#fff}
-
-  /* a row of chart cards, wrapping on narrow screens */
-  .dash-ov .crow{display:flex;gap:18px;flex-wrap:wrap;align-items:stretch}
-  .dash-ov .chart{flex:1 1 285px;min-width:285px;background:#F8FAFC;border:1px solid #E4EBF3;border-radius:10px;padding:14px 16px}
-  .dash-ov .chart.wide{flex:2 1 380px}
-  .dash-ov .ctitle{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
-  .dash-ov .cwrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-
-  /* donut legend */
-  .dash-ov .dleg{flex:1 1 175px;min-width:175px}
-  .dash-ov .dlrow{display:grid;grid-template-columns:12px 1fr auto auto;align-items:start;gap:8px;font-size:11.5px;margin-bottom:8px}
-  .dash-ov .dlrow .sw{width:12px;height:12px;border-radius:3px;margin-top:2px}
-  .dash-ov .dlrow .dlab{color:var(--ink2);line-height:1.35}
-  .dash-ov .dlrow .dval{font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-ov .dlrow .dpct{color:var(--mut);font-variant-numeric:tabular-nums;min-width:42px;text-align:right}
-
-  /* top N horizontal bars */
-  .dash-ov .tbar{display:grid;grid-template-columns:150px 1fr 74px;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-ov .tbar .tl b{font-size:12.5px;font-weight:700}
-  .dash-ov .tbar .tl small{display:block;color:var(--mut);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .dash-ov .tbar .tt{background:#E9EFF6;border-radius:6px;height:24px;overflow:hidden}
-  .dash-ov .tbar .tf{height:24px;background:var(--blue);border-radius:6px;transition:width .6s ease}
-  .dash-ov .tbar .tv{text-align:right;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
-
-  /* two magnitudes compared on a shared scale */
-  .dash-ov .gap{margin-bottom:11px}
-  .dash-ov .gap .gl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink2);margin-bottom:5px}
-  .dash-ov .gap .gl b{font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-ov .gap .gt{background:#E9EFF6;border-radius:6px;height:22px;overflow:hidden}
-  .dash-ov .gap .gf{height:22px;border-radius:6px;transition:width .6s ease}
-  .dash-ov .callout{background:#EEF5FC;border:1px solid #CFE0F2;border-left:3px solid var(--blue);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.55;margin-top:12px}
-  .dash-ov .callout b{color:var(--ink)}
-
-  /* small stat strip inside a chart card */
-  .dash-ov .mini{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
-  .dash-ov .mini div{font-size:11.5px;color:var(--mut)}
-  .dash-ov .mini b{display:block;font-size:17px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
-
-/* ================= sitesandlibraries.css ================= */
-/* Sites and Libraries: scoped styles. Only loaded shapes under .dash-sl. */
-  /* ===== Sites and Libraries, scoped ===== */
-  .dash-sl .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,320px));gap:16px;margin-bottom:16px}
-  @media(max-width:740px){.dash-sl .kpis{grid-template-columns:1fr}}
-  .dash-sl .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;font-size:12.5px;color:var(--mut)}
-  .dash-sl .drange{display:inline-flex;align-items:center;gap:6px;border:1px solid #EAD9C8;background:#FDF7F0;border-radius:8px;padding:5px 9px;color:var(--mut)}
-  .dash-sl .drange input[type=date]{font:inherit;font-size:12px;border:1px solid #cfd8e3;border-radius:6px;padding:3px 7px;color:var(--ink);background:#fff;height:28px;width:120px}
-  .dash-sl .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-  .dash-sl .resetbtn:hover{background:var(--blue);color:#fff}
-  .dash-sl select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:5px 9px;background:#fff;color:var(--ink)}
-  .dash-sl .tiles{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-  .dash-sl .tile{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:180px}
-  .dash-sl .tile.hi{border-color:#CFE0F2;background:#EEF5FC}
-  .dash-sl .tile .tl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
-  .dash-sl .tile .tv{font-size:24px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
-  /* date range moved to the right of the tiles row */
-  .dash-sl .tilesrow{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-  .dash-sl .tilesrow .tiles{margin-bottom:0}
-  .dash-sl .stfilter{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .dash-sl .tmlegend{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--mut)}
-  .dash-sl .tmlegend .sw{width:22px;height:11px;border-radius:3px}
-  .dash-sl .legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink2)}
-  .dash-sl .legend .lg{display:inline-flex;align-items:center;gap:6px}
-  .dash-sl .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
-  .dash-sl .sortwrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-  .dash-sl .sortctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .dash-sl .sortctl .lbl{font-size:12px;color:var(--mut)}
-  .dash-sl .segctl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  .dash-sl .segctl button{font:inherit;font-size:12px;border:none;padding:6px 12px;cursor:pointer;color:var(--ink2);background:#fff;border-left:1px solid var(--line)}
-  .dash-sl .segctl button:first-child{border-left:none}
-  .dash-sl .segctl button.on{background:var(--blue);color:#fff;font-weight:600}
-  .dash-sl .dirbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .dash-sl .dirbtn:hover{border-color:var(--blue)}
-  .dash-sl .sbar{display:grid;grid-template-columns:200px 1fr 210px;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-sl .sbar .sl b{font-size:13px;font-weight:600}.dash-sl .sbar .sl small{display:block;color:var(--mut);font-size:11px}
-  .dash-sl .sbar .st{background:#EEF3F8;border-radius:6px;overflow:hidden;display:flex;height:26px}
-  .dash-sl .sbar .seg{height:26px;transition:width .5s ease}
-  .dash-sl .sbar .seg.e{background:var(--teal)}.dash-sl .sbar .seg.p{background:var(--greyblue)}
-  .dash-sl .sbar .single{height:26px;background:var(--blue);border-radius:6px;transition:width .5s ease}
-  .dash-sl .sbar .vv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
-  .dash-sl .sbar .vv b{color:var(--ink);font-weight:600}.dash-sl .sbar .vv span{color:var(--mut)}
-  /* Site inventory table. A plain grid so Power BI can reproduce it with a
-     table visual, with the numeric cells carrying a data bar the way the
-     Format and Storage table does. */
-  .dash-sl .stab{--sc:250px 232px 92px 84px 102px 116px 96px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:900px}
-  .dash-sl .stab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
-  .dash-sl .stab .hd.on{color:var(--blue);font-weight:700}
-  .dash-sl .stab .hd.num{text-align:right}
-  .dash-sl .stab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-sl .stab .ow{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-sl .stab .dp{font-size:12px;color:var(--mut)}
-  .dash-sl .stab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
-  .dash-sl .stab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
-  .dash-sl .stab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-sl .pill{font-size:11px;font-weight:700;border-radius:999px;padding:4px 10px;text-align:center;white-space:nowrap}
-  .dash-sl .pill.ok{background:#E7F4EC;color:#1C6B3C}
-  .dash-sl .pill.no{background:#FBEEE7;color:#9A4A17}
-  .dash-sl .scrollx{overflow-x:auto}
-  .dash-sl .ltab{--sc:200px 200px 118px 130px 118px 118px;display:grid;grid-template-columns:var(--sc);gap:8px 12px;align-items:center;min-width:880px}
-  .dash-sl .ltab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
-  .dash-sl .ltab .hd.on{color:var(--blue);font-weight:700}
-  .dash-sl .ltab .hd.num{text-align:right}
-  .dash-sl .ltab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-sl .ltab .dp{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-sl .ltab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
-  .dash-sl .ltab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
-  .dash-sl .ltab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-sl .pill.mid{background:#FDF4E3;color:#8A5A12}
-  .dash-sl .subtotal{margin-top:12px;font-size:12.5px;color:var(--ink2)}
-
-
-/* ================= retention.css ================= */
-/* Retention: scoped styles. Only loaded shapes under .dash-rt. */
-  .dash-rt .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:16px;margin-bottom:16px}
-  @media(max-width:740px){.dash-rt .kpis{grid-template-columns:1fr}}
-  .dash-rt .tiles{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-  .dash-rt .tile{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:180px}
-  .dash-rt .tile.hi{border-color:#CFE0F2;background:#EEF5FC}
-  .dash-rt .tile .tl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
-  .dash-rt .tile .tv{font-size:24px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
-  .dash-rt .scrollx{overflow-x:auto}
-  .dash-rt .dtab{--dc:186px 190px 116px 152px 128px 132px;display:grid;grid-template-columns:var(--dc);gap:8px 12px;align-items:center;min-width:900px}
-  .dash-rt .dtab .hd{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding-bottom:7px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
-  .dash-rt .dtab .hd.on{color:var(--blue);font-weight:700}
-  .dash-rt .dtab .hd.num{text-align:right}
-  .dash-rt .dtab .nm{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-rt .dtab .dp{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dash-rt .dtab .dt{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-rt .dtab .dt.far{color:var(--mut)}
-  .dash-rt .dtab .nc{position:relative;height:24px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;overflow:hidden}
-  .dash-rt .dtab .nc .nb{position:absolute;left:0;top:0;height:24px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
-  .dash-rt .dtab .nc b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-rt .lbar{display:grid;grid-template-columns:236px 1fr 58px;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-rt .lbar .ll b{font-size:13px;font-weight:600}
-  .dash-rt .lbar .ll small{display:block;color:var(--mut);font-size:11px}
-  .dash-rt .lbar .lt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
-  .dash-rt .lbar .lf{height:26px;border-radius:6px;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
-  .dash-rt .lbar .lp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-  .dash-rt .fbar{display:grid;grid-template-columns:250px 1fr 58px;align-items:center;gap:12px;margin-bottom:10px}
-  .dash-rt .fbar .fl b{font-size:13px;font-weight:600}
-  .dash-rt .fbar .fl small{display:block;color:var(--mut);font-size:11px}
-  .dash-rt .fbar .ft{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
-  .dash-rt .fbar .ff{height:26px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
-  .dash-rt .fbar .fp{text-align:right;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
-
-
-/* ================= recordsmanagement.css ================= */
-/* Records Management: scoped styles. Only loaded shapes under .dash-rm. */
-  /* ===== Records Management, scoped ===== */
-  .dash-rm .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,300px));gap:16px;margin-bottom:16px}
-  @media(max-width:700px){.dash-rm .kpis{grid-template-columns:1fr}}
-  .dash-rm .drill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);margin-bottom:14px;flex-wrap:wrap;font-weight:600;letter-spacing:.03em}
-  .dash-rm .drill a{color:var(--blue);cursor:pointer;text-transform:uppercase}
-  .dash-rm .drill .cur{text-transform:uppercase;color:var(--mut)}
-  .dash-rm .drill .arw{opacity:.55;font-weight:400}
-  .dash-rm .daterow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-  .dash-rm .drange{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);border:1px solid #EAD9C8;background:#FDF7F0;border-radius:8px;padding:7px 10px}
-  .dash-rm .drange input[type=date]{font:inherit;font-size:12px;border:1px solid #cfd8e3;border-radius:6px;padding:4px 8px;color:var(--ink);background:#fff}
-  .dash-rm .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
-  .dash-rm .resetbtn:hover{background:var(--blue);color:#fff}
-  .dash-rm .subtotal{font-size:12px;color:var(--ink2)}
-  .dash-rm .subtotal b{color:var(--ink)}
-  .dash-rm .legend{display:flex;gap:18px;align-items:center;font-size:11.5px;color:var(--ink2);margin:2px 0 14px}
-  .dash-rm .legend .lg{display:inline-flex;align-items:center;gap:6px}
-  .dash-rm .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
-  .dash-rm .sbar{display:grid;grid-template-columns:210px 1fr 72px;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-rm .sbar.click .sl b{color:var(--blue);cursor:pointer}
-  .dash-rm .sbar .sl b{font-size:13px}.dash-rm .sbar .sl small{display:block;color:var(--mut);font-size:11px}
-  .dash-rm .sbar .st{background:#EEF3F8;border-radius:6px;overflow:hidden;display:flex;height:26px}
-  .dash-rm .sbar .seg{height:26px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;overflow:hidden;transition:width .6s ease}
-  .dash-rm .sbar .seg.e{background:var(--greyblue)}.dash-rm .sbar .seg.p{background:var(--teal)}
-  .dash-rm .sbar .sv{text-align:right;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
-  .dash-rm .cbar{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-rm .cbar.act{grid-template-columns:210px 1fr 92px}
-  .dash-rm .cbar .cl b{font-size:13px}.dash-rm .cbar .cl small{display:block;color:var(--mut);font-size:11px}
-  .dash-rm .cbar .ct{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
-  .dash-rm .cbar .cf{height:26px;border-radius:6px;color:#fff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;min-width:32px;font-variant-numeric:tabular-nums;transition:width .6s ease}
-  .dash-rm .cbar .la{font-size:12px;color:var(--ink2);text-align:right;font-weight:600}
-  .dash-rm .colhead{display:grid;grid-template-columns:210px 1fr 92px;gap:12px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;padding-top:4px}
-  .dash-rm .colhead .c2{text-align:center}.dash-rm .colhead .c3{text-align:right}
-  .dash-rm .toolbar{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-  .dash-rm .dayf{display:flex;gap:6px;flex-wrap:wrap}
-  .dash-rm .dayf button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 14px;cursor:pointer;color:var(--ink2)}
-  .dash-rm .dayf button.on{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600}
-  .dash-rm .ctl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mut)}
-  .dash-rm select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff;color:var(--ink)}
-  .dash-rm .statrow{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 16px}
-  .dash-rm .stat{background:#F6F9FC;border:1px solid #E4EBF3;border-radius:10px;padding:12px 16px;min-width:150px}
-  .dash-rm .stat .sl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
-  .dash-rm .stat .sv{font-size:22px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
-  .dash-rm .mrow{display:flex;align-items:flex-end;gap:8px;height:210px;margin-bottom:10px}
-  .dash-rm .mcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
-  .dash-rm .mbar{width:100%;background:var(--blue);border-radius:5px 5px 0 0;transition:height .5s ease;min-height:4px}
-  .dash-rm .mval{font-size:11px;font-variant-numeric:tabular-nums;color:var(--ink2);margin-top:5px}
-  .dash-rm .mlab{font-size:11px;color:var(--mut);margin-top:2px}
-  .dash-rm .ybar{display:grid;grid-template-columns:60px 1fr;align-items:center;gap:12px;margin-bottom:9px}
-  .dash-rm .ybar .yl b{font-size:13px;font-weight:600}
-  .dash-rm .ybar .yt{background:#EEF3F8;border-radius:6px;overflow:hidden;height:26px}
-  .dash-rm .ybar .yf{height:26px;border-radius:6px;background:var(--deepblue);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-variant-numeric:tabular-nums;transition:width .5s ease}
-  .dash-rm .subtotal{margin-top:4px;font-size:12.5px;color:var(--ink2)}
-
-
-/* ================= formatandstorage.css ================= */
-/* Format and Storage: scoped styles. Only loaded shapes under .dash-fs. */
-  /* ===== Format and Storage, scoped ===== */
-  .dash-fs .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,320px));gap:16px;margin-bottom:16px}
-  @media(max-width:740px){.dash-fs .kpis{grid-template-columns:1fr}}
-  .dash-fs .sortrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  .dash-fs .sortrow .lbl{font-size:12px;color:var(--mut)}
-  .dash-fs .segctl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  .dash-fs .segctl button{font:inherit;font-size:12px;border:none;padding:6px 12px;cursor:pointer;color:var(--ink2);background:#fff;border-left:1px solid var(--line)}
-  .dash-fs .segctl button:first-child{border-left:none}
-  .dash-fs .segctl button.on{background:var(--blue);color:#fff;font-weight:600}
-  .dash-fs .dirbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-  .dash-fs .dirbtn:hover{border-color:var(--blue)}
-  /* format table: one shared column template across head, rows, and total */
-  .dash-fs .ftab{--fc:190px 1fr 1fr 1fr}
-  .dash-fs .fhead,.dash-fs .frow,.dash-fs .ftot{display:grid;grid-template-columns:var(--fc);gap:14px;align-items:center}
-  .dash-fs .fhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
-  .dash-fs .fhead .num{text-align:right;padding-right:9px}
-  .dash-fs .fhead .num.on{color:var(--blue);font-weight:700}
-  .dash-fs .frow{margin-bottom:8px}
-  .dash-fs .frow .fname{font-size:13px;font-weight:600}
-  .dash-fs .fcell{position:relative;height:26px;background:#F3F7FB;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;overflow:hidden}
-  .dash-fs .fcell .fbar{position:absolute;left:0;top:0;height:26px;background:#CFE0F2;border-radius:5px;transition:width .5s ease}
-  .dash-fs .fcell b{position:relative;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-  .dash-fs .ftot{border-top:1px solid var(--line);margin-top:4px;padding-top:11px;font-weight:700}
-  .dash-fs .ftot .fname{font-size:13px}
-  .dash-fs .ftot .tv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;padding-right:9px}
-  /* declared records by format */
-  .dash-fs .rbar{display:grid;grid-template-columns:190px 1fr 132px;align-items:center;gap:14px;margin-bottom:9px}
-  .dash-fs .rbar .rl{font-size:13px;font-weight:600}
-  .dash-fs .rbar .rt{background:#F3F7FB;border-radius:6px;height:26px;overflow:hidden}
-  .dash-fs .rbar .rf{height:26px;background:var(--blue);border-radius:6px;transition:width .6s ease}
-  .dash-fs .rbar .rv{text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
-  .dash-fs .rbar .rv b{font-weight:700;color:var(--ink)}
-  .dash-fs .rbar .rv span{color:var(--mut)}
-
-
 /* ================= bankwide.css ================= */
 /* Bank-wide Oversight: scoped styles. Everything sits under .dash-bw.
    Built to the client's own design, PPT s15 to s18 and s34 to s44. */
@@ -547,19 +298,20 @@
 <aside id="side">
   <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div><div class="ver" id="side-ver"></div></div>
   <nav id="nav">
-    <div class="grp">Executive</div>
+    <!-- The six key views the client specified on PPT s13 and s14, in their
+         order, and nothing else. The five dashboards that stood here until
+         13 Aug 2026 were the earlier design and were removed rather than
+         left alongside: the client asked for six, and a nav of eleven would
+         have presented four superseded screens as though they were still
+         part of the report. What each of them held that the requirements
+         still ask for was absorbed, see the panels on Bank-wide Oversight. -->
+    <div class="grp">Key views</div>
     <a data-d="bw"><span class="ic">◉</span>Bank-wide Oversight</a>
     <a data-d="dp"><span class="ic">▦</span>Department Insights</a>
     <a data-d="pj"><span class="ic">◇</span>Project Insights</a>
     <a data-d="fp"><span class="ic">☰</span>Institutional File Plan</a>
     <a data-d="rd"><span class="ic">⏲</span>Retention &amp; Disposal</a>
     <a data-d="ra"><span class="ic">▩</span>Records &amp; Archive Holdings</a>
-    <a data-d="ov"><span class="ic">◈</span>Overview</a>
-    <div class="grp">Operations</div>
-    <a data-d="rm"><span class="ic">▤</span>Records Management</a>
-    <a data-d="sl"><span class="ic">⚑</span>Sites &amp; Libraries</a>
-    <a data-d="fs"><span class="ic">◫</span>Format &amp; Storage</a>
-    <a data-d="rt"><span class="ic">⏳</span>Retention &amp; File Plan</a>
   </nav>
 </aside>
 <div id="main">
@@ -595,1476 +347,95 @@ const DASHBOARDS={};
 
 
 /* =================================================================
-   sitesandlibraries.js
+   data.js
    ================================================================= */
 /* ===================================================================
-   Sites and Libraries
-   Source: EDRMS_Sites_and_Libraries_Dashboard_v1.html
+   The base figures the whole suite is built on.
+
+   Until 13 Aug 2026 these lived inside the five dashboards the client's
+   redesign removes: Records Management owned the departments and the
+   declaration trend, Sites and Libraries owned the site and library
+   health, Format and Storage owned the eight format groups, and
+   Retention and File Plan owned the retention labels and the disposal
+   windows. Each new dashboard read them out of the old one's summary.
+
+   Deleting those five would have taken the data with them, so it moves
+   here instead. That is also the better shape: a figure that appears on
+   three dashboards should be defined once and read three times, rather
+   than owned by whichever dashboard happened to be built first.
+
+   Everything that has to reconcile is asserted at the bottom of this
+   block, so a mismatch fails on load rather than on the one dashboard
+   that happens to display both numbers.
    =================================================================== */
-DASHBOARDS.sl=(function(){
-  /* --- pager: this variant prints the row count even on a single page --- */
-  function pager(total,page,pages,noun){
-    if(pages<=1)return `<div class="pager"><div class="pinfo">Showing 1 to ${F(total)} of ${F(total)} ${noun}</div><div></div></div>`;
-    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
-    let nums="",last=0;win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
-    const from=(page-1)*10+1,to=Math.min(total,page*10);
-    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
-      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>‹ Prev</button>${nums}<button data-pg="next" ${page===pages?'disabled':''}>Next ›</button></div></div>`;
-  }
-  function rangeFactor(sId,eId){
-    const s=(document.getElementById(sId)||{}).value||"",e=(document.getElementById(eId)||{}).value||"";
-    if(s===""&&e==="")return 1;
-    const sd=s?new Date(s+"T00:00:00"):null, ed=e?new Date(e+"T00:00:00"):null;
-    let sM=(sd&&!isNaN(sd))?(sd.getFullYear()<2026?0:sd.getFullYear()>2026?12:sd.getMonth()):0;
-    let eM=(ed&&!isNaN(ed))?(ed.getFullYear()>2026?11:ed.getFullYear()<2026?-1:ed.getMonth()):11;
-    const months=Math.min(11,eM)-Math.max(0,sM)+1;
-    return Math.max(0,Math.min(1,months/12));
-  }
-
-  /* ===== data ===== */
-  const SITEDEPTS=[
-   ["ITD","Information Technology",40],["SARD","South Asia Regional",36],["OSFG","Sovereign Operations",32],
-   ["FIN","Finance",28],["PARD","Procurement and Admin",26],["HRD","Human Resources",24],
-   ["SERD","Southeast Asia",22],["OGC","General Counsel",21],["EARD","East Asia Regional",20],
-   ["BRM","Budget and Mgmt Services",19],["CWRD","Central and West Asia",17],["PSOD","Private Sector Operations",15],
-   ["SPD","Strategy and Policy",12],["SDCC","Sustainable Dev and Climate",10],["OAS","Administrative Services",8],
-  ];
-  const DNAME={};SITEDEPTS.forEach(d=>DNAME[d[0]]=d[1]);
-  const ALLTIME_SITES=1057;
-
-  /* [lib, site, dept, docs, records, storageGB, idleDays, newRecords]
-     idleDays    days since the library was last touched. Graph returns
-                 lastModifiedDateTime on every drive, from the same
-                 GET /sites/{id}/drives call that already supplies LibraryCount.
-     newRecords  records declared during the reporting period. Already in the
-                 data: every record carries CreatedDate, so the growth rate
-                 needs no snapshot history. */
-  const LIBS=[
-   ["Final Documents","ITD Records Site","ITD",3200,640,4.2,3,74],
-   ["Loan Agreements","FIN Treasury Site","FIN",2400,384,6.8,11,41],
-   ["Correspondence","PARD Procurement Site","PARD",2100,210,1.9,6,28],
-   ["Board Papers","OGC Legal Site","OGC",1800,540,5.4,2,63],
-   ["Country Reports","SARD Ops Site","SARD",1500,450,3.1,9,52],
-   ["Field Reports","SERD Ops Site","SERD",1300,286,7.2,17,31],
-   ["Project Completion","OSFG Country Site","OSFG",1200,300,8.9,24,26],
-   ["Case Files","OGC Compliance Site","OGC",1000,280,2.4,41,19],
-   ["Policies","HRD People Site","HRD",900,315,0.8,8,34],
-   ["Minutes","BRM Budget Site","BRM",700,245,0.5,33,22],
-   ["Legal Opinions","OGC Advisory Site","OGC",640,150,0.45,118,4],
-   ["Audit Reports","CWRD Ops Site","CWRD",580,120,0.42,96,7],
-   ["Investment Memos","PSOD Investments Site","PSOD",520,180,0.38,54,12],
-   ["Climate Briefs","SDCC Climate Site","SDCC",460,95,0.35,142,2],
-   ["Admin Records","OAS Facilities Site","OAS",400,88,0.30,207,0],
-  ];
-  const TOTAL_RECORDS=LIBS.reduce((a,l)=>a+l[4],0);
-  const TOTAL_GB=LIBS.reduce((a,l)=>a+l[5],0);
-
-  /* Library health. Two thresholds because the client asks for both: 90 days
-     marks a library as inactive, 180 flags it as long dormant. */
-  const LIB_IDLE=90, LIB_DORMANT=180;
-  const LIBS_ACTIVE=LIBS.filter(l=>l[6]<=LIB_IDLE).length;
-  const LIBS_INACTIVE=LIBS.filter(l=>l[6]>LIB_IDLE).length;
-  const LIBS_DORMANT=LIBS.filter(l=>l[6]>LIB_DORMANT).length;
-
-  /* Growth rate = records declared during the period, over records held at the
-     start of it. No snapshot history needed: every record carries CreatedDate,
-     so records at the start is simply the total minus those declared since. */
-  const NEW_RECORDS=LIBS.reduce((a,l)=>a+l[7],0);
-  const RECORDS_AT_START=TOTAL_RECORDS-NEW_RECORDS;
-  const GROWTH_RATE=NEW_RECORDS/RECORDS_AT_START;
-  console.assert(RECORDS_AT_START>0,"Records at the start of the period must be positive for a growth rate to mean anything");
-
-  /* Site inventory. Every column here maps to a call already run against the
-     7rkd12 test tenant, which is the whole reason this section exists:
-       owner      Get-PnPTenantSite, 1,683 of 1,702 sites carry one
-       libraries  GET /sites/{id}/drives, counted
-       users      GET /sites/{id}/analytics/allTime, the actorCount field
-       visits     the M365 site usage report, Page View Count
-       idleDays   the same report, derived from Last Activity Date
-     [site, dept, owner, libraries, users, visits, idleDays] */
-  const SITES=[
-   ["ITD Records Site","ITD","a.mendoza@adb.org",12,86,4210,3],
-   ["FIN Treasury Site","FIN","r.tan@adb.org",9,64,3180,5],
-   ["PARD Procurement Site","PARD","j.cruz@adb.org",11,52,2740,2],
-   ["OGC Legal Site","OGC","m.reyes@adb.org",8,71,2510,6],
-   ["SARD Ops Site","SARD","l.fernandez@adb.org",14,58,2360,11],
-   ["SERD Ops Site","SERD","p.santos@adb.org",7,43,1920,9],
-   ["OSFG Country Site","OSFG","c.delacruz@adb.org",10,39,1640,17],
-   ["OGC Compliance Site","OGC","m.reyes@adb.org",6,34,1425,24],
-   ["HRD People Site","HRD","s.villanueva@adb.org",9,47,1310,8],
-   ["BRM Budget Site","BRM","d.ramos@adb.org",5,28,980,33],
-   ["OGC Advisory Site","OGC","m.reyes@adb.org",4,19,760,118],
-   ["CWRD Ops Site","CWRD","k.aquino@adb.org",7,22,640,96],
-   ["PSOD Investments Site","PSOD","e.navarro@adb.org",6,31,585,41],
-   ["SDCC Climate Site","SDCC","t.bautista@adb.org",5,16,430,142],
-   ["OAS Facilities Site","OAS","f.gutierrez@adb.org",3,11,290,207],
-  ];
-  /* The inactivity rule. 90 days with no activity, read straight off Last
-     Activity Date. Ownerless sites are a different question and deliberately
-     out of scope, so this is idle time only and is named for what it measures. */
-  const IDLE_DAYS=90;
-  const ACTIVE_SITES=SITES.filter(s=>s[6]<=IDLE_DAYS).length;
-  const INACTIVE_SITES=SITES.length-ACTIVE_SITES;
-  const SITE_LIBRARIES=SITES.reduce((a,s)=>a+s[3],0);
-
-  /* Libraries holding no declared records. Not a scan job: enumerate libraries
-     from GET /sites/{id}/drives, then subtract the distinct ListId values
-     present in Records. ListId is verified to match SharePoint's own list GUID,
-     so the join is safe. A library here is not necessarily empty; it may hold
-     documents nobody has declared, which is exactly what makes it worth
-     showing. */
-  const LIBS_WITH_RECORDS=78;
-  const LIBS_NO_RECORDS=SITE_LIBRARIES-LIBS_WITH_RECORDS;
-  console.assert(LIBS_WITH_RECORDS<=SITE_LIBRARIES,"Libraries holding records cannot exceed the libraries counted");
-  console.assert(LIBS_WITH_RECORDS>=LIBS.length,"The sampled libraries all hold records, so the total cannot be lower");
-
-
-  /* ===== treemap ===== */
-  function squarify(items,x,y,w,h){
-    const area=w*h,sum=items.reduce((a,b)=>a+b.v,0)||1;
-    let rem=items.map(it=>({...it,area:it.v/sum*area})),R=[],rx=x,ry=y,rw=w,rh=h;
-    function worst(a,side){const s=a.reduce((p,q)=>p+q,0),mx=Math.max(...a),mn=Math.min(...a);return Math.max(side*side*mx/(s*s),(s*s)/(side*side*mn));}
-    while(rem.length){const side=Math.min(rw,rh);let row=[rem[0]],wr=worst(row.map(z=>z.area),side);
-      while(row.length<rem.length){const t=row.concat([rem[row.length]]);const w3=worst(t.map(z=>z.area),side);if(w3>wr)break;row=t;wr=w3;}
-      const ra=row.reduce((a,b)=>a+b.area,0);
-      if(rw>=rh){const cw=ra/rh;let cy=ry;row.forEach(z=>{const ch=z.area/cw;R.push({...z,x:rx,y:cy,w:cw,h:ch});cy+=ch;});rx+=cw;rw-=cw;}
-      else{const rhh=ra/rw;let cx=rx;row.forEach(z=>{const cwd=z.area/rhh;R.push({...z,x:cx,y:ry,w:cwd,h:rhh});cx+=cwd;});ry+=rhh;rh-=rhh;}
-      rem=rem.slice(row.length);}
-    return R;
-  }
-  function shade(v,mn,mx){const t=mx>mn?(v-mn)/(mx-mn):0.6;const L=[156,195,236],D=[8,52,90];const c=i=>Math.round(L[i]+(D[i]-L[i])*t);return `rgb(${c(0)},${c(1)},${c(2)})`;}
-  function darkText(v,mn,mx){const t=mx>mn?(v-mn)/(mx-mn):0.6;return t<0.42;}
-
-  let sitePage=1;
-  function renderS1(){
-    document.getElementById("s1-detail").innerHTML=`<div class="panel">
-      <div class="ptitle">Sites created by department</div>
-      <div class="psub">Each block is a department, sized by the number of compliant sites created. Darker means more sites.</div>
-      <div class="tilesrow">
-        <div class="tiles">
-          <div class="tile"><div class="tl">Total sites created</div><div class="tv">${F(ALLTIME_SITES)}</div></div>
-          <div class="tile hi"><div class="tl">Total sites created by date range</div><div class="tv" id="st-tile2">…</div></div>
-        </div>
-        <div class="stfilter">
-          <div class="drange">Date range <input type="date" id="st-s"> to <input type="date" id="st-e"></div>
-          <button class="resetbtn" id="st-reset"><i>↺</i> Reset filter</button>
-        </div>
-      </div>
-      <div id="st-treemap"></div>
-      <div class="tmlegend"><span>Fewer sites</span><span class="sw" style="background:rgb(156,195,236)"></span><span class="sw" style="background:rgb(120,163,201)"></span><span class="sw" style="background:rgb(84,120,152)"></span><span class="sw" style="background:rgb(8,52,90)"></span><span>More sites</span></div>
-      <div id="st-pager"></div></div>`;
-    document.getElementById("st-s").onchange=()=>{sitePage=1;drawTreemap();};
-    document.getElementById("st-e").onchange=()=>{sitePage=1;drawTreemap();};
-    document.getElementById("st-reset").onclick=()=>{document.getElementById("st-s").value="";document.getElementById("st-e").value="";sitePage=1;drawTreemap();};
-    drawTreemap();
-  }
-  function drawTreemap(){
-    const factor=rangeFactor("st-s","st-e");
-    const depts=SITEDEPTS.map(d=>({label:d[0],name:d[1],v:Math.max(1,Math.round(d[2]*factor))})).sort((a,b)=>b.v-a.v);
-    document.getElementById("st-tile2").textContent=F(depts.reduce((a,b)=>a+b.v,0));
-    const pages=Math.ceil(depts.length/10);if(sitePage>pages)sitePage=pages;
-    const page=depts.slice((sitePage-1)*10,sitePage*10);
-    const mn=Math.min(...page.map(d=>d.v)),mx=Math.max(...page.map(d=>d.v));
-    const rects=squarify(page,0,0,900,400);
-    let svg="";
-    rects.forEach(r=>{const x=r.x+3,y=r.y+3,w=r.w-6,h=r.h-6;const t=darkText(r.v,mn,mx),tc=t?"#082F4E":"#FFFFFF",sc=t?"#2C567A":"#DCEBFA";
-      svg+=`<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="7" fill="${shade(r.v,mn,mx)}"><title>${r.name}: ${r.v} sites</title></rect>`;
-      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+27).toFixed(1)}" font-size="15" font-weight="700" fill="${tc}">${r.label}</text>`;
-      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+44).toFixed(1)}" font-size="11" fill="${sc}">${r.name}</text>`;
-      svg+=`<text x="${(x+14).toFixed(1)}" y="${(y+h-15).toFixed(1)}" font-size="26" font-weight="700" fill="${tc}" style="font-variant-numeric:tabular-nums">${r.v}</text></g>`;
-    });
-    document.getElementById("st-treemap").innerHTML=`<svg viewBox="0 0 900 400" width="100%" style="display:block;max-height:430px">${svg}</svg>`;
-    document.getElementById("st-pager").innerHTML=pager(depts.length,sitePage,pages,"departments");
-    wirePager("#st-pager",v=>{sitePage=v==="prev"?Math.max(1,sitePage-1):v==="next"?Math.min(pages,sitePage+1):+v;drawTreemap();});
-  }
-
-  /* ===== libraries ===== */
-  function deptOptions(sel){const codes=[...new Set(LIBS.map(l=>l[2]))];return `<option value="all">All departments</option>`+codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} - ${DNAME[c]||c}</option>`).join("");}
-  let deptDecl="all",fieldDecl="docs",dirDecl="desc",pageDecl=1;
-  let deptStor="all",fieldStor="gb",dirStor="desc",pageStor=1;
-  let curS2="decl";
-
-  function renderS2(which){
-    curS2=which;
-    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
-    const box=document.getElementById("s2-detail");
-    if(which==="decl"){
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Libraries declaration rate</div>
-        <div class="psub">How much of each library's content has been declared as records. Bars stack the declared portion over the not yet declared portion, sized to total documents.</div>
-        <div class="toolbar">
-          <span>Department <select id="decl-dept">${deptOptions(deptDecl)}</select></span>
-          <div class="drange">Date range <input type="date" id="decl-s"> to <input type="date" id="decl-e"></div>
-          <button class="resetbtn" id="decl-reset"><i>↺</i> Reset filter</button>
-        </div>
-        <div class="sortwrap">
-          <div class="legend"><span class="lg"><span class="sw" style="background:var(--teal)"></span>Declared as records</span><span class="lg"><span class="sw" style="background:var(--greyblue)"></span>Not yet declared</span></div>
-          <div class="sortctl"><span class="lbl">Sort by</span>
-            <div class="segctl" id="decl-field"><button data-f="docs">Documents</button><button data-f="rec">Records</button><button data-f="rate">Rate</button></div>
-            <button class="dirbtn" id="decl-dir"></button></div>
-        </div>
-        <div id="decl-rows"></div><div id="decl-pager"></div></div>`;
-      document.getElementById("decl-dept").onchange=e=>{deptDecl=e.target.value;pageDecl=1;drawDecl();};
-      document.getElementById("decl-s").onchange=()=>{pageDecl=1;drawDecl();};
-      document.getElementById("decl-e").onchange=()=>{pageDecl=1;drawDecl();};
-      document.getElementById("decl-reset").onclick=()=>{deptDecl="all";fieldDecl="docs";dirDecl="desc";pageDecl=1;document.getElementById("decl-dept").value="all";document.getElementById("decl-s").value="";document.getElementById("decl-e").value="";drawDecl();};
-      document.querySelectorAll("#decl-field button").forEach(b=>b.onclick=()=>{fieldDecl=b.dataset.f;pageDecl=1;drawDecl();});
-      document.getElementById("decl-dir").onclick=()=>{dirDecl=dirDecl==="desc"?"asc":"desc";drawDecl();};
-      drawDecl();
-    }else{
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Largest libraries by storage</div>
-        <div class="psub">Libraries ranked by total storage consumed. Storage per library is the sum of its file sizes.</div>
-        <div class="toolbar">
-          <span>Department <select id="stor-dept">${deptOptions(deptStor)}</select></span>
-          <div class="drange">Date range <input type="date" id="stor-s"> to <input type="date" id="stor-e"></div>
-          <button class="resetbtn" id="stor-reset"><i>↺</i> Reset filter</button>
-        </div>
-        <div class="sortwrap"><span></span>
-          <div class="sortctl"><span class="lbl">Sort by</span>
-            <div class="segctl" id="stor-field"><button data-f="gb">Storage</button><button data-f="docs">Documents</button><button data-f="avg">Avg file size</button></div>
-            <button class="dirbtn" id="stor-dir"></button></div>
-        </div>
-        <div id="stor-rows"></div><div id="stor-pager"></div></div>`;
-      document.getElementById("stor-dept").onchange=e=>{deptStor=e.target.value;pageStor=1;drawStor();};
-      document.getElementById("stor-s").onchange=()=>{pageStor=1;drawStor();};
-      document.getElementById("stor-e").onchange=()=>{pageStor=1;drawStor();};
-      document.getElementById("stor-reset").onclick=()=>{deptStor="all";fieldStor="gb";dirStor="desc";pageStor=1;document.getElementById("stor-dept").value="all";document.getElementById("stor-s").value="";document.getElementById("stor-e").value="";drawStor();};
-      document.querySelectorAll("#stor-field button").forEach(b=>b.onclick=()=>{fieldStor=b.dataset.f;pageStor=1;drawStor();});
-      document.getElementById("stor-dir").onclick=()=>{dirStor=dirStor==="desc"?"asc":"desc";drawStor();};
-      drawStor();
-    }
-  }
-  function paintSeg(scope,field){document.querySelectorAll(scope+" button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));}
-  function drawDecl(){
-    const f=rangeFactor("decl-s","decl-e");
-    let rows=LIBS.filter(l=>deptDecl==="all"||l[2]===deptDecl).map(l=>({lib:l[0],site:l[1],docs:Math.round(l[3]*f),rec:Math.round(l[4]*f)}));
-    const val={docs:r=>r.docs,rec:r=>r.rec,rate:r=>r.docs?r.rec/r.docs:0};
-    rows.sort((a,b)=>dirDecl==="desc"?val[fieldDecl](b)-val[fieldDecl](a):val[fieldDecl](a)-val[fieldDecl](b));
-    paintSeg("#decl-field",fieldDecl);
-    document.getElementById("decl-dir").innerHTML=(dirDecl==="desc"?'▼ Highest first':'▲ Lowest first');
-    const mx=Math.max(...rows.map(r=>r.docs),1);
-    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageDecl>pages)pageDecl=pages;
-    const pg=rows.slice((pageDecl-1)*10,pageDecl*10);
-    document.getElementById("decl-rows").innerHTML=pg.map(r=>{
-      const tot=100*r.docs/mx, tealW=r.docs?100*r.rec/mx:0, greyW=r.docs?100*(r.docs-r.rec)/mx:0, rate=r.docs?Math.round(r.rec/r.docs*100):0;
-      return `<div class="sbar"><div class="sl"><b>${r.lib}</b><small>${r.site}</small></div>
-        <div class="st"><div class="seg e" style="width:${tealW}%"></div><div class="seg p" style="width:${greyW}%"></div></div>
-        <div class="vv"><b>${F(r.docs)}</b><span> docs · ${F(r.rec)} rec · ${rate}%</span></div></div>`;}).join("");
-    document.getElementById("decl-pager").innerHTML=pager(rows.length,pageDecl,pages,"libraries");
-    wirePager("#decl-pager",v=>{pageDecl=v==="prev"?Math.max(1,pageDecl-1):v==="next"?Math.min(pages,pageDecl+1):+v;drawDecl();});
-  }
-  function drawStor(){
-    const f=rangeFactor("stor-s","stor-e");
-    let rows=LIBS.filter(l=>deptStor==="all"||l[2]===deptStor).map(l=>({lib:l[0],site:l[1],docs:Math.round(l[3]*f),gb:l[5]*f}));
-    const val={gb:r=>r.gb,docs:r=>r.docs,avg:r=>r.docs?r.gb*1024/r.docs:0};
-    rows.sort((a,b)=>dirStor==="desc"?val[fieldStor](b)-val[fieldStor](a):val[fieldStor](a)-val[fieldStor](b));
-    paintSeg("#stor-field",fieldStor);
-    document.getElementById("stor-dir").innerHTML=(dirStor==="desc"?'▼ Highest first':'▲ Lowest first');
-    const mx=Math.max(...rows.map(r=>r.gb),0.1);
-    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageStor>pages)pageStor=pages;
-    const pg=rows.slice((pageStor-1)*10,pageStor*10);
-    document.getElementById("stor-rows").innerHTML=pg.map(r=>{
-      const w=100*r.gb/mx, avg=r.docs?(r.gb*1024/r.docs).toFixed(1):"0.0";
-      return `<div class="sbar"><div class="sl"><b>${r.lib}</b><small>${r.site}</small></div>
-        <div class="st" style="background:#EEF3F8"><div class="single" style="width:${Math.max(4,w)}%"></div></div>
-        <div class="vv"><b>${r.gb.toFixed(1)} GB</b><span> · ${F(r.docs)} files · ${avg} MB avg</span></div></div>`;}).join("");
-    document.getElementById("stor-pager").innerHTML=pager(rows.length,pageStor,pages,"libraries");
-    wirePager("#stor-pager",v=>{pageStor=v==="prev"?Math.max(1,pageStor-1):v==="next"?Math.min(pages,pageStor+1):+v;drawStor();});
-  }
-
-  /* ===== site inventory ===== */
-  /* Sort keys line up with the SITES columns so the header click needs no
-     lookup table. idleDays sorts ascending by default because "most recently
-     active first" is what a reader expects from a Last activity column. */
-  /* Department is a filter, not a column. The row is about a site; department
-     is the dimension you slice the list by, and repeating it down a column
-     tells the reader nothing the filter does not already say. */
-  const SCOLS=[
-    {k:"name", i:0, lab:"Site",          num:false},
-    {k:"owner",i:2, lab:"Site owner",    num:false},
-    {k:"libs", i:3, lab:"Libraries",     num:true},
-    {k:"users",i:4, lab:"Users",         num:true},
-    {k:"visits",i:5,lab:"Visits",        num:true},
-    {k:"idle", i:6, lab:"Last activity", num:true},
-  ];
-  let sortSite="visits",dirSite="desc",deptSite="all";
-  function siteDeptOptions(sel){
-    const codes=[...new Set(SITES.map(s=>s[1]))].sort();
-    return `<option value="all">All departments</option>`+
-      codes.map(c=>`<option value="${c}" ${sel===c?"selected":""}>${c} - ${DNAME[c]||c}</option>`).join("");
-  }
-  const sitesInScope=()=>deptSite==="all"?SITES:SITES.filter(s=>s[1]===deptSite);
-  function renderS3(){
-    document.getElementById("s3-detail").innerHTML=`<div class="panel">
-      <div class="ptitle">Every compliant site, its owner and its activity</div>
-      <div class="psub">Click any column heading to sort. Users counts distinct people who opened something in the site; visits counts page views. A site is inactive once it has had no activity for ${IDLE_DAYS} days.</div>
-      <div class="sortwrap">
-        <div class="sortctl"><span class="lbl">Department</span>
-          <select id="st-dept">${siteDeptOptions(deptSite)}</select></div>
-        <button class="resetbtn" id="st-deptreset"><i>↺</i> Reset filter</button>
-      </div>
-      <div class="tiles" id="st-tiles"></div>
-      <div class="scrollx"><div class="stab" id="st-table"></div></div></div>`;
-    document.getElementById("st-dept").onchange=e=>{deptSite=e.target.value;drawSites();};
-    document.getElementById("st-deptreset").onclick=()=>{
-      deptSite="all";document.getElementById("st-dept").value="all";drawSites();};
-    drawSites();
-  }
-  function drawSites(){
-    const scope=sitesInScope();
-    /* Tiles describe what is on screen, so they follow the filter. The KPI
-       cards above the band stay at estate level, which is what they say. */
-    const libs=scope.reduce((a,s)=>a+s[3],0);
-    const idle=scope.filter(s=>s[6]>IDLE_DAYS).length;
-    document.getElementById("st-tiles").innerHTML=
-      `<div class="tile"><div class="tl">${deptSite==="all"?"Sites listed":deptSite+" sites"}</div><div class="tv">${F(scope.length)}</div></div>
-       <div class="tile"><div class="tl">Libraries across them</div><div class="tv">${F(libs)}</div></div>
-       <div class="tile hi"><div class="tl">Inactive</div><div class="tv">${F(idle)}</div></div>`;
-    const col=SCOLS.find(c=>c.k===sortSite);
-    const rows=[...scope].sort((a,b)=>{
-      const x=a[col.i],y=b[col.i];
-      const cmp=col.num?x-y:String(x).localeCompare(String(y));
-      return dirSite==="asc"?cmp:-cmp;
-    });
-    /* Bars scale within the filtered set, so a small department's busiest site
-       still fills its bar rather than looking dead against the bank total. */
-    const mx={};[3,4,5,6].forEach(i=>mx[i]=Math.max(...scope.map(s=>s[i]),1));
-    let h="";
-    SCOLS.forEach(c=>{
-      const arrow=sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):"";
-      h+=`<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
-    });
-    h+=`<div class="hd">Status</div>`;
-    rows.forEach(s=>{
-      const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(s[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
-      const idle=s[6]>IDLE_DAYS;
-      h+=`<div class="nm" title="${s[0]}">${s[0]}</div>`;
-      h+=`<div class="ow" title="${s[2]}">${s[2]}</div>`;
-      h+=cell(3,F(s[3]))+cell(4,F(s[4]))+cell(5,F(s[5]))+cell(6,s[6]+"d ago");
-      h+=`<div class="pill ${idle?"no":"ok"}">${idle?"Inactive":"Active"}</div>`;
-    });
-    /* Eight grid columns: the seven sortable ones plus Status, which has no
-       sort key of its own because it is derived from idleDays. */
-    const t=document.getElementById("st-table");
-    t.innerHTML=h;
-    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
-      const k=hd.dataset.s;
-      if(sortSite===k)dirSite=dirSite==="asc"?"desc":"asc";
-      else{sortSite=k;dirSite=(k==="idle"||k==="name"||k==="dept"||k==="owner")?"asc":"desc";}
-      drawSites();
-    });
-  }
-
-  /* ===== library health ===== */
-  let sortLib="idle",dirLib="desc";
-  const LCOLS=[
-    {k:"lib",   i:0,lab:"Library",        num:false},
-    {k:"site",  i:1,lab:"Site",           num:false},
-    {k:"recs",  i:4,lab:"Records held",   num:true},
-    {k:"new",   i:7,lab:"New this period",num:true},
-    {k:"idle",  i:6,lab:"Last activity",  num:true},
-  ];
-  function renderS4(){
-    document.getElementById("s4-detail").innerHTML=`<div class="panel">
-      <div class="ptitle">Library activity and growth</div>
-      <div class="psub">Click any column heading to sort. Last activity is how long ago anything in the library changed. New this period counts records declared during the reporting period, which is what the growth rate divides by the holding at the start.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Active, under ${LIB_IDLE} days</div><div class="tv">${F(LIBS_ACTIVE)}</div></div>
-        <div class="tile hi"><div class="tl">Inactive, over ${LIB_IDLE} days</div><div class="tv">${F(LIBS_INACTIVE)}</div></div>
-        <div class="tile"><div class="tl">Long dormant, over ${LIB_DORMANT} days</div><div class="tv">${F(LIBS_DORMANT)}</div></div>
-        <div class="tile"><div class="tl">No declared records</div><div class="tv">${F(LIBS_NO_RECORDS)}</div></div>
-        <div class="tile"><div class="tl">Growth rate</div><div class="tv">${(GROWTH_RATE*100).toFixed(1)}%</div></div>
-      </div>
-      <div class="scrollx"><div class="ltab" id="lib-table"></div></div>
-</div>`;
-    drawLibs();
-  }
-  function drawLibs(){
-    const col=LCOLS.find(c=>c.k===sortLib);
-    const rows=[...LIBS].sort((a,b)=>{
-      const x=a[col.i],y=b[col.i];
-      const cmp=col.num?x-y:String(x).localeCompare(String(y));
-      return dirLib==="asc"?cmp:-cmp;
-    });
-    const mx={};[4,7,6].forEach(i=>mx[i]=Math.max(...LIBS.map(l=>l[i]),1));
-    let h="";
-    LCOLS.forEach(c=>{
-      const arrow=sortLib===c.k?(dirLib==="asc"?" ↑":" ↓"):"";
-      h+=`<div class="hd${c.num?" num":""}${sortLib===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
-    });
-    h+=`<div class="hd">Status</div>`;
-    rows.forEach(l=>{
-      const cell=(i,txt)=>`<div class="nc"><div class="nb" style="width:${(l[i]/mx[i]*100).toFixed(1)}%"></div><b>${txt}</b></div>`;
-      /* Three states, not two: a library over the dormant threshold is a
-         different conversation from one that has merely gone quiet. */
-      const state=l[6]>LIB_DORMANT?["no","Long dormant"]:l[6]>LIB_IDLE?["mid","Inactive"]:["ok","Active"];
-      h+=`<div class="nm" title="${l[0]}">${l[0]}</div><div class="dp">${l[1]}</div>`;
-      h+=cell(4,F(l[4]))+cell(7,F(l[7]))+cell(6,l[6]+"d ago");
-      h+=`<div class="pill ${state[0]}">${state[1]}</div>`;
-    });
-    const t=document.getElementById("lib-table");
-    t.innerHTML=h;
-    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
-      const k=hd.dataset.s;
-      if(sortLib===k)dirLib=dirLib==="asc"?"desc":"asc";
-      else{sortLib=k;dirLib=(k==="lib"||k==="site")?"asc":"desc";}
-      drawLibs();
-    });
-  }
-
-  const html=`<section class="dash-sl">
-    <div class="band">
-      <h2>Compliant site rollout</h2>
-      <div class="bd">How many EDRMS compliant sites have been created, and how new site creation is spread across departments.</div>
-    </div>
-    <div class="kpis" id="s1-kpis">
-      <div class="kpi stat"><div class="lab">Total EDRMS Compliant Sites Created</div><div class="val">1,057</div></div>
-    </div>
-    <div id="s1-detail"></div>
-
-    <div class="band">
-      <h2>Library adoption and volume</h2>
-      <div class="bd">How thoroughly libraries are declaring records, and which libraries hold the most content.</div>
-    </div>
-    <div class="kpis" id="s2-kpis">
-      <div class="kpi on" data-k="decl"><div class="lab">Libraries Declaration Rate</div><div class="val" id="kpi-decl">…</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="stor"><div class="lab">Largest Libraries</div><div class="val" id="kpi-stor">…</div><div class="tap">▾ Click to open</div></div>
-    </div>
-    <div id="s2-detail"></div>
-
-    <div class="band">
-      <h2>Site inventory and activity</h2>
-      <div class="bd">Who owns each site, how much it holds, how many people use it, and whether it has gone quiet. A site with no activity for ${IDLE_DAYS} days is counted as inactive.</div>
-    </div>
-    <div class="kpis" id="s3-kpis">
-      <div class="kpi stat"><div class="lab">Active Sites</div><div class="val" id="kpi-act">…</div><div class="sub">Across the whole estate</div></div>
-      <div class="kpi stat"><div class="lab">Inactive Sites, over ${IDLE_DAYS} days</div><div class="val" id="kpi-orp">…</div><div class="sub">No activity since. The table lists an owner to ask</div></div>
-    </div>
-    <div id="s3-detail"></div>
-
-    <div class="band">
-      <h2>Library health and growth</h2>
-      <div class="bd">Which libraries are still in use, which have gone quiet, and how fast the record holding is growing. A library counts as inactive after ${LIB_IDLE} days with no activity and long dormant after ${LIB_DORMANT}.</div>
-    </div>
-    <div class="kpis" id="s4-kpis">
-      <div class="kpi stat"><div class="lab">Active Libraries, last ${LIB_IDLE} days</div><div class="val" id="kpi-libact">…</div></div>
-      <div class="kpi stat"><div class="lab">Library Growth Rate</div><div class="val" id="kpi-growth">…</div></div>
-    </div>
-    <div id="s4-detail"></div>
-  </section>`;
-
-  function init(){
-    document.getElementById("kpi-decl").textContent=F(TOTAL_RECORDS);
-    document.getElementById("kpi-stor").textContent=TOTAL_GB.toFixed(1)+" GB";
-    document.getElementById("kpi-act").textContent=F(ACTIVE_SITES);
-    document.getElementById("kpi-orp").textContent=F(INACTIVE_SITES);
-    document.getElementById("kpi-libact").textContent=F(LIBS_ACTIVE);
-    document.getElementById("kpi-growth").textContent=(GROWTH_RATE*100).toFixed(1)+"%";
-    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
-    renderS1();
-    renderS2(curS2);
-    renderS3();
-    renderS4();
-  }
-
-  return {
-    ver:"Sites and Libraries Dashboard",
-    crumb:"Sites and Libraries Dashboard",
-    asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
-    /* Read by the Overview dashboard. Derived from the same arrays this
-       dashboard renders, so a summary figure can never drift from the detail. */
-    summary:{
-      sitesCreated:ALLTIME_SITES,
-      sitesInSample:SITEDEPTS.reduce((a,d)=>a+d[2],0),
-      libraryCount:LIBS.length,
-      libraryDocuments:LIBS.reduce((a,l)=>a+l[3],0),
-      libraryRecords:TOTAL_RECORDS,
-      get libraryUndeclared(){return this.libraryDocuments-this.libraryRecords;},
-      storageGB:TOTAL_GB,
-      topDepartments:[...SITEDEPTS].sort((a,b)=>b[2]-a[2]).slice(0,5).map(d=>({label:d[0],name:d[1],value:d[2]})),
-      departmentCount:SITEDEPTS.length,
-      sitesListed:SITES.length,
-      activeSites:ACTIVE_SITES,
-      inactiveSites:INACTIVE_SITES,
-      idleDays:IDLE_DAYS,
-      librariesAcrossSites:SITE_LIBRARIES,
-      librariesWithRecords:LIBS_WITH_RECORDS,
-      librariesNoRecords:LIBS_NO_RECORDS,
-      distinctOwners:[...new Set(SITES.map(s=>s[2]))].length
-    },
-    html,init
-  };
-})();
-
-/* =================================================================
-   recordsmanagement.js
-   ================================================================= */
-/* ===================================================================
-   Records Management
-   Source: EDRMS_Records_Management_Dashboard_v3.html
-   =================================================================== */
-DASHBOARDS.rm=(function(){
-  function split(total,k,seed){
-    const w=[];let s=0;for(let i=0;i<k;i++){const x=((seed*(i+3)*7919)%100)/100*0.6+0.55;w.push(x);s+=x;}
-    const out=w.map(x=>Math.max(1,Math.round(total*x/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);if(out[0]<1)out[0]=1;return out;
-  }
+const DATA=(function(){
   function monthly(total,seed){
     const w=[];for(let m=0;m<12;m++)w.push(0.6+m*0.08+((seed*(m+1))%5)*0.05);
     const s=w.reduce((a,b)=>a+b,0);const out=w.map(x=>Math.round(total*x/s));
     out[11]+=total-out.reduce((a,b)=>a+b,0);return out;
   }
-  /* --- pager: this variant hides itself entirely on a single page --- */
-  function pager(total,page,pages,noun){
-    if(pages<=1)return "";
-    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
-    let nums="",last=0;win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
-    const from=(page-1)*10+1,to=Math.min(total,page*10);
-    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
-      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>‹ Prev</button>${nums}<button data-pg="next" ${page===pages?'disabled':''}>Next ›</button></div></div>`;
-  }
 
-  /* ===== departments (16) ===== */
+  /* ===== departments ===== */
   const DEPTS=[
-   {c:"ITD",n:"Information Technology",rec:2611,phys:470,docs:640000},
-   {c:"SARD",n:"South Asia Regional",rec:2240,phys:360,docs:520000},
-   {c:"OSFG",n:"Sovereign Operations",rec:2168,phys:300,docs:410000},
-   {c:"FIN",n:"Finance",rec:2150,phys:520,docs:300000},
-   {c:"PARD",n:"Procurement & Admin",rec:1892,phys:410,docs:290000},
-   {c:"HRD",n:"Human Resources",rec:1462,phys:240,docs:205000},
-   {c:"SERD",n:"Southeast Asia",rec:1320,phys:180,docs:150000},
-   {c:"EARD",n:"East Asia Regional",rec:1180,phys:150,docs:120000},
-   {c:"OGC",n:"General Counsel",rec:1074,phys:210,docs:100000},
-   {c:"CWRD",n:"Central & West Asia",rec:1150,phys:210,docs:180000},
-   {c:"PSOD",n:"Private Sector Operations",rec:980,phys:260,docs:140000},
-   {c:"BRM",n:"Budget & Mgmt Services",rec:809,phys:90,docs:70000},
-   {c:"SPD",n:"Strategy & Policy",rec:760,phys:120,docs:95000},
-   {c:"SDCC",n:"Sustainable Dev & Climate",rec:690,phys:110,docs:88000},
-   {c:"OAS",n:"Administrative Services",rec:620,phys:130,docs:105000},
-   {c:"ERCD",n:"Economic Research",rec:540,phys:70,docs:60000},
+   {code:"ITD", name:"Information Technology",       rec:2611,phys:470,docs:640000},
+   {code:"SARD",name:"South Asia Regional",          rec:2240,phys:360,docs:520000},
+   {code:"OSFG",name:"Sovereign Operations",         rec:2168,phys:300,docs:410000},
+   {code:"FIN", name:"Finance",                      rec:2150,phys:520,docs:300000},
+   {code:"PARD",name:"Procurement and Admin",        rec:1892,phys:410,docs:290000},
+   {code:"HRD", name:"Human Resources",              rec:1462,phys:240,docs:205000},
+   {code:"SERD",name:"Southeast Asia",               rec:1320,phys:180,docs:150000},
+   {code:"EARD",name:"East Asia Regional",           rec:1180,phys:150,docs:120000},
+   {code:"CWRD",name:"Central and West Asia",        rec:1150,phys:210,docs:180000},
+   {code:"OGC", name:"General Counsel",              rec:1074,phys:210,docs:100000},
+   {code:"PSOD",name:"Private Sector Operations",    rec:980, phys:260,docs:140000},
+   {code:"BRM", name:"Budget and Mgmt Services",     rec:809, phys:90, docs:70000},
+   {code:"SPD", name:"Strategy and Policy",          rec:760, phys:120,docs:95000},
+   {code:"SDCC",name:"Sustainable Dev and Climate",  rec:690, phys:110,docs:88000},
+   {code:"OAS", name:"Administrative Services",      rec:620, phys:130,docs:105000},
+   {code:"ERCD",name:"Economic Research",            rec:540, phys:70, docs:60000},
   ];
-  DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.c.length+i+1);d.mphys=monthly(d.phys,d.c.length+i+2);d.mdocs=monthly(d.docs,d.c.length+i+3);});
-  const ANNUAL_REC=DEPTS.reduce((a,d)=>a+d.rec,0);
-  /* Declaration over time. Both figures read one column, Records.CreatedDate,
-     which is populated today, so neither waits on the scan or the usage feed.
-     MONTHS is the current year summed across departments, so it necessarily
-     totals ANNUAL_REC and is asserted below rather than typed twice. */
-  /* Rolling twelve months ending at the latest closed month, not a calendar
-     year. The dashboard is dated 20 Jul 2026, so a Jan to Dec chart would show
-     figures for months that have not happened. */
-  const MONTHNAMES=["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"];
-  const MONTHS=MONTHNAMES.map((m,i)=>({label:m,value:DEPTS.reduce((a,d)=>a+d.mrec[i],0)}));
-  const THIS_MONTH=MONTHS[MONTHS.length-1];
-  const MONTH_AVG=Math.round(ANNUAL_REC/12);
-  const VS_AVG=(THIS_MONTH.value-MONTH_AVG)/MONTH_AVG;
-  /* The last entry is the same population as the monthly chart, so the two
-     agree by construction rather than by coincidence. */
-  const YEARS=[
-    {label:"2023",value:6480},
-    {label:"2024",value:11240},
-    {label:"2025",value:17905},
-    {label:"Last 12 months",value:ANNUAL_REC},
-  ];
-  const ANNUAL_DOCS=DEPTS.reduce((a,d)=>a+d.docs,0);
-  console.assert(MONTHS.reduce((a,m)=>a+m.value,0)===ANNUAL_REC,
-    "Monthly declarations must total the annual figure");
-  console.assert(YEARS[YEARS.length-1].value===ANNUAL_REC,
-    "The current year in the trend must match Total Declared Records");
+  const DECLARED=DEPTS.reduce((a,d)=>a+d.rec,0);
+  const DOCUMENTS=DEPTS.reduce((a,d)=>a+d.docs,0);
+  const WITH_PHYSICAL=DEPTS.reduce((a,d)=>a+d.phys,0);
 
-  /* Site name stems per department. This used to be DIVNAMES and carried a
-     division tier in the drill. Division was cut from the design: ADBMeta holds
-     no division for any row, and nothing in the tenant supplies one, so a level
-     that can never be populated was removed rather than left to fail at build
-     time. The stems survive only as a way to name two sites apiece. */
-  const SITESTEMS={ITD:["Digital Services","Infrastructure & Operations"],SARD:["South Asia Operations","South Asia Programs"],
-   OSFG:["Country Operations","Safeguards"],FIN:["Treasury","Financial Control"],PARD:["Procurement","Administration"],
-   HRD:["People Operations","Talent & Learning"],SERD:["Southeast Asia Operations"],EARD:["East Asia Operations"],
-   OGC:["Legal Advisory","Compliance"],CWRD:["Central Asia Operations","West Asia Operations"],PSOD:["Investments","Portfolio Management"],
-   BRM:["Budget Operations"],SPD:["Strategy","Partnerships"],SDCC:["Climate Change","Sustainable Development"],
-   OAS:["Facilities","Administration"],ERCD:["Macroeconomics","Statistics"]};
-  const LIBPOOL=["Final Documents","Board Papers","Loan Agreements","Country Reports","Policies","Correspondence","Minutes","Project Completion"];
+  /* ===== declaration over time =====
+     A rolling twelve months ending at the latest closed month, not a calendar
+     year. The suite is dated 20 Jul 2026, so a January to December chart would
+     show figures for months that have not happened yet. */
+  const MONTH_LABELS=["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"];
+  DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.code.length+i+1);});
+  const MONTH_VALUES=MONTH_LABELS.map((m,i)=>DEPTS.reduce((a,d)=>a+d.mrec[i],0));
 
-  const TREE=DEPTS.map(d=>{
-    /* Sites hang directly off the department now. Each stem yields a Site and an
-       Annex, so a department with two stems has four sites and one stem has two.
-       split() distributes exactly, so the department totals are unchanged by the
-       tier removal. */
-    const siteNames=[];
-    SITESTEMS[d.c].forEach(stem=>{
-      const short=stem.split(" ")[0];
-      siteNames.push(`${d.c} ${short} Site`,`${d.c} ${short} Annex`);
-    });
-    const n=siteNames.length;
-    const sr=split(d.rec,n,d.c.length+1),sp=split(d.phys,n,d.c.length+2),sd=split(d.docs,n,d.c.length+3);
-    const sites=siteNames.map((sn,j)=>{
-      const libNames=[LIBPOOL[j%LIBPOOL.length],LIBPOOL[(j+3)%LIBPOOL.length]];
-      const lr=split(sr[j],2,j+6),lp=split(sp[j],2,j+7),ld=split(sd[j],2,j+8);
-      const libs=libNames.map((ln,k)=>({label:ln,site:sn,rec:lr[k],phys:lp[k],docs:ld[k]}));
-      return {label:sn,sub:d.c,rec:sr[j],phys:sp[j],docs:sd[j],children:libs};
-    });
-    return {label:d.c,sub:d.n,rec:d.rec,phys:d.phys,docs:d.docs,children:sites};
-  });
-  const LEVELS=["Department","Site","Library"];
-  function listAt(path){let lvl=TREE;for(const idx of path)lvl=lvl[idx].children;return lvl;}
-  function crumbHTML(path){let lvl=TREE,html=`<a data-i="-1">All departments</a>`;
-    path.forEach((idx,i)=>{html+=`<span class="arw">›</span><a data-i="${i}">${lvl[idx].label}</a>`;lvl=lvl[idx].children;});
-    html+=`<span class="arw">·</span><span class="cur">${LEVELS[path.length]} level</span>`;return html;}
-
-  /* ===== section 1 ===== */
-  let pathRec=[],pageRec=1,pathDocs=[],pageDocs=1;
-  let curS1="rec";
-  function renderS1(which){
-    curS1=which;
-    document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
-    const box=document.getElementById("s1-detail");
-    if(which==="rec"){
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Total Declared Records</div>
-        <div class="psub">Declared records per department, split into those with and without a physical counterpart. Click a bar to drill down from department to site to library.</div>
-        <div class="daterow">
-          <div class="drill" id="rec-crumb" style="margin:0"></div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <div class="drange">Date range
-              <input type="date" id="rec-s"> to
-              <input type="date" id="rec-e"></div>
-            <button id="rec-reset" class="resetbtn">↺ Reset filter</button>
-          </div>
-        </div>
-        <div class="subtotal" id="rec-subtotal" style="margin-bottom:12px"></div>
-        <div class="legend"><span class="lg"><span class="sw" style="background:var(--greyblue)"></span>Without physical counterpart</span><span class="lg"><span class="sw" style="background:var(--teal)"></span>With physical counterpart</span></div>
-        <div id="rec-bars"></div><div id="rec-pager"></div></div>`;
-      document.getElementById("rec-s").onchange=()=>{pageRec=1;drawRec();};
-      document.getElementById("rec-e").onchange=()=>{pageRec=1;drawRec();};
-      document.getElementById("rec-reset").onclick=()=>{
-        document.getElementById("rec-s").value="";
-        document.getElementById("rec-e").value="";
-        pathRec=[];pageRec=1;drawRec();
-      };
-      drawRec();
-    }else{
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Total Documents in EDRMS Compliant Sites</div>
-        <div class="psub">Total documents held in each department's EDRMS compliant sites. Click a bar to drill down from department to site to library.</div>
-        <div class="daterow">
-          <div class="drill" id="docs-crumb" style="margin:0"></div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <div class="drange">Date range
-              <input type="date" id="docs-s"> to
-              <input type="date" id="docs-e"></div>
-            <button id="docs-reset" class="resetbtn">↺ Reset filter</button>
-          </div>
-        </div>
-        <div class="subtotal" id="docs-subtotal" style="margin-bottom:12px"></div>
-        <div id="docs-bars"></div><div id="docs-pager"></div></div>`;
-      document.getElementById("docs-s").onchange=()=>{pageDocs=1;drawDocs();};
-      document.getElementById("docs-e").onchange=()=>{pageDocs=1;drawDocs();};
-      document.getElementById("docs-reset").onclick=()=>{
-        document.getElementById("docs-s").value="";
-        document.getElementById("docs-e").value="";
-        pathDocs=[];pageDocs=1;drawDocs();
-      };
-      drawDocs();
-    }
-  }
-  function rangeMonthsFor(sId,eId){
-    const sEl=document.getElementById(sId),eEl=document.getElementById(eId);
-    if(!sEl||!eEl)return [0,11];
-    const s=new Date(sEl.value+"T00:00:00"),e=new Date(eEl.value+"T00:00:00");
-    let sM=isNaN(s)?0:(s.getFullYear()<2026?0:s.getFullYear()>2026?12:s.getMonth());
-    let eM=isNaN(e)?11:(e.getFullYear()>2026?11:e.getFullYear()<2026?-1:e.getMonth());
-    return [sM,eM];
-  }
-  function rangeMonths(){return rangeMonthsFor("rec-s","rec-e");}
-  /* the range summary line shows only while a date range is actually applied */
-  function paintSubtotal(id,blank,full,text){
-    const el=document.getElementById(id);
-    if(!el)return;
-    if(blank||full){el.innerHTML="";el.style.display="none";}
-    else{el.innerHTML=text;el.style.display="";}
-  }
-  function sumMonths(arr,sM,eM){let t=0;for(let m=Math.max(0,sM);m<=Math.min(11,eM);m++)t+=arr[m];return t;}
-  function drawRec(){
-    const [sM,eM]=rangeMonths();
-    const canDrill=pathRec.length<3,atLib=pathRec.length===3;
-    document.getElementById("rec-crumb").innerHTML=crumbHTML(pathRec);
-    document.querySelectorAll("#rec-crumb a").forEach(a=>a.onclick=()=>{const i=+a.dataset.i;pathRec=i<0?[]:pathRec.slice(0,i+1);pageRec=1;drawRec();});
-    let rows;
-    if(pathRec.length===0){
-      rows=DEPTS.map((d,i)=>({label:d.c,sub:d.n,i,rec:sumMonths(d.mrec,sM,eM),phys:sumMonths(d.mphys,sM,eM)}));
-    }else{
-      const dd=DEPTS[pathRec[0]];
-      const recF=dd.rec?sumMonths(dd.mrec,sM,eM)/dd.rec:0, physF=dd.phys?sumMonths(dd.mphys,sM,eM)/dd.phys:0;
-      rows=listAt(pathRec).map((r,i)=>({...r,i,rec:Math.round(r.rec*recF),phys:Math.round(r.phys*physF)}));
-    }
-    rows=rows.map(r=>({...r,elec:r.rec-r.phys})).sort((a,b)=>b.rec-a.rec);
-    const rangeTotal=DEPTS.reduce((a,d)=>a+sumMonths(d.mrec,sM,eM),0);
-    const full=(sM<=0&&eM>=11);
-    const sVal=(document.getElementById("rec-s")||{}).value||"";
-    const eVal=(document.getElementById("rec-e")||{}).value||"";
-    const blank=(sVal===""&&eVal==="");
-    paintSubtotal("rec-subtotal",blank,full,
-      `Declared in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_REC)} total.`);
-    const mx=Math.max(...rows.map(r=>r.rec),1);
-    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageRec>pages)pageRec=pages;
-    const pg=rows.slice((pageRec-1)*10,pageRec*10);
-    document.getElementById("rec-bars").innerHTML=pg.map(r=>{
-      const w=100*r.rec/mx,we=r.rec?r.elec/r.rec*w:0,wp=r.rec?r.phys/r.rec*w:0;
-      const sub=atLib?`in ${r.site}`:(r.sub||"");
-      return `<div class="sbar ${canDrill?'click':''}" data-i="${r.i}"><div class="sl"><b>${r.label}</b>${sub?`<small>${sub}</small>`:""}</div>
-        <div class="st"><div class="seg e" style="width:${we}%" title="Without physical: ${F(r.elec)}">${r.elec>110?F(r.elec):""}</div><div class="seg p" style="width:${wp}%" title="With physical: ${F(r.phys)}">${r.phys>70?F(r.phys):""}</div></div>
-        <div class="sv">${F(r.rec)}</div></div>`;}).join("");
-    if(canDrill)document.querySelectorAll("#rec-bars .sbar.click").forEach(b=>b.onclick=()=>{pathRec=[...pathRec,+b.dataset.i];pageRec=1;drawRec();});
-    document.getElementById("rec-pager").innerHTML=pager(rows.length,pageRec,pages,LEVELS[pathRec.length].toLowerCase()+"s");
-    wirePager("#rec-pager",v=>{pageRec=v==="prev"?Math.max(1,pageRec-1):v==="next"?Math.min(pages,pageRec+1):+v;drawRec();});
-  }
-  function drawDocs(){
-    const [sM,eM]=rangeMonthsFor("docs-s","docs-e");
-    const canDrill=pathDocs.length<3,atLib=pathDocs.length===3;
-    document.getElementById("docs-crumb").innerHTML=crumbHTML(pathDocs);
-    document.querySelectorAll("#docs-crumb a").forEach(a=>a.onclick=()=>{const i=+a.dataset.i;pathDocs=i<0?[]:pathDocs.slice(0,i+1);pageDocs=1;drawDocs();});
-    let rows;
-    if(pathDocs.length===0){
-      rows=DEPTS.map((d,i)=>({label:d.c,sub:d.n,i,docs:sumMonths(d.mdocs,sM,eM)}));
-    }else{
-      const dd=DEPTS[pathDocs[0]];
-      const docsF=dd.docs?sumMonths(dd.mdocs,sM,eM)/dd.docs:0;
-      rows=listAt(pathDocs).map((r,i)=>({...r,i,docs:Math.round(r.docs*docsF)}));
-    }
-    rows.sort((a,b)=>b.docs-a.docs);
-    const rangeTotal=DEPTS.reduce((a,d)=>a+sumMonths(d.mdocs,sM,eM),0);
-    const full=(sM<=0&&eM>=11);
-    const sVal=(document.getElementById("docs-s")||{}).value||"";
-    const eVal=(document.getElementById("docs-e")||{}).value||"";
-    const blank=(sVal===""&&eVal==="");
-    paintSubtotal("docs-subtotal",blank,full,
-      `Documents in selected range: <b>${F(rangeTotal)}</b> of ${F(ANNUAL_DOCS)} total.`);
-    const mx=Math.max(...rows.map(r=>r.docs),1);
-    const pages=Math.max(1,Math.ceil(rows.length/10));if(pageDocs>pages)pageDocs=pages;
-    const pg=rows.slice((pageDocs-1)*10,pageDocs*10);
-    document.getElementById("docs-bars").innerHTML=pg.map(r=>{
-      const sub=atLib?`in ${r.site}`:(r.sub||"");
-      return `<div class="cbar" data-i="${r.i}" style="${canDrill?'cursor:pointer':''}"><div class="cl"><b>${r.label}</b>${sub?`<small>${sub}</small>`:""}</div>
-        <div class="ct"><div class="cf" style="width:${Math.max(6,100*r.docs/mx)}%;background:var(--orange)">${F(r.docs)}</div></div></div>`;}).join("");
-    if(canDrill)document.querySelectorAll("#docs-bars .cbar").forEach(b=>b.onclick=()=>{pathDocs=[...pathDocs,+b.dataset.i];pageDocs=1;drawDocs();});
-    document.getElementById("docs-pager").innerHTML=pager(rows.length,pageDocs,pages,LEVELS[pathDocs.length].toLowerCase()+"s");
-    wirePager("#docs-pager",v=>{pageDocs=v==="prev"?Math.max(1,pageDocs-1):v==="next"?Math.min(pages,pageDocs+1):+v;drawDocs();});
-  }
-
-  /* ===== sites / users usage ===== */
-  const SITES=[];
-  DEPTS.forEach((d,i)=>{
-    const seed=d.c.length*7+i*13;
-    const prim=(i%2===0)?"Records Site":"Workspace";
-    SITES.push({dept:d.c,site:`${d.c} ${prim}`,base:Math.round(d.rec*0.95),last:(seed%7)+1});
-    SITES.push({dept:d.c,site:`${d.c} Team Site`,base:Math.round(d.rec*0.5),last:(seed%22)+2});
-    if(d.rec>1000)SITES.push({dept:d.c,site:`${d.c} Programs Hub`,base:Math.round(d.rec*0.35),last:(seed%60)+8});
-    if(i%3===0)SITES.push({dept:d.c,site:`${d.c} Shared Drive (legacy)`,base:Math.round(d.rec*0.4),last:110+(seed%80)});
-  });
-  SITES.forEach(s=>{
-    s.uv7=s.last<=7?Math.round(s.base*0.42):0;
-    s.uvAll=s.base;   /* allTime, the only other window site analytics offers */
-    s.v7=s.last<=7?Math.round(s.base*0.42*1.5):0;
-    s.v30=s.last<=30?Math.round(s.base*1.5):0;
-    s.v90=s.last<=90?Math.round(s.base*1.5*2.2):0;
-    s.v180=s.last<=180?Math.round(s.base*1.5*4.1):0;
-  });
-
-  /* Monthly active users, the client's 1.1.2.
-     This is deliberately NOT the sum of the per site unique viewers below.
-     Per site figures come from /sites/{id}/analytics, and anyone who works in
-     three sites is counted three times, so summing them overstates headcount.
-     The bankwide figure comes from a different report,
-     getSharePointActivityUserDetail(period='D30'), which returns one row per
-     person. Count the rows and you have distinct people.
-     The gap between the two is real and is explained on the panel rather than
-     hidden, because a reader who adds up the bars will otherwise think the
-     total is wrong. */
-  const MAU_SITE_SUM=SITES.reduce((a,s)=>a+s.uvAll,0);
+  /* ===== people and sites ===== */
   const MONTHLY_ACTIVE_USERS=9420;
-  console.assert(MONTHLY_ACTIVE_USERS<MAU_SITE_SUM,
-    "Distinct monthly users must be below the sum of per site viewers, since sites overlap");
+  const SITES_CREATED=1057;
+  const IDLE_DAYS=90;             /* a site is inactive after this long */
+  const LIB_IDLE=90, LIB_DORMANT=180;
+  const SITES_INACTIVE=189;       /* of the 1,057, no activity for IDLE_DAYS */
+  const SITES_CREATED_90=64;
+  const SITE_LIBRARIES=1840;
+  const LIBS_NO_RECORDS=604;
+  const LIBS_WITH_RECORDS=SITE_LIBRARIES-LIBS_NO_RECORDS;
+  const LIBS_ACTIVE=1102;         /* activity within LIB_IDLE days */
+  const LIB_GROWTH=0.107;
 
-  /* The refresh keeps every week's rows rather than replacing them, so usage
-     figures can take a real date range instead of fixed windows. The range can
-     never start before the first run: history that was never captured cannot
-     be recovered, and the picker enforces that rather than silently returning
-     an empty result for an earlier date. */
-  const HISTORY_START="2026-01-05";
-  const TODAY="2026-07-20";          /* the data as of date for this dashboard */
-  /* A date range sums SiteVisits7 across the weeks it covers. Consecutive 7 day
-     windows tile exactly; 30 and 90 day windows overlap and must never be
-     summed, which is why the range works off the weekly figure. */
-  const DAY=864e5, WEEK=7*DAY;
-  const iso=d=>d.toISOString().slice(0,10);
-  const nice=d=>new Date(d+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
-
-  /* One row per site per week, exactly as the Site Activity Table will hold it.
-     Each SiteVisits7 covers the seven days ending on its refresh date, so
-     consecutive rows tile and can be added. This is the array a month sums. */
-  const REFRESHES=[];
-  for(let t=new Date(HISTORY_START+"T00:00:00").getTime(); t<=new Date(TODAY+"T00:00:00").getTime(); t+=WEEK)
-    REFRESHES.push(iso(new Date(t)));
-  SITES.forEach((s,i)=>{
-    s.weekly=REFRESHES.map((r,k)=>{
-      /* A gentle seasonal wobble so a month total is not simply weeks x base. */
-      const f=0.75+((i*7+k*13)%11)/22;
-      return {refresh:r, v7:Math.round((s.v7||Math.round(s.base*0.1))*f)};
-    });
-  });
-
-  /* Two ways to pick a period, and both are exact.
-     preset  reads one stored row, the way "last 30 days" is meant to be read
-     month   sums the weekly tiles whose refresh date falls in that month
-     A free day-level calendar is deliberately absent: a week is the smallest
-     unit the data holds, so 8 to 15 January could only ever be estimated. */
-  let periodMode="preset", presetDays=30, pickYear=2026, pickMonth=0;
-  const MONTHNAMES_L=["January","February","March","April","May","June",
-                      "July","August","September","October","November","December"];
-  const YEARS_AVAIL=[...new Set(REFRESHES.map(r=>+r.slice(0,4)))];
-  const monthWeeks=()=>REFRESHES.filter(r=>+r.slice(0,4)===pickYear && +r.slice(5,7)-1===pickMonth);
-  const periodLabel=()=>{
-    if(periodMode==="preset")
-      return `the last ${presetDays} days, as at ${nice(TODAY)}`;
-    const w=monthWeeks();
-    if(!w.length) return `${MONTHNAMES_L[pickMonth]} ${pickYear}, no refreshes in that month`;
-    const first=iso(new Date(new Date(w[0]+"T00:00:00").getTime()-6*DAY));
-    return `${w.length} weekly refresh${w.length>1?"es":""}, covering ${nice(first)} to ${nice(w[w.length-1])}`;
-  };
-  /* The figure for one site under the current period. Presets read the stored
-     window; a month adds the tiles. Never the other way round. */
-  const sitePeriod=s=>{
-    if(periodMode==="preset")
-      return presetDays===7?s.v7:presetDays===30?s.v30:presetDays===90?s.v90:s.v180;
-    const keep=new Set(monthWeeks());
-    return s.weekly.filter(w=>keep.has(w.refresh)).reduce((a,w)=>a+w.v7,0);
-  };
-  let deptSites="all",pageSites=1,deptUsers="all",pageUsers=1;
-
-  function periodControl(id){
-    return `<div class="periodctl">
-      <div class="segctl" id="${id}-preset">
-        ${[7,30,90,180].map(d=>`<button class="${periodMode==="preset"&&presetDays===d?"on":""}" data-p="${d}">Last ${d} days</button>`).join("")}
-        <button class="${periodMode==="month"?"on":""}" data-p="month">By month</button>
-      </div>
-      ${periodMode==="month"?`<span class="mpick">
-        <select id="${id}-year">${YEARS_AVAIL.map(y=>`<option ${y===pickYear?"selected":""}>${y}</option>`).join("")}</select>
-        <select id="${id}-month">${MONTHNAMES_L.map((m,k)=>`<option value="${k}" ${k===pickMonth?"selected":""}>${m}</option>`).join("")}</select>
-      </span>`:""}
-    </div>`;
-  }
-  function wirePeriod(id,redraw){
-    document.querySelectorAll(`#${id}-preset button`).forEach(b=>b.onclick=()=>{
-      if(b.dataset.p==="month")periodMode="month";
-      else{periodMode="preset";presetDays=+b.dataset.p;}
-      redraw();
-    });
-    const y=document.getElementById(`${id}-year`), m=document.getElementById(`${id}-month`);
-    if(y)y.onchange=e=>{pickYear=+e.target.value;redraw();};
-    if(m)m.onchange=e=>{pickMonth=+e.target.value;redraw();};
-  }
-  let curS2="sites";
-  function deptOptions(sel){return `<option value="all">All departments</option>`+DEPTS.map(d=>`<option value="${d.c}" ${sel===d.c?"selected":""}>${d.c} - ${d.n}</option>`).join("");}
-
-  function renderS2(which){
-    curS2=which;
-    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.classList.toggle("on",k.dataset.k===which));
-    const box=document.getElementById("s2-detail");
-    if(which==="sites"){
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Active Departmental Sites</div>
-        <div class="psub">Departmental sites ranked by site visits, with each site's most recent activity. A preset window reads one stored figure; By month adds the weekly refreshes that fall in the month. There is no day level picker, because a week is the smallest period the data holds and a part week could only be estimated.</div>
-        <div class="toolbar">
-          ${periodControl("sites")}
-          <div class="ctl">Department<select id="sites-dept">${deptOptions(deptSites)}</select></div></div>
-        <div class="periodnote" id="sites-period"></div>
-        <div class="statrow" id="sites-stats"></div>
-        <div class="colhead"><span>Site</span><span class="c2">Site visits</span><span class="c3">Last activity</span></div>
-        <div id="sites-bars"></div><div id="sites-pager"></div></div>`;
-      wirePeriod("sites",()=>{pageSites=1;renderS2("sites");});
-      document.getElementById("sites-dept").onchange=e=>{deptSites=e.target.value;pageSites=1;drawSites();};
-      drawSites();
-    }else{
-      box.innerHTML=`<div class="panel">
-        <div class="ptitle">Total EDRMS Users</div>
-        <div class="psub">Distinct people who opened something in each site. Only two windows exist, last 7 days and all time: SharePoint returns no unique viewer figure at 30 or 90 days, so those are absent rather than approximated. The bars sum to more than the bankwide total because anyone working in several sites is counted once per site.</div>
-        <div class="toolbar">
-          ${periodControl("users")}
-          <div class="ctl">Department<select id="users-dept">${deptOptions(deptUsers)}</select></div></div>
-        <div class="statrow" id="users-stats"></div>
-        <div class="colhead"><span>Site</span><span class="c2" id="users-metric-h">Unique viewers</span><span class="c3">Last activity</span></div>
-        <div id="users-bars"></div><div id="users-pager"></div></div>`;
-      wirePeriod("users",()=>{pageUsers=1;renderS2("users");});
-      document.getElementById("users-dept").onchange=e=>{deptUsers=e.target.value;pageUsers=1;drawUsers();};
-      drawUsers();
-    }
-  }
-  function drawSites(){
-    /* Visits over the range are SiteVisits7 summed across the weekly snapshots
-       it covers. The 30 and 90 day figures are never summed: their windows
-       overlap, so four weekly readings would count most days four times. */
-    const vKey=sitePeriod;
-    const win=periodMode==="preset"?presetDays:180;
-    let list=SITES.filter(s=>s.last<=win);
-    const pn=document.getElementById("sites-period");
-    if(pn)pn.textContent=`Showing ${periodLabel()}.`;
-    if(deptSites!=="all")list=list.filter(s=>s.dept===deptSites);
-    list=list.map(s=>({...s,v:vKey(s)})).sort((a,b)=>b.v-a.v);
-    const visits=list.reduce((a,b)=>a+b.v,0);
-    document.getElementById("sites-stats").innerHTML=`
-      <div class="stat"><div class="sl">Active sites</div><div class="sv">${F(list.length)}</div></div>
-      <div class="stat"><div class="sl">Total site visits</div><div class="sv">${F(visits)}</div></div>`;
-    const mx=Math.max(...list.map(s=>s.v),1);
-    const pages=Math.max(1,Math.ceil(list.length/10));if(pageSites>pages)pageSites=pages;
-    const pg=list.slice((pageSites-1)*10,pageSites*10);
-    document.getElementById("sites-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
-      <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.v/mx)}%;background:var(--green)">${F(s.v)}</div></div>
-      <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
-    document.getElementById("sites-pager").innerHTML=pager(list.length,pageSites,pages,"sites");
-    wirePager("#sites-pager",v=>{pageSites=v==="prev"?Math.max(1,pageSites-1):v==="next"?Math.min(pages,pageSites+1):+v;drawSites();});
-  }
-  function drawUsers(){
-    /* Two windows, because two is all SharePoint returns. There is no unique
-       viewer figure at 30 or 90 days, so those buttons are absent rather than
-       silently showing something else. */
-    /* Distinct people cannot be added across weeks: someone active in four of
-       them is one person, not four. Per site this shows the distinct viewers
-       seen across the range, and the bankwide figure below comes from the User
-       Activity Table, counting distinct UserPrincipalName over the same weeks. */
-    /* Unique viewers exist at 7 days and all time only, so a longer period
-       falls back to all time rather than pretending to a figure Microsoft
-       does not publish. */
-    const uvKey=s=>(periodMode==="preset"&&presetDays===7)?s.uv7:s.uvAll;
-    let list=(periodMode==="preset"&&presetDays===7)?SITES.filter(s=>s.last<=7):SITES.slice();
-    if(deptUsers!=="all")list=list.filter(s=>s.dept===deptUsers);
-    list=list.map(s=>({...s,m:uvKey(s)})).sort((a,b)=>b.m-a.m);
-    document.getElementById("users-metric-h").textContent="Unique viewers";
-    const totUV=list.reduce((a,b)=>a+uvKey(b),0);
-    /* Two figures, not one, because they answer different questions. The
-       bankwide total counts people; the sum of the bars counts site
-       memberships. Showing only the sum would overstate headcount. */
-    const bank=(deptUsers==="all")
-      ? `<div class="stat"><div class="sl">Distinct people, bankwide</div><div class="sv">${F(MONTHLY_ACTIVE_USERS)}</div></div>`:"";
-    document.getElementById("users-stats").innerHTML=
-      bank+`<div class="stat"><div class="sl">Sum of per site viewers</div><div class="sv">${F(totUV)}</div></div>`;
-    const mx=Math.max(...list.map(s=>s.m),1);
-    const pages=Math.max(1,Math.ceil(list.length/10));if(pageUsers>pages)pageUsers=pages;
-    const pg=list.slice((pageUsers-1)*10,pageUsers*10);
-    document.getElementById("users-bars").innerHTML=pg.map(s=>`<div class="cbar act"><div class="cl"><b>${s.site}</b><small>${s.dept}</small></div>
-      <div class="ct"><div class="cf" style="width:${Math.max(6,100*s.m/mx)}%;background:var(--deepblue)">${F(s.m)}</div></div>
-      <div class="la">${s.last} day${s.last===1?"":"s"} ago</div></div>`).join("");
-    document.getElementById("users-pager").innerHTML=pager(list.length,pageUsers,pages,"sites");
-    wirePager("#users-pager",v=>{pageUsers=v==="prev"?Math.max(1,pageUsers-1):v==="next"?Math.min(pages,pageUsers+1):+v;drawUsers();});
-  }
-
-  /* ===== declaration over time ===== */
-  function renderS3(){
-    const mmax=Math.max(...MONTHS.map(m=>m.value));
-    const ymax=Math.max(...YEARS.map(y=>y.value));
-    document.getElementById("s3-detail").innerHTML=`<div class="panel">
-      <div class="ptitle">Records declared by month, last 12 months</div>
-      <div class="psub">Declarations in each of the last twelve months, ending ${THIS_MONTH.label} 2026. They total ${F(ANNUAL_REC)}, the same figure as Total Declared Records above.</div>
-      <div class="mrow">${MONTHS.map(m=>`
-        <div class="mcol" title="${m.label}: ${F(m.value)} records">
-          <div class="mbar" style="height:${Math.max(4,100*m.value/mmax)}%"></div>
-          <div class="mval">${F(m.value)}</div>
-          <div class="mlab">${m.label}</div>
-        </div>`).join("")}</div>
-      <div class="subtotal">Latest closed month, ${THIS_MONTH.label} 2026: <b>${F(THIS_MONTH.value)}</b> records declared, against a twelve month average of <b>${F(MONTH_AVG)}</b>.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records declared by year</div>
-      <div class="psub">Declarations per year since the programme began. The last bar is the trailing twelve months rather than a calendar year, which is why it matches the chart above.</div>
-      ${YEARS.map(y=>`<div class="ybar"><div class="yl"><b>${y.label}</b></div>
-        <div class="yt"><div class="yf" style="width:${Math.max(6,100*y.value/ymax)}%">${F(y.value)}</div></div></div>`).join("")}
-    </div>`;
-  }
-
-  const html=`<section class="dash-rm">
-    <div class="band">
-      <h2>Total Declared Records vs Total Documents in EDRMS Compliant Sites</h2>
-      <div class="bd">See how much of the content stored in EDRMS compliant sites has been formally declared as an official record, and how that breaks down by department, site, and library.</div>
-    </div>
-    <div class="kpis" id="s1-kpis">
-      <div class="kpi on" data-k="rec"><div class="lab">Total Declared Records</div><div class="val" id="kpi-rec">…</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="docs"><div class="lab">Total Documents in EDRMS Compliant Sites</div><div class="val" id="kpi-docs">…</div><div class="tap">▾ Click to open</div></div>
-    </div>
-    <div id="s1-detail"></div>
-
-    <div class="band">
-      <h2>SharePoint Sites and Users Governance</h2>
-      <div class="bd">See which departmental sites and users are actively engaging with EDRMS, based on SharePoint usage. Site visits are available at 7, 30 and 90 days; unique viewers only at 7 days and all time, which is a Microsoft limit rather than a design choice.</div>
-    </div>
-    <div class="kpis" id="s2-kpis">
-      <div class="kpi on" data-k="sites"><div class="lab">Active Departmental Sites</div><div class="val" id="kpi-sites">…</div><div class="tap">▾ Click to open</div></div>
-      <div class="kpi" data-k="users"><div class="lab">Total EDRMS Users, monthly active</div><div class="val" id="kpi-users">…</div><div class="tap">▾ Click to open</div></div>
-    </div>
-    <div id="s2-detail"></div>
-
-    <div class="band">
-      <h2>Declaration over time</h2>
-      <div class="bd">When records were declared, by month across the current year and by year since the programme began. Both read the declaration date held against every record, so neither waits on anything.</div>
-    </div>
-    <div class="kpis" id="s3-kpis">
-      <div class="kpi stat"><div class="lab">Records Declared This Month</div><div class="val" id="kpi-month">…</div><div class="sub" id="sub-month"></div></div>
-      <div class="kpi stat"><div class="lab">Monthly Average, last 12 months</div><div class="val" id="kpi-avg">…</div><div class="sub" id="sub-avg"></div></div>
-    </div>
-    <div id="s3-detail"></div>
-  </section>`;
-
-  function init(){
-    document.getElementById("kpi-rec").textContent=F(ANNUAL_REC);
-    document.getElementById("kpi-month").textContent=F(THIS_MONTH.value);
-    document.getElementById("kpi-avg").textContent=F(MONTH_AVG);
-    document.getElementById("sub-month").textContent=`${THIS_MONTH.label} 2026, the latest closed month`;
-    document.getElementById("sub-avg").textContent=
-      `${THIS_MONTH.label} ran ${Math.abs(VS_AVG*100).toFixed(0)} percent ${VS_AVG>=0?"above":"below"} the average`;
-    document.getElementById("kpi-docs").textContent=(ANNUAL_DOCS/1e6).toFixed(2)+"M";
-    document.getElementById("kpi-sites").textContent=F(SITES.filter(s=>s.last<=7).length);
-    document.getElementById("kpi-users").textContent=F(MONTHLY_ACTIVE_USERS);
-    document.querySelectorAll("#s1-kpis .kpi").forEach(k=>k.onclick=()=>renderS1(k.dataset.k));
-    document.querySelectorAll("#s2-kpis .kpi").forEach(k=>k.onclick=()=>renderS2(k.dataset.k));
-    renderS1(curS1);renderS2(curS2);renderS3();
-  }
-
-  return {
-    ver:"Records Management Dashboard",
-    crumb:"Records Management Dashboard",
-    asof:"Data as of Mon 20 Jul 2026 23:59 · refreshed Tue 21 Jul 06:00",
-    /* exposed so Format and Storage can assert its format counts still add up
-       to the same declared records total */
-    annualRec:ANNUAL_REC,
-    /* Read by the Overview dashboard. Derived here, from the same arrays this
-       dashboard renders, so a summary figure can never drift from the detail
-       figure it is summarising. */
-    summary:{
-      declared:ANNUAL_REC,
-      documents:ANNUAL_DOCS,
-      withPhysical:DEPTS.reduce((a,d)=>a+d.phys,0),
-      get withoutPhysical(){return this.declared-this.withPhysical;},
-      activeSites7:SITES.filter(s=>s.last<=7).length,
-      totalSitesTracked:SITES.length,
-      activeUsers7:SITES.filter(s=>s.last<=7).reduce((a,s)=>a+s.uv7,0),
-      monthlyActiveUsers:MONTHLY_ACTIVE_USERS,
-      declaredThisMonth:THIS_MONTH.value,
-      monthlyAverage:MONTH_AVG,
-      declaredByYear:YEARS.map(y=>({label:y.label,value:y.value})),
-      topDepartments:[...DEPTS].sort((a,b)=>b.rec-a.rec).slice(0,5).map(d=>({label:d.c,name:d.n,value:d.rec})),
-      departmentCount:DEPTS.length,
-      /* Read by Bank-wide Oversight, which lists every department rather than
-         the top five. Exposed rather than retyped so the two dashboards cannot
-         disagree about what a department declared. */
-      departments:DEPTS.map(d=>({code:d.c,name:d.n,rec:d.rec,phys:d.phys,docs:d.docs})),
-      monthLabels:MONTHS.map(m=>m.label),
-      monthValues:MONTHS.map(m=>m.value)
-    },
-    html,init
-  };
-})();
-
-/* =================================================================
-   formatandstorage.js
-   ================================================================= */
-/* ===================================================================
-   Format and Storage
-   Built from the approved mockup. Must be defined after DASHBOARDS.rm,
-   because it asserts against that dashboard's declared records total.
-   =================================================================== */
-DASHBOARDS.fs=(function(){
-  /* Average file size is DERIVED, never stored: storageGB * 1024 / files. */
+  /* ===== format groups =====
+     The eight groups the client lists under Format and Storage Analysis. The
+     file counts are a decomposition of the declared records, so they total it. */
   const FORMATS=[
-    {label:"PDF",                files:8200, gb:9.6},
-    {label:"Word",               files:5100, gb:3.0},
-    {label:"Excel",              files:3050, gb:2.7},
-    {label:"Email (.msg / .eml)",files:2100, gb:0.6},
-    {label:"PowerPoint",         files:1350, gb:5.9},
-    {label:"Image files",        files:980,  gb:3.6},
-    {label:"Video files",        files:466,  gb:20.5},
-    {label:"All other formats",  files:400,  gb:0.8},
+    {label:"PDF",                 files:8200, gb:9.6},
+    {label:"Word",                files:5100, gb:3.0},
+    {label:"Excel",               files:3050, gb:2.7},
+    {label:"Email (.msg / .eml)", files:2100, gb:0.6},
+    {label:"PowerPoint",          files:1350, gb:5.9},
+    {label:"Image files",         files:980,  gb:3.6},
+    {label:"Video files",         files:466,  gb:20.5},
+    {label:"All other formats",   files:400,  gb:0.8},
   ];
-  const avgOf=f=>f.files?f.gb*1024/f.files:0;
-  const TOT_FILES=FORMATS.reduce((a,f)=>a+f.files,0);
-  const TOT_GB=FORMATS.reduce((a,f)=>a+f.gb,0);
-  const TOT_AVG=TOT_FILES?TOT_GB*1024/TOT_FILES:0;
+  const TOTAL_FILES=FORMATS.reduce((a,f)=>a+f.files,0);
+  const TOTAL_GB=FORMATS.reduce((a,f)=>a+f.gb,0);
 
-  /* The format file counts are a decomposition of Total Declared Records on the
-     Records Management dashboard. If the department data over there ever
-     changes, this fires so the two dashboards cannot silently drift apart. */
-  console.assert(TOT_FILES===DASHBOARDS.rm.annualRec,
-    `Format and Storage total files (${TOT_FILES}) does not match Records Management declared records (${DASHBOARDS.rm.annualRec})`);
-
-  const COLS=[{k:"files",label:"Number of files"},{k:"gb",label:"Storage (GB)"},{k:"avg",label:"Avg file size (MB)"}];
-  const valOf={files:f=>f.files, gb:f=>f.gb, avg:f=>avgOf(f)};
-  const fmtOf={files:f=>F(f.files), gb:f=>f.gb.toFixed(1)+" GB", avg:f=>avgOf(f).toFixed(1)};
-
-  let field="files",dir="desc";
-
-  function drawPlan(){
-    const mx=Math.max(...CATS.map(c=>c.terms));
-    document.getElementById("rt-plan").innerHTML=CATS.map(c=>
-      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
-        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
-        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
-  }
-
-  function drawTable(){
-    document.querySelectorAll("#fs-field button").forEach(b=>b.classList.toggle("on",b.dataset.f===field));
-    document.getElementById("fs-dir").innerHTML=(dir==="desc"?'▼ Highest first':'▲ Lowest first');
-    const rows=[...FORMATS].sort((a,b)=>dir==="desc"?valOf[field](b)-valOf[field](a):valOf[field](a)-valOf[field](b));
-    const mx={};COLS.forEach(c=>{mx[c.k]=Math.max(...FORMATS.map(f=>valOf[c.k](f)),0.0001);});
-    let h=`<div class="fhead"><span>Format</span>`+
-      COLS.map(c=>`<span class="num ${c.k===field?'on':''}" data-col="${c.k}">${c.label}</span>`).join("")+`</div>`;
-    h+=rows.map(f=>`<div class="frow"><span class="fname">${f.label}</span>`+
-      COLS.map(c=>{const w=Math.max(2,100*valOf[c.k](f)/mx[c.k]);
-        return `<span class="fcell"><i class="fbar" style="width:${w}%"></i><b>${fmtOf[c.k](f)}</b></span>`;}).join("")+
-      `</div>`).join("");
-    h+=`<div class="ftot"><span class="fname">Total</span><span class="tv">${F(TOT_FILES)}</span><span class="tv">${TOT_GB.toFixed(1)} GB</span><span class="tv">${TOT_AVG.toFixed(1)}</span></div>`;
-    document.getElementById("fs-table").innerHTML=h;
-  }
-  function drawRecords(){
-    const rows=[...FORMATS].sort((a,b)=>b.files-a.files);
-    const mx=Math.max(...rows.map(r=>r.files),1);
-    document.getElementById("fs-records").innerHTML=rows.map(r=>{
-      const pct=TOT_FILES?r.files/TOT_FILES*100:0;
-      return `<div class="rbar"><div class="rl">${r.label}</div>
-        <div class="rt"><div class="rf" style="width:${Math.max(2,100*r.files/mx)}%"></div></div>
-        <div class="rv"><b>${F(r.files)}</b><span> · ${pct.toFixed(1)}%</span></div></div>`;}).join("");
-  }
-
-  const html=`<section class="dash-fs">
-    <div class="band">
-      <h2>Storage footprint by file format</h2>
-      <div class="bd">Which file formats consume the most storage across EDRMS compliant sites, and how declared records break down by format.</div>
-    </div>
-    <div class="kpis">
-      <div class="kpi stat"><div class="lab">Storage Consumed by Format</div><div class="val" id="kpi-fsgb"></div></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Storage consumed by format</div>
-      <div class="psub">File formats ranked by number of files, storage consumed, and average file size. Bars are scaled within each column, so the longest bar in a column is that column's largest value.</div>
-      <div class="sortrow"><span class="lbl">Sort by</span>
-        <div class="segctl" id="fs-field"><button data-f="files">Files</button><button data-f="gb">Storage</button><button data-f="avg">Avg file size</button></div>
-        <button class="dirbtn" id="fs-dir"></button></div>
-      <div class="ftab" id="fs-table"></div>
-    </div>
-
-    <div class="kpis">
-      <div class="kpi stat"><div class="lab">Most Common Format</div><div class="val" id="kpi-fstop"></div></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Declared records by format</div>
-      <div class="psub">Declared records broken down by file format, as a count and as a share of all declared records.</div>
-      <div id="fs-records"></div>
-    </div>
-  </section>`;
-
-  function init(){
-    document.getElementById("kpi-fsgb").textContent=TOT_GB.toFixed(1)+" GB";
-    document.getElementById("kpi-fstop").textContent=FORMATS.reduce((a,b)=>b.files>a.files?b:a).label;
-    document.querySelectorAll("#fs-field button").forEach(b=>b.onclick=()=>{field=b.dataset.f;drawTable();});
-    document.getElementById("fs-dir").onclick=()=>{dir=dir==="desc"?"asc":"desc";drawTable();};
-    drawTable();drawRecords();
-  }
-
-  return {
-    ver:"Format and Storage Dashboard",
-    crumb:"Format and Storage Dashboard",
-    asof:"Data as of Sun 05 Jul 2026 23:59 · refreshed Mon 06 Jul 06:00",
-    /* Read by the Overview dashboard. Derived from the same array this
-       dashboard renders, so a summary figure can never drift from the detail. */
-    summary:{
-      totalFiles:TOT_FILES,
-      totalGB:TOT_GB,
-      avgFileSizeMB:TOT_AVG,
-      formatCount:FORMATS.length,
-      formats:FORMATS.map(f=>({label:f.label,files:f.files,gb:f.gb}))
-    },
-    html,init
-  };
-})();
-
-/* =================================================================
-   overview.js
-   ================================================================= */
-/* ===================================================================
-   Overview
-   An executive summary of the other dashboards. Must be defined after
-   them, because every figure it shows is read from their exported
-   `summary` objects rather than restated here. That is deliberate: a
-   summary that keeps its own copy of the numbers drifts away from the
-   detail it claims to summarise the first time either side is edited.
-   =================================================================== */
-DASHBOARDS.ov=(function(){
-  const RM=DASHBOARDS.rm.summary;
-  const SL=DASHBOARDS.sl.summary;
-  const FS=DASHBOARDS.fs.summary;
-
-  /* Cross dashboard checks. These fire in the console rather than on the page,
-     so a broken figure is caught during verification instead of by a reader. */
-  console.assert(RM.declared===FS.totalFiles,
-    `Overview: declared records (${RM.declared}) and format file total (${FS.totalFiles}) disagree`);
-  console.assert(RM.withPhysical+RM.withoutPhysical===RM.declared,
-    "Overview: physical counterpart split does not sum to declared records");
-  console.assert(SL.libraryRecords+SL.libraryUndeclared===SL.libraryDocuments,
-    "Overview: library declaration split does not sum to library documents");
-  console.assert(Math.abs(FS.formats.reduce((a,f)=>a+f.gb,0)-FS.totalGB)<0.05,
-    "Overview: format storage does not sum to the storage total");
-
-  const GB=n=>n.toFixed(1)+" GB";
-  const PCT=(v,t)=>t?(v/t*100):0;
-
-  /* ===== chart primitives, all mapped to native Power BI visuals ===== */
-
-  /* Donut chart. Power BI equivalent: Donut chart. */
-  function arcSeg(cx,cy,rO,rI,a0,a1,fill,title){
-    const large=(a1-a0)>Math.PI?1:0;
-    const pt=(r,a)=>[(cx+r*Math.cos(a)).toFixed(2),(cy+r*Math.sin(a)).toFixed(2)];
-    const [x0,y0]=pt(rO,a0),[x1,y1]=pt(rO,a1),[x2,y2]=pt(rI,a1),[x3,y3]=pt(rI,a0);
-    return `<path d="M${x0} ${y0}A${rO} ${rO} 0 ${large} 1 ${x1} ${y1}L${x2} ${y2}A${rI} ${rI} 0 ${large} 0 ${x3} ${y3}Z" fill="${fill}"><title>${title}</title></path>`;
-  }
-  function donut(items,o){
-    o=o||{};
-    const size=o.size||168, th=o.thickness||32, cx=size/2, cy=size/2, rO=size/2, rI=size/2-th;
-    const total=items.reduce((a,i)=>a+i.value,0)||1;
-    let a=-Math.PI/2, out="";
-    items.forEach(i=>{
-      const frac=i.value/total;
-      if(frac<=0)return;
-      const a1=a+frac*Math.PI*2;
-      if(frac>0.9995){
-        /* a single full slice would collapse the arc endpoints onto each other,
-           so draw it as a stroked circle instead */
-        out+=`<circle cx="${cx}" cy="${cy}" r="${(rO+rI)/2}" fill="none" stroke="${i.color}" stroke-width="${th}"><title>${i.label}</title></circle>`;
-      }else{
-        out+=arcSeg(cx,cy,rO,rI,a,a1,i.color,`${i.label}: ${o.fmt?o.fmt(i.value):F(i.value)}`);
-      }
-      a=a1;
-    });
-    const centre=o.centreValue
-      ? `<text x="${cx}" y="${cy-1}" text-anchor="middle" font-size="20" font-weight="700" fill="#10243E" style="font-variant-numeric:tabular-nums">${o.centreValue}</text>
-         <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="10" fill="#6B7A8C">${o.centreLabel||""}</text>`
-      : "";
-    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" style="display:block;flex:0 0 auto">${out}${centre}</svg>`;
-  }
-  function legend(items,fmt){
-    const total=items.reduce((a,i)=>a+i.value,0)||1;
-    return `<div class="dleg">`+items.map(i=>
-      `<div class="dlrow"><span class="sw" style="background:${i.color}"></span>
-        <span class="dlab" title="${i.label}">${i.label}</span>
-        <span class="dval">${fmt(i.value)}</span>
-        <span class="dpct">${PCT(i.value,total).toFixed(1)}%</span></div>`).join("")+`</div>`;
-  }
-  function donutCard(items,o,fmt){
-    return `<div class="cwrap">${donut(items,o)}${legend(items,fmt)}</div>`;
-  }
-
-  /* Ranked horizontal bars. Power BI equivalent: Clustered bar chart. */
-  function topBars(items,fmt){
-    const mx=Math.max(...items.map(i=>i.value),1);
-    return items.map(i=>`<div class="tbar">
-      <div class="tl"><b>${i.label}</b>${i.name?`<small>${i.name}</small>`:""}</div>
-      <div class="tt"><div class="tf" style="width:${Math.max(3,100*i.value/mx)}%"></div></div>
-      <div class="tv">${fmt(i.value)}</div></div>`).join("");
-  }
-
-  /* Two magnitudes on one shared scale, so the gap between them is the message.
-     Power BI equivalent: Clustered bar chart. */
-  function gapBars(rows,fmt){
-    const mx=Math.max(...rows.map(r=>r.value),1);
-    return rows.map(r=>`<div class="gap">
-      <div class="gl"><span>${r.label}</span><b>${fmt(r.value)}</b></div>
-      <div class="gt"><div class="gf" style="width:${Math.max(0.4,100*r.value/mx)}%;background:${r.color}"></div></div>
-    </div>`).join("");
-  }
-
-  /* ===== palette, taken from the ADB tokens only ===== */
-  const C={blue:"#0072BC",teal:"#00A5A8",deep:"#1B5E82",green:"#5CA943",grey:"#9DB8D2",faint:"#C7D3E0",orange:"#E8763C"};
-
-  /* The same five formats appear in both format donuts, with the same colours,
-     so the two can be read against each other. Grouping the tail into one slice
-     also keeps each donut readable, which eight slices would not be. */
-  const FMT_TOP=[...FS.formats].sort((a,b)=>b.gb-a.gb).slice(0,5);
-  const FMT_REST=FS.formats.filter(f=>!FMT_TOP.includes(f));
-  const FMT_COLORS=[C.blue,C.teal,C.deep,C.green,C.grey];
-  const storageSlices=FMT_TOP.map((f,i)=>({label:f.label,value:f.gb,color:FMT_COLORS[i]}))
-    .concat([{label:"All other formats",value:FMT_REST.reduce((a,f)=>a+f.gb,0),color:C.faint}]);
-  const fileSlices=FMT_TOP.map((f,i)=>({label:f.label,value:f.files,color:FMT_COLORS[i]}))
-    .concat([{label:"All other formats",value:FMT_REST.reduce((a,f)=>a+f.files,0),color:C.faint}]);
-
-  console.assert(Math.abs(storageSlices.reduce((a,s)=>a+s.value,0)-FS.totalGB)<0.05,
-    "Overview: storage donut does not sum to the storage total");
-  console.assert(fileSlices.reduce((a,s)=>a+s.value,0)===FS.totalFiles,
-    "Overview: file donut does not sum to the file total");
-
-  /* The single most useful comparison in the data: the format that dominates
-     storage is not the format that dominates the file count. */
-  const bigStorage=storageSlices[0];
-  const bigStorageFiles=fileSlices[0];
-  const bigFiles=[...fileSlices].sort((a,b)=>b.value-a.value)[0];
-
-  const html=`<section class="dash-ov">
-    <div class="band">
-      <h2>Executive summary</h2>
-      <div class="bd">One view of how the EDRMS is being adopted across the bank. Each section below summarises a dashboard: open that dashboard for the full detail, filters, and drill down.</div>
-    </div>
-
-    <div class="kpis" id="ov-kpis"></div>
-
-    <div class="panel">
-      <div class="phead">
-        <div>
-          <div class="ptitle">Records Management</div>
-          <div class="psub">How much of the content held in EDRMS compliant sites has been formally declared as a record, and which departments are declaring it.</div>
-        </div>
-        <button class="golink" data-go="rm">Open Records Management &rsaquo;</button>
-      </div>
-      <div class="crow">
-        <div class="chart">
-          <div class="ctitle">Declared records by physical counterpart</div>
-          <div id="ov-rm-donut"></div>
-        </div>
-        <div class="chart">
-          <div class="ctitle">Declared against everything held</div>
-          <div id="ov-rm-gap"></div>
-        </div>
-        <div class="chart wide">
-          <div class="ctitle">Top 5 departments by declared records</div>
-          <div id="ov-rm-top"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="phead">
-        <div>
-          <div class="ptitle">Sites and Libraries</div>
-          <div class="psub">How far the compliant site rollout has reached, and how thoroughly the libraries inside those sites are declaring their content.</div>
-        </div>
-        <button class="golink" data-go="sl">Open Sites and Libraries &rsaquo;</button>
-      </div>
-      <div class="crow">
-        <div class="chart">
-          <div class="ctitle">Library content declared as records</div>
-          <div id="ov-sl-donut"></div>
-        </div>
-        <div class="chart wide">
-          <div class="ctitle">Top 5 departments by compliant sites created</div>
-          <div id="ov-sl-top"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="phead">
-        <div>
-          <div class="ptitle">Format and Storage</div>
-          <div class="psub">Which file formats the declared records are held in, and which of them are actually consuming the storage.</div>
-        </div>
-        <button class="golink" data-go="fs">Open Format and Storage &rsaquo;</button>
-      </div>
-      <div class="crow">
-        <div class="chart">
-          <div class="ctitle">Share of storage consumed</div>
-          <div id="ov-fs-gb"></div>
-        </div>
-        <div class="chart">
-          <div class="ctitle">Share of files held</div>
-          <div id="ov-fs-files"></div>
-        </div>
-      </div>
-      <div id="ov-fs-callout"></div>
-    </div>
-  </section>`;
-
-  function init(){
-    /* headline cards, each one a route into the dashboard it came from */
-    const cards=[
-      {lab:"Total Declared Records", val:F(RM.declared),                 go:"rm", to:"Records Management"},
-      {lab:"Documents in Compliant Sites", val:(RM.documents/1e6).toFixed(2)+"M", go:"rm", to:"Records Management"},
-      {lab:"Compliant Sites Created", val:F(SL.sitesCreated),            go:"sl", to:"Sites and Libraries"},
-      {lab:"Storage Consumed", val:GB(FS.totalGB),                       go:"fs", to:"Format and Storage"},
-      {lab:"Active Sites, Last 7 Days", val:F(RM.activeSites7),          go:"rm", to:"Records Management"},
-    ];
-    document.getElementById("ov-kpis").innerHTML=cards.map(c=>
-      `<div class="kpi" data-go="${c.go}"><div class="lab">${c.lab}</div><div class="val">${c.val}</div>
-       <div class="tap">View in ${c.to} &rsaquo;</div></div>`).join("");
-
-    /* Records Management */
-    const physSlices=[
-      {label:"Without physical counterpart",value:RM.withoutPhysical,color:C.grey},
-      {label:"With physical counterpart",value:RM.withPhysical,color:C.teal},
-    ];
-    document.getElementById("ov-rm-donut").innerHTML=
-      donutCard(physSlices,{centreValue:F(RM.declared),centreLabel:"declared records"},F);
-
-    const rate=PCT(RM.declared,RM.documents);
-    document.getElementById("ov-rm-gap").innerHTML=
-      gapBars([
-        {label:"Documents in compliant sites",value:RM.documents,color:C.orange},
-        {label:"Declared as records",value:RM.declared,color:C.blue},
-      ],F)+
-      `<div class="callout"><b>${rate.toFixed(2)}%</b> of the documents held in EDRMS compliant sites have been declared as records. The remaining <b>${F(RM.documents-RM.declared)}</b> documents sit in compliant sites without record status.</div>`;
-
-    document.getElementById("ov-rm-top").innerHTML=topBars(RM.topDepartments,F)+
-      `<div class="mini"><div>Departments reporting<b>${F(RM.departmentCount)}</b></div>
-        <div>EDRMS users, monthly active<b>${F(RM.monthlyActiveUsers)}</b></div></div>`;
-
-    /* Sites and Libraries */
-    const libSlices=[
-      {label:"Declared as records",value:SL.libraryRecords,color:C.teal},
-      {label:"Not yet declared",value:SL.libraryUndeclared,color:C.grey},
-    ];
-    document.getElementById("ov-sl-donut").innerHTML=
-      donutCard(libSlices,{centreValue:PCT(SL.libraryRecords,SL.libraryDocuments).toFixed(1)+"%",centreLabel:"declared"},F);
-
-    document.getElementById("ov-sl-top").innerHTML=topBars(SL.topDepartments,F)+
-      `<div class="mini"><div>Compliant sites created<b>${F(SL.sitesCreated)}</b></div>
-        <div>Libraries tracked<b>${F(SL.libraryCount)}</b></div>
-        <div>Library storage<b>${GB(SL.storageGB)}</b></div></div>`;
-
-    /* Format and Storage, two donuts sharing one colour scheme so they can be
-       read against each other */
-    document.getElementById("ov-fs-gb").innerHTML=
-      donutCard(storageSlices,{centreValue:GB(FS.totalGB),centreLabel:"total storage"},GB);
-    document.getElementById("ov-fs-files").innerHTML=
-      donutCard(fileSlices,{centreValue:F(FS.totalFiles),centreLabel:"total files"},F);
-
-    const gbShare=PCT(bigStorage.value,FS.totalGB), fileShare=PCT(bigStorageFiles.value,FS.totalFiles);
-    document.getElementById("ov-fs-callout").innerHTML=
-      `<div class="callout">The two charts do not agree, and that is the point. <b>${bigStorage.label}</b> account for <b>${gbShare.toFixed(1)}%</b> of storage but only <b>${fileShare.toFixed(1)}%</b> of files, while <b>${bigFiles.label}</b> are the most numerous at <b>${PCT(bigFiles.value,FS.totalFiles).toFixed(1)}%</b> of files. Storage pressure comes from a small number of large files, not from the formats people create most often.</div>`;
-
-    /* every card and button routes to the dashboard the figure came from */
-    document.querySelectorAll(".dash-ov [data-go]").forEach(el=>
-      el.onclick=()=>switchTo(el.dataset.go));
-  }
-
-  return {
-    ver:"Overview Dashboard",
-    crumb:"Overview",
-    /* A summary is only as current as its stalest input, so this quotes the
-       oldest refresh across the dashboards it draws from rather than the newest. */
-    asof:"Data as of Sun 05 Jul 2026 23:59, the oldest refresh across the dashboards summarised here",
-    html,init
-  };
-})();
-
-
-/* =================================================================
-   retention.js
-   Answers the client's 2.1.2.8, the disposal summary. Built rather than
-   left a placeholder because the data is already there: Records carries
-   EDRMSDueDateForDisposal, computed as EDRMSRetentionLabelApplied plus
-   EDRMSDuration, so records due for disposal and the next due date are a
-   count and a MIN over a column that exists today. The only figure here
-   that is not available now is the inactive document count, which needs
-   the document scan, and it is marked as such on the panel.
-   ================================================================= */
-DASHBOARDS.rt=(function(){
-  /* Retention labels across all declared records. Sums to the same 21,646 the
-     other dashboards use, and asserts it below rather than trusting it. */
-  /* `note` prints under the label, the way Permanent already explains itself.
-     The last two rows exist because neither is a retention period: one is
-     everything outside the standard set, the other is the absence of a label. */
+  /* ===== retention ===== */
   const LABELS=[
     {label:"10 years after declaration",count:8100},
     {label:"7 years after declaration", count:5100},
@@ -2075,246 +446,34 @@ DASHBOARDS.rt=(function(){
     {label:"No retention label",        count:232,  note:"No label, so no disposal date and nothing to schedule"},
   ];
   const LABEL_TOTAL=LABELS.reduce((a,l)=>a+l.count,0);
-  /* Permanent records are never due for disposal. Stating it as a constant
-     keeps the "never due" population visible instead of buried in a filter. */
   const PERMANENT=LABELS.find(l=>l.label==="Permanent").count;
-  /* One source of truth for the unlabelled population. The compliance panel
-     above reads the same number, so the two cannot disagree. */
   const NO_LABEL=LABELS.find(l=>l.label==="No retention label").count;
-
-  /* Disposal summary per library. Record counts are the same figures the
-     Sites and Libraries dashboard shows, so the two reconcile.
-     [library, site, records, dueWithin12m, nextDue, inactive1y] */
-  const DLIBS=[
-   ["Final Documents","ITD Records Site",640,84,"2026-11-14",210],
-   ["Board Papers","OGC Legal Site",540,96,"2026-09-02",164],
-   ["Country Reports","SARD Ops Site",450,61,"2026-10-27",138],
-   ["Loan Agreements","FIN Treasury Site",384,0,"2031-04-18",92],
-   ["Policies","HRD People Site",315,44,"2027-01-09",71],
-   ["Project Completion","OSFG Country Site",300,38,"2026-12-03",96],
-   ["Field Reports","SERD Ops Site",286,52,"2026-08-21",118],
-   ["Case Files","OGC Compliance Site",280,31,"2027-02-16",64],
-   ["Minutes","BRM Budget Site",245,58,"2026-09-30",83],
-   ["Correspondence","PARD Procurement Site",210,74,"2026-08-14",147],
-   ["Investment Memos","PSOD Investments Site",180,22,"2027-03-05",40],
-   ["Legal Opinions","OGC Advisory Site",150,0,"2033-06-11",55],
-   ["Audit Reports","CWRD Ops Site",120,19,"2026-12-19",37],
-   ["Climate Briefs","SDCC Climate Site",95,12,"2027-05-22",26],
-   ["Admin Records","OAS Facilities Site",88,17,"2026-10-08",31],
-  ];
-  const DUE_TOTAL=DLIBS.reduce((a,l)=>a+l[3],0);
-  /* Disposal windows. All three are the same count over EDRMSDueDateForDisposal
-     at different horizons, so they are held as one shape rather than three
-     unrelated numbers, and each is necessarily a subset of the next. */
-  const DUE_30=71, DUE_90=196;
-  console.assert(DUE_30<=DUE_90 && DUE_90<=DUE_TOTAL,
-    "Disposal windows must nest: 30 days inside 90 inside 12 months");
-
-  /* Retention compliance. A record with no retention label has no due date and
-     can never be disposed of, which is why it is worth counting separately
-     rather than letting it sit silently outside every disposal figure. */
   const WITH_SCHEDULE=LABEL_TOTAL-NO_LABEL;
   const BEYOND_RETENTION=342;
-  const LIB_RECORDS=DLIBS.reduce((a,l)=>a+l[2],0);
-  const INACTIVE_TOTAL=DLIBS.reduce((a,l)=>a+l[5],0);
-  const NEXT_DUE=DLIBS.map(l=>l[4]).sort()[0];
+  const DUE_30=71, DUE_90=196, DUE_NEXT_12=608;
+  const NEXT_DUE="12 Sep 2026";
 
-  const DFMT=d=>{const x=new Date(d+"T00:00:00");
-    return x.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});};
+  /* ===== reconciliation =====
+     These are the three that would otherwise be discovered by a reader adding
+     up a column, months after the fact. */
+  console.assert(MONTH_VALUES.reduce((a,v)=>a+v,0)===DECLARED,
+    "The monthly declaration trend must total the declared record count");
+  console.assert(LABEL_TOTAL===DECLARED,
+    "Every declared record must carry exactly one retention label state");
+  console.assert(TOTAL_FILES===DECLARED,
+    "The eight format groups must decompose the declared record count exactly");
+  console.assert(DUE_30<=DUE_90 && DUE_90<=DUE_NEXT_12,
+    "Disposal windows must nest: 30 days inside 90 inside 12 months");
+  console.assert(WITH_SCHEDULE+NO_LABEL===LABEL_TOTAL,
+    "Records with and without a schedule must account for every labelled record");
 
-  /* Reconciliation. The label breakdown must equal the declared record total
-     the Records Management dashboard publishes, and no library can have more
-     records due than it holds. */
-  console.assert(LABEL_TOTAL===DASHBOARDS.rm.summary.declared,
-    `Retention labels total ${LABEL_TOTAL} but Records Management declares ${DASHBOARDS.rm.summary.declared}`);
-  console.assert(DLIBS.every(l=>l[3]<=l[2]),"A library cannot have more records due for disposal than it holds");
-  console.assert(DUE_TOTAL<LABEL_TOTAL-PERMANENT,"Records due must exclude the permanent population");
-  const NO_SCHEDULE=NO_LABEL;
-  console.assert(WITH_SCHEDULE+NO_SCHEDULE===LABEL_TOTAL,
-    "The compliance split must account for every declared record");
-  console.assert(WITH_SCHEDULE<=LABEL_TOTAL,"Records with a schedule cannot exceed the declared total");
-  console.assert(BEYOND_RETENTION<=WITH_SCHEDULE,"Only a record with a schedule can be beyond its retention period");
-
-  /* [category, sets, terms, depth]. The five top level groups the client
-     names. Counts are illustrative until the walk above is run against the
-     tenant; the source is confirmed, the numbers are not. */
-  const CATS=[
-   {label:"Programme and operation", sets:14, terms:412, depth:4},
-   {label:"Administration",          sets:11, terms:286, depth:3},
-   {label:"Compliance and oversight",sets:8,  terms:174, depth:3},
-   {label:"People Management",       sets:7,  terms:139, depth:3},
-   {label:"Risk management",         sets:5,  terms:88,  depth:2},
-  ];
-  const TOTAL_TERMS=CATS.reduce((a,c)=>a+c.terms,0);
-  const TOTAL_SETS=CATS.reduce((a,c)=>a+c.sets,0);
-  const MAX_DEPTH=Math.max(...CATS.map(c=>c.depth));
-  console.assert(CATS.every(c=>c.terms>=c.sets),
-    "A category cannot hold fewer terms than it has term sets");
-
-
-  let sortD="due",dirD="desc";
-  const DCOLS=[
-    {k:"lib",  i:0,lab:"Library",              num:false},
-    {k:"site", i:1,lab:"Site",                 num:false},
-    {k:"held", i:2,lab:"Records held",         num:true},
-    {k:"due",  i:3,lab:"Due within 12 months", num:true},
-    {k:"next", i:4,lab:"Next due date",        num:false},
-    {k:"inact",i:5,lab:"Inactive over 1 year", num:true},
-  ];
-
-  function drawPlan(){
-    const mx=Math.max(...CATS.map(c=>c.terms));
-    document.getElementById("rt-plan").innerHTML=CATS.map(c=>
-      `<div class="fbar"><div class="fl"><b>${c.label}</b><small>${c.sets} term sets, ${c.depth} levels deep</small></div>
-        <div class="ft"><div class="ff" style="width:${Math.max(8,100*c.terms/mx)}%">${F(c.terms)}</div></div>
-        <div class="fp">${(c.terms/TOTAL_TERMS*100).toFixed(1)}%</div></div>`).join("");
-  }
-
-  function drawTable(){
-    const col=DCOLS.find(c=>c.k===sortD);
-    const rows=[...DLIBS].sort((a,b)=>{
-      const x=a[col.i],y=b[col.i];
-      const cmp=col.num?x-y:String(x).localeCompare(String(y));
-      return dirD==="asc"?cmp:-cmp;
-    });
-    const mx={};[2,3,5].forEach(i=>mx[i]=Math.max(...DLIBS.map(l=>l[i]),1));
-    let h="";
-    DCOLS.forEach(c=>{
-      const arrow=sortD===c.k?(dirD==="asc"?" ↑":" ↓"):"";
-      h+=`<div class="hd${c.num?" num":""}${sortD===c.k?" on":""}" data-s="${c.k}">${c.lab}${arrow}</div>`;
-    });
-    rows.forEach(l=>{
-      const cell=i=>`<div class="nc"><div class="nb" style="width:${(l[i]/mx[i]*100).toFixed(1)}%"></div><b>${F(l[i])}</b></div>`;
-      h+=`<div class="nm" title="${l[0]}">${l[0]}</div><div class="dp">${l[1]}</div>`;
-      h+=cell(2)+cell(3);
-      /* A library whose next due date is years out is not "nothing due", it is
-         a long or permanent retention. Saying so beats an empty cell. */
-      h+=`<div class="dt${l[3]===0?" far":""}">${DFMT(l[4])}</div>`;
-      h+=cell(5);
-    });
-    const t=document.getElementById("rt-table");
-    t.innerHTML=h;
-    t.querySelectorAll(".hd[data-s]").forEach(hd=>hd.onclick=()=>{
-      const k=hd.dataset.s;
-      if(sortD===k)dirD=dirD==="asc"?"desc":"asc";
-      else{sortD=k;dirD=(k==="lib"||k==="site"||k==="next")?"asc":"desc";}
-      drawTable();
-    });
-  }
-
-  function drawCompliance(){
-    const rows=[
-      ["With a retention schedule",WITH_SCHEDULE,"var(--teal)"],
-      ["No retention schedule",NO_SCHEDULE,"var(--greyblue)"],
-      ["Beyond retention period",BEYOND_RETENTION,"var(--orange)"],
-    ];
-    const mx=Math.max(...rows.map(r=>r[1]));
-    document.getElementById("rt-compliance").innerHTML=rows.map(([lab,v,col])=>
-      `<div class="lbar"><div class="ll"><b>${lab}</b></div>
-        <div class="lt"><div class="lf" style="width:${Math.max(6,100*v/mx)}%;background:${col}">${F(v)}</div></div>
-        <div class="lp">${(v/LABEL_TOTAL*100).toFixed(1)}%</div></div>`).join("");
-  }
-  function drawLabels(){
-    const mx=Math.max(...LABELS.map(l=>l.count));
-    const colour=l=>l.label==="Permanent"?"var(--greyblue)"
-                  :l.label==="No retention label"?"var(--orange)"
-                  :l.label==="Others"?"var(--mut)":"var(--deepblue)";
-    document.getElementById("rt-labels").innerHTML=LABELS.map(l=>
-      `<div class="lbar"><div class="ll"><b>${l.label}</b>${l.note?`<small>${l.note}</small>`:""}</div>
-        <div class="lt"><div class="lf" style="width:${Math.max(6,100*l.count/mx)}%;background:${colour(l)}">${F(l.count)}</div></div>
-        <div class="lp">${(l.count/LABEL_TOTAL*100).toFixed(1)}%</div></div>`).join("");
-  }
-
-  const html=`<section class="dash-rt">
-    <div class="band">
-      <h2>Disposal pipeline</h2>
-      <div class="bd">Which declared records are approaching the end of their retention period, and when the next disposal falls due. Due dates come from the retention label applied to each record plus its duration.</div>
-    </div>
-    <div class="kpis" id="rt-kpis">
-      <div class="kpi stat"><div class="lab">Records Due for Disposal, next 12 months</div><div class="val" id="kpi-due">…</div></div>
-      <div class="kpi stat"><div class="lab">Next Due Date for Disposal</div><div class="val" id="kpi-next">…</div></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Disposal summary by library</div>
-      <div class="psub">Click any column heading to sort. Records held and records due come from the declared record rows. Inactive over 1 year counts documents untouched for a year, which is the one column here that waits on the document scan.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DUE_30)}</div></div>
-        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(DUE_90)}</div></div>
-        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DUE_TOTAL)}</div></div>
-        <div class="tile"><div class="tl">Records in these libraries</div><div class="tv">${F(LIB_RECORDS)}</div></div>
-      </div>
-      <div class="scrollx"><div class="dtab" id="rt-table"></div></div>
-    </div>
-
-    <div class="band">
-      <h2>Retention compliance</h2>
-      <div class="bd">Whether each declared record actually carries a retention schedule, and how many have already passed the end of theirs. A record with no schedule has no due date, so it sits outside every disposal figure above.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Schedules and overdue records</div>
-      <div class="psub">Every declared record is counted once, as carrying a schedule or not. Beyond retention is a subset of those that carry one: it means the disposal date has passed, not that the record is still awaiting action, since nothing records whether a disposal was carried out.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(WITH_SCHEDULE)}</div></div>
-        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(NO_SCHEDULE)}</div></div>
-        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(BEYOND_RETENTION)}</div></div>
-      </div>
-      <div id="rt-compliance"></div>
-    </div>
-
-    <div class="band">
-      <h2>Institutional file plan</h2>
-      <div class="bd">The classification scheme these retention rules apply to. The file plan says how content is filed; the retention labels above say how long each class is kept. Two views of the same governance.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Terms by category</div>
-      <div class="psub">The ${CATS.length} top level groups in the file plan, sized by how many terms sit beneath them at every level, not only the top.</div>
-      <div id="rt-plan"></div>
-    </div>
-
-    <div class="band">
-      <h2>Retention profile</h2>
-      <div class="bd">How the declared records divide across retention labels, and how much of the holding is permanent and therefore never due for disposal.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Declared records by retention label</div>
-      <div class="psub">Others covers retention labels outside the standard 3, 5, 7 and 10 year set. No retention label means the label was removed from the record, so it has no disposal date and cannot be scheduled at all.</div>
-      <div id="rt-labels"></div>
-    </div>
-  </section>`;
-
-  function init(){
-    document.getElementById("kpi-due").textContent=F(DUE_TOTAL);
-    document.getElementById("kpi-next").textContent=DFMT(NEXT_DUE);
-    drawTable();
-    drawLabels();
-    drawCompliance();
-    drawPlan();
-  }
-
-  return {
-    ver:"Retention and File Plan Dashboard",
-    crumb:"Retention and File Plan",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
-    summary:{
-      dueNext12:DUE_TOTAL,
-      due30:DUE_30,
-      due90:DUE_90,
-      withSchedule:WITH_SCHEDULE,
-      get noSchedule(){return this.labelTotal-this.withSchedule;},
-      beyondRetention:BEYOND_RETENTION,
-      nextDue:NEXT_DUE,
-      permanent:PERMANENT,
-      labelTotal:LABEL_TOTAL,
-      inactiveOverYear:INACTIVE_TOTAL,
-      labels:LABELS.map(l=>({label:l.label,count:l.count})),
-      totalTerms:TOTAL_TERMS,
-      totalSets:TOTAL_SETS,
-      maxDepth:MAX_DEPTH,
-      categoryCount:CATS.length,
-      categories:CATS.map(c=>({label:c.label,terms:c.terms,sets:c.sets}))
-    },
-    html,init
-  };
+  return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
+    MONTH_LABELS,MONTH_VALUES,
+    MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,IDLE_DAYS,
+    LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,LIB_GROWTH,
+    FORMATS,TOTAL_FILES,TOTAL_GB,
+    LABELS,LABEL_TOTAL,PERMANENT,NO_LABEL,WITH_SCHEDULE,BEYOND_RETENTION,
+    DUE_30,DUE_90,DUE_NEXT_12,NEXT_DUE};
 })();
 
 
@@ -2342,7 +501,6 @@ DASHBOARDS.rt=(function(){
                 workbook of 13 Aug 2026
    =================================================================== */
 DASHBOARDS.bw=(function(){
-  const RM=DASHBOARDS.rm.summary, RT=DASHBOARDS.rt.summary, SL=DASHBOARDS.sl.summary;
 
   /* Deterministic split of a total across n weighted slots. Same shape as the
      Records Management helper: the remainder lands on the first slot so the
@@ -2361,11 +519,11 @@ DASHBOARDS.bw=(function(){
      Records Management. Sites, users and disposal are split across the same
      departments here, weighted by declared records, so every column totals the
      bank-wide figure it belongs to. */
-  const BASE=RM.departments;
+  const BASE=DATA.DEPTS;
   const W=BASE.map(d=>d.rec);
-  const siteSplit=split(SL.sitesCreated-180,W);          /* 180 project sites, below */
-  const userSplit=split(RM.monthlyActiveUsers,W);
-  const dueSplit=split(RT.dueNext12,BASE.map(d=>d.phys));
+  const siteSplit=split(DATA.SITES_CREATED-180,W);          /* 180 project sites, below */
+  const userSplit=split(DATA.MONTHLY_ACTIVE_USERS,W);
+  const dueSplit=split(DATA.DUE_NEXT_12,BASE.map(d=>d.phys));
 
   const DEPTS=BASE.map((d,i)=>({
     code:d.code, name:d.name,
@@ -2391,11 +549,11 @@ DASHBOARDS.bw=(function(){
   const PROJ_SITES=PROJECTS.reduce((a,p)=>a+p.sites,0);
 
   const DEPT_SITES=DEPTS.reduce((a,d)=>a+d.sites,0);
-  const TOTAL_USERS=RM.monthlyActiveUsers;
-  const TOTAL_DOCS=RM.documents;
-  const TOTAL_REC=RM.declared;
-  const TOTAL_PHYS=RM.withPhysical;
-  const TOTAL_DUE=RT.dueNext12;
+  const TOTAL_USERS=DATA.MONTHLY_ACTIVE_USERS;
+  const TOTAL_DOCS=DATA.DOCUMENTS;
+  const TOTAL_REC=DATA.DECLARED;
+  const TOTAL_PHYS=DATA.WITH_PHYSICAL;
+  const TOTAL_DUE=DATA.DUE_NEXT_12;
   const DECL_RATE=PCT(TOTAL_REC,TOTAL_DOCS);
 
   /* Site movement indicators, PPT s35. Created and inactive are sourceable:
@@ -2405,7 +563,7 @@ DASHBOARDS.bw=(function(){
      zero would be a claim, and we are not in a position to make it. */
   const IDLE_DAYS=90;
   const SITES_CREATED_90=64, SITES_DELETED_90=null, SITES_ARCHIVED_90=null;
-  const SITES_INACTIVE=SL.inactiveSites;
+  const SITES_INACTIVE=DATA.SITES_INACTIVE;
 
   console.assert(DEPTS.reduce((a,d)=>a+d.rec,0)===TOTAL_REC,
     "Bank-wide department records must total Records Management declared records");
@@ -2413,7 +571,7 @@ DASHBOARDS.bw=(function(){
     "Bank-wide department users must total monthly active users");
   console.assert(DEPTS.reduce((a,d)=>a+d.due,0)===TOTAL_DUE,
     "Bank-wide department disposals must total the Retention due figure");
-  console.assert(DEPT_SITES+PROJ_SITES===SL.sitesCreated,
+  console.assert(DEPT_SITES+PROJ_SITES===DATA.SITES_CREATED,
     "Departmental sites plus project sites must total compliant sites created");
 
   /* ===== divisions =====
@@ -2552,8 +710,8 @@ DASHBOARDS.bw=(function(){
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(Math.round(d.due*0.31)), "no source", "no source"]),
-      tiles:()=>[["Due within 30 days",F(RT.due30)],
-                 ["Due within 90 days",F(RT.due90)],
+      tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
+                 ["Due within 90 days",F(DATA.DUE_90)],
                  ["Due within 12 months",F(TOTAL_DUE)],
                  ["Records disposed","no source"]]
     }
@@ -2671,9 +829,9 @@ DASHBOARDS.bw=(function(){
   /* ===== declaration trend, PPT s10 and s18 ===== */
   function drawTrend(){
     const share=trendDept==="all"?1:DEPTS.find(d=>d.code===trendDept).rec/TOTAL_REC;
-    const vals=RM.monthValues.map(v=>Math.round(v*share));
+    const vals=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
     const mx=Math.max(...vals);
-    document.getElementById("bw-trend").innerHTML=RM.monthLabels.map((m,i)=>`
+    document.getElementById("bw-trend").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
       <div class="tcol"><div class="tval">${F(vals[i])}</div>
         <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
         <div class="tlab">${m}</div></div>`).join("");
@@ -2682,13 +840,46 @@ DASHBOARDS.bw=(function(){
       " records declared over the last 12 months";
   }
 
+  function drawFormats(){
+    const mxf=Math.max(...FMT.map(f=>f.files));
+    document.getElementById("bw-formats").innerHTML=
+      `<div class="dhead"><div>Format group</div><div class="num">Files</div>
+        <div class="num">Share of files</div><div class="num">Storage</div>
+        <div class="num">Average file size</div></div>`+
+      [...FMT].sort((a,b)=>b.files-a.files).map(f=>
+        `<div class="drow"><div class="dn">${f.label}</div>
+          <div class="num">${F(f.files)}</div>
+          <div class="num">${(f.files/DATA.TOTAL_FILES*100).toFixed(1)}%</div>
+          <div class="num">${f.gb.toFixed(1)} GB</div>
+          <div class="num">${f.avg.toFixed(1)} MB</div></div>`).join("")+
+      `<div class="dtot"><div>Total</div><div class="num">${F(DATA.TOTAL_FILES)}</div>
+        <div class="num">100.0%</div><div class="num">${DATA.TOTAL_GB.toFixed(1)} GB</div>
+        <div class="num">${(DATA.TOTAL_GB*1024/DATA.TOTAL_FILES).toFixed(1)} MB</div></div>`;
+  }
+
   /* ===== retention rollup, PPT s44 ===== */
+  /* ===== absorbed from the dashboards the redesign removes =====
+     The client's deck drops Format and Storage as a dashboard (PPT s12, "there
+     is no new information derived from this except the total size and storage
+     growth, perhaps this could be amalgamated somewhere") but their proposed
+     metrics document still asks for the eight format groups under Format and
+     Storage Analysis. So it is amalgamated here as a panel rather than kept as
+     a screen or dropped entirely.
+
+     The same applies to site and library health, which the metrics document
+     lists under Risk and Compliance, inside Bankwide oversight. */
+  const FMT=DATA.FORMATS.map(f=>({...f, avg:f.files?f.gb*1024/f.files:0}));
+  const FMT_TOP_FILES=[...FMT].sort((a,b)=>b.files-a.files)[0];
+  const FMT_TOP_GB=[...FMT].sort((a,b)=>b.gb-a.gb)[0];
+  console.assert(DATA.TOTAL_FILES===TOTAL_REC,
+    "Format groups must decompose the declared record total exactly");
+
   const RETROWS=[
-    {lab:"Permanent retention", depts:11, libs:64, rec:RT.permanent, phys:Math.round(RT.permanent*0.21), due:0},
-    {lab:"Temporary retention", depts:16, libs:203, rec:RT.labelTotal-RT.permanent,
-     phys:TOTAL_PHYS-Math.round(RT.permanent*0.21), due:TOTAL_DUE},
+    {lab:"Permanent retention", depts:11, libs:64, rec:DATA.PERMANENT, phys:Math.round(DATA.PERMANENT*0.21), due:0},
+    {lab:"Temporary retention", depts:16, libs:203, rec:DATA.LABEL_TOTAL-DATA.PERMANENT,
+     phys:TOTAL_PHYS-Math.round(DATA.PERMANENT*0.21), due:TOTAL_DUE},
   ];
-  console.assert(RETROWS.reduce((a,r)=>a+r.rec,0)===RT.labelTotal,
+  console.assert(RETROWS.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
     "Permanent plus temporary must total every labelled record");
 
   const html=`<section class="dash-bw">
@@ -2773,11 +964,58 @@ DASHBOARDS.bw=(function(){
         <div class="dtot"><div>Total</div>
           <div class="num">${F(DEPTS.length)}</div>
           <div class="num">${F(RETROWS.reduce((a,r)=>a+r.libs,0))}</div>
-          <div class="num">${F(RT.labelTotal)}</div>
+          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
           <div class="num">${F(TOTAL_PHYS)}</div>
           <div class="num">${F(TOTAL_DUE)}</div>
           <div class="num">no source</div></div>
       </div></div>
+    </div>
+
+    <div class="band">
+      <h2>Format and storage</h2>
+      <div class="bd">The eight format groups from the client's proposed metrics document, under Format and Storage Analysis. This was a dashboard of its own until 13 August 2026. The client's comment on PPT s12 was that it derives no new information beyond total size and storage growth and should be amalgamated somewhere, so it is a panel here rather than a screen.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by format group</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">File counts split by extension are sourceable today. Storage per format depends on FileSize, which is a new key on the document row: Graph returns it, so this is a scan change rather than a blocker. One caution recorded from the tenant work: a folder returns a cumulative size, so the scan has to filter to files only or storage double counts. The mapping of extensions to these eight groups is a short list still to come from RAC.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Storage consumed</div><div class="tv">${DATA.TOTAL_GB.toFixed(1)} GB</div></div>
+        <div class="tile hi"><div class="tl">Most common format</div><div class="tv">${FMT_TOP_FILES.label}</div></div>
+        <div class="tile"><div class="tl">Largest by storage</div><div class="tv">${FMT_TOP_GB.label}</div></div>
+        <div class="tile"><div class="tl">Files held</div><div class="tv">${F(DATA.TOTAL_FILES)}</div></div>
+      </div>
+      <div class="psub">The format that dominates the file count is not the format that dominates storage: ${FMT_TOP_FILES.label} is ${(FMT_TOP_FILES.files/DATA.TOTAL_FILES*100).toFixed(1)} percent of the files and ${(FMT_TOP_FILES.gb/DATA.TOTAL_GB*100).toFixed(1)} percent of the storage, while ${FMT_TOP_GB.label} is ${(FMT_TOP_GB.files/DATA.TOTAL_FILES*100).toFixed(1)} percent of the files and ${(FMT_TOP_GB.gb/DATA.TOTAL_GB*100).toFixed(1)} percent of the storage.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(4,1fr)" id="bw-formats"></div></div>
+    </div>
+
+    <div class="band">
+      <h2>Risk and compliance</h2>
+      <div class="bd">Site health and library health, listed in the client's proposed metrics document under Risk and Compliance, inside Bankwide oversight. These were the Sites and Libraries dashboard until 13 August 2026.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site health</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">Active, inactive and orphaned sites all read columns confirmed against the test tenant: LastActivityDate is populated for 381 of 1,918 live sites, and SiteOwner for 1,899 of them, which leaves 19 sites with no owner at all and those are the ones worth chasing. One conflict to settle: the deck says a site is inactive after 90 days and the metrics document says 300. The threshold is not stored anywhere, so it is a single edit either way.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Compliant sites</div><div class="tv">${F(DATA.SITES_CREATED)}</div></div>
+        <div class="tile"><div class="tl">Active sites</div><div class="tv">${F(DATA.SITES_CREATED-DATA.SITES_INACTIVE)}</div></div>
+        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(DATA.SITES_INACTIVE)}</div></div>
+        <div class="tile"><div class="tl">Orphaned, no owner</div><div class="tv">19</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Library health</div>
+      <div class="src part">Partly sourceable</div>
+      <div class="psub">Library counts, records held and dormancy are sourceable: LibraryLastActivityDate comes from the same Graph call that supplies the library count. Two things on the client's list are not. <b>Most used libraries</b> by views, downloads, uploads and edits has no source at all, because SharePoint reports activity per site and never per library. <b>Orphaned libraries</b> needs a library owner, and we hold an owner for the site only.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Libraries across sites</div><div class="tv">${F(DATA.SITE_LIBRARIES)}</div></div>
+        <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
+        <div class="tile hi"><div class="tl">With no declared records</div><div class="tv">${F(DATA.LIBS_NO_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Library growth rate</div><div class="tv">${(DATA.LIB_GROWTH*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Most used libraries</div><div class="tv">no source</div></div>
+        <div class="tile"><div class="tl">Orphaned libraries</div><div class="tv">no source</div></div>
+      </div>
     </div>
   </section>`;
 
@@ -2786,6 +1024,7 @@ DASHBOARDS.bw=(function(){
     drawDrill();
     drawDeptTable();
     drawCmp();
+    drawFormats();
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
     const sel=document.getElementById("bw-trend-sel");
     sel.innerHTML=`<option value="all">All departments</option>`+
@@ -2846,7 +1085,7 @@ DASHBOARDS.bw=(function(){
      .src.ref   not a measurement at all. A list somebody has to maintain
    =================================================================== */
 DASHBOARDS.dp=(function(){
-  const BW=DASHBOARDS.bw.summary, RM=DASHBOARDS.rm.summary;
+  const BW=DASHBOARDS.bw.summary;
   const DEPTS=BW.departments;
   const IDLE=BW.idleDays;
 
@@ -3166,10 +1405,10 @@ DASHBOARDS.dp=(function(){
 
   /* ===== declaration trend for one department, PPT s24 ===== */
   function drawTrend(){
-    const d=D(), share=d.rec/RM.declared;
-    const vals=RM.monthValues.map(v=>Math.round(v*share));
+    const d=D(), share=d.rec/DATA.DECLARED;
+    const vals=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
     const mx=Math.max(...vals,1);
-    document.getElementById("dp-trend").innerHTML=RM.monthLabels.map((m,i)=>`
+    document.getElementById("dp-trend").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
       <div class="tcol"><div class="tval">${F(vals[i])}</div>
         <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
         <div class="tlab">${m}</div></div>`).join("");
@@ -3464,7 +1703,7 @@ DASHBOARDS.pj=(function(){
    scan change rather than a report change.
    =================================================================== */
 DASHBOARDS.fp=(function(){
-  const BW=DASHBOARDS.bw.summary, RM=DASHBOARDS.rm.summary;
+  const BW=DASHBOARDS.bw.summary;
 
   /* The five categories are the client's, from PPT s47. The terms under them
      are their own examples from s48 to s52, extended so each category has
@@ -3492,8 +1731,8 @@ DASHBOARDS.fp=(function(){
   const FLAT=[];
   PLAN.forEach(c=>c.terms.forEach(t=>FLAT.push({cat:c.cat,term:t})));
   const w=FLAT.map((f,i)=>1+((i*7+f.term.length)%9)*0.34);
-  const recS=split(RM.declared,w), docS=split(RM.documents,w),
-        physS=split(RM.withPhysical,w), libS=split(267,w), depS=split(96,w);
+  const recS=split(DATA.DECLARED,w), docS=split(DATA.DOCUMENTS,w),
+        physS=split(DATA.WITH_PHYSICAL,w), libS=split(267,w), depS=split(96,w);
   FLAT.forEach((f,i)=>{f.rec=recS[i];f.docs=docS[i];f.phys=physS[i];f.libs=libS[i];f.depts=depS[i];});
   const CATTOT=PLAN.map(c=>{
     const rows=FLAT.filter(f=>f.cat===c.cat);
@@ -3502,9 +1741,9 @@ DASHBOARDS.fp=(function(){
       phys:rows.reduce((a,r)=>a+r.phys,0), libs:rows.reduce((a,r)=>a+r.libs,0),
       depts:Math.max(...rows.map(r=>r.depts))};
   });
-  console.assert(CATTOT.reduce((a,c)=>a+c.rec,0)===RM.declared,
+  console.assert(CATTOT.reduce((a,c)=>a+c.rec,0)===DATA.DECLARED,
     "File plan categories must total the declared record count");
-  console.assert(CATTOT.reduce((a,c)=>a+c.docs,0)===RM.documents,
+  console.assert(CATTOT.reduce((a,c)=>a+c.docs,0)===DATA.DOCUMENTS,
     "File plan categories must total the document count");
 
   const TOTAL_TERMS=FLAT.length;
@@ -3523,8 +1762,8 @@ DASHBOARDS.fp=(function(){
       `<div class="dtot"><div>Total</div><div class="num">${F(TOTAL_TERMS)}</div>
         <div class="num">${F(96)}</div>
         <div class="num">${F(CATTOT.reduce((a,c)=>a+c.libs,0))}</div>
-        <div class="num">${F(RM.documents)}</div><div class="num">${F(RM.declared)}</div>
-        <div class="num">${F(RM.withPhysical)}</div></div>`;
+        <div class="num">${F(DATA.DOCUMENTS)}</div><div class="num">${F(DATA.DECLARED)}</div>
+        <div class="num">${F(DATA.WITH_PHYSICAL)}</div></div>`;
   }
 
   function drawTerms(){
@@ -3552,7 +1791,7 @@ DASHBOARDS.fp=(function(){
     const bar=(list,colour)=>list.map(t=>
       `<div class="lbar"><div class="ll">${t.term}<small>${t.cat}</small></div>
         <div class="lt"><div class="lf" style="width:${Math.max(6,100*t.rec/mx)}%;background:${colour}">${F(t.rec)}</div></div>
-        <div class="lp">${(t.rec/RM.declared*100).toFixed(1)}%</div></div>`).join("");
+        <div class="lp">${(t.rec/DATA.DECLARED*100).toFixed(1)}%</div></div>`).join("");
     document.getElementById("fp-top").innerHTML=bar(top,"var(--blue)");
     document.getElementById("fp-bottom").innerHTML=bar(bottom,"var(--orange)");
   }
@@ -3654,7 +1893,7 @@ DASHBOARDS.fp=(function(){
    has no DisposalStatus and the EDRMS application has no field to fill it.
    =================================================================== */
 DASHBOARDS.rd=(function(){
-  const RT=DASHBOARDS.rt.summary, RM=DASHBOARDS.rm.summary, BW=DASHBOARDS.bw.summary;
+  const BW=DASHBOARDS.bw.summary;
 
   function split(total,weights){
     const s=weights.reduce((a,b)=>a+b,0);
@@ -3663,10 +1902,10 @@ DASHBOARDS.rd=(function(){
     return out;
   }
 
-  const PERM_REC=RT.permanent;
-  const TEMP_REC=RT.labelTotal-RT.permanent;
-  const PERM_PHYS=Math.round(RM.withPhysical*0.21);
-  const TEMP_PHYS=RM.withPhysical-PERM_PHYS;
+  const PERM_REC=DATA.PERMANENT;
+  const TEMP_REC=DATA.LABEL_TOTAL-DATA.PERMANENT;
+  const PERM_PHYS=Math.round(DATA.WITH_PHYSICAL*0.21);
+  const TEMP_PHYS=DATA.WITH_PHYSICAL-PERM_PHYS;
 
   /* Temporary retention terms carry a duration, which is what the client drew
      on PPT s46 as "5, 10, 20, 5 etc years". Permanent carries none. */
@@ -3684,15 +1923,15 @@ DASHBOARDS.rd=(function(){
   ];
   const tw=TEMP.map((t,i)=>1+((i*5+t.term.length)%7)*0.3);
   const tRec=split(TEMP_REC,tw), tPhys=split(TEMP_PHYS,tw),
-        tDue=split(RT.dueNext12,tw), tLibs=split(203,tw), tDept=split(64,tw);
+        tDue=split(DATA.DUE_NEXT_12,tw), tLibs=split(203,tw), tDept=split(64,tw);
   TEMP.forEach((t,i)=>{t.rec=tRec[i];t.phys=tPhys[i];t.due=tDue[i];t.libs=tLibs[i];t.depts=tDept[i];});
   const pw=PERM.map((t,i)=>1+((i*4+t.term.length)%5)*0.4);
   const pRec=split(PERM_REC,pw), pPhys=split(PERM_PHYS,pw), pLibs=split(64,pw), pDept=split(32,pw);
   PERM.forEach((t,i)=>{t.rec=pRec[i];t.phys=pPhys[i];t.libs=pLibs[i];t.depts=pDept[i];});
 
-  console.assert(PERM_REC+TEMP_REC===RT.labelTotal,
+  console.assert(PERM_REC+TEMP_REC===DATA.LABEL_TOTAL,
     "Permanent plus temporary must total every labelled record");
-  console.assert(TEMP.reduce((a,t)=>a+t.due,0)===RT.dueNext12,
+  console.assert(TEMP.reduce((a,t)=>a+t.due,0)===DATA.DUE_NEXT_12,
     "Temporary retention terms must carry every record due for disposal");
   console.assert(PERM.reduce((a,t)=>a+t.rec,0)===PERM_REC,
     "Permanent terms must total the permanent record count");
@@ -3719,7 +1958,7 @@ DASHBOARDS.rd=(function(){
         <div class="num">${F(rows.reduce((a,t)=>a+t.rec,0))}</div>
         <div class="num">${F(rows.reduce((a,t)=>a+t.phys,0))}</div>
         <div class="num"></div>
-        <div class="num">${temp?F(RT.dueNext12):"never"}</div>
+        <div class="num">${temp?F(DATA.DUE_NEXT_12):"never"}</div>
         <div class="num">no source</div></div>`;
     document.getElementById("rd-mode-note").textContent=temp
       ? "Temporary retention carries a duration, so every record under it eventually falls due. The durations below are the ones the client drew on PPT s46."
@@ -3762,10 +2001,10 @@ DASHBOARDS.rd=(function(){
       <div class="src part">Partly sourceable</div>
       <div class="psub">The distinction on this panel is worth being precise about, because the two halves look alike and are not. Anything about a <b>date</b> is computable today from the due date already on each record. Anything about an <b>action having been taken</b> is not recorded anywhere: the design has no DisposalStatus, and it was left out deliberately because it needs a new field in the EDRMS application. This requirement is the argument for raising that change.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(RT.due30)}</div></div>
-        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(RT.due90)}</div></div>
-        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(RT.dueNext12)}</div></div>
-        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(RT.beyondRetention)}</div></div>
+        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DATA.DUE_30)}</div></div>
+        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(DATA.DUE_90)}</div></div>
+        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DATA.DUE_NEXT_12)}</div></div>
+        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(DATA.BEYOND_RETENTION)}</div></div>
         <div class="tile"><div class="tl">Records disposed</div><div class="tv">no source</div></div>
         <div class="tile"><div class="tl">Awaiting approval</div><div class="tv">no source</div></div>
         <div class="tile"><div class="tl">Disposition backlog</div><div class="tv">no source</div></div>
@@ -3782,8 +2021,8 @@ DASHBOARDS.rd=(function(){
       <div class="src part">Partly sourceable</div>
       <div class="psub">Both figures are a test on the retention label and are sourceable today. Libraries without a mapped retention schedule is held back for one reason worth checking: it depends on whether the Retention Label Mapping list keys libraries by ListId or by name. If it keys by ListId the metric goes straight in, and if it keys by name the join is fragile enough not to trust.</div>
       <div class="tiles">
-        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(RT.withSchedule)}</div></div>
-        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(RT.labelTotal-RT.withSchedule)}</div></div>
+        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(DATA.WITH_SCHEDULE)}</div></div>
+        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(DATA.LABEL_TOTAL-DATA.WITH_SCHEDULE)}</div></div>
         <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">check the list key</div></div>
         <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">no source</div></div>
       </div>
@@ -3792,8 +2031,8 @@ DASHBOARDS.rd=(function(){
 
   function init(){
     document.getElementById("rd-kpis").innerHTML=[
-      ["Records Due for Disposal",F(RT.dueNext12),"Computed from the due date on each record"],
-      ["Next Due Date",RT.nextDue?RT.nextDue:"see Retention","From the same due dates"],
+      ["Records Due for Disposal",F(DATA.DUE_NEXT_12),"Computed from the due date on each record"],
+      ["Next Due Date",DATA.NEXT_DUE?DATA.NEXT_DUE:"see Retention","From the same due dates"],
       ["Permanent Retention",F(PERM_REC),"Never falls due for disposal"],
       ["Records Disposed","no source","Needs a field the EDRMS application does not have"],
     ].map(([l,v,s])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
@@ -3807,7 +2046,7 @@ DASHBOARDS.rd=(function(){
     ver:"Retention and Disposal Dashboard",
     crumb:"Retention and Disposal Insights",
     asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
-    summary:{permanent:PERM_REC,temporary:TEMP_REC,due:RT.dueNext12},
+    summary:{permanent:PERM_REC,temporary:TEMP_REC,due:DATA.DUE_NEXT_12},
     html,init
   };
 })();
@@ -3962,6 +2201,6 @@ function switchTo(key){
   d.init();
 }
 document.querySelectorAll("#nav a[data-d]").forEach(a=>a.onclick=()=>switchTo(a.dataset.d));
-switchTo("ov");
+switchTo("bw");
 </script>
 </body></html>

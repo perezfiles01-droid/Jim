@@ -68,7 +68,7 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
     [...e.children].map(c=>c.textContent.trim()));
   /* the categories must total the bank-wide figures, or the file plan quietly
      disagrees with Records Management about how many records exist */
-  const rm=await page.evaluate(()=>DASHBOARDS.rm.summary);
+  const rm=await page.evaluate(()=>({declared:DATA.DECLARED,documents:DATA.DOCUMENTS}));
   eq(catRows.reduce((a,r)=>a+n(r[5]),0),rm.declared,"the categories total the declared record count");
   eq(catRows.reduce((a,r)=>a+n(r[4]),0),rm.documents,"the categories total the document count");
   eq(n(catTot[5]),rm.declared,"the total row agrees with Records Management");
@@ -87,10 +87,10 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   /* ---------------- Retention and Disposal, PPT s32 and s44 to s46 ---------------- */
   console.log("\nRetention and Disposal");
   await page.evaluate(()=>switchTo("rd"));
-  const rt=await page.evaluate(()=>DASHBOARDS.rt.summary);
+  const rt=await page.evaluate(()=>({labelTotal:DATA.LABEL_TOTAL,dueNext12:DATA.DUE_NEXT_12}));
   const rd=await page.evaluate(()=>DASHBOARDS.rd.summary);
   eq(rd.permanent+rd.temporary,rt.labelTotal,"permanent plus temporary total every labelled record");
-  eq(rd.due,rt.dueNext12,"records due agree with the Retention dashboard");
+  eq(rd.due,rt.dueNext12,"records due agree with the shared disposal window");
   const tempRows=await page.$$eval(".dash-rd #rd-terms .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   eq(tempRows.reduce((a,r)=>a+n(r[6]),0),rt.dueNext12,

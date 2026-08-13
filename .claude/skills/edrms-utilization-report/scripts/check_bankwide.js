@@ -40,14 +40,13 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
 
   console.log("\nReconciliation against the other dashboards");
   const s=await page.evaluate(()=>({
-    bw:DASHBOARDS.bw.summary, rm:DASHBOARDS.rm.summary,
-    rt:DASHBOARDS.rt.summary, sl:DASHBOARDS.sl.summary}));
-  eq(s.bw.declared,s.rm.declared,"declared records match Records Management");
-  eq(s.bw.documents,s.rm.documents,"documents match Records Management");
-  eq(s.bw.physical,s.rm.withPhysical,"physical counterparts match Records Management");
-  eq(s.bw.users,s.rm.monthlyActiveUsers,"users match the monthly active user figure");
-  eq(s.bw.dueForDisposal,s.rt.dueNext12,"records due match the Retention dashboard");
-  eq(s.bw.departmentalSites+s.bw.projectSites,s.sl.sitesCreated,
+    bw:DASHBOARDS.bw.summary, d:DATA}));
+  eq(s.bw.declared,s.d.DECLARED,"declared records match the shared base figures");
+  eq(s.bw.documents,s.d.DOCUMENTS,"documents match the shared base figures");
+  eq(s.bw.physical,s.d.WITH_PHYSICAL,"physical counterparts match the shared base figures");
+  eq(s.bw.users,s.d.MONTHLY_ACTIVE_USERS,"users match the monthly active user figure");
+  eq(s.bw.dueForDisposal,s.d.DUE_NEXT_12,"records due match the shared disposal window");
+  eq(s.bw.departmentalSites+s.bw.projectSites,s.d.SITES_CREATED,
      "departmental plus project sites total compliant sites created");
 
   console.log("\nDepartment table, PPT s16 and s35");
@@ -60,12 +59,12 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
     const summed=rows.reduce((a,r)=>a+num(r[i]),0);
     eq(summed,num(tot[i]),`${label} column sums to its total row`);
   }
-  eq(num(tot[1]),s.sl.sitesCreated,"the site total is the compliant site count, not a new number");
+  eq(num(tot[1]),s.d.SITES_CREATED,"the site total is the compliant site count, not a new number");
   /* The total row covers the project groupings as well as the departments, so
      it is deliberately larger than the declared record count. It is the
      departments alone that must agree with Records Management. */
   const deptOnly=rows.slice(0,16).reduce((a,r)=>a+num(r[3]),0);
-  eq(deptOnly,s.rm.declared,"the sixteen departments alone total the declared record count");
+  eq(deptOnly,s.d.DECLARED,"the sixteen departments alone total the declared record count");
   eq(num(tot[3]),deptOnly+rows.slice(16).reduce((a,r)=>a+num(r[3]),0),
      "the total row adds the project groupings on top of the departments");
 
@@ -117,7 +116,7 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   await page.selectOption(".dash-bw #bw-trend-sel","all");
   const all=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
   ok(trendTotal(all)>itdTotal,"the bank-wide trend is larger than one department's");
-  eq(trendTotal(all),s.rm.declared,"the bank-wide trend totals the declared record count");
+  eq(trendTotal(all),s.d.DECLARED,"the bank-wide trend totals the declared record count");
   await page.selectOption(".dash-bw #bw-trend-sel","FIN");
   await page.click(".dash-bw #bw-trend-reset");
   const reset=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
