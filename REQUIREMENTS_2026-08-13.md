@@ -375,18 +375,45 @@ we should confirm whether they are still wanted before costing them.
 
 ## 9. SUMMARY: WHAT IS DOABLE
 
-Counting the distinct requirements across both documents, roughly 150 of them:
+Every requirement in both documents has since been enumerated one by one in
+`EDRMS_Utilization_Report_Requirements_2026-08-13.xlsx`, sheet
+`Requirements register`. **These are the counted figures from that register, 123
+requirements, and they replace the estimates first written here.** The estimate
+was optimistic: it put "buildable now" at about 37 percent, and the actual count
+is 21 percent.
 
 | Category | Count | Share |
 | --- | --- | --- |
-| **Buildable now**, from the current 73 column design | ~55 | 37 percent |
-| **Buildable once the department list arrives** from RAC | ~30 | 20 percent |
-| **Needs a new column or a new join** in the design | ~15 | 10 percent |
-| **Needs an application change** by the development team | ~12 | 8 percent |
-| **Needs a reference list** somebody must maintain | ~12 | 8 percent |
-| **Needs a new data source** we have not touched | ~26 | 17 percent |
+| **Buildable now**, from the current 73 column design | 26 | 21 percent |
+| **Buildable once the department list arrives** from RAC | 29 | 24 percent |
+| **Needs a new column or a new join** in the design | 12 | 10 percent |
+| **Needs an application change** by the development team | 7 | 6 percent |
+| **Needs a reference list** somebody must maintain | 6 | 5 percent |
+| **Needs a new data source** we have not touched | 32 | 26 percent |
+| **Decision needed** before it can be scoped at all | 11 | 9 percent |
+| **Total** | **123** | |
 
-So **just over half the deck is deliverable on the design as it stands**, and the
+One register row is one work item. Where a slide asks for the same figure at two
+levels, bank-wide and again per department, it is counted once at each level
+because the two have different blockers.
+
+By key view, which is where the shape of the problem shows:
+
+| Key view | Requirements | Buildable now |
+| --- | --- | --- |
+| 1. Bank-wide Oversight | 42 | 11 |
+| 2. Department Insights | 30 | 1 |
+| 3. Project Insights | 5 | 0 |
+| 4. Institutional File Plan Insights | 9 | 0 |
+| 5. Retention and Disposal | 10 | 5 |
+| 6. Records and Archive Holdings | 11 | 0 |
+| 7. In the Word list only | 16 | 9 |
+
+**Three of the six new dashboards have nothing at all that can be built today.**
+Department Insights, the largest at 30 requirements, has exactly one.
+
+So **45 percent of the requirement is deliverable on the design as it stands or
+the moment the department list arrives**, and the
 single highest value unblocker remains the one already at the top of STATUS.md:
 **the site to department list.** It alone releases about a fifth of the
 requirement and it is the precondition for the entire Department Insights
