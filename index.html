@@ -940,6 +940,7 @@ DASHBOARDS.bw=(function(){
   let sortDept="rec", dirDept="desc";
   let cmpMode="docsrec";
   let trendDept="all";
+  let visitDept="all", visitMonths=12;
   let expanded={};              /* which department rows have their divisions open */
 
   /* ===== top panel, PPT s15 and s34 ===== */
@@ -1183,7 +1184,32 @@ DASHBOARDS.bw=(function(){
       trendDept==="all"?"All departments":trendDept;
   }
 
+  function drawFormats(){
+    const mxf=Math.max(...FMT.map(f=>f.files));
+    document.getElementById("bw-formats").innerHTML=
+      `<div class="dhead"><div>Format group</div><div class="num">Files</div>
+        <div class="num">Share of files</div><div class="num">Storage</div>
+        <div class="num">Average file size</div></div>`+
+      [...FMT].sort((a,b)=>b.files-a.files).map(f=>
+        `<div class="drow"><div class="dn">${f.label}</div>
+          <div class="num">${F(f.files)}</div>
+          <div class="num">${(f.files/DATA.TOTAL_FILES*100).toFixed(1)}%</div>
+          <div class="num">${f.gb.toFixed(1)} GB</div>
+          <div class="num">${f.avg.toFixed(1)} MB</div></div>`).join("")+
+      `<div class="dtot"><div>Total</div><div class="num">${F(DATA.TOTAL_FILES)}</div>
+        <div class="num">100.0%</div><div class="num">${DATA.TOTAL_GB.toFixed(1)} GB</div>
+        <div class="num">${(DATA.TOTAL_GB*1024/DATA.TOTAL_FILES).toFixed(1)} MB</div></div>`;
+  }
 
+  function drawVisits(){
+    const series=visitDept==="all"?DATA.SITE_VISITS_MONTHLY:VISITS_BY_DEPT[visitDept];
+    const from=DATA.MONTH_LABELS.length-visitMonths;
+    const labels=DATA.MONTH_LABELS.slice(from), vals=series.slice(from);
+    document.getElementById("bw-visits").innerHTML=CHART.columns(
+      labels.map((m,i)=>({label:m,value:vals[i]})),{height:190,color:"var(--teal)"});
+    document.getElementById("bw-visits-sum").textContent=
+      (visitDept==="all"?"All departments":visitDept)+", last "+visitMonths+" months";
+  }
 
   function drawYears(){
     document.getElementById("bw-years").innerHTML=CHART.columns(
@@ -1196,6 +1222,14 @@ DASHBOARDS.bw=(function(){
       DEPTS.map(d=>({label:d.code,value:d.rec})),{height:330});
   }
 
+  function drawFormatDonuts(){
+    const files=FMT.map(f=>({label:f.label,value:f.files}));
+    const gb=FMT.map(f=>({label:f.label,value:f.gb}));
+    document.getElementById("bw-fmt-files").innerHTML=
+      CHART.donut(files,{centreValue:F(DATA.TOTAL_FILES),centreLabel:"files"});
+    document.getElementById("bw-fmt-gb").innerHTML=
+      CHART.donut(gb,{centreValue:DATA.TOTAL_GB.toFixed(0)+" GB",centreLabel:"storage"});
+  }
 
   function drawRetSplit(){
     document.getElementById("bw-retsplit").innerHTML=CHART.stacked([
@@ -1204,9 +1238,35 @@ DASHBOARDS.bw=(function(){
     ],{caption:F(DATA.LABEL_TOTAL)+" declared records, by whether they will ever fall due"});
   }
 
+  function drawSiteHealth(){
+    document.getElementById("bw-sitehealth").innerHTML=CHART.stacked([
+      {label:"Active",value:DATA.SITES_CREATED-DATA.SITES_INACTIVE,color:"var(--green)"},
+      {label:"Inactive over "+IDLE_DAYS+" days",value:DATA.SITES_INACTIVE,color:"var(--orange)"},
+    ],{caption:F(DATA.SITES_CREATED)+" compliant sites"});
+  }
+
+  let libRank="rec";
+  function drawLibRank(){
+    const key=l=>libRank==="rate"?l.rec/l.docs*100:l[libRank];
+    const rows=[...DATA.TOP_LIBRARIES].sort((a,b)=>key(b)-key(a));
+    const show=l=>libRank==="gb"?l.gb.toFixed(1)+" GB"
+               :libRank==="rate"?(l.rec/l.docs*100).toFixed(2)+"%":F(l.rec);
+    const colour=libRank==="gb"?"var(--deepblue)":libRank==="rate"?"var(--green)":"var(--blue)";
+    document.getElementById("bw-libs").innerHTML=CHART.hbars(
+      rows.map(l=>({label:l.lib,sub:l.site+", "+l.dept,value:key(l),display:show(l),color:colour})));
+  }
 
 
-
+  function drawSensitivity(){
+    const mx=Math.max(...DATA.SENSITIVITY.map(s=>s.count));
+    const colour=s=>s.label==="Restricted"?"var(--orange)"
+                  :s.label==="Confidential"?"var(--deepblue)"
+                  :s.label==="No sensitivity label"?"var(--mut)":"var(--blue)";
+    document.getElementById("bw-sens").innerHTML=DATA.SENSITIVITY.map(s=>
+      `<div class="lbar"><div class="ll">${s.label}</div>
+        <div class="lt"><div class="lf" style="width:${Math.max(6,100*s.count/mx)}%;background:${colour(s)}">${F(s.count)}</div></div>
+        <div class="lp">${(s.count/DATA.SENSITIVITY_TOTAL*100).toFixed(1)}%</div></div>`).join("");
+  }
 
   /* ===== retention rollup, PPT s44 ===== */
   /* ===== absorbed from the dashboards the redesign removes =====
@@ -1219,6 +1279,9 @@ DASHBOARDS.bw=(function(){
 
      The same applies to site and library health, which the metrics document
      lists under Risk and Compliance, inside Bankwide oversight. */
+  const FMT=DATA.FORMATS.map(f=>({...f, avg:f.files?f.gb*1024/f.files:0}));
+  const FMT_TOP_FILES=[...FMT].sort((a,b)=>b.files-a.files)[0];
+  const FMT_TOP_GB=[...FMT].sort((a,b)=>b.gb-a.gb)[0];
   console.assert(DATA.TOTAL_FILES===TOTAL_REC,
     "Format groups must decompose the declared record total exactly");
 
@@ -1301,6 +1364,27 @@ DASHBOARDS.bw=(function(){
       <div id="bw-years"></div>
     </div>
 
+    <div class="band">
+      <h2>Site activity trend</h2>
+      <div class="bd">Site visits each month, across the estate or for one department.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site visits by month</div>
+      <div class="psub">Choose a department and a period.</div>
+      <div class="toolbar">
+        <span class="lbl">Department</span>
+        <select id="bw-visit-dept"></select>
+        <span class="lbl">Period</span>
+        <select id="bw-visit-months">
+          <option value="12">Last 12 months</option>
+          <option value="6">Last 6 months</option>
+          <option value="3">Last 3 months</option>
+        </select>
+        <button class="resetbtn" id="bw-visit-reset">Reset</button>
+      </div>
+      <div id="bw-visits"></div>
+      <div class="psub" style="margin-top:12px" id="bw-visits-sum"></div>
+    </div>
 
     <div class="band">
       <h2>Retention and disposal rollup</h2>
@@ -1328,8 +1412,88 @@ DASHBOARDS.bw=(function(){
       </div></div>
     </div>
 
+    <div class="band">
+      <h2>Format and storage</h2>
+      <div class="bd">What the declared records are held in, and which formats consume the storage.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by format group</div>
+      <div class="psub">Share of files held and share of storage consumed, by format group.</div>
+      <div class="crow" style="margin-bottom:16px">
+        <div class="chart"><div class="ctitle">Share of files held</div><div id="bw-fmt-files"></div></div>
+        <div class="chart"><div class="ctitle">Share of storage consumed</div><div id="bw-fmt-gb"></div></div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Storage consumed</div><div class="tv">${DATA.TOTAL_GB.toFixed(1)} GB</div></div>
+        <div class="tile hi"><div class="tl">Most common format</div><div class="tv">${FMT_TOP_FILES.label}</div></div>
+        <div class="tile"><div class="tl">Largest by storage</div><div class="tv">${FMT_TOP_GB.label}</div></div>
+        <div class="tile"><div class="tl">Files held</div><div class="tv">${F(DATA.TOTAL_FILES)}</div></div>
+      </div>
+      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(4,1fr)" id="bw-formats"></div></div>
+    </div>
 
+    <div class="band">
+      <h2>Risk and compliance</h2>
+      <div class="bd">Which sites and libraries are healthy, and which need attention.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site health</div>
+      <div class="psub">Active, inactive and unowned sites across the estate.</div>
+      <div id="bw-sitehealth" style="margin-bottom:16px"></div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Compliant sites</div><div class="tv">${F(DATA.SITES_CREATED)}</div></div>
+        <div class="tile"><div class="tl">Active sites</div><div class="tv">${F(DATA.SITES_CREATED-DATA.SITES_INACTIVE)}</div></div>
+        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(DATA.SITES_INACTIVE)}</div></div>
+        <div class="tile"><div class="tl">Orphaned, no owner</div><div class="tv">19</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Library health</div>
+      <div class="psub">Library counts, activity, growth and the largest libraries.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">Libraries across sites</div><div class="tv">${F(DATA.SITE_LIBRARIES)}</div></div>
+        <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
+        <div class="tile hi"><div class="tl">With no declared records</div><div class="tv">${F(DATA.LIBS_NO_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Library growth rate</div><div class="tv">${(DATA.LIB_GROWTH*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Dormant over ${DATA.LIB_DORMANT} days</div><div class="tv">${F(DATA.LIBS_DORMANT_180)}</div></div>
+      </div>
+      <div class="psub" style="margin-top:6px">Ranked by record volume, storage consumed or declaration rate. Each library is shown with its parent site.</div>
+      <div class="toolbar">
+        <span class="lbl">Rank libraries by</span>
+        <select id="bw-librank">
+          <option value="rec">Record volume</option>
+          <option value="gb">Storage consumed</option>
+          <option value="rate">Declaration rate</option>
+        </select>
+      </div>
+      <div id="bw-libs"></div>
+    </div>
 
+    <div class="band">
+      <h2>Records quality and classification</h2>
+      <div class="bd">Duplicates, classification, access and search.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records quality</div>
+      <div class="psub">Declared records sharing a filename, and records whose parent site or library no longer resolves.</div>
+      <div class="tiles">
+        <div class="tile hi"><div class="tl">Duplicated records</div><div class="tv">${F(DATA.DUPLICATE_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Share of declared records</div><div class="tv">${(DATA.DUPLICATE_RECORDS/TOTAL_REC*100).toFixed(1)}%</div></div>
+        <div class="tile"><div class="tl">Orphaned records</div><div class="tv">${F(DATA.ORPHANED_RECORDS)}</div></div>
+        <div class="tile"><div class="tl">Records checked</div><div class="tv">${F(TOTAL_REC)}</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Information classification</div>
+      <div class="psub">Declared records by sensitivity label, and how many carry no label at all.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">With a sensitivity label</div><div class="tv">${F(DATA.SENSITIVITY_TOTAL-DATA.UNLABELLED)}</div></div>
+        <div class="tile hi"><div class="tl">Without a sensitivity label</div><div class="tv">${F(DATA.UNLABELLED)}</div></div>
+        <div class="tile"><div class="tl">Confidential records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Confidential").count)}</div></div>
+        <div class="tile"><div class="tl">Restricted records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Restricted").count)}</div></div>
+      </div>
+      <div id="bw-sens"></div>
+    </div>
   </section>`;
 
   function init(){
@@ -1338,9 +1502,16 @@ DASHBOARDS.bw=(function(){
     drawDrill();
     drawDeptTable();
     drawCmp();
+    drawFormats();
     drawYears();
+    drawVisits();
     drawTree();
+    drawFormatDonuts();
     drawRetSplit();
+    drawSiteHealth();
+    drawLibRank();
+    drawSensitivity();
+    document.getElementById("bw-librank").onchange=e=>{libRank=e.target.value;drawLibRank();};
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
     const sel=document.getElementById("bw-trend-sel");
     sel.innerHTML=`<option value="all">All departments</option>`+
@@ -1348,6 +1519,15 @@ DASHBOARDS.bw=(function(){
     sel.onchange=e=>{trendDept=e.target.value;drawTrend();};
     document.getElementById("bw-trend-reset").onclick=()=>{
       trendDept="all";sel.value="all";drawTrend();
+    };
+    const vd=document.getElementById("bw-visit-dept");
+    const vm=document.getElementById("bw-visit-months");
+    vd.innerHTML=`<option value="all">All departments</option>`+
+      DEPTS.map(d=>`<option value="${d.code}">${d.code} - ${d.name}</option>`).join("");
+    vd.onchange=e=>{visitDept=e.target.value;drawVisits();};
+    vm.onchange=e=>{visitMonths=+e.target.value;drawVisits();};
+    document.getElementById("bw-visit-reset").onclick=()=>{
+      visitDept="all";visitMonths=12;vd.value="all";vm.value="12";drawVisits();
     };
     drawTrend();
   }
@@ -2381,6 +2561,20 @@ DASHBOARDS.rd=(function(){
       </div>
     </div>
 
+    <div class="band">
+      <h2>Retention compliance</h2>
+      <div class="bd">Whether each declared record carries a retention schedule at all.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records with and without a schedule</div>
+      <div class="psub">Declared records with and without a retention schedule.</div>
+      <div class="tiles">
+        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(DATA.WITH_SCHEDULE)}</div></div>
+        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(DATA.LABEL_TOTAL-DATA.WITH_SCHEDULE)}</div></div>
+        <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">${F(147)}</div></div>
+        <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">${F(46)}</div></div>
+      </div>
+    </div>
   </section>`;
 
   function drawSplit(){

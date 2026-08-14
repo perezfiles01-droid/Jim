@@ -345,57 +345,58 @@ term store does not hold it either. **This is a question for the client.**
 | **A standalone File Plan dashboard is back** | 13 Aug | Client instruction. PPT s13 names it a key view and s47 to s52 give it six screens |
 | Base figures live in `DATA`, not in a dashboard | 13 Aug | Defined once, read six times, asserted on load |
 | Unsourceable cells print "no source" | 13 Aug | Never a plausible number |
-| **If it is not drawn on a slide, it comes off the page** | 14 Aug | Client instruction. 10 panels cut, see below |
+| **A panel comes off only if it is undrawn AND unsourceable** | 14 Aug | Client instruction, then narrowed. 3 panels cut, see below |
 
-### The 14 August cut: slide-backed only
+### The 14 August cut: undrawn and unsourceable
 
 The 123 requirements have two sources, and the register records which: **97 are
 drawn on a slide** in the client's deck, **26 come from the proposed metrics
 document only**. The metrics document is a word list. Nobody drew a screen for
-those, nobody said what the panel should show, and the client has never seen
-one rendered.
+those and nobody said what the panel should show.
 
-Sixteen of those 26 had become **eight panels on Bank-wide Oversight**, and two
-more sat on other dashboards. All ten are now removed:
+Applied literally, "not on a slide means off the page" removed ten panels. That
+was too blunt: **six of the ten were buildable today**, and one of them,
+Declared records by format group, is asked for on **PPT s12** ("adds nothing
+except total size and storage growth, amalgamate it"), which the register files
+under the metrics document because that is where the detail is worded. Cutting
+it contradicted a direct client instruction.
 
-| Dashboard | Panel cut | Requirements behind it |
+So the rule was narrowed. **A panel comes off only if it is both undrawn and
+unsourceable.** Three panels and two tiles failed that test:
+
+| Cut | Requirement | Why it cannot be built |
 | --- | --- | --- |
-| Bank-wide | Site visits by month | S/N 109, 110 |
-| Bank-wide | Declared records by format group | S/N 117 |
-| Bank-wide | Site health | S/N 108 |
-| Bank-wide | Library health | S/N 112 to 114 |
-| Bank-wide | Records quality | S/N 115, 116 |
-| Bank-wide | Information classification | S/N 118 |
-| Bank-wide | Access management | S/N 119, 120 |
-| Bank-wide | Search and usage analytics | S/N 121 to 123 |
-| Retention and Disposal | Records with and without a schedule | S/N 90, 91 |
-| Records and Archive Holdings | Physical inventory | S/N 103 |
+| Search and usage analytics | S/N 121 to 123 | SharePoint search analytics are tenant level, not exposed per record |
+| Access management | S/N 120 | Access requests and external sharing need audit log data, a different Graph surface |
+| Physical inventory | S/N 103 | Needs a physical records system. No boxes, locations or facilities in any source |
+| Tile: Most used libraries | S/N 111 | No per library activity feed exists, only per site |
+| Tile: Orphaned libraries | S/N 114 | We hold a site owner, not a library owner |
 
-31 titled panels became 21. **`DATA` was left untouched**, so every figure is
-still defined and still asserted on load. Only the DOM and the draw functions
-went, which makes this reversible in one commit if the client asks for any of
-it back.
+**Restricted and confidential records, S/N 119, survived the Access management
+cut** because they were already tiles on Information classification. They follow
+from the sensitivity label, which is column 34 of the design.
 
-**`check_data.js` now asserts the cut in both directions:** six slide-backed
-metrics headings must stay on the page, and nineteen withdrawn ones must stay
-off. Asserting the absence is the point, since a later edit that quietly
-restores one would put an unrequested panel in front of the committee.
+**Everything else stayed**, including the seven panels the first pass removed:
+site visits by month, format groups, site health, library health, records
+quality, information classification, and records with and without a schedule.
 
-**Two things this cut deliberately did not touch.** "What is computable, and
-what is not" on Retention and Disposal looked like a candidate, because it maps
-to no requirement by title, but its contents are the disposal due windows and
-records beyond retention period, which are S/N 40 and S/N 95 and are drawn on
-s34 and s43. It was **renamed** to "Records falling due, and records past
-retention" rather than removed. And **"Records with and without a schedule" was
-cut with a known consequence**: records carrying no retention label have no due
-date and drop out of the disposal KPI silently, so that panel was the thing
-keeping them visible. If the disposal KPI ships before this returns, the
-omission has to be stated on the page some other way.
+**`check_data.js` asserts the decision in both directions:** eighteen retained
+metrics headings must be on the page, ten withdrawn ones must stay off.
+Asserting the absence is the point, since a later edit that restores one would
+put an undeliverable panel in front of the committee, and undeliverable is worse
+than missing.
 
-**AvePoint is an export, not an integration.** Cloud Governance cannot write to
-the database. If it holds the requesting department, that is a CSV loaded once.
+**One rename, not a cut.** "What is computable, and what is not" on Retention
+and Disposal maps to no requirement by title, but its contents are the disposal
+due windows and records beyond retention period, S/N 40 and S/N 95, drawn on
+s34 and s43. It is now "Records falling due, and records past retention", which
+also brings it into line with the caption rule.
 
----
+**Two open items this leaves.** Site health is on the page but its threshold is
+unsettled: the deck says 90 days, the metrics document says 300, which is open
+question 6. And the requirement register's "In the prototype?" column is stale
+for these rows; it is generated by `build_requirements.py` and needs a rerun.
+
 
 ## 8. ERRORS MADE AND CORRECTED. DO NOT REPEAT
 
