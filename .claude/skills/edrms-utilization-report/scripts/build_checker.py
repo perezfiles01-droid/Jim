@@ -74,6 +74,7 @@ T1, T2, T3, T4 = "1 Utilization Report", "2 Site Activity", "3 User Activity", "
 EDRMS, GRAPH, USAGE, ANALYTICS, TERMS, LIST, NONE = (
     "EDRMS database", "Microsoft Graph", "M365 usage report", "Site analytics",
     "Term store", "SharePoint list", "No source")
+CG = "AvePoint Cloud Governance"
 BUILD, DEPT, JOIN, APPCH, REFL, NEWSRC, DECIDE = (
     "Buildable now", "Needs department list", "Needs new column or join",
     "Needs application change", "Needs reference list", "Needs new data source",
@@ -117,6 +118,15 @@ RC["graph"] = (GRAPH, "Microsoft Graph, run interactively",
  "2. Sign in with a tenant account and consent to the scope named in the next column\n"
  "3. Paste the call from the Exact column heading cell into the address bar and click Run query\n"
  "4. Read the field named in that same cell out of the JSON response")
+RC["cg"] = (CG, "Cloud Governance Workspace report, exported as CSV",
+ "1. Open AvePoint Online Services, then Cloud Governance\n"
+ "2. Left nav: Directory, then Workspace report\n"
+ "3. Click Export report, top left. The file is queued, not downloaded immediately\n"
+ "4. Collect it from Job monitor in the left nav when the job shows green\n"
+ "5. The export carries 93 columns and one row per workspace, 1,209 in the test tenant. "
+ "45 of those columns are empty on every row, so check population before relying on one\n"
+ "6. The column that matters is 'EDRMS Site Type'. Filter to rows where it is not blank")
+
 RC["spadmin"] = (USAGE, "SharePoint admin centre, Active sites",
  "1. Go to https://7rkd12-admin.sharepoint.com\n"
  "2. Open Sites, then Active sites\n"
@@ -129,8 +139,13 @@ RC["purview"] = (LIST, "Purview file plan",
 RC["terms"] = (TERMS, "SharePoint term store",
  "1. Go to https://7rkd12-admin.sharepoint.com\n"
  "2. Open Content services, then Term store\n"
- "3. Expand the groups. The tenant holds 6 value sets and 16 terms, one level deep, "
- "which is NOT an institutional file plan")
+ "3. Expand the groups. 19 term groups were visible on 14 Aug 2026: ADB, ADB Exchange, "
+ "ADB Test, ADB-Test, CPM Terms, Deleted Required, Emails, File Type, Finance, Group01, "
+ "Group02, HR Tracking, LeilaTest, OneDrive, People, Search Dictionaries, SharePoint, "
+ "Short Term Storage, System. NONE is named File Plan, Classification or Records.\n"
+ "4. NOT RE-VERIFIED: the earlier note of 6 value sets and 16 terms one level deep was "
+ "taken before those 19 groups were seen, and the groups were not expanded. Expand ADB "
+ "and File Type and count depth before quoting either figure")
 RC["maplist"] = (LIST, "Retention Label Mapping list, a SharePoint list",
  "1. Open the EDRMS site that holds the Retention Label Mapping list\n"
  "2. Open the list and check its columns first: does it key a library by ListId or by name?\n"
@@ -178,9 +193,14 @@ Q_TERMJOIN = ("Ask the development team to add a term reference to the "
 Q_DISPOSAL = ("Raise a change request for a disposal status field: status, "
               "approver, and date disposed. Why: nothing records that a "
               "disposal happened, so every completion figure is unanswerable")
-Q_COMPLIANT = ("Ask Mihal Le which API returns the installed app list per "
-               "site, for app {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}. Why: it "
-               "defines which sites are in the report at all")
+# Superseded 14 Aug. The compliance list is not a technical detection problem,
+# it is a business register, and Cloud Governance holds it. What remains is
+# getting the PRODUCTION export and confirming the register matches reality.
+Q_COMPLIANT = ("Ask Leah Bancale for the PRODUCTION Cloud Governance Workspace "
+               "report export, and whether a converted site is recorded in "
+               "Cloud Governance the same way a created one is. Why: 'EDRMS Site "
+               "Type' in that export is the compliant site list, so this single "
+               "file defines which sites are in the report at all")
 Q_STAFF = ("Ask which system owns staff, contractor and consultant "
            "classification and training completion. The client asks the same "
            "question on their own slide 54. Why: nothing in SharePoint holds it")
@@ -366,6 +386,67 @@ RM_DISP = (
     "never actioned.")
 
 
+Q_SITES_ASKED = (
+    "How do we determine the list of all edrms compliant sites? Currently we "
+    "know a site is an edrms compliant if it gets cg adopted. How are we going "
+    "to know these list? Is it possible that all sites in the cloud governance "
+    "be the count for this? Essentially when a site is cg created it is found "
+    "in cloud governance and is it possible that all cg adopted sites are going "
+    "to be move to the cloud governance then from there we can get the list?")
+
+F_SITES = (
+    "ANSWERED 14 Aug 2026 by exporting the Cloud Governance Workspace report.\n\n"
+    "The export carries 93 columns over 1,209 workspaces. The column "
+    "'EDRMS Site Type' is populated on 1,032 rows with a single value, "
+    "'EDRMS Project Site'. It is a yes/no flag and it is the compliant site "
+    "list. The 177 blanks are template and admin sites: edrmstemplate, "
+    "template_drmdefault, app_edrms_data.\n\n"
+    "1,032 against the 1,057 placeholder that has been in the prototype since "
+    "before this project. Nobody could justify that number. It was close.\n\n"
+    "'Department' is populated on 1,030 of the 1,032. That is the site to "
+    "department mapping RAC has been asked for and 29 requirements have been "
+    "waiting on. BUT 240 sites carry SEVERAL departments, semicolon separated, "
+    "such as ADBI;BOD and ADBI;BOD;CSD;CWRD;SARD. That is 23 percent, and it "
+    "contradicts the 10 August decision that a site has one department owner.\n\n"
+    "Also arriving with it, all 100 percent populated over the 1,032: "
+    "Created Time, Last Active Time, Primary Business Owner, Storage Used (GB), "
+    "Storage Quota (GB), External Sharing for Site, and Status as Active, "
+    "Locked or Archived.\n\n"
+    "'Last Active Time' is the important one for THIS row. The M365 usage "
+    "export fills Last Activity Date on only 381 of 1,918 live sites, so most "
+    "sites cannot be judged active or inactive from it. Cloud Governance fills "
+    "it on every row.\n\n"
+    "NOT VERIFIED: whether every workspace carrying 'EDRMS Site Type' actually "
+    "has the app installed. A register records intent. The app records reality. "
+    "They can drift and nothing announces it.\n\n"
+    "TEST TENANT. Every URL is 7rkd12 and the site names are generated, such as "
+    "dane-Site-Title-ddos-125. No count here transfers to production.")
+
+RM_SITES = (
+    "Get the list from the cloud governance. In cloud gov, sites listed are "
+    "both cg adopted and cg created which are the basis of the edrms compliant "
+    "site number.\n\n"
+    "Leah Bancale confirmed on 14 Aug that EDRMS sites exist which did not come "
+    "through Cloud Governance originally, and that those get converted to become "
+    "compliant. So the CG CREATED list alone would be incomplete: it would miss "
+    "every converted site, and those are the older, established departmental "
+    "sites most likely to hold the largest volume of declared records.\n\n"
+    "This is the better definition, not merely the easier one. A site RAC "
+    "designated as EDRMS where the app deployment failed disappears entirely "
+    "under a technical test, and nobody ever learns it is broken. Under the "
+    "register it appears with zero declared records and somebody asks why. That "
+    "gap is a compliance finding worth reporting.\n\n"
+    "STILL TO DO:\n"
+    "1. Get the PRODUCTION export. Everything above is structure learned from "
+    "the test tenant.\n"
+    "2. Confirm a converted site is recorded in Cloud Governance the same way a "
+    "created one is.\n"
+    "3. Validate the register against the app once, on a sample of about twenty "
+    "sites, in both directions.\n"
+    "4. Put the multi-department question to RAC. Either a document counts to "
+    "several departments, and departmental totals will not sum to the bank-wide "
+    "figure, or one is picked as primary and the rest are dropped.")
+
 def R(section, element, typ, measure, recipe, cols, compute,
       table, column, design, tenant, effort, status, question="",
       asked="", found="", remarks=""):
@@ -430,13 +511,15 @@ BW = [
    "90 day and 12 month figures should nest inside one another",
    asked=Q_DISP_ASKED, found=F_DISP, remarks=RM_DISP),
  R("Top panel", "Active EDRMS Sites, Department / RM / Office", "KPI", "Compliant sites still in use",
-   "usage", "'Last Activity Date', 'Is Deleted', and the compliance rule",
-   "Filter out rows where 'Is Deleted' is True, then keep rows where 'Last Activity Date' is "
-   "within the last 90 days, then count them. In the test tenant 'Last Activity Date' is filled "
-   "on only 381 of the 1,918 live sites, so the rest cannot be judged either way. The compliance "
-   "filter cannot be applied at all yet, see the question column",
+   "cg", "'EDRMS Site Type', 'Status', 'Last Active Time', 'Department'",
+   "Filter to rows where 'EDRMS Site Type' is not blank, which is the compliant site list, then "
+   "keep rows where 'Status' is Active, then count. In the test tenant that is 1,032 sites of "
+   "1,209 workspaces. Break down by 'Department'. This REPLACES the earlier recipe over the M365 "
+   "usage export, which could not apply a compliance filter at all and fills Last Activity Date "
+   "on only 381 of 1,918 live sites. Cloud Governance fills it on every row",
    T2, "IsEdrmsCompliant, LastActivityDate, ADBDepartmentOwner", "Yes, 2 need a rule",
-   "Partly", "Medium", DEPT, Q_COMPLIANT + ". Also " + Q_IDLE),
+   "Yes, in test", "Easy", DEPT, Q_COMPLIANT + ". Also " + Q_IDLE,
+   asked=Q_SITES_ASKED, found=F_SITES, remarks=RM_SITES),
  R("Top panel", "Active EDRMS Sites, Sovereign Projects", "KPI", "Sites belonging to sovereign projects",
    "none", "No column in any export identifies a project site",
    "Cannot be worked out. Once a project register exists, it would be: count the sites whose "
