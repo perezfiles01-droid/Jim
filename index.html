@@ -1217,11 +1217,6 @@ DASHBOARDS.bw=(function(){
         color:i===DATA.YEARS.length-1?"var(--teal)":"var(--blue)"})),{height:170});
   }
 
-  function drawTree(){
-    document.getElementById("bw-tree").innerHTML=CHART.treemap(
-      DEPTS.map(d=>({label:d.code,value:d.rec})),{height:330});
-  }
-
   function drawFormatDonuts(){
     const files=FMT.map(f=>({label:f.label,value:f.files}));
     const gb=FMT.map(f=>({label:f.label,value:f.gb}));
@@ -1309,7 +1304,6 @@ DASHBOARDS.bw=(function(){
     <div class="panel">
       <div class="ptitle">Sites, documents, records and counterparts by department</div>
       <div class="psub">Sized by records declared. Click a column heading in the table to re-sort.</div>
-      <div id="bw-tree"></div>
       <div class="tiles">
         <div class="tile"><div class="tl">Sites created, last ${IDLE_DAYS} days</div><div class="tv">${F(SITES_CREATED_90)}</div></div>
         <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(SITES_INACTIVE)}</div></div>
@@ -1365,28 +1359,6 @@ DASHBOARDS.bw=(function(){
     </div>
 
     <div class="band">
-      <h2>Site activity trend</h2>
-      <div class="bd">Site visits each month, across the estate or for one department.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Site visits by month</div>
-      <div class="psub">Choose a department and a period.</div>
-      <div class="toolbar">
-        <span class="lbl">Department</span>
-        <select id="bw-visit-dept"></select>
-        <span class="lbl">Period</span>
-        <select id="bw-visit-months">
-          <option value="12">Last 12 months</option>
-          <option value="6">Last 6 months</option>
-          <option value="3">Last 3 months</option>
-        </select>
-        <button class="resetbtn" id="bw-visit-reset">Reset</button>
-      </div>
-      <div id="bw-visits"></div>
-      <div class="psub" style="margin-top:12px" id="bw-visits-sum"></div>
-    </div>
-
-    <div class="band">
       <h2>Retention and disposal rollup</h2>
       <div class="bd">Permanent and temporary retention as a share of the declared holding.</div>
     </div>
@@ -1411,6 +1383,34 @@ DASHBOARDS.bw=(function(){
           <div class="num">${F(Math.round(TOTAL_DUE*0.42))}</div></div>
       </div></div>
     </div>
+
+    <div class="band">
+      <h2>Supporting detail</h2>
+      <div class="bd">Estate activity, storage, site and library health, and record quality. These sit below the eight key figures and their drill-downs.</div>
+    </div>
+
+    <div class="band">
+      <h2>Site activity trend</h2>
+      <div class="bd">Site visits each month, across the estate or for one department.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Site visits by month</div>
+      <div class="psub">Choose a department and a period.</div>
+      <div class="toolbar">
+        <span class="lbl">Department</span>
+        <select id="bw-visit-dept"></select>
+        <span class="lbl">Period</span>
+        <select id="bw-visit-months">
+          <option value="12">Last 12 months</option>
+          <option value="6">Last 6 months</option>
+          <option value="3">Last 3 months</option>
+        </select>
+        <button class="resetbtn" id="bw-visit-reset">Reset</button>
+      </div>
+      <div id="bw-visits"></div>
+      <div class="psub" style="margin-top:12px" id="bw-visits-sum"></div>
+    </div>
+
 
     <div class="band">
       <h2>Format and storage</h2>
@@ -1505,7 +1505,6 @@ DASHBOARDS.bw=(function(){
     drawFormats();
     drawYears();
     drawVisits();
-    drawTree();
     drawFormatDonuts();
     drawRetSplit();
     drawSiteHealth();
