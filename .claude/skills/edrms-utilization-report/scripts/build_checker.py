@@ -58,16 +58,19 @@ HDR = ["S/N", "Section", "Element", "Type", "What the figure is",
        "Exact column heading in that file",
        "How the number is worked out",
        "Database table", "Database column",
-       "In the design?", "In the tenant today?",
+       "In the design?",
+       "Proved in test tenant (7rkd12)?",
+       "Proved in ADB production?",
+       "Exactly how it was proved: file, columns, result",
        "Effort", "Status", "Question to ask the client, and why",
        "Questions", "What we found", "FINAL REMARKS"]
 # The last three are the client's own review columns, added to the workbook by
 # hand on 14 Aug and folded back into the generator here so they survive a
 # rebuild. Widths follow what he set, except "What we found", widened from 21
 # because at that width a paragraph becomes a 400px tall row.
-WID = [5, 24, 28, 9, 34, 18, 30, 62, 40, 60, 20, 28, 13, 15, 9, 24, 58,
+WID = [5, 24, 28, 9, 34, 18, 30, 62, 40, 60, 20, 28, 13, 17, 17, 66, 9, 24, 58,
        46, 40, 69]
-COL_STATUS = 16          # P, the column the Summary counts and the filter uses
+COL_STATUS = 18          # R, the column the Summary counts and the filter uses
 
 # Shorthands used a lot below.
 T1, T2, T3, T4 = "1 Utilization Report", "2 Site Activity", "3 User Activity", "4 File Plan"
@@ -451,9 +454,44 @@ RM_SITES = (
     "several departments, and departmental totals will not sum to the bank-wide "
     "figure, or one is picked as primary and the rest are dropped.")
 
+# What was actually run to prove a row, keyed by recipe. Used when a row does not
+# supply its own. Every entry names a real file in the repo or a real call, so a
+# reader can go and repeat it rather than take the workbook's word for it.
+PROOF = {
+ "usage": "TEST TENANT, 12 Aug 2026. evidence_SharePointSiteUsageDetail_2026-08-12.csv, "
+          "2,575 rows, 23 columns, one row per site. Every column heading quoted in this "
+          "workbook is checked against that file when it is rebuilt. Site URL is EMPTY on "
+          "all 2,575 rows, so Site Id is the only usable site key",
+ "user":  "TEST TENANT, 12 Aug 2026. evidence_SharePointActivityUserDetail_2026-08-12.csv, "
+          "30 rows, 12 columns, one row per LICENSED user. Only 8 rows have "
+          "'Viewed Or Edited File Count' above zero, so a row count overstates adoption "
+          "by nearly four times",
+ "cg":    "TEST TENANT, 14 Aug 2026. evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv, "
+          "1,209 rows, 93 columns, one row per workspace. 45 of the 93 columns are empty on "
+          "every row, so population was measured per column before anything was relied on. "
+          "'EDRMS Site Type' is filled on 1,032 rows, 'Department' on 1,030 of those",
+ "db":    "TEST TENANT / UAT. Direct query against public.\"Records\" in drm-npr. About 1,990 "
+          "rows, all declared records. NOT re-run recently: treat the row count as indicative "
+          "and re-query before quoting it",
+ "graph": "TEST TENANT, 14 Aug 2026. Run by hand in Graph Explorer against "
+          "org_csd_1.4testsite. /sites, /sites/{id}/drives, /drives/{id}/list and "
+          "/drives/{id}/root/delta all returned as documented. WARNING: /sites?search=* is a "
+          "SEARCH over the crawled index, not an enumeration. It returned 451 sites against "
+          "1,676 from Get-PnPTenantSite",
+ "spadmin": "TEST TENANT. Get-PnPTenantSite returned 1,676 sites, which is the only "
+            "enumeration in this project that is known to be complete",
+ "purview": "NOT EXPORTED. The 53 label figure came from looking at the screen, not from an "
+            "export. Every retention and disposal figure rests on it. Export it before "
+            "quoting anything from this row",
+ "terms": "TEST TENANT, 14 Aug 2026, LOOKED AT ONLY. 19 term groups visible in the Term Store "
+          "Management Tool. None is named File Plan, Classification, Records or Retention. The "
+          "groups were NOT expanded, so no statement about depth is proved either way",
+ "none":  "Nothing to prove. No system this report can reach holds this figure",
+}
+
 def R(section, element, typ, measure, recipe, cols, compute,
       table, column, design, tenant, effort, status, question="",
-      asked="", found="", remarks=""):
+      asked="", found="", remarks="", adb="", proof=""):
     """One checkable figure.
 
     recipe  a key into RC, which supplies the source system, the file to open
@@ -464,10 +502,23 @@ def R(section, element, typ, measure, recipe, cols, compute,
     asked   his own question against this row, in his words
     found   what checking actually returned
     remarks the conclusion, once it is settled
+    adb     whether this has been proved against ADB PRODUCTION. Defaults to
+            "Not yet" for anything proved in test, because nothing has been run
+            against production. The column exists so that gap is visible rather
+            than assumed away
+    proof   the evidence: which file, which columns, what came back, and when.
+            Auto-derived from the recipe when not given, so every row carries
+            something truthful rather than a blank
     """
     src, report, steps = RC[recipe]
+    if not adb:
+        # "Not yet" everywhere, because NOTHING has been run against production.
+        # The exception is a row with no source at all: there is nothing to run.
+        adb = "n/a, no source" if recipe == "none" else "Not yet"
+    if not proof:
+        proof = PROOF.get(recipe, "Not exported. Nothing has been run to prove this one either way")
     return (section, element, typ, measure, src, report, steps, cols, compute,
-            table, column, design, tenant, effort, status, question,
+            table, column, design, tenant, adb, proof, effort, status, question,
             asked, found, remarks)
 
 
@@ -484,7 +535,12 @@ BW = [
    "How should EDRMS User be defined? Aldo Enriquez raised this on 10 Aug and Kylee Williamson "
    "replied that it will need defining. Neither settled it, and every option is buildable today, "
    "so this is a definition to agree rather than work to do",
-   asked=Q_USERS_ASKED, found=F_USERS, remarks=RM_USERS),
+   asked=Q_USERS_ASKED, found=F_USERS, remarks=RM_USERS,
+   proof="TEST TENANT, 12 Aug 2026. Opened evidence_SharePointActivityUserDetail_2026-08-12.csv "
+         "in Excel, filtered 'Viewed Or Edited File Count' to greater than 0. 30 rows in, "
+         "8 rows out. The answer is 8, not 30. WHAT IS NOT PROVED: the figure covers ALL "
+         "SharePoint activity, not EDRMS sites, because the export has no per site breakdown, "
+         "so it overstates adoption by an unknown amount"),
  R("Top panel", "Total Documents in EDRMS", "KPI", "Every document held, declared or not",
    "usage", "'File Count', and 'Site Id' to identify the site",
    "Sum the 'File Count' column across the sites that are EDRMS compliant. In the test tenant "
@@ -493,7 +549,14 @@ BW = [
    "the documents the report defines",
    T1, "All rows WHERE IsEdrmsCompliant", "Yes", "Partly", "Medium", BUILD,
    "Four questions, in the FINAL REMARKS column, ready to send to development",
-   asked=Q_DOCS_ASKED, found=F_DOCS, remarks=RM_DOCS),
+   asked=Q_DOCS_ASKED, found=F_DOCS, remarks=RM_DOCS,
+   proof="TEST TENANT, 12 and 14 Aug 2026. Summed 'File Count' over "
+         "evidence_SharePointSiteUsageDetail_2026-08-12.csv after excluding rows where "
+         "'Is Deleted' is True: 32,833 across 1,071 sites. Separately, on 14 Aug, ran "
+         "/drives/{id}/root/delta by hand on one library: 73 items returned, 19 folders, "
+         "54 documents, and summing size over all 73 gave 684.3 MB against a true 172.2 MB. "
+         "WHAT IS NOT PROVED: the scan has never been run at scale. 32,833 is an upper bound "
+         "because File Count includes system libraries and non EDRMS sites"),
  R("Top panel", "Total Records Declared", "KPI", "Documents formally declared as records",
    "db", "The whole table, and the IsDeleted flag",
    "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE NOT \"IsDeleted\". About 1,990 in UAT. "
@@ -513,7 +576,11 @@ BW = [
    T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD,
    "Confirm the 12 month window is the one they want on the tile, and that the 30 day, "
    "90 day and 12 month figures should nest inside one another",
-   asked=Q_DISP_ASKED, found=F_DISP, remarks=RM_DISP),
+   asked=Q_DISP_ASKED, found=F_DISP, remarks=RM_DISP,
+   proof="NOT PROVED. The column EDRMSDueDateForDisposal is in the design and the query is "
+         "written, but nobody has run SELECT COUNT(*), COUNT(\"EDRMSDueDateForDisposal\") FROM "
+         "public.\"Records\" to see whether it is populated. If coverage is low this KPI "
+         "measures retention label coverage, not disposal workload"),
  R("Top panel", "Active EDRMS Sites, Department / RM / Office", "KPI", "Compliant sites still in use",
    "cg", "'EDRMS Site Type', 'Status', 'Last Active Time', 'Department'",
    "Filter to rows where 'EDRMS Site Type' is not blank, which is the compliant site list, then "
@@ -522,8 +589,16 @@ BW = [
    "usage export, which could not apply a compliance filter at all and fills Last Activity Date "
    "on only 381 of 1,918 live sites. Cloud Governance fills it on every row",
    T2, "IsEdrmsCompliant, LastActivityDate, ADBDepartmentOwner", "Yes, 2 need a rule",
-   "Yes, in test", "Easy", DEPT, Q_COMPLIANT + ". Also " + Q_IDLE,
-   asked=Q_SITES_ASKED, found=F_SITES, remarks=RM_SITES),
+   "Yes", "Easy", DEPT, Q_COMPLIANT + ". Also " + Q_IDLE,
+   asked=Q_SITES_ASKED, found=F_SITES, remarks=RM_SITES,
+   proof="TEST TENANT, 14 Aug 2026. Exported Cloud Governance Workspace report to "
+         "evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv, 1,209 rows, 93 columns. "
+         "Filtered to rows where 'EDRMS Site Type' is not blank: 1,032 sites, all Status "
+         "Active. The 177 excluded are template and admin sites. 'Department' is filled on "
+         "1,030 of the 1,032, of which 240 carry several departments separated by semicolons. "
+         "Result saved as compliant_sites.csv and it feeds -CompliantSiteList directly. "
+         "WHAT IS NOT PROVED: that a workspace carrying 'EDRMS Site Type' actually has the "
+         "app installed. The register records intent, the app records reality"),
  R("Top panel", "Active EDRMS Sites, Sovereign Projects", "KPI", "Sites belonging to sovereign projects",
    "none", "No column in any export identifies a project site",
    "Cannot be worked out. Once a project register exists, it would be: count the sites whose "
@@ -1244,7 +1319,16 @@ intro = [
     ("How it is produced", "The formula or the direction to source it. Written to be handed to whoever "
                            "builds the Power BI measure"),
     ("In the design?", "Whether the 73 column design already carries it"),
-    ("In the tenant today?", "Whether the data exists in the test tenant now"),
+    ("Proved in test tenant (7rkd12)?", "Whether the data was actually seen in the test tenant"),
+    ("Proved in ADB production?",
+     "Whether this has been run against ADB. TODAY EVERY ROW READS 'Not yet', because no "
+     "export has been taken from production. The column exists so that gap is visible rather "
+     "than assumed away. It is the checklist to work through once Leah Bancale supplies the "
+     "production exports"),
+    ("Exactly how it was proved",
+     "The evidence: which file, which columns, what came back, and on what date. Where a row "
+     "was NOT proved it says so and says why. Where something was proved only partly, the "
+     "sentence starting WHAT IS NOT PROVED names the half that is still assumption"),
     ("Testable in the tenant, and how", "The actual check to run, with the export or the API call"),
     ("Effort", "Easy, Medium or Blocked"),
     ("Status", "The verdict. Colour coded, see the Summary sheet"),
