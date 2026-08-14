@@ -13,10 +13,17 @@
 
     WHAT IT PROVES, AND WHAT IT DOES NOT
     The count is real: it walks every library in every site it is given and
-    applies the same rules as the full scan. What it cannot do on its own is
-    tell you WHICH sites are EDRMS compliant, because nobody has answered that
-    yet. See COMPLIANCE in simulate_document_scan.ps1. Without a compliant site
-    list this reports an UPPER BOUND across the whole tenant, and it says so.
+    applies the same rules as the full scan. WHICH sites are EDRMS compliant is
+    no longer an open question: export the AvePoint Cloud Governance Workspace
+    report and filter to rows where 'EDRMS Site Type' is not blank. Pass that as
+    -CompliantSiteList. Without it this reports an UPPER BOUND across the whole
+    tenant, and it says so.
+
+    TENANT
+    $Tenant below is the test tenant. For ADB production, change it and change
+    nothing else. Every call, column and rule in this script is tenant
+    independent: the same reports exist, with the same column names. Only the
+    numbers differ.
 
     THE RULE THE NUMBER DEPENDS ON
     An item with a `folder` facet is a folder. An item with a `file` facet is a

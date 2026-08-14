@@ -93,6 +93,7 @@ BUILD, DEPT, JOIN, APPCH, REFL, NEWSRC, DECIDE = (
 RC = {}
 RC["usage"] = (USAGE, "SharePoint site usage report, exported as CSV",
  "1. Go to https://admin.microsoft.com/#/reportsUsage/SharePointSiteUsage\n"
+ "   (tenant independent URL: signing in as an ADB reports reader gives ADB figures)\n"
  "2. Sign in as a Microsoft 365 reports reader or global reader\n"
  "3. Set the period selector to 30 days\n"
  "4. Click Export, top right. A CSV downloads, named like "
@@ -102,6 +103,7 @@ RC["usage"] = (USAGE, "SharePoint site usage report, exported as CSV",
  "site list from Graph if you need the address")
 RC["user"] = (USAGE, "SharePoint activity user detail report, exported as CSV",
  "1. Go to https://admin.microsoft.com/#/reportsUsage/SharePointActivity\n"
+ "   (tenant independent URL: signing in as an ADB reports reader gives ADB figures)\n"
  "2. Sign in as a Microsoft 365 reports reader or global reader\n"
  "3. Set the period selector to 30 days\n"
  "4. Click Export. A CSV downloads, named like "
@@ -119,6 +121,8 @@ RC["graph"] = (GRAPH, "Microsoft Graph, run interactively",
  "3. Paste the call from the Exact column heading cell into the address bar and click Run query\n"
  "4. Read the field named in that same cell out of the JSON response")
 RC["cg"] = (CG, "Cloud Governance Workspace report, exported as CSV",
+ "0. FOR ADB PRODUCTION: same product, same screen, same columns. Only the AvePoint Online "
+ "Services instance differs. Ask Leah Bancale for access or for the export itself\n"
  "1. Open AvePoint Online Services, then Cloud Governance\n"
  "2. Left nav: Directory, then Workspace report\n"
  "3. Click Export report, top left. The file is queued, not downloaded immediately\n"
@@ -1245,6 +1249,38 @@ intro = [
     ("Effort", "Easy, Medium or Blocked"),
     ("Status", "The verdict. Colour coded, see the Summary sheet"),
     ("Question to ask the client", "What to ask, and why it matters. Blank means nothing to ask"),
+    ("Questions", "His own question against that row, in his words"),
+    ("What we found", "What checking actually returned. Kept separate from his question so it stays "
+                      "visible which half is the ask and which half is the result"),
+    ("FINAL REMARKS", "The conclusion, once it is settled"),
+    ("", ""),
+    ("THE TEST TENANT AND THE ADB TENANT", ""),
+    ("The method transfers. The numbers do not.",
+     "Everything in this workbook was proved against the 7rkd12 TEST tenant. Treat the METHOD as "
+     "valid for ADB production: the same reports exist, under the same names, with the same column "
+     "headings, and the same rules govern them. Microsoft and AvePoint do not ship different "
+     "products to different tenants. What does NOT transfer is any figure. 1,032 compliant sites, "
+     "1,676 sites, 32,833 files, 1,990 declared records: all test tenant. Re-run each export "
+     "against production and read the real number off it."),
+    ("What to change for ADB",
+     "Two things only. Swap the tenant name in every admin URL, so 7rkd12-admin.sharepoint.com "
+     "becomes ADB's equivalent. And point Cloud Governance at ADB's own AvePoint Online Services "
+     "instance. Every click path, column name, Graph call and SQL statement is unchanged."),
+    ("The four exports that reproduce this workbook in production", ""),
+    ("1. Cloud Governance Workspace report",
+     "AvePoint Online Services, Cloud Governance, Directory, Workspace report, Export report. "
+     "Collect from Job monitor. Gives the EDRMS compliant site list via 'EDRMS Site Type', the "
+     "site to department mapping via 'Department', plus owner, storage, activity and status. "
+     "The single highest value file in the project. Ask Leah Bancale."),
+    ("2. SharePoint site usage report",
+     "admin.microsoft.com, Reports, Usage, SharePoint site usage, Export. Gives File Count per "
+     "site. Join to export 1 on Site Id to get the interim document total."),
+    ("3. SharePoint activity user detail report",
+     "admin.microsoft.com, Reports, Usage, SharePoint activity, Export. One row per LICENSED "
+     "user, not per active user. Filter on Viewed Or Edited File Count above zero."),
+    ("4. The drm-npr database",
+     "Any SQL client against public.\"Records\". Declared records only. Everything else in the "
+     "report needs the weekly scan, which needs export 1 to know which sites to scan."),
     ("", ""),
     ("The single most important fact", ""),
     ("Records holds declared records only",

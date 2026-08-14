@@ -284,6 +284,36 @@ so the scan must filter to files only or storage is double counted.
 
 Graph `/sites?search=*` returns `createdDateTime`.
 
+### The test tenant and the ADB tenant
+
+**The method transfers. The numbers do not.** Everything proved in this project
+was proved against **7rkd12**, the test tenant. Treat the METHOD as valid for ADB
+production: the same reports exist, under the same names, with the same column
+headings, and the same rules govern them. Microsoft and AvePoint do not ship
+different products to different tenants.
+
+What does **not** transfer is any figure. 1,032 compliant sites, 1,676 sites,
+32,833 files, 26,660 documents, 1,990 declared records, 53 retention labels: all
+test tenant. Re-run each export against production and read the real number.
+
+**Two things change for ADB, and only two.** Swap the tenant name in every admin
+URL, so `7rkd12-admin.sharepoint.com` becomes ADB's equivalent. And point Cloud
+Governance at ADB's own AvePoint Online Services instance. Every click path,
+column name, Graph call and SQL statement is unchanged.
+
+**The four exports that reproduce the whole project in production:**
+
+| # | Export | Where | What it gives |
+| --- | --- | --- | --- |
+| 1 | **Cloud Governance Workspace report** | AvePoint Online Services, Cloud Governance, Directory, Workspace report, Export report, collect from Job monitor | The compliant site list via `EDRMS Site Type`, the site to department mapping via `Department`, plus owner, storage, activity, status. **Highest value single file in the project.** Ask Leah Bancale |
+| 2 | **SharePoint site usage report** | admin.microsoft.com, Reports, Usage, SharePoint site usage, Export | `File Count` per site. Join to 1 on Site Id for the interim document total |
+| 3 | **SharePoint activity user detail** | admin.microsoft.com, Reports, Usage, SharePoint activity, Export | One row per **licensed** user, not per active user. Filter on Viewed Or Edited File Count above zero |
+| 4 | **The drm-npr database** | Any SQL client, `public."Records"` | Declared records only. Everything else needs the weekly scan, which needs export 1 to know which sites to scan |
+
+Exports 2, 3 and 4 have been run against the test tenant and their columns are
+verified. Export 1 has been run against the test tenant and its 93 columns are
+profiled. **None has been run against production.**
+
 ### Gap 3b, compliance. CLOSED 14 August, by Cloud Governance
 
 **The compliant site list is a business register, not a technical detection
