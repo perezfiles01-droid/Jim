@@ -99,14 +99,37 @@ function Get-GraphPaged {
     return $all
 }
 
-# Gap 3b, the one genuinely blocked step. The rule is known: a site is compliant
-# when app {B255A2AF-7F63-4A30-966A-5D5FD99F97D7} is installed on it. Which API
-# returns that across every site is not known. Replace this function body when
-# Mihal Le answers; nothing else in either script changes.
+# Gap 3b, CLOSED 14 Aug 2026. The compliant site list is a business register,
+# not a technical detection problem: AvePoint Cloud Governance, Directory,
+# Workspace report, column 'EDRMS Site Type'. Populated on 1,032 of 1,209
+# workspaces in the test tenant. Export it, filter to rows where that column is
+# not blank, and pass the result as -CompliantSiteList. No code change was
+# needed here, which is the whole point of having isolated the test.
 function Test-EdrmsCompliant {
     param([string] $SiteUrl, [hashtable] $Allowed)
     if ($Allowed.Count -gt 0) { return $Allowed.ContainsKey($SiteUrl.ToLower()) }
     return $true   # no list supplied: count everything, and label it an upper bound
+}
+
+# Resolve a site URL to the Graph site id. Needed because Cloud Governance gives
+# URLs and Graph's /drives call wants an id.
+#
+# This REPLACES enumerating sites with /sites?search=* on the compliant path.
+# That call is a SEARCH over the crawled index, not an enumeration: measured on
+# 14 Aug 2026 it returned 451 sites against 1,676 from Get-PnPTenantSite. A scan
+# built on it silently misses most of the tenant. When the compliant list is
+# supplied we do not need to enumerate anything, so the problem disappears.
+function Resolve-SiteId {
+    param([string] $SiteUrl)
+    $u = [uri] $SiteUrl
+    $path = $u.AbsolutePath.TrimStart('/')
+    try {
+        $s = Invoke-PnPGraphMethod -Url "v1.0/sites/$($u.Host):/$($path)?`$select=id,displayName,webUrl" -Method Get
+        return $s
+    } catch {
+        Write-Warning "  cannot resolve $SiteUrl : $_"
+        return $null
+    }
 }
 
 # ---- 1. AUTHENTICATE ------------------------------------------------------
@@ -124,10 +147,27 @@ if ($CompliantSiteList -and (Test-Path $CompliantSiteList)) {
 }
 
 # ---- 3. SITES -------------------------------------------------------------
-$sites = Get-GraphPaged "v1.0/sites?search=*&`$select=id,displayName,webUrl&`$top=999"
-Write-Host "$($sites.Count) sites returned by Graph"
-
-$sites = $sites | Where-Object { Test-EdrmsCompliant -SiteUrl $_.webUrl -Allowed $allowed }
+# Preferred path: the compliant list supplies the URLs, so resolve each one and
+# enumerate nothing. Fallback path: no list, so fall back to search, which is
+# incomplete and says so.
+$sites = @()
+if ($allowed.Count -gt 0) {
+    foreach ($u in $allowed.Keys) {
+        $s = Resolve-SiteId -SiteUrl $u
+        if ($s) { $sites += $s }
+    }
+    Write-Host "$($sites.Count) of $($allowed.Count) compliant sites resolved through Graph"
+} else {
+    $sites = Get-GraphPaged "v1.0/sites?search=*&`$select=id,displayName,webUrl&`$top=999"
+    Write-Warning "Enumerated with /sites?search=*, which returned $($sites.Count) sites. That call is a search over the crawled index, NOT an enumeration: it returned 451 against 1,676 real sites on 14 Aug 2026. Supply -CompliantSiteList instead."
+}
+# Only filter on the fallback path. On the compliant path the list has already
+# done the filtering, and re-checking would compare Graph's webUrl against the
+# Cloud Governance URL. Those can differ in case or trailing slash, which would
+# drop sites silently, which is the worst kind of wrong.
+if ($allowed.Count -eq 0) {
+    $sites = $sites | Where-Object { Test-EdrmsCompliant -SiteUrl $_.webUrl -Allowed $allowed }
+}
 if ($SiteUrlLike) { $sites = $sites | Where-Object { $_.webUrl -like "*$SiteUrlLike*" } }
 if ($MaxSites -gt 0) { $sites = $sites | Select-Object -First $MaxSites }
 Write-Host "$($sites.Count) sites will be counted"

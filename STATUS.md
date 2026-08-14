@@ -8,8 +8,9 @@ what is assumed, what is blocked, and what was got wrong along the way.
 the no em dashes rule) but was written on 4 August and predates all of this.
 **Where the two disagree, this file wins.**
 
-Last updated 13 August 2026, after the client's dashboard requirements arrived
-and the prototype was rebuilt around them.
+Last updated **14 August 2026**. Cloud Governance closed Gap 3b, the compliance
+question that had blocked four KPIs since the start, and supplied the site to
+department mapping. See section 6.
 
 ---
 
@@ -57,6 +58,11 @@ yet. That single fact explains most of what is still open.
 | `utilizationdb.md` | The same design as prose, no code | Current |
 | `evidence_SharePointSiteUsageDetail_2026-08-12.csv` | Real tenant export, 2,575 rows | Evidence |
 | `evidence_SharePointActivityUserDetail_2026-08-12.csv` | Real tenant export, 30 rows | Evidence |
+| `evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv` | **The compliance answer.** 1,209 workspaces, 93 columns | Evidence |
+| `evidence_CG_GroupsExport_2026-08-14.csv` | 676 groups. Checked and rejected, see section 6 | Evidence |
+| `compliant_sites.csv` | The 1,032 EDRMS sites, shaped for `-CompliantSiteList` | Derived |
+| `EDRMS_Utilization_Report_Checker_2026-08-14.xlsx` | **The checker.** 109 figures, each with the steps to reproduce it by hand | Current |
+| `kpi_brief_total_documents.html` | Work order for the Total Documents KPI | Current |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | Element to source mapping, 25 findings | **STALE**, predates the 10 Aug cut |
 | `BACKGROUND.md` | Durable context, stack and palette | Still correct on those |
 
@@ -278,23 +284,116 @@ so the scan must filter to files only or storage is double counted.
 
 Graph `/sites?search=*` returns `createdDateTime`.
 
-### Gap 3b, compliance. Rule known, query outstanding
+### Gap 3b, compliance. CLOSED 14 August, by Cloud Governance
 
-A site is compliant when it has the **Declare as Record** button, which comes from
-app `{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}`, `digital-records-management-system`.
+**The compliant site list is a business register, not a technical detection
+problem.** That reframing is the whole answer, and it came from the client.
 
-Site Contents shows the catalog and the installed app as **separate rows**:
+AvePoint Cloud Governance, Directory, **Workspace report**, exports 93 columns
+with one row per workspace. The column **`EDRMS Site Type`** is the marker. In
+the test tenant it is populated on **1,032 of 1,209** workspaces with a single
+value, `EDRMS Project Site`. The 177 blanks are template and admin sites:
+`edrmstemplate`, `template_drmdefault`, `app_edrms_data`.
 
-```
-Apps for SharePoint            List   3/5/2026  5:05 PM   <- the catalog
-digital-records-management-    App    12/4/2025 2:11 PM   <- installed here
-```
+**1,032 against the 1,057 placeholder** that has been in the prototype since
+before this project. Nobody could justify that number. It was close.
 
-The `App` row carries a Modified date that differs between sites, so it is not a
-bulk stamp. Whether it is the install date or an upgrade date is unproven; compare
-it against `MIN(CreatedDate)` from `Records` per site to settle it.
+`compliant_sites.csv` is that filtered list in the shape both scan scripts
+already accept via `-CompliantSiteList`. **No code change was needed**, because
+the compliance test was deliberately isolated in one function.
 
-**Outstanding:** which API returns that row across 1,057 sites.
+**Why the register beats the technical test.** A site RAC designated as EDRMS
+where the app deployment failed vanishes entirely under an app-installed test,
+and nobody ever learns it is broken. Under the register it appears with zero
+declared records and somebody asks why. **That gap is a compliance finding worth
+reporting**, and it exists only if you hold the business list.
+
+**Leah Bancale confirmed on 14 August** that EDRMS sites exist which did not come
+through Cloud Governance originally, and that those are converted to become
+compliant. So the CG **created** list alone would be incomplete: it would miss
+every converted site, and those are the older, established departmental sites
+most likely to hold the largest volume of declared records.
+
+**Four things still to do, none of them blocking:**
+
+1. **Get the PRODUCTION export.** Everything above is structure learned from
+   `7rkd12`. One export from Leah gives the real compliant count, the real
+   department mapping and the real go-live dates. Highest value single file in
+   the project.
+2. **Confirm a converted site is recorded in Cloud Governance the same way a
+   created one is.** If conversion is done by installing the app directly, there
+   is a second list somewhere and it needs an owner.
+3. **Validate the register against the app once**, on about twenty sites, both
+   directions. A register records intent. The app records reality. They drift and
+   nothing announces it.
+4. **The 90 versus 300 day inactivity threshold** is still unanswered, and now
+   sits on a live panel.
+
+The earlier note stands as history: Site Contents shows the catalog and the
+installed app as separate rows, and the `App` row's Modified date differs between
+sites so it is not a bulk stamp. **That is no longer the route**, but it remains
+the way to validate step 3 on a sample.
+
+### Gap 1, department. Source found 14 August, with a complication
+
+The same Cloud Governance export carries **`Department`, populated on 1,030 of
+the 1,032** EDRMS sites. This is the site to department mapping RAC has been
+asked for since the start, which 29 requirements and the whole Department
+Insights dashboard have been waiting on.
+
+**It is not clean. 240 sites carry several departments**, semicolon separated:
+`ADBI;BOD`, `CWRD;SARD`, `ADBI;BOD;CSD;CWRD;SARD`. That is 23 percent.
+
+**This contradicts a decision settled on 10 August**, that department attaches to
+the site and every document inherits it, one department per site. Roughly a
+quarter of sites do not work that way. Either a document counts to several
+departments, **and then departmental totals will not sum to the bank-wide
+figure**, or one department is chosen as primary and the rest are dropped.
+
+**That is RAC's call and it is new.** It is the only finding of 14 August that
+invalidates something already agreed, so it is the first thing to raise.
+
+`Division` exists as a column in the export and is **empty on all 1,032 rows**.
+That moves division from "we have not found the source" to "no source has it",
+which is a much stronger thing to tell the client.
+
+### What else the Cloud Governance export carries
+
+All 100 percent populated over the 1,032, all previously missing or partial:
+
+| Column | What it unblocks |
+| --- | --- |
+| `Last Active Time` | Site inactivity. The M365 usage export fills its equivalent on only **381 of 1,918** live sites |
+| `Primary Business Owner` | Site ownership. The SharePoint export had **19 sites with no owner** |
+| `Storage Used (GB)`, `Storage Quota (GB)` | Storage per site, plus quota, which no other source had |
+| `External Sharing for Site` | Part of S/N 120, previously "needs new data source" |
+| `Status` = Active / Locked / Archived | **S/N 15, sites archived**, blocked on "no definition". Cloud Governance has one |
+| `Site Status` = Deleted | **S/N 14, sites deleted**, previously "needs new column or join" |
+| `Created Time` | Site creation date. **NOT the EDRMS go-live date**, see below |
+
+**Correction worth keeping.** `Created Time` was first written up as the per site
+go-live date. That was an inference, not a measurement. It records when the
+**site** was created. For a converted site the site existed first and became
+EDRMS later, and **no column in the export records that date**. Every date column
+was checked. The likely home is **Job monitor**, whose job types include
+`Site manual import` and `Apply profile for site`, both timestamped.
+
+### Two Cloud Governance reports that were checked and rejected
+
+**Groups export**, 676 rows. `Site URL` and `EDRMS Site Type` are empty on every
+row, so it does not join. Joining on the group email local part reaches only
+**207 of the 1,032** EDRMS sites, and `Owners` and `Members` are **counts, not
+names**, so it cannot produce users per department even where it joins.
+
+That produced a finding worth more than the report: **1,028 of the 1,032 EDRMS
+sites are `Team site (no Microsoft 365 group)`**. A site with no group has no
+group membership, so **users per site cannot come from group membership at all**.
+Together with the existing finding that SharePoint reports viewers per site and
+never per library, every "who has access" requirement is harder than it looks:
+S/N 23, S/N 51, S/N 56, and the visitors internal versus external split.
+
+**User activity report** records Cloud Governance activity, not SharePoint
+activity, so it cannot contribute to Total EDRMS Users.
 
 ### The file plan: source unknown
 
@@ -582,7 +681,7 @@ The full versions are in `REQUIREMENTS_2026-08-13.md` section 9 and on the
 
 8. **Get the site to department list from RAC.** 29 of the 123 requirements wait
    only on this, and all of Department Insights
-9. **Ask Mihal how to detect the EDRMS app per site.** Gap 3b, 4 KPIs
+9. ~~Ask Mihal how to detect the EDRMS app per site.~~ **DONE 14 Aug.** It was never an API problem. Cloud Governance holds the register. What replaces it: **ask Leah Bancale for the PRODUCTION Workspace report export**, which is now the highest value single file in the project
 10. **Fill the verification tracker.** 36 columns left, 24 of them settled by
     one query to Mihal
 11. **Rebuild the source data workbook as v5.** `elements.py` still holds the

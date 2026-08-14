@@ -78,7 +78,7 @@ Email Records Declaration stream.
 
 **Known deviation, deliberately left alone:** both source prototypes emit em
 dashes in visible text, which breaks the hard rule in section 8. They appear in
-the department dropdown options (`ITD — Information Technology`) and as KPI
+the department dropdown options (`ITD - Information Technology`) and as KPI
 placeholder glyphs. These were inherited verbatim rather than fixed, because the
 requester asked for exactly one change. Worth fixing in a later pass: the fix is
 to change the separator in each `deptOptions` builder.
