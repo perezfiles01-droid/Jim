@@ -1,0 +1,1033 @@
+SiteUrl,SiteName,EdrmsSiteType,Department,DepartmentCount,PrimaryBusinessOwner,CreatedTime,LastActiveTime,StorageUsedGB,ExternalSharingForSite,Status
+https://7rkd12.sharepoint.com/teams/Test814,Test814,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-14 11:16:45,2026-08-14 11:31:39,0.002,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-125,dane-Site-Title-ddos-125,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:29:34,2026-08-14 02:20:24,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-122,dane-Site-Title-ddos-122,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:29:15,2026-08-13 21:14:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-119,dane-Site-Title-ddos-119,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:29:11,2026-08-14 03:16:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-118,dane-Site-Title-ddos-118,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:29:03,2026-08-13 22:02:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-117,dane-Site-Title-ddos-117,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:59,2026-08-13 22:28:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-116,dane-Site-Title-ddos-116,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:55,2026-08-13 22:44:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-113,dane-Site-Title-ddos-113,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:51,2026-08-13 23:51:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-115,dane-Site-Title-ddos-115,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:51,2026-08-13 23:41:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-112,dane-Site-Title-ddos-112,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:50,2026-08-13 23:48:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-114,dane-Site-Title-ddos-114,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:50,2026-08-13 23:41:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-111,dane-Site-Title-ddos-111,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:41,2026-08-14 00:03:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-108,dane-Site-Title-ddos-108,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:40,2026-08-14 03:55:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-109,dane-Site-Title-ddos-109,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:40,2026-08-14 03:48:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-110,dane-Site-Title-ddos-110,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:39,2026-08-14 04:23:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-107,dane-Site-Title-ddos-107,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:27,2026-08-14 03:54:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-105,dane-Site-Title-ddos-105,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:25,2026-08-14 04:26:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-104,dane-Site-Title-ddos-104,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:17,2026-08-14 05:19:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-103,dane-Site-Title-ddos-103,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:17,2026-08-14 05:01:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-102,dane-Site-Title-ddos-102,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:09,2026-08-14 05:35:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-100,dane-Site-Title-ddos-100,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:07,2026-08-14 04:48:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-101,dane-Site-Title-ddos-101,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:28:07,2026-08-14 04:53:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-98,dane-Site-Title-ddos-98,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:59,2026-08-14 05:40:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-97,dane-Site-Title-ddos-97,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:44,2026-08-13 23:18:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-96,dane-Site-Title-ddos-96,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:41,2026-08-14 01:29:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-95,dane-Site-Title-ddos-95,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:39,2026-08-14 02:26:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-94,dane-Site-Title-ddos-94,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:33,2026-08-14 01:37:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-93,dane-Site-Title-ddos-93,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:31,2026-08-14 02:00:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-91,dane-Site-Title-ddos-91,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:30,2026-08-14 02:02:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-92,dane-Site-Title-ddos-92,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:29,2026-08-14 06:11:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-90,dane-Site-Title-ddos-90,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:22,2026-08-14 06:09:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-89,dane-Site-Title-ddos-89,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:18,2026-08-14 06:43:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-85,dane-Site-Title-ddos-85,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:27:06,2026-08-14 06:30:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-84,dane-Site-Title-ddos-84,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:58,2026-08-14 07:46:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-81,dane-Site-Title-ddos-81,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:48,2026-08-14 07:31:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-80,dane-Site-Title-ddos-80,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:37,2026-08-14 08:12:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-77,dane-Site-Title-ddos-77,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:18,2026-08-14 00:03:24,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-76,dane-Site-Title-ddos-76,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:18,2026-08-14 00:35:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-73,dane-Site-Title-ddos-73,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:06,2026-08-14 04:38:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-74,dane-Site-Title-ddos-74,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:26:06,2026-08-14 05:19:09,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-71,dane-Site-Title-ddos-71,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:56,2026-08-14 05:40:47,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-70,dane-Site-Title-ddos-70,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:49,2026-08-14 01:10:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-69,dane-Site-Title-ddos-69,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:44,2026-08-14 00:26:59,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-64,dane-Site-Title-ddos-64,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:14,2026-08-14 10:00:11,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-65,dane-Site-Title-ddos-65,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:14,2026-08-14 10:04:10,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-63,dane-Site-Title-ddos-63,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:09,2026-08-14 10:35:37,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-62,dane-Site-Title-ddos-62,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:06,2026-08-14 09:32:05,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-60,dane-Site-Title-ddos-60,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:25:02,2026-08-13 22:16:13,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-59,dane-Site-Title-ddos-59,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:57,2026-08-13 22:41:26,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-58,dane-Site-Title-ddos-58,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:53,2026-08-13 23:05:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-57,dane-Site-Title-ddos-57,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:53,2026-08-13 22:23:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-56,dane-Site-Title-ddos-56,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:49,2026-08-13 22:04:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-54,dane-Site-Title-ddos-54,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:45,2026-08-14 07:42:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-52,dane-Site-Title-ddos-52,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:36,2026-08-14 10:50:48,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-50,dane-Site-Title-ddos-50,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:35,2026-08-14 10:22:05,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-46,dane-Site-Title-ddos-46,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:26,2026-08-14 04:12:03,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-47,dane-Site-Title-ddos-47,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:26,2026-08-14 04:13:02,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-48,dane-Site-Title-ddos-48,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:25,2026-08-14 03:46:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-45,dane-Site-Title-ddos-45,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:16,2026-08-14 08:34:36,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-39,dane-Site-Title-ddos-39,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:07,2026-08-14 05:33:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-40,dane-Site-Title-ddos-40,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:24:06,2026-08-14 07:49:18,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-36,dane-Site-Title-ddos-36,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:54,2026-08-14 11:10:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-34,dane-Site-Title-ddos-34,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:53,2026-08-14 11:09:32,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-31,dane-Site-Title-ddos-31,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:44,2026-08-13 23:07:18,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-32,dane-Site-Title-ddos-32,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:43,2026-08-13 22:28:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-33,dane-Site-Title-ddos-33,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:43,2026-08-14 02:55:09,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-30,dane-Site-Title-ddos-30,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:38,2026-08-14 01:06:14,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-28,dane-Site-Title-ddos-28,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:30,2026-08-14 01:02:45,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-27,dane-Site-Title-ddos-27,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:28,2026-08-14 01:17:28,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-24,dane-Site-Title-ddos-24,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:27,2026-08-14 02:32:45,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-26,dane-Site-Title-ddos-26,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:27,2026-08-14 02:03:10,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-25,dane-Site-Title-ddos-25,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:26,2026-08-14 02:28:01,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-21,dane-Site-Title-ddos-21,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:14,2026-08-14 09:18:20,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-22,dane-Site-Title-ddos-22,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:14,2026-08-14 10:07:36,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-20,dane-Site-Title-ddos-20,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:13,2026-08-14 09:53:33,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-18,dane-Site-Title-ddos-18,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:04,2026-08-14 10:11:57,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-17,dane-Site-Title-ddos-17,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:04,2026-08-14 08:52:51,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-19,dane-Site-Title-ddos-19,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:04,2026-08-14 09:06:29,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-16,dane-Site-Title-ddos-16,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:23:03,2026-08-14 09:45:56,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-13,dane-Site-Title-ddos-13,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:54,2026-08-14 11:48:44,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-14,dane-Site-Title-ddos-14,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:52,2026-08-14 12:07:44,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-12,dane-Site-Title-ddos-12,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:44,2026-08-14 11:23:40,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-10,dane-Site-Title-ddos-10,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:44,2026-08-14 11:24:06,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-9,dane-Site-Title-ddos-9,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:44,2026-08-14 11:49:54,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-11,dane-Site-Title-ddos-11,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:43,2026-08-14 12:44:34,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-8,dane-Site-Title-ddos-8,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:33,2026-08-14 12:35:01,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-5,dane-Site-Title-ddos-5,EDRMS Project Site,CWRD;SARD,2,Mihal,2026-08-13 19:22:33,2026-08-14 12:30:23,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-4,dane-Site-Title-ddos-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-13 19:22:22,2026-08-14 12:18:18,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-1,dane-Site-Title-ddos-1,EDRMS Project Site,ADBI;BOD;CSD;CWRD;SARD,5,Mihal,2026-08-13 19:22:20,2026-08-14 12:56:54,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-3,dane-Site-Title-ddos-3,EDRMS Project Site,ADBI;BOD;SARD,3,Mihal,2026-08-13 19:22:19,2026-08-14 12:58:04,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-ddos-2,dane-Site-Title-ddos-2,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:22:17,2026-08-14 13:25:34,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-83,dane-Site-Title-l-83,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:18:20,2026-08-14 13:21:40,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-81,dane-Site-Title-l-81,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:18:14,2026-08-14 14:29:02,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-50,dane-Site-Title-l-50,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:16:26,2026-08-14 14:06:07,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-49,dane-Site-Title-l-49,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:16:23,2026-08-14 13:38:54,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-48,dane-Site-Title-l-48,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:16:19,2026-08-14 13:21:43,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-46,dane-Site-Title-l-46,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:16:15,2026-08-14 13:29:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-42,dane-Site-Title-l-42,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:16:05,2026-08-14 14:33:51,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-l-35,dane-Site-Title-l-35,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 19:15:46,2026-08-14 14:42:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-088,dane-Group-Site-a-088,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:47:56,2026-08-13 17:03:08,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-082,dane-Group-Site-a-082,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:47:15,2026-08-13 17:21:10,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-073,dane-Group-Site-a-073,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:45,2026-08-13 17:54:49,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-069,dane-Group-Site-a-069,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:34,2026-08-13 17:53:31,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-068,dane-Group-Site-a-068,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:33,2026-08-13 17:50:49,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-067,dane-Group-Site-a-067,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:29,2026-08-13 17:18:05,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-065,dane-Group-Site-a-065,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:24,2026-08-13 18:01:22,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-062,dane-Group-Site-a-062,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:45:16,2026-08-13 17:41:59,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-059,dane-Group-Site-a-059,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:44:33,2026-08-13 20:19:52,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_danegroupsite-025,dane-Group-Site-a-025,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 15:41:44,2026-08-13 18:34:34,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-30,dane-Site-Title-c-30,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:12:29,2026-08-13 13:46:06,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-29,dane-Site-Title-c-29,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:12:24,2026-08-13 13:55:43,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-27,dane-Site-Title-c-27,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:12:21,2026-08-13 14:02:44,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-23,dane-Site-Title-c-23,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:12:11,2026-08-13 13:38:08,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-19,dane-Site-Title-c-19,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:12:00,2026-08-13 15:18:07,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-16,dane-Site-Title-c-16,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:11:53,2026-08-13 15:13:13,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-15,dane-Site-Title-c-15,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:11:51,2026-08-13 15:18:13,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-11,dane-Site-Title-c-11,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:10:58,2026-08-13 14:14:51,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-10,dane-Site-Title-c-10,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:10:57,2026-08-13 14:06:35,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-9,dane-Site-Title-c-9,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:10:56,2026-08-13 13:38:04,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-8,dane-Site-Title-c-8,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:10:52,2026-08-13 14:57:32,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-7,dane-Site-Title-c-7,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 12:10:50,2026-08-13 14:25:32,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-6,dane-Site-Title-c-6,EDRMS Project Site,ADBI;BOD;CSD,3,Mihal,2026-08-13 12:10:47,2026-08-13 14:34:10,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-5,dane-Site-Title-c-5,EDRMS Project Site,CWRD;SARD,2,Mihal,2026-08-13 12:10:46,2026-08-13 14:33:03,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-c-4,dane-Site-Title-c-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-13 12:10:44,2026-08-13 14:48:52,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-6,kendrick-Site-Title-t-6,EDRMS Project Site,ADBI;BOD;CSD,3,Mihal,2026-08-13 11:10:45,2026-08-13 13:05:50,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-5,kendrick-Site-Title-t-5,EDRMS Project Site,CWRD;SARD,2,Mihal,2026-08-13 11:10:42,2026-08-13 12:59:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-4,kendrick-Site-Title-t-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-13 11:10:39,2026-08-13 12:35:22,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-3,kendrick-Site-Title-t-3,EDRMS Project Site,ADBI;BOD;SARD,3,Mihal,2026-08-13 11:10:39,2026-08-13 12:53:10,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-2,kendrick-Site-Title-t-2,EDRMS Project Site,ADBI,1,Mihal,2026-08-13 11:10:36,2026-08-13 12:36:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-t-1,kendrick-Site-Title-t-1,EDRMS Project Site,ADBI;BOD;CSD;CWRD;SARD,5,Mihal,2026-08-13 11:10:35,2026-08-13 13:19:53,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-d-6,Dane-Site-Title-d-6,EDRMS Project Site,ADBI;BOD;CSD,3,Mihal,2026-08-12 20:01:41,2026-08-12 23:22:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-d-4,Dane-Site-Title-d-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-12 20:01:11,2026-08-12 23:00:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-d-3,Dane-Site-Title-d-3,EDRMS Project Site,ADBI;BOD;SARD,3,Mihal,2026-08-12 20:00:52,2026-08-12 23:13:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-d-2,Dane-Site-Title-d-2,EDRMS Project Site,ADBI,1,Mihal,2026-08-12 20:00:50,2026-08-12 22:59:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_dane-d-1,Dane-Site-Title-d-1,EDRMS Project Site,ADBI;BOD;CSD;CWRD;SARD,5,Mihal,2026-08-12 20:00:49,2026-08-12 23:06:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-d-6,kendrick-Site-Title-d-6,EDRMS Project Site,ADBI;BOD;CSD,3,Mihal,2026-08-12 00:25:44,2026-08-12 01:49:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-d-5,kendrick-Site-Title-d-5,EDRMS Project Site,CWRD;SARD,2,Mihal,2026-08-12 00:25:07,2026-08-12 02:14:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-d-4,kendrick-Site-Title-d-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-12 00:25:06,2026-08-12 02:13:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-d-3,kendrick-Site-Title-d-3,EDRMS Project Site,ADBI;BOD;SARD,3,Mihal,2026-08-12 00:25:06,2026-08-12 02:10:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-d-1,kendrick-Site-Title-d-1,EDRMS Project Site,ADBI;BOD;CSD;CWRD;SARD,5,Mihal,2026-08-12 00:24:58,2026-08-12 02:15:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810073,Group Sites-0810073,EDRMS Project Site,ADBI,1,Bonnie Test,2026-08-10 16:52:46,2026-08-11 03:19:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808048,Team Sites-0808048,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:40:16,2026-08-11 15:41:01,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808050,Team Sites-0808050,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:39:56,2026-08-11 15:28:14,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808049,Team Sites-0808049,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:39:52,2026-08-11 14:18:12,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808045,Team Sites-0808045,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:39:46,2026-08-10 23:35:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808047,Team Sites-0808047,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:39:11,2026-08-10 23:37:18,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808046,Team Sites-0808046,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:39:10,2026-08-10 23:39:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808041,Team Sites-0808041,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:44,2026-08-10 23:28:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808040,Team Sites-0808040,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:41,2026-08-10 23:31:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808038,Team Sites-0808038,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:40,2026-08-10 23:38:51,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808036,Team Sites-0808036,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:28,2026-08-11 10:13:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808033,Team Sites-0808033,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:24,2026-08-11 04:29:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808030,Team Sites-0808030,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:17,2026-08-11 13:15:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808037,Team Sites-0808037,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:38:08,2026-08-11 10:16:29,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808035,Team Sites-0808035,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:47,2026-08-11 12:02:21,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808027,Team Sites-0808027,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:47,2026-08-11 03:44:23,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808034,Team Sites-0808034,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:47,2026-08-11 12:18:24,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808032,Team Sites-0808032,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:39,2026-08-10 23:25:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808031,Team Sites-0808031,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:28,2026-08-11 13:25:24,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808029,Team Sites-0808029,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:23,2026-08-11 13:40:45,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808025,Team Sites-0808025,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:16,2026-08-11 07:44:14,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808028,Team Sites-0808028,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:37:13,2026-08-11 08:49:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808021,Team Sites-0808021,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:47,2026-08-11 06:29:21,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808026,Team Sites-0808026,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:47,2026-08-11 04:29:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808024,Team Sites-0808024,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:20,2026-08-11 19:04:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808023,Team Sites-0808023,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:18,2026-08-11 05:50:49,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808020,Team Sites-0808020,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:17,2026-08-11 10:27:23,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808019,Team Sites-0808019,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:36:02,2026-08-11 20:06:17,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808018,Team Sites-0808018,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:35:56,2026-08-11 15:36:44,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808016,Team Sites-0808016,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:35:51,2026-08-11 14:19:06,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808011,Team Sites-0808011,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:35:23,2026-08-11 01:54:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808009,Team Sites-0808009,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:35:17,2026-08-11 02:58:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808017,Team Sites-0808017,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:35:13,2026-08-11 21:37:46,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808015,Team Sites-0808015,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:34:59,2026-08-11 00:38:09,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808010,Team Sites-0808010,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:34:27,2026-08-11 02:10:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808004,Team Sites-0808004,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:34:26,2026-08-11 16:51:03,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808007,Team Sites-0808007,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:34:07,2026-08-11 06:12:29,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808006,Team Sites-0808006,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:59,2026-08-11 17:26:47,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808001,Team Sites-0808001,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:53,2026-08-11 09:00:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808005,Team Sites-0808005,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:48,2026-08-11 17:05:17,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808047,Group Sites-0808047,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:47,2026-08-11 13:19:37,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0808002,Team Sites-0808002,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:35,2026-08-11 09:00:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808045,Group Sites-0808045,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:16,2026-08-11 05:30:18,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808050,Group Sites-0808050,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:33:15,2026-08-11 12:12:25,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808049,Group Sites-0808049,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:56,2026-08-11 15:14:10,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808048,Group Sites-0808048,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:56,2026-08-11 08:13:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808040,Group Sites-0808040,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:47,2026-08-11 02:56:15,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808044,Group Sites-0808044,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:36,2026-08-11 01:46:43,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808041,Group Sites-0808041,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:04,2026-08-11 07:05:44,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808036,Group Sites-0808036,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:32:01,2026-08-11 22:46:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808027,Group Sites-0808027,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:47,2026-08-11 20:11:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808039,Group Sites-0808039,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:43,2026-08-11 01:56:18,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808037,Group Sites-0808037,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:34,2026-08-11 17:12:37,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808033,Group Sites-0808033,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:18,2026-08-11 10:56:06,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808032,Group Sites-0808032,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:13,2026-08-11 10:40:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808031,Group Sites-0808031,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:11,2026-08-11 10:57:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808030,Group Sites-0808030,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:31:04,2026-08-11 12:13:21,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808029,Group Sites-0808029,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:30:59,2026-08-11 11:52:53,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808025,Group Sites-0808025,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:30:48,2026-08-11 01:42:29,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808023,Group Sites-0808023,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:57,2026-08-11 04:09:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808022,Group Sites-0808022,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:49,2026-08-11 03:20:55,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808021,Group Sites-0808021,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:48,2026-08-11 16:51:57,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808020,Group Sites-0808020,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:39,2026-08-11 09:35:18,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808019,Group Sites-0808019,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:36,2026-08-11 08:01:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808018,Group Sites-0808018,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:32,2026-08-11 19:03:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808017,Group Sites-0808017,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:29,2026-08-11 17:42:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808010,Group Sites-0808010,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:23,2026-08-11 11:57:38,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808006,Group Sites-0808006,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:18,2026-08-11 17:50:50,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808014,Group Sites-0808014,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:16,2026-08-11 16:44:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808013,Group Sites-0808013,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:10,2026-08-12 03:40:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808012,Group Sites-0808012,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:06,2026-08-11 09:30:31,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808011,Group Sites-0808011,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:29:04,2026-08-11 07:01:01,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808008,Group Sites-0808008,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:55,2026-08-11 01:55:16,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808007,Group Sites-0808007,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:55,2026-08-11 06:48:40,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808005,Group Sites-0808005,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:45,2026-08-11 04:07:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808003,Group Sites-0808003,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:36,2026-08-11 05:26:45,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808004,Group Sites-0808004,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:35,2026-08-11 05:46:17,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0808002,Group Sites-0808002,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:30,2026-08-11 09:00:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809100,Team Sites-0809100,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:23,2026-08-11 17:55:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809099,Team Sites-0809099,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:17,2026-08-11 07:12:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809098,Team Sites-0809098,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:15,2026-08-11 18:46:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809097,Team Sites-0809097,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:10,2026-08-11 08:10:47,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809096,Team Sites-0809096,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:28:05,2026-08-11 01:01:57,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809092,Team Sites-0809092,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:53,2026-08-11 01:53:55,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809094,Team Sites-0809094,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:53,2026-08-11 01:44:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809093,Team Sites-0809093,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:53,2026-08-11 01:57:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809091,Team Sites-0809091,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:43,2026-08-11 09:53:21,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809088,Team Sites-0809088,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:34,2026-08-11 16:27:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809087,Team Sites-0809087,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:33,2026-08-12 03:31:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809086,Team Sites-0809086,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:28,2026-08-11 03:44:14,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809083,Team Sites-0809083,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:19,2026-08-11 14:23:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809085,Team Sites-0809085,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:16,2026-08-11 22:34:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809084,Team Sites-0809084,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:27:12,2026-08-13 15:24:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809081,Team Sites-0809081,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:31,2026-08-13 15:50:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809080,Team Sites-0809080,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:23,2026-08-11 15:31:32,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809079,Team Sites-0809079,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:23,2026-08-11 16:36:39,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809076,Team Sites-0809076,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:12,2026-08-12 01:11:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809077,Team Sites-0809077,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:12,2026-08-12 01:05:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809074,Team Sites-0809074,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:06,2026-08-12 01:20:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809075,Team Sites-0809075,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:26:06,2026-08-13 16:33:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809073,Team Sites-0809073,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:25:50,2026-08-11 04:31:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809070,Team Sites-0809070,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:25:11,2026-08-11 23:42:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809069,Team Sites-0809069,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:25:00,2026-08-11 08:15:19,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809066,Team Sites-0809066,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:48,2026-08-11 23:52:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809065,Team Sites-0809065,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:43,2026-08-11 15:30:23,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809064,Team Sites-0809064,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:38,2026-08-11 14:30:26,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809062,Team Sites-0809062,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:33,2026-08-11 20:15:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809061,Team Sites-0809061,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:28,2026-08-11 17:59:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809060,Team Sites-0809060,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:24,2026-08-11 21:30:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809059,Team Sites-0809059,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:24:15,2026-08-11 10:41:57,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809058,Team Sites-0809058,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:53,2026-08-12 03:57:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809057,Team Sites-0809057,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:48,2026-08-12 04:24:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809056,Team Sites-0809056,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:45,2026-08-12 04:58:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809055,Team Sites-0809055,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:45,2026-08-12 04:26:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809054,Team Sites-0809054,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:33,2026-08-11 16:39:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809053,Team Sites-0809053,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:28,2026-08-11 19:13:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809052,Team Sites-0809052,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:24,2026-08-11 19:06:24,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809051,Team Sites-0809051,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:22,2026-08-11 17:55:50,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809050,Team Sites-0809050,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:16,2026-08-11 22:28:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809049,Team Sites-0809049,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:14,2026-08-11 23:47:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809048,Team Sites-0809048,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:06,2026-08-11 11:10:43,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809046,Team Sites-0809046,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:04,2026-08-11 20:11:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809047,Team Sites-0809047,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:23:03,2026-08-11 19:24:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809045,Team Sites-0809045,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:54,2026-08-11 00:01:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809044,Team Sites-0809044,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:52,2026-08-11 18:18:29,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809043,Team Sites-0809043,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:51,2026-08-11 15:51:26,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809042,Team Sites-0809042,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:41,2026-08-12 00:10:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809041,Team Sites-0809041,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:23,2026-08-11 20:12:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809040,Team Sites-0809040,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:19,2026-08-11 05:02:01,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809039,Team Sites-0809039,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:18,2026-08-11 05:48:25,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809038,Team Sites-0809038,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:13,2026-08-11 21:15:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809037,Team Sites-0809037,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:05,2026-08-12 01:07:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809035,Team Sites-0809035,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:04,2026-08-12 01:04:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809036,Team Sites-0809036,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:22:02,2026-08-12 01:18:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809034,Team Sites-0809034,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:53,2026-08-12 02:38:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809033,Team Sites-0809033,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:52,2026-08-11 05:00:56,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809032,Team Sites-0809032,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:49,2026-08-12 04:48:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809031,Team Sites-0809031,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:39,2026-08-11 12:39:11,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809030,Team Sites-0809030,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:35,2026-08-11 09:48:35,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809029,Team Sites-0809029,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:31,2026-08-11 09:39:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809028,Team Sites-0809028,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:21:20,2026-08-12 06:50:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809027,Team Sites-0809027,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:58,2026-08-12 06:57:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809026,Team Sites-0809026,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:52,2026-08-11 07:34:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809024,Team Sites-0809024,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:39,2026-08-11 14:04:44,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809023,Team Sites-0809023,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:28,2026-08-11 19:55:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809022,Team Sites-0809022,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:25,2026-08-11 19:32:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809021,Team Sites-0809021,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:23,2026-08-11 03:08:54,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809020,Team Sites-0809020,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:16,2026-08-11 15:57:19,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809019,Team Sites-0809019,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:20:14,2026-08-11 23:38:42,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809018,Team Sites-0809018,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:45,2026-08-12 08:12:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809017,Team Sites-0809017,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:36,2026-08-12 08:19:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809016,Team Sites-0809016,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:36,2026-08-12 08:01:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809015,Team Sites-0809015,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:31,2026-08-12 09:18:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809014,Team Sites-0809014,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:24,2026-08-13 16:41:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809013,Team Sites-0809013,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:20,2026-08-12 10:04:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809012,Team Sites-0809012,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:16,2026-08-11 21:38:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809011,Team Sites-0809011,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:12,2026-08-13 16:08:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809010,Team Sites-0809010,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:08,2026-08-11 23:29:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809009,Team Sites-0809009,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:19:00,2026-08-11 21:40:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809008,Team Sites-0809008,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:55,2026-08-11 23:55:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809007,Team Sites-0809007,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:24,2026-08-11 00:40:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809006,Team Sites-0809006,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:21,2026-08-12 05:16:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809005,Team Sites-0809005,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:20,2026-08-11 04:24:22,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809003,Team Sites-0809003,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:12,2026-08-12 05:09:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809004,Team Sites-0809004,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:12,2026-08-12 06:16:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809002,Team Sites-0809002,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:12,2026-08-12 05:42:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0809001,Team Sites-0809001,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:18:00,2026-08-12 03:09:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809100,Group Sites-0809100,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:51,2026-08-12 02:21:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809099,Group Sites-0809099,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:50,2026-08-12 08:31:44,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809098,Group Sites-0809098,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:45,2026-08-12 02:12:19,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809097,Group Sites-0809097,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:41,2026-08-11 03:16:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809096,Group Sites-0809096,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:41,2026-08-11 07:52:07,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809095,Group Sites-0809095,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:31,2026-08-11 09:36:37,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809092,Group Sites-0809092,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:23,2026-08-12 10:00:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809091,Group Sites-0809091,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:18,2026-08-12 08:24:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809090,Group Sites-0809090,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:15,2026-08-12 10:29:47,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809089,Group Sites-0809089,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:09,2026-08-12 10:29:19,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809088,Group Sites-0809088,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:07,2026-08-12 09:03:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809087,Group Sites-0809087,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:17:05,2026-08-12 11:57:47,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809085,Group Sites-0809085,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:59,2026-08-12 11:50:19,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809084,Group Sites-0809084,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:58,2026-08-12 11:51:32,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809086,Group Sites-0809086,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:57,2026-08-12 06:37:33,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809083,Group Sites-0809083,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:47,2026-08-13 16:29:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809082,Group Sites-0809082,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:47,2026-08-11 20:30:16,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809080,Group Sites-0809080,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:36,2026-08-13 15:37:17,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809079,Group Sites-0809079,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:31,2026-08-11 09:12:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809078,Group Sites-0809078,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:28,2026-08-11 21:45:15,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809077,Group Sites-0809077,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:23,2026-08-12 04:58:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809076,Group Sites-0809076,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:18,2026-08-11 03:04:57,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809075,Group Sites-0809075,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:16,2026-08-13 16:33:00,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809074,Group Sites-0809074,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:12,2026-08-12 06:05:09,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809073,Group Sites-0809073,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:06,2026-08-12 06:06:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809071,Group Sites-0809071,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:16:00,2026-08-12 03:43:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809070,Group Sites-0809070,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:57,2026-08-13 16:49:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809069,Group Sites-0809069,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:51,2026-08-12 13:12:05,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809068,Group Sites-0809068,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:17,2026-08-12 09:33:11,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809067,Group Sites-0809067,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:12,2026-08-12 06:54:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809066,Group Sites-0809066,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:04,2026-08-11 22:05:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809065,Group Sites-0809065,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:15:02,2026-08-11 18:12:45,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809063,Group Sites-0809063,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:56,2026-08-11 22:44:20,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809064,Group Sites-0809064,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:56,2026-08-11 22:45:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809062,Group Sites-0809062,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:54,2026-08-11 23:51:25,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809061,Group Sites-0809061,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:44,2026-08-12 03:41:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809060,Group Sites-0809060,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:42,2026-08-11 23:49:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809059,Group Sites-0809059,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:14:06,2026-08-12 14:20:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809057,Group Sites-0809057,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:56,2026-08-11 01:58:28,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809056,Group Sites-0809056,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:54,2026-08-12 01:24:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809055,Group Sites-0809055,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:50,2026-08-12 00:39:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809054,Group Sites-0809054,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:44,2026-08-11 04:32:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809053,Group Sites-0809053,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:38,2026-08-12 03:37:00,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809052,Group Sites-0809052,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:35,2026-08-12 08:06:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809051,Group Sites-0809051,EDRMS Project Site,ADBI;BOD,2,Bonnie Test,2026-08-10 16:13:32,2026-08-11 17:44:28,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809050,Group Sites-0809050,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:13:17,2026-08-12 09:19:21,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809046,Group Sites-0809046,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:12:31,2026-08-12 15:33:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809042,Group Sites-0809042,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:12:05,2026-08-12 05:07:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809038,Group Sites-0809038,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:11:19,2026-08-11 00:40:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809036,Group Sites-0809036,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:11:11,2026-08-12 07:48:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809035,Group Sites-0809035,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:11:06,2026-08-12 10:43:59,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809034,Group Sites-0809034,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:11:02,2026-08-12 07:32:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809033,Group Sites-0809033,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:11:01,2026-08-11 22:53:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809032,Group Sites-0809032,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:10:40,2026-08-11 15:19:25,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809031,Group Sites-0809031,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:10:33,2026-08-12 15:37:28,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809030,Group Sites-0809030,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:10:13,2026-08-12 23:01:49,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809029,Group Sites-0809029,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:10:10,2026-08-12 23:40:17,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809027,Group Sites-0809027,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:10:00,2026-08-12 14:06:24,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809026,Group Sites-0809026,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:09:58,2026-08-12 04:54:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809025,Group Sites-0809025,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:09:53,2026-08-12 00:54:15,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809024,Group Sites-0809024,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:09:50,2026-08-11 12:18:19,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809023,Group Sites-0809023,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:09:50,2026-08-12 00:53:02,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809022,Group Sites-0809022,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:09:27,2026-08-11 14:33:51,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809021,Group Sites-0809021,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:51,2026-08-13 01:54:15,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809020,Group Sites-0809020,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:49,2026-08-12 11:41:51,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809019,Group Sites-0809019,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:43,2026-08-12 11:50:38,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809018,Group Sites-0809018,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:39,2026-08-12 14:02:08,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809017,Group Sites-0809017,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:32,2026-08-12 15:56:58,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809016,Group Sites-0809016,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:29,2026-08-12 18:06:14,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809015,Group Sites-0809015,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:07,2026-08-11 20:20:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809014,Group Sites-0809014,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:08:04,2026-08-12 05:39:40,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809013,Group Sites-0809013,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:58,2026-08-13 15:28:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809010,Group Sites-0809010,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:39,2026-08-12 07:46:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809009,Group Sites-0809009,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:36,2026-08-12 12:29:27,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809007,Group Sites-0809007,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:29,2026-08-12 20:12:19,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809008,Group Sites-0809008,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:29,2026-08-12 19:27:19,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809006,Group Sites-0809006,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:28,2026-08-12 18:14:01,0.004,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809005,Group Sites-0809005,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:19,2026-08-12 19:54:27,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809004,Group Sites-0809004,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:15,2026-08-11 13:18:02,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809003,Group Sites-0809003,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:02,2026-08-12 08:34:19,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809002,Group Sites-0809002,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:07:00,2026-08-11 22:42:03,0.005,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0809001,Group Sites-0809001,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:52,2026-08-12 00:02:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810100,Team Sites-0810100,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:49,2026-08-11 14:05:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810099,Team Sites-0810099,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:47,2026-08-11 05:08:25,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810098,Team Sites-0810098,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:40,2026-08-12 13:14:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810097,Team Sites-0810097,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:37,2026-08-12 13:04:32,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810096,Team Sites-0810096,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:32,2026-08-13 02:27:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810095,Team Sites-0810095,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:24,2026-08-12 13:52:18,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810094,Team Sites-0810094,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:24,2026-08-13 03:29:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810093,Team Sites-0810093,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:14,2026-08-12 15:04:35,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810092,Team Sites-0810092,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:13,2026-08-12 16:33:42,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810090,Team Sites-0810090,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:06:04,2026-08-13 00:16:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810089,Team Sites-0810089,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:50,2026-08-13 00:37:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810088,Team Sites-0810088,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:31,2026-08-12 09:10:55,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810087,Team Sites-0810087,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:28,2026-08-12 09:52:58,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810086,Team Sites-0810086,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:23,2026-08-13 03:15:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810085,Team Sites-0810085,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:19,2026-08-13 03:13:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810084,Team Sites-0810084,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:15,2026-08-12 18:59:06,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810083,Team Sites-0810083,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:11,2026-08-12 20:16:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810082,Team Sites-0810082,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:08,2026-08-12 20:38:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810081,Team Sites-0810081,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:07,2026-08-12 22:12:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810080,Team Sites-0810080,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:05:00,2026-08-12 13:41:26,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810079,Team Sites-0810079,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:58,2026-08-12 22:12:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810078,Team Sites-0810078,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:56,2026-08-13 01:52:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810077,Team Sites-0810077,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:50,2026-08-13 01:50:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810075,Team Sites-0810075,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:41,2026-08-13 01:09:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810074,Team Sites-0810074,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:36,2026-08-13 02:15:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810073,Team Sites-0810073,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:04:02,2026-08-13 04:38:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810069,Team Sites-0810069,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:03:49,2026-08-12 06:57:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810068,Team Sites-0810068,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:03:46,2026-08-12 07:59:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810067,Team Sites-0810067,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:03:42,2026-08-13 00:24:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810065,Team Sites-0810065,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:03:26,2026-08-12 10:34:08,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810064,Team Sites-0810064,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:54,2026-08-13 06:11:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810062,Team Sites-0810062,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:40,2026-08-12 12:14:44,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810061,Team Sites-0810061,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:35,2026-08-12 06:15:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810060,Team Sites-0810060,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:35,2026-08-12 13:07:07,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810058,Team Sites-0810058,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:24,2026-08-12 13:58:25,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810066,Group Sites-0810066,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:18,2026-08-13 03:16:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810057,Team Sites-0810057,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:02:12,2026-08-12 23:47:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810056,Team Sites-0810056,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:01:55,2026-08-12 13:25:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810055,Team Sites-0810055,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:01:45,2026-08-13 00:49:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810053,Team Sites-0810053,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:01:30,2026-08-12 09:15:39,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810051,Team Sites-0810051,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:01:14,2026-08-13 04:31:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810050,Team Sites-0810050,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:51,2026-08-13 05:46:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810048,Team Sites-0810048,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:26,2026-08-13 06:55:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810047,Team Sites-0810047,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:20,2026-08-13 06:35:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810046,Team Sites-0810046,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:18,2026-08-12 18:44:26,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810045,Team Sites-0810045,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:14,2026-08-12 10:55:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810044,Team Sites-0810044,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:07,2026-08-12 06:32:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810043,Team Sites-0810043,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 16:00:06,2026-08-12 17:09:38,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810042,Team Sites-0810042,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:59:58,2026-08-13 05:13:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810041,Team Sites-0810041,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:59:52,2026-08-13 05:49:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810039,Team Sites-0810039,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:59:07,2026-08-13 08:23:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810038,Team Sites-0810038,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:59:01,2026-08-13 08:33:37,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810037,Team Sites-0810037,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:58,2026-08-13 05:12:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810036,Team Sites-0810036,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:53,2026-08-13 07:59:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810034,Team Sites-0810034,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:45,2026-08-11 14:45:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810033,Team Sites-0810033,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:41,2026-08-11 22:43:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810032,Team Sites-0810032,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:39,2026-08-13 06:31:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810031,Team Sites-0810031,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:30,2026-08-12 12:46:52,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810030,Team Sites-0810030,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:58:07,2026-08-13 02:04:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810029,Team Sites-0810029,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:58,2026-08-13 00:33:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810028,Team Sites-0810028,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:54,2026-08-13 07:57:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810027,Team Sites-0810027,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:50,2026-08-13 10:11:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810026,Team Sites-0810026,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:46,2026-08-13 06:43:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810024,Team Sites-0810024,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:39,2026-08-13 06:03:33,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810023,Team Sites-0810023,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:37,2026-08-13 05:36:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810021,Team Sites-0810021,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:28,2026-08-12 12:06:32,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810020,Team Sites-0810020,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:24,2026-08-13 04:28:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810017,Team Sites-0810017,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:57:04,2026-08-12 20:26:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810016,Team Sites-0810016,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:59,2026-08-12 21:37:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810015,Team Sites-0810015,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:57,2026-08-12 23:09:24,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810014,Team Sites-0810014,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:52,2026-08-12 19:21:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810012,Team Sites-0810012,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:43,2026-08-13 09:18:27,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810011,Team Sites-0810011,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:40,2026-08-12 19:10:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810010,Team Sites-0810010,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:36,2026-08-12 19:15:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810008,Team Sites-0810008,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:28,2026-08-13 02:05:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810005,Team Sites-0810005,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:19,2026-08-12 20:15:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810003,Team Sites-0810003,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:09,2026-08-13 01:54:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810002,Team Sites-0810002,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:08,2026-08-12 05:47:58,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsites-0810001,Team Sites-0810001,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:56:00,2026-08-13 03:36:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810100,Group Sites-0810100,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:58,2026-08-13 03:52:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810099,Group Sites-0810099,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:55,2026-08-13 07:52:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810098,Group Sites-0810098,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:53,2026-08-13 07:14:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810097,Group Sites-0810097,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:47,2026-08-13 10:39:45,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810096,Group Sites-0810096,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:44,2026-08-13 10:25:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810095,Group Sites-0810095,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:40,2026-08-13 10:02:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810094,Group Sites-0810094,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:26,2026-08-13 13:16:31,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810093,Group Sites-0810093,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:24,2026-08-13 12:02:28,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810092,Group Sites-0810092,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:18,2026-08-13 11:49:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810090,Group Sites-0810090,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:14,2026-08-13 11:53:50,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810089,Group Sites-0810089,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:07,2026-08-13 08:05:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810088,Group Sites-0810088,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:55:04,2026-08-13 08:29:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810086,Group Sites-0810086,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:54:41,2026-08-13 09:11:12,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810083,Group Sites-0810083,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:54:09,2026-08-13 21:22:33,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810082,Group Sites-0810082,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:54:05,2026-08-13 20:56:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810078,Group Sites-0810078,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:53:35,2026-08-13 05:42:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810077,Group Sites-0810077,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:53:30,2026-08-13 07:24:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810076,Group Sites-0810076,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:53:27,2026-08-13 07:03:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810075,Group Sites-0810075,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:53:23,2026-08-12 07:10:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810074,Group Sites-0810074,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:53:18,2026-08-13 03:25:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810072,Group Sites-0810072,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:52:13,2026-08-11 20:36:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810071,Group Sites-0810071,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:52:09,2026-08-13 04:38:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810070,Group Sites-0810070,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:52:04,2026-08-13 16:00:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810063,Group Sites-0810063,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:51:22,2026-08-13 11:02:17,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810062,Group Sites-0810062,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:51:17,2026-08-13 12:23:23,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810061,Group Sites-0810061,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:51:08,2026-08-13 11:31:03,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810056,Group Sites-0810056,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:50:49,2026-08-13 09:17:09,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810055,Group Sites-0810055,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:50:46,2026-08-13 08:38:33,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810052,Group Sites-0810052,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:50:21,2026-08-13 20:55:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810051,Group Sites-0810051,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:50:17,2026-08-13 20:11:17,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810048,Group Sites-0810048,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:50:01,2026-08-14 11:21:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810046,Group Sites-0810046,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:54,2026-08-13 21:06:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810042,Group Sites-0810042,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:39,2026-08-13 09:47:35,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810041,Group Sites-0810041,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:32,2026-08-12 15:36:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810040,Group Sites-0810040,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:26,2026-08-12 12:57:48,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810038,Group Sites-0810038,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:15,2026-08-13 13:20:11,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810036,Group Sites-0810036,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:06,2026-08-13 11:34:43,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810035,Group Sites-0810035,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:49:03,2026-08-13 10:38:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810034,Group Sites-0810034,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:48:58,2026-08-13 11:03:33,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810030,Group Sites-0810030,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:48:27,2026-08-13 04:52:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810025,Group Sites-0810025,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:48:05,2026-08-13 20:02:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810021,Group Sites-0810021,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:47:53,2026-08-13 16:48:41,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810017,Group Sites-0810017,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:47:36,2026-08-13 20:46:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810014,Group Sites-0810014,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:47:25,2026-08-10 22:23:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810012,Group Sites-0810012,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:47:02,2026-08-10 22:22:53,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810011,Group Sites-0810011,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:58,2026-08-10 22:27:58,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810010,Group Sites-0810010,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:54,2026-08-10 22:16:36,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810007,Group Sites-0810007,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:42,2026-08-13 16:29:37,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810006,Group Sites-0810006,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:38,2026-08-13 08:21:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810004,Group Sites-0810004,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:30,2026-08-13 11:47:57,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810003,Group Sites-0810003,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:26,2026-08-11 13:02:34,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsites-0810001,Group Sites-0810001,EDRMS Project Site,CSD,1,Bonnie Test,2026-08-10 15:46:18,2026-08-13 21:07:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-6,kendrick-Site-Title-c-6,EDRMS Project Site,ADBI;BOD;CSD,3,Mihal,2026-08-06 18:53:33,2026-08-07 11:20:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-5,kendrick-Site-Title-c-5,EDRMS Project Site,CWRD;SARD,2,Mihal,2026-08-06 18:53:29,2026-08-07 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-4,kendrick-Site-Title-c-4,EDRMS Project Site,ADBI;SARD,2,Mihal,2026-08-06 18:53:25,2026-08-06 22:13:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-3,kendrick-Site-Title-c-3,EDRMS Project Site,ADBI;BOD;SARD,3,Mihal,2026-08-06 18:53:21,2026-08-06 23:31:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-2,kendrick-Site-Title-c-2,EDRMS Project Site,ADBI,1,Mihal,2026-08-06 18:53:15,2026-08-06 22:05:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_kendrick-c-1,kendrick-Site-Title-c-1,EDRMS Project Site,ADBI;BOD;CSD;CWRD;SARD,5,Mihal,2026-08-06 18:53:10,2026-08-06 22:36:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805100,prj_Team Site-805100,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:22,2026-08-06 17:31:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805099,prj_Team Site-805099,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:14,2026-08-05 16:43:01,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805098,prj_Team Site-805098,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:12,2026-08-07 01:52:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805097,prj_Team Site-805097,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:06,2026-08-05 14:16:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805094,prj_Team Site-805094,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:04,2026-08-05 14:16:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805095,prj_Team Site-805095,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:03,2026-08-05 14:06:42,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805096,prj_Team Site-805096,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:19:03,2026-08-07 02:10:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805093,prj_Team Site-805093,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:50,2026-08-07 00:52:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805092,prj_Team Site-805092,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:46,2026-08-06 17:22:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805091,prj_Team Site-805091,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:14,2026-08-05 17:56:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805090,prj_Team Site-805090,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:10,2026-08-06 18:17:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805089,prj_Team Site-805089,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:06,2026-08-05 18:18:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805087,prj_Team Site-805087,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:03,2026-08-05 18:18:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805088,prj_Team Site-805088,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:02,2026-08-06 20:02:58,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805086,prj_Team Site-805086,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:18:02,2026-08-07 02:36:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805085,prj_Team Site-805085,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:17:50,2026-08-06 18:13:47,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805084,prj_Team Site-805084,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:17:46,2026-08-05 14:25:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805083,prj_Team Site-805083,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:17:31,2026-08-07 00:46:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805082,prj_Team Site-805082,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:17:01,2026-08-05 19:41:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805081,prj_Team Site-805081,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:17:01,2026-08-05 19:15:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805080,prj_Team Site-805080,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:50,2026-08-07 11:16:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805079,prj_Team Site-805079,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:45,2026-08-05 15:33:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805078,prj_Team Site-805078,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:41,2026-08-07 03:10:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805077,prj_Team Site-805077,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:40,2026-08-05 15:32:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805076,prj_Team Site-805076,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:33,2026-08-05 15:42:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805075,prj_Team Site-805075,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:26,2026-08-05 15:31:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805074,prj_Team Site-805074,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:16:21,2026-08-05 15:41:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805073,prj_Team Site-805073,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:47,2026-08-05 20:37:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805072,prj_Team Site-805072,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:43,2026-08-05 20:43:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805071,prj_Team Site-805071,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:41,2026-08-05 20:46:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805070,prj_Team Site-805070,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:36,2026-08-05 19:40:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805069,prj_Team Site-805069,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:32,2026-08-05 20:23:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805068,prj_Team Site-805068,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:29,2026-08-05 19:47:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805067,prj_Team Site-805067,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:24,2026-08-05 14:36:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805066,prj_Team Site-805066,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:20,2026-08-07 03:33:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805065,prj_Team Site-805065,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:15:12,2026-08-05 15:29:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805064,prj_Team Site-805064,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:40,2026-08-05 20:44:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805063,prj_Team Site-805063,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:33,2026-08-05 20:51:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805062,prj_Team Site-805062,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:29,2026-08-05 16:37:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805061,prj_Team Site-805061,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:28,2026-08-07 01:28:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805060,prj_Team Site-805060,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:24,2026-08-05 20:55:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805059,prj_Team Site-805059,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:20,2026-08-07 03:28:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805058,prj_Team Site-805058,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:19,2026-08-05 15:44:47,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805057,prj_Team Site-805057,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:11,2026-08-07 11:18:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805056,prj_Team Site-805056,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:14:09,2026-08-07 03:21:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805055,prj_Team Site-805055,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:31,2026-08-05 21:35:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805054,prj_Team Site-805054,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:28,2026-08-05 20:57:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805053,prj_Team Site-805053,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:23,2026-08-05 21:58:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805052,prj_Team Site-805052,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:19,2026-08-07 00:34:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805051,prj_Team Site-805051,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:14,2026-08-05 22:07:54,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805050,prj_Team Site-805050,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:09,2026-08-05 17:00:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805049,prj_Team Site-805049,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:07,2026-08-05 16:49:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805048,prj_Team Site-805048,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:13:01,2026-08-05 17:01:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805047,prj_Team Site-805047,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:12:59,2026-08-06 18:15:01,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805046,prj_Team Site-805046,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:12:59,2026-08-05 17:06:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805045,prj_Team Site-805045,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:12:48,2026-08-05 19:37:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805044,prj_Team Site-805044,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:12:18,2026-08-05 22:09:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805043,prj_Team Site-805043,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:12:00,2026-08-06 18:31:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805042,prj_Team Site-805042,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:56,2026-08-05 18:25:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805041,prj_Team Site-805041,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:50,2026-08-05 18:02:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805040,prj_Team Site-805040,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:49,2026-08-05 19:24:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805039,prj_Team Site-805039,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:43,2026-08-05 19:11:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805038,prj_Team Site-805038,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:39,2026-08-05 17:57:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805036,prj_Team Site-805036,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:39,2026-08-05 19:16:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805037,prj_Team Site-805037,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:38,2026-08-06 22:57:20,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805035,prj_Team Site-805035,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:11:28,2026-08-05 21:01:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805034,prj_Team Site-805034,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:10:55,2026-08-05 22:24:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805033,prj_Team Site-805033,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:10:48,2026-08-07 11:16:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805032,prj_Team Site-805032,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:10:46,2026-08-05 22:37:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805031,prj_Team Site-805031,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 12:10:45,2026-08-05 22:27:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805030,prj_Team Site-805030,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:59:17,2026-08-06 03:34:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805029,prj_Team Site-805029,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:59:17,2026-08-06 00:33:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805028,prj_Team Site-805028,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:59:09,2026-08-06 19:14:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805027,prj_Team Site-805027,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:59:08,2026-08-06 00:41:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805026,prj_Team Site-805026,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:59:03,2026-08-06 00:24:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805025,prj_Team Site-805025,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:49,2026-08-05 23:11:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805024,prj_Team Site-805024,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:16,2026-08-07 02:11:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805023,prj_Team Site-805023,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:11,2026-08-06 03:59:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805022,prj_Team Site-805022,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:07,2026-08-07 03:10:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805021,prj_Team Site-805021,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:06,2026-08-07 03:31:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805020,prj_Team Site-805020,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:58:00,2026-08-06 01:07:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805019,prj_Team Site-805019,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:56,2026-08-06 01:08:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805018,prj_Team Site-805018,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:53,2026-08-06 01:13:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805017,prj_Team Site-805017,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:46,2026-08-06 21:24:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805016,prj_Team Site-805016,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:17,2026-08-06 05:52:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805015,prj_Team Site-805015,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:11,2026-08-06 05:59:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805014,prj_Team Site-805014,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:06,2026-08-06 07:08:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805013,prj_Team Site-805013,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:57:00,2026-08-07 01:01:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805012,prj_Team Site-805012,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:56,2026-08-07 02:03:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805011,prj_Team Site-805011,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:53,2026-08-06 00:52:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805010,prj_Team Site-805010,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:51,2026-08-07 00:39:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805009,prj_Team Site-805009,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:47,2026-08-06 02:13:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805008,prj_Team Site-805008,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:46,2026-08-07 11:15:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805007,prj_Team Site-805007,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:38,2026-08-06 01:57:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805006,prj_Team Site-805006,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:06,2026-08-06 04:45:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805005,prj_Team Site-805005,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:56:03,2026-08-05 23:21:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805004,prj_Team Site-805004,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:58,2026-08-06 05:51:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805003,prj_Team Site-805003,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:57,2026-08-05 23:22:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805002,prj_Team Site-805002,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:56,2026-08-07 00:28:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-805001,prj_Team Site-805001,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:47,2026-08-06 07:32:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805100,prj_Group Site-805100,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:44,2026-08-06 07:27:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805099,prj_Group Site-805099,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:39,2026-08-06 02:59:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805098,prj_Group Site-805098,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:36,2026-08-07 02:14:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805097,prj_Group Site-805097,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:33,2026-08-06 03:24:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805096,prj_Group Site-805096,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:30,2026-08-06 03:08:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805095,prj_Group Site-805095,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:25,2026-08-06 03:11:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805094,prj_Group Site-805094,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:55:03,2026-08-07 00:20:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805093,prj_Group Site-805093,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:43,2026-08-06 08:28:47,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805092,prj_Group Site-805092,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:39,2026-08-06 01:35:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805091,prj_Group Site-805091,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:34,2026-08-06 08:07:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805090,prj_Group Site-805090,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:31,2026-08-06 02:02:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805088,prj_Group Site-805088,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:27,2026-08-06 03:50:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805089,prj_Group Site-805089,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:27,2026-08-06 04:42:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805087,prj_Group Site-805087,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:21,2026-08-06 02:22:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805086,prj_Group Site-805086,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:16,2026-08-06 04:44:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805085,prj_Group Site-805085,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:54:03,2026-08-05 23:46:24,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805084,prj_Group Site-805084,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:28,2026-08-06 10:05:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805083,prj_Group Site-805083,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:25,2026-08-06 09:47:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805082,prj_Group Site-805082,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:20,2026-08-06 10:27:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805081,prj_Group Site-805081,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:16,2026-08-06 03:15:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805080,prj_Group Site-805080,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:13,2026-08-06 03:44:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805079,prj_Group Site-805079,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:09,2026-08-06 06:01:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805078,prj_Group Site-805078,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:53:00,2026-08-06 06:48:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805077,prj_Group Site-805077,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:46,2026-08-06 02:25:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805076,prj_Group Site-805076,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:31,2026-08-06 08:25:58,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805075,prj_Group Site-805075,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:28,2026-08-06 20:22:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805074,prj_Group Site-805074,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:25,2026-08-06 08:52:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805073,prj_Group Site-805073,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:16,2026-08-06 11:27:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805072,prj_Group Site-805072,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:14,2026-08-06 11:01:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805071,prj_Group Site-805071,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:08,2026-08-06 11:34:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805070,prj_Group Site-805070,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:52:04,2026-08-05 23:09:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805069,prj_Group Site-805069,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:59,2026-08-06 05:25:47,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805068,prj_Group Site-805068,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:56,2026-08-06 05:10:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805067,prj_Group Site-805067,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:43,2026-08-06 07:18:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805066,prj_Group Site-805066,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:42,2026-08-06 20:02:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805065,prj_Group Site-805065,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:37,2026-08-07 12:19:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805064,prj_Group Site-805064,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:28,2026-08-07 11:15:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805063,prj_Group Site-805063,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:22,2026-08-07 03:36:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805062,prj_Group Site-805062,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:19,2026-08-06 11:04:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805061,prj_Group Site-805061,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:14,2026-08-06 09:41:02,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805060,prj_Group Site-805060,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:11,2026-08-06 09:02:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805059,prj_Group Site-805059,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:06,2026-08-06 00:57:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805058,prj_Group Site-805058,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:51:00,2026-08-06 06:47:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805057,prj_Group Site-805057,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:58,2026-08-06 06:27:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805056,prj_Group Site-805056,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:54,2026-08-06 06:29:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805055,prj_Group Site-805055,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:50,2026-08-07 01:02:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805054,prj_Group Site-805054,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:45,2026-08-06 07:40:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805053,prj_Group Site-805053,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:41,2026-08-06 06:02:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805052,prj_Group Site-805052,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:39,2026-08-06 06:08:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805051,prj_Group Site-805051,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:34,2026-08-06 08:11:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805050,prj_Group Site-805050,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:30,2026-08-05 22:00:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805049,prj_Group Site-805049,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:26,2026-08-06 21:37:31,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805048,prj_Group Site-805048,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:23,2026-08-06 04:38:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805047,prj_Group Site-805047,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:18,2026-08-06 04:16:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805046,prj_Group Site-805046,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:14,2026-08-06 04:30:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805045,prj_Group Site-805045,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:10,2026-08-06 11:07:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805044,prj_Group Site-805044,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:06,2026-08-06 15:38:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805043,prj_Group Site-805043,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:50:00,2026-08-06 15:39:59,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805042,prj_Group Site-805042,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:57,2026-08-06 11:45:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805041,prj_Group Site-805041,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:54,2026-08-06 11:05:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805040,prj_Group Site-805040,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:48,2026-08-06 14:18:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805039,prj_Group Site-805039,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:46,2026-08-06 05:29:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805038,prj_Group Site-805038,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:43,2026-08-06 08:59:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805037,prj_Group Site-805037,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:37,2026-08-06 04:28:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805036,prj_Group Site-805036,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:35,2026-08-06 10:29:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805035,prj_Group Site-805035,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:30,2026-08-07 01:28:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805034,prj_Group Site-805034,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:26,2026-08-06 19:46:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805033,prj_Group Site-805033,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:23,2026-08-06 09:45:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805032,prj_Group Site-805032,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:20,2026-08-06 10:17:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805031,prj_Group Site-805031,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:15,2026-08-06 10:10:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805030,prj_Group Site-805030,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:12,2026-08-06 21:13:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805029,prj_Group Site-805029,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:08,2026-08-06 09:55:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805028,prj_Group Site-805028,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:49:05,2026-08-06 11:40:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805027,prj_Group Site-805027,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:59,2026-08-06 14:10:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805026,prj_Group Site-805026,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:56,2026-08-06 14:08:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805025,prj_Group Site-805025,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:52,2026-08-06 14:13:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805024,prj_Group Site-805024,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:48,2026-08-06 14:08:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805023,prj_Group Site-805023,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:46,2026-08-06 14:08:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805022,prj_Group Site-805022,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:42,2026-08-06 14:09:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805021,prj_Group Site-805021,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:26,2026-08-07 00:56:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805020,prj_Group Site-805020,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:20,2026-08-06 14:12:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805019,prj_Group Site-805019,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:16,2026-08-06 14:16:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805018,prj_Group Site-805018,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:11,2026-08-06 14:11:58,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805017,prj_Group Site-805017,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:07,2026-08-06 15:53:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805016,prj_Group Site-805016,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:05,2026-08-07 11:20:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805015,prj_Group Site-805015,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:48:01,2026-08-06 15:54:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805014,prj_Group Site-805014,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:56,2026-08-06 15:59:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805013,prj_Group Site-805013,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:53,2026-08-06 15:56:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805012,prj_Group Site-805012,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:50,2026-08-06 19:32:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805011,prj_Group Site-805011,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:46,2026-08-06 15:44:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805010,prj_Group Site-805010,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:43,2026-08-05 13:10:05,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805009,prj_Group Site-805009,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:38,2026-08-07 11:23:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805008,prj_Group Site-805008,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:34,2026-08-05 13:09:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805007,prj_Group Site-805007,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:30,2026-08-05 13:18:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805006,prj_Group Site-805006,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:26,2026-08-05 13:07:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805005,prj_Group Site-805005,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:22,2026-08-05 13:10:46,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805004,prj_Group Site-805004,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:17,2026-08-07 00:45:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805003,prj_Group Site-805003,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:14,2026-08-05 13:09:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805002,prj_Group Site-805002,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:10,2026-08-05 13:15:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-805001,prj_Group Site-805001,EDRMS Project Site,CSD,1,AdaTest,2026-08-05 11:47:06,2026-08-05 13:08:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731099,prj_Team Site-731099,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:14:03,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731100,prj_Team Site-731100,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:14:02,2026-07-31 19:31:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731098,prj_Team Site-731098,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:53,2026-08-03 16:24:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731097,prj_Team Site-731097,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:49,2026-07-31 13:13:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731096,prj_Team Site-731096,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:36,2026-08-03 09:00:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731095,prj_Team Site-731095,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:34,2026-08-03 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731094,prj_Team Site-731094,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:27,2026-08-03 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731093,prj_Team Site-731093,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:24,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731092,prj_Team Site-731092,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:13:23,2026-08-03 16:23:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731091,prj_Team Site-731091,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:51,2026-07-31 15:42:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731090,prj_Team Site-731090,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:51,2026-07-31 16:41:31,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731089,prj_Team Site-731089,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:48,2026-07-31 16:49:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731088,prj_Team Site-731088,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:43,2026-07-31 16:52:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731087,prj_Team Site-731087,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:37,2026-07-31 14:33:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731086,prj_Team Site-731086,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:35,2026-08-03 12:14:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731085,prj_Team Site-731085,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:22,2026-07-31 22:59:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731084,prj_Team Site-731084,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:20,2026-08-03 14:24:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731083,prj_Team Site-731083,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:12:12,2026-08-01 00:50:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731082,prj_Team Site-731082,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:57,2026-08-01 00:52:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731081,prj_Team Site-731081,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:38,2026-08-03 15:37:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731080,prj_Team Site-731080,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:36,2026-08-03 13:40:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731079,prj_Team Site-731079,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:33,2026-07-31 17:17:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731078,prj_Team Site-731078,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:28,2026-07-31 21:38:26,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731076,prj_Team Site-731076,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:10,2026-08-01 01:43:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731077,prj_Team Site-731077,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:10,2026-08-01 02:02:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731075,prj_Team Site-731075,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:04,2026-08-01 01:30:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731074,prj_Team Site-731074,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:11:00,2026-07-31 14:32:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731073,prj_Team Site-731073,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:57,2026-07-31 14:46:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731072,prj_Team Site-731072,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:54,2026-08-03 11:12:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731071,prj_Team Site-731071,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:52,2026-08-03 11:11:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731070,prj_Team Site-731070,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:29,2026-07-31 16:19:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731069,prj_Team Site-731069,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:24,2026-07-31 23:48:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731067,prj_Team Site-731067,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:21,2026-07-31 23:20:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731068,prj_Team Site-731068,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:20,2026-07-31 13:34:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731066,prj_Team Site-731066,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:14,2026-08-03 12:37:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731065,prj_Team Site-731065,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:10:10,2026-07-31 15:45:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731064,prj_Team Site-731064,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:59,2026-08-01 00:39:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731063,prj_Team Site-731063,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:55,2026-08-03 13:49:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731062,prj_Team Site-731062,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:50,2026-07-31 15:59:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731061,prj_Team Site-731061,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:46,2026-07-31 16:23:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731060,prj_Team Site-731060,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:42,2026-07-31 21:03:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731059,prj_Team Site-731059,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:30,2026-08-01 02:13:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731058,prj_Team Site-731058,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:13,2026-07-31 17:22:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731057,prj_Team Site-731057,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:09,2026-07-31 16:08:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731056,prj_Team Site-731056,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:09,2026-07-31 13:27:06,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731055,prj_Team Site-731055,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:02,2026-07-31 18:15:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731054,prj_Team Site-731054,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:09:01,2026-07-31 19:16:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731053,prj_Team Site-731053,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:57,2026-08-01 03:12:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731052,prj_Team Site-731052,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:51,2026-07-31 15:32:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731051,prj_Team Site-731051,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:42,2026-08-03 12:22:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731050,prj_Team Site-731050,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:38,2026-07-31 17:40:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731049,prj_Team Site-731049,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:37,2026-08-01 00:00:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731048,prj_Team Site-731048,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:32,2026-07-31 13:19:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731047,prj_Team Site-731047,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:30,2026-08-03 12:26:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731046,prj_Team Site-731046,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:02,2026-08-01 00:36:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731045,prj_Team Site-731045,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:08:01,2026-08-01 04:13:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731044,prj_Team Site-731044,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:56,2026-08-01 01:58:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731043,prj_Team Site-731043,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:52,2026-07-31 17:13:01,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731042,prj_Team Site-731042,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:47,2026-07-31 14:47:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731041,prj_Team Site-731041,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:43,2026-07-31 18:04:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731040,prj_Team Site-731040,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:40,2026-08-01 03:01:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731039,prj_Team Site-731039,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:37,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731038,prj_Team Site-731038,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:33,2026-08-01 04:59:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731037,prj_Team Site-731037,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:29,2026-08-03 16:19:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731036,prj_Team Site-731036,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:28,2026-07-31 22:19:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731035,prj_Team Site-731035,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:20,2026-07-31 21:16:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731034,prj_Team Site-731034,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:19,2026-08-03 14:57:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731033,prj_Team Site-731033,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:07:18,2026-07-31 21:45:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731032,prj_Team Site-731032,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:43,2026-07-31 20:12:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731031,prj_Team Site-731031,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:26,2026-08-01 01:23:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731030,prj_Team Site-731030,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:21,2026-08-01 05:20:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731029,prj_Team Site-731029,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:19,2026-07-31 23:12:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731028,prj_Team Site-731028,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:10,2026-07-31 13:34:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731027,prj_Team Site-731027,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:09,2026-08-01 02:05:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731026,prj_Team Site-731026,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:06:05,2026-07-31 18:14:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731025,prj_Team Site-731025,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:59,2026-08-03 16:28:44,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731024,prj_Team Site-731024,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:42,2026-07-31 22:34:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731023,prj_Team Site-731023,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:20,2026-08-01 07:18:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731022,prj_Team Site-731022,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:19,2026-08-01 06:17:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731021,prj_Team Site-731021,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:13,2026-08-01 06:58:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731020,prj_Team Site-731020,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:10,2026-08-01 06:34:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731019,prj_Team Site-731019,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:08,2026-08-01 03:30:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731018,prj_Team Site-731018,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:02,2026-07-31 19:19:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731017,prj_Team Site-731017,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:05:00,2026-08-03 13:28:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731016,prj_Team Site-731016,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:58,2026-08-03 14:30:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731015,prj_Team Site-731015,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:50,2026-08-01 04:06:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731014,prj_Team Site-731014,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:46,2026-08-01 03:56:50,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731013,prj_Team Site-731013,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:43,2026-07-31 14:19:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731012,prj_Team Site-731012,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:31,2026-08-04 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731011,prj_Team Site-731011,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:11,2026-07-31 14:33:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731010,prj_Team Site-731010,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:09,2026-07-31 20:41:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731009,prj_Team Site-731009,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:04:04,2026-08-03 13:26:42,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731008,prj_Team Site-731008,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:59,2026-08-01 07:30:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731007,prj_Team Site-731007,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:50,2026-08-03 12:29:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731006,prj_Team Site-731006,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:43,2026-07-31 16:46:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731005,prj_Team Site-731005,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:41,2026-07-31 19:45:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731004,prj_Team Site-731004,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:36,2026-08-01 05:35:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731003,prj_Team Site-731003,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:31,2026-08-01 04:45:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731002,prj_Team Site-731002,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:28,2026-08-01 05:53:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_teamsite-731001,prj_Team Site-731001,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:25,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731100,prj_Group Site-731100,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:03:13,2026-08-01 06:08:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731099,prj_Group Site-731099,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:59,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731098,prj_Group Site-731098,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:53,2026-08-01 09:02:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731097,prj_Group Site-731097,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:53,2026-08-03 14:05:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731096,prj_Group Site-731096,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:49,2026-08-01 09:18:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731095,prj_Group Site-731095,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:43,2026-08-01 10:05:47,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731094,prj_Group Site-731094,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:35,2026-08-03 16:24:42,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731093,prj_Group Site-731093,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:26,2026-07-31 15:47:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731092,prj_Group Site-731092,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:23,2026-08-01 02:37:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731091,prj_Group Site-731091,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:20,2026-08-01 05:23:53,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731090,prj_Group Site-731090,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:17,2026-07-31 20:50:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731089,prj_Group Site-731089,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:16,2026-07-31 23:47:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731088,prj_Group Site-731088,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:08,2026-07-31 21:15:58,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731087,prj_Group Site-731087,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:02:07,2026-08-01 05:11:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731086,prj_Group Site-731086,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:45,2026-07-31 20:03:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731085,prj_Group Site-731085,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:43,2026-08-01 04:19:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731084,prj_Group Site-731084,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:38,2026-07-31 22:28:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731083,prj_Group Site-731083,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:36,2026-08-01 03:32:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731082,prj_Group Site-731082,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:31,2026-08-01 04:28:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731081,prj_Group Site-731081,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:27,2026-08-01 11:01:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731080,prj_Group Site-731080,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:25,2026-08-01 10:51:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731079,prj_Group Site-731079,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:11,2026-08-03 15:56:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731078,prj_Group Site-731078,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:07,2026-08-01 06:13:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731077,prj_Group Site-731077,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:04,2026-07-31 19:16:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731076,prj_Group Site-731076,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:01:02,2026-07-31 18:20:18,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731075,prj_Group Site-731075,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:58,2026-08-03 15:32:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731074,prj_Group Site-731074,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:54,2026-08-01 09:11:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731073,prj_Group Site-731073,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:45,2026-08-01 03:37:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731072,prj_Group Site-731072,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:36,2026-08-01 10:35:27,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731071,prj_Group Site-731071,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:33,2026-08-01 01:08:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731070,prj_Group Site-731070,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:30,2026-07-31 13:28:39,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731069,prj_Group Site-731069,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:26,2026-07-31 22:35:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731068,prj_Group Site-731068,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:24,2026-08-01 00:08:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731067,prj_Group Site-731067,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:18,2026-08-01 05:01:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731066,prj_Group Site-731066,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:05,2026-07-31 20:27:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731065,prj_Group Site-731065,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 11:00:03,2026-07-31 20:45:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731064,prj_Group Site-731064,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:57,2026-08-04 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731063,prj_Group Site-731063,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:55,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731062,prj_Group Site-731062,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:52,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731061,prj_Group Site-731061,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:48,2026-07-31 23:56:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731060,prj_Group Site-731060,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:44,2026-08-01 08:02:16,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731059,prj_Group Site-731059,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:41,2026-08-01 07:23:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731058,prj_Group Site-731058,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:34,2026-08-01 07:43:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731057,prj_Group Site-731057,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:29,2026-08-03 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731056,prj_Group Site-731056,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:25,2026-08-03 13:24:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731055,prj_Group Site-731055,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:22,2026-08-01 10:47:32,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731054,prj_Group Site-731054,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:20,2026-08-03 12:16:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731053,prj_Group Site-731053,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:16,2026-08-01 02:23:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731052,prj_Group Site-731052,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:11,2026-08-01 07:16:46,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731051,prj_Group Site-731051,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:07,2026-07-31 22:24:59,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731050,prj_Group Site-731050,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:02,2026-08-01 06:34:24,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731049,prj_Group Site-731049,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:59:00,2026-08-01 05:36:49,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731048,prj_Group Site-731048,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:56,2026-08-03 14:49:28,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731047,prj_Group Site-731047,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:53,2026-08-03 11:10:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731046,prj_Group Site-731046,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:50,2026-08-04 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731045,prj_Group Site-731045,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:45,2026-08-01 08:47:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731044,prj_Group Site-731044,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:43,2026-08-01 10:28:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731043,prj_Group Site-731043,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:40,2026-08-01 10:07:05,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731042,prj_Group Site-731042,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:35,2026-07-31 15:37:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731041,prj_Group Site-731041,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:31,2026-08-01 10:47:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731040,prj_Group Site-731040,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:28,2026-08-01 10:05:51,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731039,prj_Group Site-731039,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:23,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731038,prj_Group Site-731038,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:20,2026-08-01 10:22:24,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731037,prj_Group Site-731037,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:14,2026-07-31 23:29:36,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731036,prj_Group Site-731036,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:12,2026-08-03 11:11:13,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731035,prj_Group Site-731035,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:10,2026-07-31 19:51:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731034,prj_Group Site-731034,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:05,2026-08-01 01:19:31,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731033,prj_Group Site-731033,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:58:02,2026-08-01 01:25:03,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731032,prj_Group Site-731032,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:59,2026-08-03 15:55:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731031,prj_Group Site-731031,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:55,2026-08-03 15:44:33,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731030,prj_Group Site-731030,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:53,2026-08-04 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731029,prj_Group Site-731029,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:51,2026-08-01 03:46:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731028,prj_Group Site-731028,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:45,2026-08-03 14:52:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731027,prj_Group Site-731027,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:42,2026-08-03 12:16:55,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731026,prj_Group Site-731026,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:38,2026-08-03 13:06:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731025,prj_Group Site-731025,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:35,2026-08-03 12:26:11,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731024,prj_Group Site-731024,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:31,2026-08-01 02:32:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731023,prj_Group Site-731023,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:29,2026-08-01 08:40:02,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731022,prj_Group Site-731022,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:24,2026-08-01 02:49:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731021,prj_Group Site-731021,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:21,2026-08-03 16:10:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731020,prj_Group Site-731020,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:19,2026-08-01 08:27:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731019,prj_Group Site-731019,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:15,2026-08-03 11:18:17,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731018,prj_Group Site-731018,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:11,2026-08-03 15:44:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731017,prj_Group Site-731017,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:09,2026-08-03 13:43:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731016,prj_Group Site-731016,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:04,2026-08-03 14:48:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731015,prj_Group Site-731015,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:57:02,2026-08-03 17:02:23,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731014,prj_Group Site-731014,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:59,2026-08-03 11:29:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731013,prj_Group Site-731013,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:55,2026-08-03 14:28:51,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731012,prj_Group Site-731012,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:51,2026-08-03 11:21:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731011,prj_Group Site-731011,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:46,2026-08-03 13:45:09,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731010,prj_Group Site-731010,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:46,2026-07-31 12:07:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731009,prj_Group Site-731009,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:41,2026-07-31 12:11:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731008,prj_Group Site-731008,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:38,2026-08-03 12:44:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731007,prj_Group Site-731007,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:35,2026-07-31 12:16:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731006,prj_Group Site-731006,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:32,2026-08-03 15:14:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731005,prj_Group Site-731005,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:28,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731004,prj_Group Site-731004,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:25,2026-08-03 11:24:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731003,prj_Group Site-731003,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:22,2026-08-11 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731002,prj_Group Site-731002,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:16,2026-07-31 12:14:31,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_groupsite-731001,prj_Group Site-731001,EDRMS Project Site,CSD,1,AdaTest,2026-07-31 10:56:13,2026-08-11 09:00:00,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-166,prj_mihal Team Site-166,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:52:52,2026-07-29 16:53:06,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-165,prj_mihal Team Site-165,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:52:52,2026-07-30 07:34:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-163,prj_mihal Team Site-163,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:52:43,2026-07-30 02:39:22,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-162,prj_mihal Team Site-162,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:52:32,2026-07-29 16:52:44,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-150,prj_mihal Team Site-150,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:51:42,2026-07-30 07:07:25,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-158,prj_mihal Team Site-158,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:51:42,2026-07-30 09:05:42,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-157,prj_mihal Team Site-157,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:51:41,2026-07-30 08:51:10,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-156,prj_mihal Team Site-156,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:51:33,2026-07-30 08:33:57,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-154,prj_mihal Team Site-154,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:51:31,2026-07-30 11:22:43,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-153,prj_mihal Team Site-153,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:50:51,2026-07-30 03:58:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-143,prj_mihal Team Site-143,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:50:20,2026-07-29 21:35:14,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-141,prj_mihal Team Site-141,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:50:00,2026-07-30 07:57:26,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-136,prj_mihal Team Site-136,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:49:16,2026-07-30 04:01:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-135,prj_mihal Team Site-135,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:49:14,2026-07-29 16:49:26,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-134,prj_mihal Team Site-134,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:49:10,2026-07-29 22:35:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-133,prj_mihal Team Site-133,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:49:09,2026-07-29 22:33:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-132,prj_mihal Team Site-132,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:49:06,2026-07-29 22:36:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-117,prj_mihal Team Site-117,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:47:24,2026-07-30 11:17:07,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-097,prj_mihal Team Site-097,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:46:41,2026-07-29 20:08:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-107,prj_mihal Team Site-107,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:46:40,2026-07-30 02:31:31,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-106,prj_mihal Team Site-106,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:46:37,2026-07-30 10:39:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-104,prj_mihal Team Site-104,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:45:54,2026-07-29 21:32:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-102,prj_mihal Team Site-102,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:45:53,2026-08-10 09:00:00,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-103,prj_mihal Team Site-103,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:45:52,2026-07-30 07:14:15,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-101,prj_mihal Team Site-101,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:45:52,2026-07-29 23:57:12,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-095,prj_mihal Team Site-095,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:45:12,2026-07-30 04:07:53,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-080,prj_mihal Team Site-080,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:42,2026-07-30 09:00:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-082,prj_mihal Team Site-082,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:41,2026-07-29 21:22:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-081,prj_mihal Team Site-081,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:41,2026-07-30 10:12:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-078,prj_mihal Team Site-078,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:30,2026-07-30 05:25:30,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-075,prj_mihal Team Site-075,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:19,2026-07-30 01:23:41,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-074,prj_mihal Team Site-074,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:43:17,2026-07-30 11:52:54,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-034,prj_mihal Team Site-034,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:39:54,2026-07-29 16:40:06,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-031,prj_mihal Team Site-031,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:39:47,2026-07-30 05:27:55,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-029,prj_mihal Team Site-029,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:39:43,2026-07-30 05:06:08,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-028,prj_mihal Team Site-028,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:39:42,2026-07-30 05:40:35,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-025,prj_mihal Team Site-025,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:39:09,2026-07-30 01:05:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-022,prj_mihal Team Site-022,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:38:43,2026-07-29 16:38:57,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-020,prj_mihal Team Site-020,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:38:40,2026-07-30 00:46:20,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-021,prj_mihal Team Site-021,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:38:40,2026-07-30 02:27:29,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-019,prj_mihal Team Site-019,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:38:33,2026-07-29 16:39:17,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-011,prj_mihal Team Site-011,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:37:31,2026-07-30 01:11:52,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-008,prj_mihal Team Site-008,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:37:24,2026-07-30 04:10:48,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-002,prj_mihal Team Site-002,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:36:52,2026-07-29 16:37:04,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-250,prj_mihal Group Site-250,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:36:19,2026-07-29 16:37:07,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalteamsite-001,prj_mihal Team Site-001,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:36:19,2026-07-29 16:36:34,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-241,prj_mihal Group Site-241,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:35:15,2026-07-29 16:35:59,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-240,prj_mihal Group Site-240,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:35:15,2026-07-29 16:35:29,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-234,prj_mihal Group Site-234,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:34:53,2026-07-29 16:35:03,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-225,prj_mihal Group Site-225,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:33:48,2026-07-29 16:34:02,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-224,prj_mihal Group Site-224,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:33:44,2026-07-30 04:15:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-222,prj_mihal Group Site-222,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:33:42,2026-07-29 23:54:19,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-212,prj_mihal Group Site-212,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:32:30,2026-07-29 16:32:43,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-211,prj_mihal Group Site-211,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:32:25,2026-07-29 16:32:39,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-206,prj_mihal Group Site-206,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:31:30,2026-07-29 16:31:46,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-198,prj_mihal Group Site-198,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:31:03,2026-07-29 16:31:18,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-195,prj_mihal Group Site-195,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:30:25,2026-07-29 16:30:40,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-194,prj_mihal Group Site-194,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:30:22,2026-07-29 16:30:39,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-193,prj_mihal Group Site-193,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:30:19,2026-07-29 16:30:36,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-192,prj_mihal Group Site-192,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:30:15,2026-07-29 16:30:30,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-184,prj_mihal Group Site-184,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:29:17,2026-07-29 16:29:31,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-165,prj_mihal Group Site-165,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:27:54,2026-07-29 16:28:06,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-151,prj_mihal Group Site-151,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:34,2026-07-29 16:26:49,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-147,prj_mihal Group Site-147,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:20,2026-07-29 16:26:34,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-146,prj_mihal Group Site-146,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:17,2026-07-29 16:26:30,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-143,prj_mihal Group Site-143,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:15,2026-07-29 16:26:26,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-144,prj_mihal Group Site-144,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:15,2026-07-29 16:27:05,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-145,prj_mihal Group Site-145,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:26:15,2026-07-29 16:26:27,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-139,prj_mihal Group Site-139,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:25:15,2026-07-29 16:25:29,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-138,prj_mihal Group Site-138,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:25:15,2026-07-29 16:25:28,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-135,prj_mihal Group Site-135,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:25:07,2026-07-29 16:25:20,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-133,prj_mihal Group Site-133,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:24:55,2026-07-29 16:25:06,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-123,prj_mihal Group Site-123,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:23:53,2026-07-30 05:50:56,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-120,prj_mihal Group Site-120,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:23:43,2026-07-30 11:40:45,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-101,prj_mihal Group Site-101,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:22:20,2026-07-29 16:22:39,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-095,prj_mihal Group Site-095,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:21:33,2026-07-29 16:21:47,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-090,prj_mihal Group Site-090,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:21:14,2026-07-29 16:21:28,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-088,prj_mihal Group Site-088,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:21:08,2026-07-29 16:21:21,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-083,prj_mihal Group Site-083,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:20:38,2026-07-29 16:20:48,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-078,prj_mihal Group Site-078,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:20:22,2026-07-29 16:20:35,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-070,prj_mihal Group Site-070,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:48,2026-07-29 22:38:34,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-069,prj_mihal Group Site-069,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:46,2026-07-29 22:32:04,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-065,prj_mihal Group Site-065,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:23,2026-07-29 16:20:05,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-064,prj_mihal Group Site-064,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:20,2026-07-30 07:36:40,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-062,prj_mihal Group Site-062,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:14,2026-07-30 01:30:21,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-059,prj_mihal Group Site-059,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:19:04,2026-07-29 16:19:15,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-047,prj_mihal Group Site-047,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:18:25,2026-07-29 16:18:38,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-045,prj_mihal Group Site-045,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:18:19,2026-07-29 16:18:31,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-044,prj_mihal Group Site-044,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:18:16,2026-07-29 16:18:28,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-040,prj_mihal Group Site-040,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:18:06,2026-07-29 16:18:20,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-039,prj_mihal Group Site-039,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:18:02,2026-08-11 09:00:00,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-006,prj_mihal Group Site-006,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:16:13,2026-07-29 17:42:37,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-005,prj_mihal Group Site-005,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:16:11,2026-07-29 17:49:38,0.005,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_mihalgroupsite-001,prj_mihal Group Site-001,EDRMS Project Site,CSD,1,Mihal,2026-07-29 16:15:55,2026-07-29 17:43:30,0.004,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/prj_template_project_v3,prj_Project Site,EDRMS Project Site,CSD,1,Bonnie Test,2026-07-09 12:41:43,2026-07-23 16:07:17,0.004,Not Allowed,Active
+https://7rkd12.sharepoint.com/teams/prj_edrms-001,prj_EDRMS-001,EDRMS Project Site,CSD;BOD,2,Bonnie Test,2026-07-09 10:59:56,2026-08-11 09:00:00,0.003,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/prj_teams-1,prj_teams-1,EDRMS Project Site,CSD;SARD,2,Bonnie Test,2026-07-08 12:40:12,2026-07-29 09:00:00,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/prj_teams-test,prj_teams-test,EDRMS Project Site,CSD,1,Bonnie Test,2026-07-08 12:25:49,2026-07-08 12:32:50,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/test0708,test0708,EDRMS Project Site,CSD,1,Bonnie Test,2026-07-08 10:50:41,2026-08-11 09:00:00,0.002,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/prj_temp-004,prj_temp-004,EDRMS Project Site,CSD;BOD,2,Bonnie Test,2026-07-07 12:10:15,2026-07-07 12:18:27,0.001,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/projectsite04,Project Site04,EDRMS Project Site,BOD,1,Admin ADB,2026-02-05 10:56:51,2026-07-23 09:00:00,0.002,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/projectsite03,Project Site03,EDRMS Project Site,BOD,1,Admin ADB,2026-02-05 10:19:52,2026-08-11 09:00:00,0.035,New and existing external users,Active
+https://7rkd12.sharepoint.com/sites/projectsite01,Project Site01-1,EDRMS Project Site,BOD,1,Admin ADB,2026-02-05 10:14:49,2026-08-11 09:00:00,4.133,Not Allowed,Active
+https://7rkd12.sharepoint.com/sites/org_csd_testadb0825,Test ADB_Sava 0825,EDRMS Project Site,CSD,1,HazelTest (Inactive),2025-08-25 21:37:22,2026-06-11 09:00:00,0.098,New and existing external users,Active
+https://7rkd12.sharepoint.com/teams/grp_csd_sample,grp_csd_sample,EDRMS Project Site,,0,Admin ADB,2024-11-21 14:50:06,2026-04-21 09:00:00,0.012,Existing external users,Active
+https://7rkd12.sharepoint.com/teams/grp_csd_test2,test2,EDRMS Project Site,,0,Admin ADB,2024-11-20 22:41:17,2026-06-11 09:00:00,0.010,Existing external users,Active
