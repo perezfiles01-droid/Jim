@@ -1,4 +1,4 @@
-"""Build EDRMS_Utilization_Report_Checker_2026-08-13.xlsx.
+"""Build EDRMS_Utilization_Report_Checker_2026-08-14.xlsx.
 
 A checker for the report: one sheet per dashboard, every figure on it, where
 each figure comes from, which database column carries it, how it is computed,
@@ -21,7 +21,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from utilization_tables import TABLES, SOURCE
 
-OUT = "EDRMS_Utilization_Report_Checker_2026-08-13.xlsx"
+OUT = "EDRMS_Utilization_Report_Checker_2026-08-14.xlsx"
 FONT = "Arial"
 ADB_BLUE = "0067B1"
 GREY = "6B7785"
@@ -59,8 +59,14 @@ HDR = ["S/N", "Section", "Element", "Type", "What the figure is",
        "How the number is worked out",
        "Database table", "Database column",
        "In the design?", "In the tenant today?",
-       "Effort", "Status", "Question to ask the client, and why"]
-WID = [5, 24, 28, 9, 34, 18, 30, 62, 40, 60, 20, 28, 13, 15, 9, 24, 58]
+       "Effort", "Status", "Question to ask the client, and why",
+       "Questions", "What we found", "FINAL REMARKS"]
+# The last three are the client's own review columns, added to the workbook by
+# hand on 14 Aug and folded back into the generator here so they survive a
+# rebuild. Widths follow what he set, except "What we found", widened from 21
+# because at that width a paragraph becomes a 400px tall row.
+WID = [5, 24, 28, 9, 34, 18, 30, 62, 40, 60, 20, 28, 13, 15, 9, 24, 58,
+       46, 40, 69]
 COL_STATUS = 16          # P, the column the Summary counts and the filter uses
 
 # Shorthands used a lot below.
@@ -198,8 +204,171 @@ Q_REF = ("Ask who maintains this list and where it will live. Why: it is not a "
          "stays empty")
 
 
+# =====================================================================
+# THE CLIENT'S OWN REVIEW COLUMNS, 14 AUGUST
+# ---------------------------------------------------------------------
+# Three columns he added to the workbook by hand: his question, what
+# checking returned, and the conclusion. His wording is kept as he wrote
+# it. Where a question has since been answered by an actual measurement,
+# the answer is added to "What we found" rather than folded into his text,
+# so it stays visible which half is his and which half is the result.
+# =====================================================================
+
+Q_USERS_ASKED = (
+    "Is it accurate to determine the total edrms users in the sharepoint export? "
+    "Do we have any other report as basis to get this number? Why sharepoint "
+    "specifically? It is kpi and when clicked, opens the list of departments and "
+    "each department determines the active users? How to map this?")
+
+F_USERS = (
+    "M365 Activity Report: it does not contain any activity that guarantees a "
+    "person used an EDRMS compliant site.\n\n"
+    "This report only includes activities made to any SharePoint file anywhere, "
+    "including a team site that has nothing to do with EDRMS. The figure "
+    "overstates EDRMS adoption, because it counts non EDRMS SharePoint use.\n\n"
+    "2nd trap: records only every licensed user, not every active one. 30 rows in "
+    "the test tenant, 8 with activity above zero.\n\n"
+    "Why SharePoint specifically: the EDRMS is not a separate application. It is "
+    "app {B255A2AF-7F63-4A30-966A-5D5FD99F97D7} installed into SharePoint sites, "
+    "so the only two traces of EDRMS use are SharePoint usage reporting, which is "
+    "broad, and the Records table, which sees declarers only.\n\n"
+    "Mapping users to departments: not from the RAC site list. That maps SITE to "
+    "department. USER to department comes from the Entra ID 'department' "
+    "attribute, joined on User Principal Name. Whether ADB populates it is NOT "
+    "yet confirmed: four Graph Explorer attempts all returned the default "
+    "property set, so the check has not actually run.")
+
+RM_USERS = (
+    "Kylee and Aldo have a conversation regarding how EDRMS user should be "
+    "defined.\n\n"
+    "CAVEATS:\n\n"
+    "1. M365 Usage report: Activity only overstates. It counts anyone who touched "
+    "any SharePoint file anywhere, including sites with nothing to do with "
+    "records. Someone who has never declared anything appears as an EDRMS user.\n\n"
+    "2. Users who declared a record: Declarers only understates. Not sure of the "
+    "responsibility for each staff, but a records officer whose job involves "
+    "searching, reviewing and retrieving records all day, and who declares "
+    "nothing because declaring is not their job, would count as a non user.\n\n"
+    "BUILDABLE:\n"
+    "EDRMS Users is the headline: distinct licensed users with SharePoint "
+    "activity in the last 90 days. Stated with the caveat that it covers all "
+    "SharePoint activity, because the usage report cannot break activity down per "
+    "site.\n\n"
+    "Active Records Declarers sits beside it: distinct users who declared at "
+    "least one record in the last 90 days.\n\n"
+    "On 90 days: 30 is too tight for records work, 180 stops discriminating, and "
+    "90 is the window the usage report offers natively and matches the site "
+    "inactivity rule. On the declared side a rolling 3 months is exact. On the "
+    "activity side it must mean the 90 day export, not a calendar quarter, or the "
+    "two will not reconcile.\n\n"
+    "The gap between the two figures is the most useful adoption number in the "
+    "report. The definition is the client's to sign off.")
+
+Q_DOCS_ASKED = (
+    "Where would I be getting this: site list from Graph.\n\n"
+    "In the export, does this File Count count what specific documents it "
+    "includes? Does a folder get classified as a file?")
+
+F_DOCS = (
+    "FOLDERS: answered by measurement, not by reading documentation. Graph "
+    "returns a facet on every item: an item carrying a 'folder' facet is a "
+    "folder, one carrying a 'file' facet is a document.\n\n"
+    "Measured on org_csd_1.4testsite, Documents library, 14 Aug 2026: 73 items "
+    "returned, 19 of them folders, 54 documents. Counting rows instead of "
+    "checking facets overstates by 35 percent.\n\n"
+    "Storage is worse. A folder's 'size' is CUMULATIVE, so it already contains "
+    "everything beneath it. Summing size over all 73 items gives 684.3 MB against "
+    "a true 172.2 MB, four times over. The 54 file sizes reconcile to the root "
+    "folder figure exactly.\n\n"
+    "SYSTEM LIBRARIES: 21 libraries on that one site, 2 of them created by "
+    "SharePoint itself and holding no business document, 'Apps for SharePoint' "
+    "and 'Client Side Assets'. File Count in the usage export includes these. The "
+    "scan excludes them, so the scan total will read LOWER than 32,833.\n\n"
+    "SITE LIST: do NOT use GET /sites?search=* to enumerate. It is a search over "
+    "the crawled index, not an enumeration. Measured 14 Aug: it returned 451 "
+    "sites against 1,676 from Get-PnPTenantSite. A scan built on it silently "
+    "misses most of the tenant.\n\n"
+    "NOT VERIFIED: whether the plain GUID in the usage export's 'Site Id' is the "
+    "same GUID that sits inside the Graph composite site id. If it is not, the "
+    "usage report route needs a different join key.")
+
+RM_DOCS = (
+    "The exact number does not exist in any system today. Not in the database, "
+    "not in any report. public.\"Records\" holds declared records only and has no "
+    "concept of an undeclared document.\n\n"
+    "TWO ROUTES, and the answer is to do both.\n\n"
+    "Route A, the usage report: filter the site usage export to EDRMS compliant "
+    "Site Ids, exclude rows where Is Deleted is True, sum File Count. Cheap, no "
+    "development, gives a headline total as soon as RAC supplies the compliant "
+    "site list. It gives a count per site and nothing else.\n\n"
+    "Route B, the document scan: one row per document carrying ListId and "
+    "ItemId. Only this can be joined to public.\"Records\" to say WHICH documents "
+    "were declared, which is the declaration rate the whole report exists to "
+    "show. Route A cannot answer that at all.\n\n"
+    "THE FOUR QUESTIONS FOR DEVELOPMENT:\n\n"
+    "1. Is it feasible to produce Total Documents in All EDRMS Compliant Sites as "
+    "a KPI? We can produce declared records today, since they sit in "
+    "public.\"Records\". We have no equivalent for documents that were never "
+    "declared, and every percentage in the report needs that figure underneath "
+    "it. Is this achievable, and roughly what does it cost?\n\n"
+    "2. If it is feasible, where does the number come from? public.\"Records\" "
+    "holds declared records only, about 1,990 rows in UAT, with no row at all for "
+    "an undeclared document. So the count has to come from SharePoint rather than "
+    "from the database. Which source would you use, and does it need a new "
+    "scheduled job or can it come from an existing report?\n\n"
+    "3. Can the SharePoint usage report do this without a document scan? The site "
+    "usage export has Site Id, File Count and Is Deleted on every row. If we had "
+    "the list of EDRMS compliant sites, could we filter that export to those Site "
+    "Ids, exclude the deleted ones, and sum File Count? Two things we want your "
+    "view on. First, File Count appears to include system libraries such as Apps "
+    "for SharePoint and Client Side Assets, so we expect it to read high. Can "
+    "that be corrected, or do we accept it and label it? Second, the Site Id in "
+    "the usage export is a plain GUID, while the Graph site id is a composite of "
+    "host, site GUID and web GUID. Are those the same site GUID, so the two can "
+    "be joined reliably? And separately: we understand this route gives a count "
+    "per site with no document level rows, so it cannot tell us which documents "
+    "were declared. Is that your reading too?\n\n"
+    "4. How do we identify EDRMS compliant sites across the whole tenant? A site "
+    "is compliant when app {B255A2AF-7F63-4A30-966A-5D5FD99F97D7}, "
+    "digital-records-management-system, is installed on it, and Site Contents "
+    "shows it as its own row in a browser. What we do not know is which API "
+    "returns that across all sites at once. Is there a query that does this, or "
+    "should RAC maintain the list by hand? This one blocks BOTH routes equally.")
+
+Q_DISP_ASKED = (
+    "How do we determine the numbers here? Should the KPI change to a more "
+    "specific title like Total Records Due for Disposal within 12 months or "
+    "something similar?")
+
+F_DISP = (
+    "NOT VERIFIED: whether EDRMSDueDateForDisposal is actually populated. Run "
+    "SELECT COUNT(*), COUNT(\"EDRMSDueDateForDisposal\") FROM public.\"Records\". "
+    "If coverage is low, this KPI measures retention label coverage rather than "
+    "disposal workload, which is a different thing wearing the same name.\n\n"
+    "Records carrying no retention label have no due date and drop out of this "
+    "figure SILENTLY. Nothing on screen says so. 'Records without a retention "
+    "schedule' has to stay visible beside this KPI or the number flatters.\n\n"
+    "Due for disposal does not mean awaiting action. Nothing records whether a "
+    "disposal actually happened, because there is no DisposalStatus field. That "
+    "is an application change for development, not a report change, and it is "
+    "why S/N 36 to 38 on this sheet cannot be built.")
+
+RM_DISP = (
+    "DECIDED: change the KPI title to include the window. It now reads 'Total "
+    "Records Due for Disposal, Next 12 Months'.\n\n"
+    "This is consistent with the caption rule, which bans computed numbers in a "
+    "label, not definitions. A window in the title is part of what the figure IS.\n\n"
+    "The 30 day, 90 day and 12 month figures must NEST: the 30 cannot exceed the "
+    "90, which cannot exceed the 12 month. If they do not nest, the query is "
+    "wrong.\n\n"
+    "'Records beyond retention period' stays visibly separate as the backlog. It "
+    "is not part of what is falling due, it is what already fell due and was "
+    "never actioned.")
+
+
 def R(section, element, typ, measure, recipe, cols, compute,
-      table, column, design, tenant, effort, status, question=""):
+      table, column, design, tenant, effort, status, question="",
+      asked="", found="", remarks=""):
     """One checkable figure.
 
     recipe  a key into RC, which supplies the source system, the file to open
@@ -207,10 +376,14 @@ def R(section, element, typ, measure, recipe, cols, compute,
     cols    the exact column heading in that file, or the exact Graph field
     compute the arithmetic, written with those exact headings so a reader can
             reproduce the number in Excel without translating anything
+    asked   his own question against this row, in his words
+    found   what checking actually returned
+    remarks the conclusion, once it is settled
     """
     src, report, steps = RC[recipe]
     return (section, element, typ, measure, src, report, steps, cols, compute,
-            table, column, design, tenant, effort, status, question)
+            table, column, design, tenant, effort, status, question,
+            asked, found, remarks)
 
 
 # =====================================================================
@@ -223,7 +396,10 @@ BW = [
    "the remaining rows. In the test tenant the file has 30 rows but only 8 survive that filter, "
    "so the answer is 8, not 30. Do NOT just count rows: the export lists every licensed user",
    T3, "UserPrincipalName, ViewedOrEditedFileCount", "Yes", "Yes", "Easy", BUILD,
-   "None. Warn the client the export lists every licensed user, so a row count overstates adoption"),
+   "How should EDRMS User be defined? Aldo Enriquez raised this on 10 Aug and Kylee Williamson "
+   "replied that it will need defining. Neither settled it, and every option is buildable today, "
+   "so this is a definition to agree rather than work to do",
+   asked=Q_USERS_ASKED, found=F_USERS, remarks=RM_USERS),
  R("Top panel", "Total Documents in EDRMS", "KPI", "Every document held, declared or not",
    "usage", "'File Count', and 'Site Id' to identify the site",
    "Sum the 'File Count' column across the sites that are EDRMS compliant. In the test tenant "
@@ -231,7 +407,8 @@ BW = [
    "the real figure needs the weekly scan, because the usage export counts files rather than "
    "the documents the report defines",
    T1, "All rows WHERE IsEdrmsCompliant", "Yes", "Partly", "Medium", BUILD,
-   "None, but flag that the scan must be built before this is exact"),
+   "Four questions, in the FINAL REMARKS column, ready to send to development",
+   asked=Q_DOCS_ASKED, found=F_DOCS, remarks=RM_DOCS),
  R("Top panel", "Total Records Declared", "KPI", "Documents formally declared as records",
    "db", "The whole table, and the IsDeleted flag",
    "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE NOT \"IsDeleted\". About 1,990 in UAT. "
@@ -242,12 +419,16 @@ BW = [
    "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE \"EDRMSMeta\"->>'HasPhysical' = 'true'. "
    "The answer is a subset of Total Records Declared, so it must always be the smaller number",
    T1, "HasPhysical", "Yes", "Yes", "Easy", BUILD),
- R("Top panel", "Total Records Due for Disposal", "KPI", "Records reaching end of retention in 12 months",
+ R("Top panel", "Total Records Due for Disposal, Next 12 Months", "KPI",
+   "Records reaching end of retention in 12 months",
    "db", "'EDRMSDueDateForDisposal'",
    "Run: SELECT COUNT(*) FROM public.\"Records\" WHERE \"EDRMSDueDateForDisposal\" BETWEEN "
    "CURRENT_DATE AND CURRENT_DATE + INTERVAL '12 months'. The date is already computed in the "
    "source database, so nothing needs adding up",
-   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD),
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD,
+   "Confirm the 12 month window is the one they want on the tile, and that the 30 day, "
+   "90 day and 12 month figures should nest inside one another",
+   asked=Q_DISP_ASKED, found=F_DISP, remarks=RM_DISP),
  R("Top panel", "Active EDRMS Sites, Department / RM / Office", "KPI", "Compliant sites still in use",
    "usage", "'Last Activity Date', 'Is Deleted', and the compliance rule",
    "Filter out rows where 'Is Deleted' is True, then keep rows where 'Last Activity Date' is "
@@ -777,7 +958,10 @@ RD = [
    "COUNT(*) where the due date falls inside each window from today. The three windows must "
    "NEST: the 30 day count cannot exceed the 90, which cannot exceed the 12 month. If they do "
    "not nest, the query is wrong",
-   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD),
+   T1, "EDRMSDueDateForDisposal", "Yes", "Yes", "Easy", BUILD,
+   "Confirm the 12 month window is the one they want on the tile, and that the 30 day, "
+   "90 day and 12 month figures should nest inside one another",
+   ),
  R("Retention", "Retention label and duration per term", "Table column",
    "How long each class is kept", "purview",
    "The label name and its retention period from the file plan export",
