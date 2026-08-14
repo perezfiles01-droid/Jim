@@ -1,0 +1,508 @@
+<title>Total Documents in EDRMS</title>
+<style>
+  :root {
+    --navy:#0E1F35; --blue:#0072BC; --teal:#00A5A8; --green:#5CA943;
+    --greyblue:#9DB8D2; --rust:#A8442A;
+
+    --ground:#FBFCFD;
+    --surface:#FFFFFF;
+    --surface-sunk:#F1F5F9;
+    --ink:#0E1F35;
+    --ink-soft:#43566E;
+    --ink-mute:#6D8098;
+    --rule:#DCE5EE;
+    --rule-soft:#EAF0F6;
+
+    --accent:var(--blue);
+    --ok:#3F8C2A;
+    --wait:#00807F;
+    --stop:#A8442A;
+
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#0A1725;
+      --surface:#0F2135;
+      --surface-sunk:#132B44;
+      --ink:#E8EFF6;
+      --ink-soft:#B4C6D8;
+      --ink-mute:#8399B1;
+      --rule:#20374F;
+      --rule-soft:#18293D;
+      --accent:#4CA6E0;
+      --ok:#6FBE4F;
+      --wait:#2CC0BE;
+      --stop:#D9754F;
+      --greyblue:#7A96B4;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:#0A1725;
+    --surface:#0F2135;
+    --surface-sunk:#132B44;
+    --ink:#E8EFF6;
+    --ink-soft:#B4C6D8;
+    --ink-mute:#8399B1;
+    --rule:#20374F;
+    --rule-soft:#18293D;
+    --accent:#4CA6E0;
+    --ok:#6FBE4F;
+    --wait:#2CC0BE;
+    --stop:#D9754F;
+    --greyblue:#7A96B4;
+  }
+
+  * { box-sizing:border-box; }
+
+  body {
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap {
+    max-width:920px;
+    margin:0 auto;
+    padding:clamp(28px,6vw,72px) clamp(18px,5vw,40px) 96px;
+  }
+
+  /* ---- masthead ---- */
+
+  .eyebrow {
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin:0 0 18px;
+  }
+
+  h1 {
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:clamp(30px,5.2vw,46px);
+    line-height:1.1;
+    letter-spacing:-.015em;
+    text-wrap:balance;
+    margin:0 0 18px;
+  }
+
+  .standfirst {
+    font-size:clamp(17px,2.2vw,19px);
+    line-height:1.55;
+    color:var(--ink-soft);
+    max-width:var(--measure);
+    margin:0;
+  }
+
+  .masthead {
+    border-bottom:2px solid var(--navy);
+    padding-bottom:30px;
+    margin-bottom:8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .masthead { border-bottom-color:var(--greyblue); }
+  }
+  :root[data-theme="dark"] .masthead { border-bottom-color:var(--greyblue); }
+
+  .stamp {
+    display:flex; flex-wrap:wrap; gap:6px 22px;
+    font-family:var(--mono); font-size:11.5px;
+    color:var(--ink-mute);
+    padding:12px 0 0;
+  }
+
+  /* ---- generic prose ---- */
+
+  h2 {
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:clamp(22px,3.2vw,28px);
+    line-height:1.2;
+    letter-spacing:-.01em;
+    text-wrap:balance;
+    margin:0 0 6px;
+  }
+
+  h3 {
+    font-family:var(--sans);
+    font-weight:650;
+    font-size:15px;
+    letter-spacing:.005em;
+    margin:0 0 8px;
+  }
+
+  p { max-width:var(--measure); margin:0 0 14px; }
+  p:last-child { margin-bottom:0; }
+
+  section { margin-top:56px; }
+
+  .lede { color:var(--ink-soft); max-width:var(--measure); }
+
+  strong { font-weight:650; }
+
+  code {
+    font-family:var(--mono);
+    font-size:.875em;
+    background:var(--surface-sunk);
+    border-radius:3px;
+    padding:.13em .38em;
+    word-break:break-word;
+  }
+
+  /* ---- the pipeline ---- */
+
+  .steps { display:flex; flex-direction:column; gap:0; margin-top:28px; }
+
+  .step {
+    display:grid;
+    grid-template-columns:98px 1fr;
+    gap:0 26px;
+    padding:26px 0;
+    border-top:1px solid var(--rule);
+  }
+  .step:last-child { border-bottom:1px solid var(--rule); }
+
+  .step-rail { display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+
+  .num {
+    font-family:var(--serif);
+    font-size:30px;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+    color:var(--greyblue);
+  }
+
+  .chip {
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:3px 7px;
+    border-radius:2px;
+    border:1px solid currentColor;
+    white-space:nowrap;
+  }
+  .chip.done { color:var(--ok); }
+  .chip.dev  { color:var(--accent); }
+  .chip.client { color:var(--wait); }
+  .chip.blocked { color:var(--stop); }
+
+  .step-body > *:first-child { margin-top:0; }
+  .step-body p { margin-bottom:10px; }
+  .step-body p:last-child { margin-bottom:0; }
+
+  .call {
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.5;
+    background:var(--surface-sunk);
+    border-left:2px solid var(--accent);
+    padding:10px 14px;
+    margin:12px 0;
+    overflow-x:auto;
+    white-space:pre;
+  }
+
+  /* ---- action lists ---- */
+
+  ol.actions, ul.plain { margin:16px 0 0; padding:0; list-style:none; }
+
+  ol.actions { counter-reset:act; }
+  ol.actions > li {
+    counter-increment:act;
+    position:relative;
+    padding:0 0 18px 34px;
+    max-width:var(--measure);
+  }
+  ol.actions > li::before {
+    content:counter(act);
+    position:absolute; left:0; top:1px;
+    font-family:var(--mono);
+    font-size:11px;
+    font-variant-numeric:tabular-nums;
+    color:var(--ground);
+    background:var(--accent);
+    width:20px; height:20px;
+    border-radius:50%;
+    display:grid; place-items:center;
+  }
+  ol.actions > li:last-child { padding-bottom:0; }
+
+  ul.plain > li {
+    position:relative;
+    padding:0 0 14px 18px;
+    max-width:var(--measure);
+  }
+  ul.plain > li::before {
+    content:"";
+    position:absolute; left:0; top:.62em;
+    width:6px; height:6px;
+    background:var(--greyblue);
+  }
+  ul.plain > li:last-child { padding-bottom:0; }
+
+  .ask {
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--wait);
+    padding:16px 18px;
+    margin:0 0 14px;
+    max-width:var(--measure);
+  }
+  .ask h3 { margin-bottom:6px; }
+  .ask p { margin-bottom:0; font-size:15px; color:var(--ink-soft); }
+  .ask .why {
+    font-size:13.5px;
+    color:var(--ink-mute);
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px dashed var(--rule);
+  }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x:auto; margin:18px 0 0; }
+  table { border-collapse:collapse; width:100%; font-size:14.5px; min-width:480px; }
+  th, td { text-align:left; padding:9px 14px 9px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  th {
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-mute); font-weight:400;
+    border-bottom:1px solid var(--rule);
+  }
+  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  /* ---- callout ---- */
+
+  .flag {
+    border:1px solid var(--stop);
+    border-radius:2px;
+    padding:16px 18px;
+    margin:22px 0 0;
+    max-width:var(--measure);
+    background:var(--surface);
+  }
+  .flag .tag {
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--stop); display:block; margin-bottom:6px;
+  }
+  .flag p:last-child { margin-bottom:0; }
+
+  footer {
+    margin-top:64px; padding-top:20px;
+    border-top:1px solid var(--rule);
+    font-size:13.5px; color:var(--ink-mute);
+    max-width:var(--measure);
+  }
+
+  @media (max-width:620px) {
+    .step { grid-template-columns:1fr; gap:12px; }
+    .step-rail { flex-direction:row; align-items:center; gap:12px; }
+    .num { font-size:22px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">EDRMS Utilization Report &middot; KPI work order</p>
+    <h1>Total Documents in EDRMS</h1>
+    <p class="standfirst">This number does not exist in any system today. Not in the reporting database, not in any Microsoft report, not in AvePoint. Producing it needs one new job from the development team and two answers from the client. Here is exactly what each side has to do.</p>
+    <div class="stamp">
+      <span>14 August 2026</span>
+      <span>S/N 2 &middot; PPT s15, s34, s40</span>
+      <span>Test tenant 7rkd12</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>Why there is no number to look up</h2>
+    <p class="lede">The EDRMS is not a separate application. It is app <code>{B255A2AF-7F63-4A30-966A-5D5FD99F97D7}</code> installed into SharePoint sites, which is what puts the <strong>Declare as Record</strong> button on a library.</p>
+    <p>The reporting database table <code>public."Records"</code> holds about 1,990 rows in UAT, and every one is a <strong>declared record</strong>. There is no row for a document that was never declared. The database does not know those documents exist.</p>
+    <p>So today the bank can answer "how many records were declared". It cannot answer "how many documents are there", and therefore cannot answer any question shaped as a percentage, because every one of those needs this number underneath it.</p>
+
+    <div class="flag">
+      <span class="tag">Do not use the usage report as a substitute</span>
+      <p>The SharePoint site usage export has a <code>File Count</code> column summing to 32,833. It is not this number and must not be presented as it. It counts every site in the tenant rather than EDRMS sites, it counts system libraries, and it counts non business libraries. It is an upper bound with no way to narrow it.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The pipeline, and who owns each step</h2>
+    <p class="lede">Five steps, in order. Steps 1 and 3 are settled and proven against the tenant. Step 2 is the blocker. Steps 4 and 5 are ordinary development work.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-rail">
+          <span class="num">1</span>
+          <span class="chip dev">Dev</span>
+        </div>
+        <div class="step-body">
+          <h3>Enumerate every site in the tenant</h3>
+          <p>A document lives in a library, a library lives in a site. Everything starts from a complete site list.</p>
+          <p><strong>Do not use <code>GET /sites?search=*</code>.</strong> It looks like an enumeration and is not one: it is served from the search index and returns only what has been crawled. Measured on 14 August 2026 it returned <strong>451 sites</strong> against <strong>1,676</strong> from <code>Get-PnPTenantSite</code>. A scan built on it would silently miss most of the tenant and report a confidently wrong total.</p>
+          <div class="call">Get-PnPTenantSite          # 1,676 sites
+GET /sites?search=*        # 451 sites, incomplete</div>
+          <p>Enumerate through the SharePoint admin API, then use Graph for everything below the site.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail">
+          <span class="num">2</span>
+          <span class="chip blocked">Blocked</span>
+        </div>
+        <div class="step-body">
+          <h3>Keep only the EDRMS compliant sites</h3>
+          <p>The rule is known and is not in dispute: a site is compliant when the EDRMS app is installed on it. Site Contents shows the installed app as its own row in a browser, and its Modified date differs between sites, so it is not a bulk stamp.</p>
+          <p><strong>What nobody has answered is which API returns that app list across every site at once.</strong> Checking one site in a browser is not the same thing as filtering 1,676.</p>
+          <p>This is the single question standing between the bank and this KPI. Everything else is built.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail">
+          <span class="num">3</span>
+          <span class="chip done">Proven</span>
+        </div>
+        <div class="step-body">
+          <h3>Walk each library and count only files</h3>
+          <p>For each compliant site, list its libraries, then walk each library's items. Two rules decide whether the resulting number is right, and both were verified against a real library on 14 August 2026.</p>
+          <p><strong>An item with a <code>folder</code> facet is a folder. An item with a <code>file</code> facet is a document.</strong> Count only files.</p>
+          <p><strong>A folder's <code>size</code> is cumulative</strong>, meaning it already contains everything beneath it. Summing size across all items counts the same bytes at every level of the tree.</p>
+
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr><th>Measured on one library</th><th>Counting rows</th><th>Checking facets</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Documents</td><td class="n">73</td><td class="n">54</td></tr>
+                <tr><td>Storage</td><td class="n">684.3 MB</td><td class="n">172.2 MB</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:14px;">Getting it wrong overstates the document count by 35 percent and the storage by roughly four times, and nothing in the output looks wrong.</p>
+          <p>Two further rules, both from the same measurement. Exclude system libraries, which exist on every site and hold no business document: <code>Apps for SharePoint</code> and <code>Client Side Assets</code> among them. And address libraries by id, never by name, because library names in this tenant contain commas, quotes and backslashes.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail">
+          <span class="num">4</span>
+          <span class="chip dev">Dev</span>
+        </div>
+        <div class="step-body">
+          <h3>Write one row per document, keeping the join key</h3>
+          <p>The scan writes to <code>rpt.utilization_report</code> in the reporting database, one row per document, projected at about 3.47 million rows. That table is <strong>replaced</strong> each week rather than appended to.</p>
+          <p>Every row must carry <strong><code>ListId</code> and <code>ItemId</code></strong>. That pair is the grain <code>public."Records"</code> uses to identify a document, and it is the only thing that makes step 5 possible.</p>
+          <p><strong>The ListId is not on the drive object.</strong> The <code>/drives</code> response carries <code>driveType</code>, <code>owner</code> and <code>quota</code> and no <code>list</code> block, so reading <code>drive.list.id</code> yields null on every row. The scan completes, the output looks plausible, and the join matches nothing. Fetch it explicitly:</p>
+          <div class="call">GET /drives/{driveId}/list?$select=id</div>
+          <p>Load into a staging table and swap, so the report never reads a half written table. Nothing pushes into the database: a job pulls on a schedule, weekly. Microsoft and AvePoint cannot write to PostgreSQL.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-rail">
+          <span class="num">5</span>
+          <span class="chip dev">Dev</span>
+        </div>
+        <div class="step-body">
+          <h3>Join scanned against declared</h3>
+          <p>Once the table exists, one query produces the figure the whole report has been waiting for.</p>
+          <div class="call">LEFT JOIN rpt.utilization_report
+       ON ListId + ItemId
+       AGAINST public."Records"
+
+matched    = declared
+unmatched  = never declared</div>
+          <p>Total Documents in EDRMS is the row count. The declaration rate is the matched proportion. <strong>Neither can be produced any other way</strong>, which is why this scan sits on the critical path rather than being an optimisation.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>What to give the development team</h2>
+    <p class="lede">Read only work throughout. The job needs Graph permission <code>Sites.Read.All</code>, which is a straightforward approval, plus read access to the reporting database.</p>
+    <ol class="actions">
+      <li><strong>Answer the compliance question first.</strong> Which API returns the installed app list across all sites, so the scan can filter to EDRMS sites rather than scanning the whole tenant. Nothing else is blocked; this is.</li>
+      <li><strong>Replace site enumeration with the admin API.</strong> <code>search=*</code> returns 451 of 1,676 sites. Confirm the true count in production before the first full run.</li>
+      <li><strong>Create <code>rpt.utilization_report</code></strong> to the agreed 73 column design, in the <code>rpt</code> schema alongside <code>public</code>, so a query can join across the two.</li>
+      <li><strong>Build the weekly job</strong> implementing steps 1 to 4. A working simulation already exists and produces a CSV rather than inserting, so the logic can be compared row for row before anything writes.</li>
+      <li><strong>Use delta tokens for the refresh.</strong> Each library's <code>@odata.deltaLink</code> returns only what changed since the last run, which is what keeps a weekly job at minutes rather than hours after the first pass.</li>
+      <li><strong>Add a <code>DisposalStatus</code> field to the EDRMS application.</strong> Separate from this KPI, but it is the same development conversation. Nothing currently records whether a disposal happened, so the disposal screens cannot be built at all.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>What to get from the client</h2>
+    <p class="lede">Two of these block the number itself. The third and fourth block the breakdowns beneath it, which is what anyone will ask for within a minute of seeing the total.</p>
+
+    <div class="ask">
+      <h3>1. Which sites are EDRMS sites?</h3>
+      <p>Until the app detection question is answered, supply a maintained list of compliant site URLs. Even twenty sites gives a real, defensible number for those twenty and proves the whole chain end to end.</p>
+      <p class="why">Without it the scan covers the entire tenant and the result is an upper bound, not Total Documents in EDRMS. The figure of 1,057 compliant sites currently circulating is a placeholder inherited from an early prototype and has never been measured.</p>
+    </div>
+
+    <div class="ask">
+      <h3>2. What counts as a document?</h3>
+      <p>The scan counts every file. That includes notification emails the EDRMS application saves back into libraries as <code>.eml</code>, and it includes duplicates: one library was measured holding eight byte identical copies of the same PDF.</p>
+      <p class="why">No filter is proposed, because a rule dropping <code>.eml</code> would also drop genuinely declared correspondence. The client should decide, and the decision should be recorded, because it changes the headline number and someone will ask.</p>
+    </div>
+
+    <div class="ask">
+      <h3>3. The site to department list, from RAC</h3>
+      <p>One row per site, giving the owning department and division. Roughly a thousand rows, supplied once.</p>
+      <p class="why">Department is attached to the site, not the document, and documents inherit it. Confirmed feasible by development on 10 August with no migration required. Twenty nine of the 123 logged requirements wait only on this list, along with the entire Department Insights dashboard.</p>
+    </div>
+
+    <div class="ask">
+      <h3>4. Confirm the department assumption</h3>
+      <p>Is it acceptable that every document in a departmental site counts to that department, regardless of who created it?</p>
+      <p class="why">Every departmental breakdown in the report assumes yes. If the answer is no, the design changes rather than the report, and it is far cheaper to hear that now.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What is already proven, so nobody repeats it</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Fact</th><th>Value</th><th>How it was established</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sites in the tenant</td><td class="n">1,676</td><td>Get-PnPTenantSite</td></tr>
+          <tr><td>Sites returned by Graph search</td><td class="n">451</td><td>Script run, 14 Aug 2026</td></tr>
+          <tr><td>Sites holding documents</td><td class="n">1,071</td><td>Usage export, File Count above zero</td></tr>
+          <tr><td>Libraries on one site</td><td class="n">21</td><td>Graph /drives, of which 2 are system</td></tr>
+          <tr><td>Items in one library</td><td class="n">73</td><td>Graph delta</td></tr>
+          <tr><td>Of those, folders</td><td class="n">19</td><td>folder facet</td></tr>
+          <tr><td>Of those, documents</td><td class="n">54</td><td>file facet</td></tr>
+          <tr><td>True size of that library</td><td class="n">172.2 MB</td><td>Sum of files, reconciles to root exactly</td></tr>
+          <tr><td>Rows in public."Records"</td><td class="n">~1,990</td><td>Direct query, all declared records</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:20px;">Every figure above came from exporting the real file or running the real call and reading the result. None is an estimate. Where something has not been measured, it is not in this table.</p>
+  </section>
+
+  <footer>
+    Prepared for the ADB EDRMS Utilization Report. Figures are from the 7rkd12 test tenant and will differ in production. The counting script referenced in step 3 has been run successfully against the tenant; the full document scan has not yet been run at scale.
+  </footer>
+
+</div>
