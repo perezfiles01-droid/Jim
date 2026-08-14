@@ -345,6 +345,52 @@ term store does not hold it either. **This is a question for the client.**
 | **A standalone File Plan dashboard is back** | 13 Aug | Client instruction. PPT s13 names it a key view and s47 to s52 give it six screens |
 | Base figures live in `DATA`, not in a dashboard | 13 Aug | Defined once, read six times, asserted on load |
 | Unsourceable cells print "no source" | 13 Aug | Never a plausible number |
+| **If it is not drawn on a slide, it comes off the page** | 14 Aug | Client instruction. 10 panels cut, see below |
+
+### The 14 August cut: slide-backed only
+
+The 123 requirements have two sources, and the register records which: **97 are
+drawn on a slide** in the client's deck, **26 come from the proposed metrics
+document only**. The metrics document is a word list. Nobody drew a screen for
+those, nobody said what the panel should show, and the client has never seen
+one rendered.
+
+Sixteen of those 26 had become **eight panels on Bank-wide Oversight**, and two
+more sat on other dashboards. All ten are now removed:
+
+| Dashboard | Panel cut | Requirements behind it |
+| --- | --- | --- |
+| Bank-wide | Site visits by month | S/N 109, 110 |
+| Bank-wide | Declared records by format group | S/N 117 |
+| Bank-wide | Site health | S/N 108 |
+| Bank-wide | Library health | S/N 112 to 114 |
+| Bank-wide | Records quality | S/N 115, 116 |
+| Bank-wide | Information classification | S/N 118 |
+| Bank-wide | Access management | S/N 119, 120 |
+| Bank-wide | Search and usage analytics | S/N 121 to 123 |
+| Retention and Disposal | Records with and without a schedule | S/N 90, 91 |
+| Records and Archive Holdings | Physical inventory | S/N 103 |
+
+31 titled panels became 21. **`DATA` was left untouched**, so every figure is
+still defined and still asserted on load. Only the DOM and the draw functions
+went, which makes this reversible in one commit if the client asks for any of
+it back.
+
+**`check_data.js` now asserts the cut in both directions:** six slide-backed
+metrics headings must stay on the page, and nineteen withdrawn ones must stay
+off. Asserting the absence is the point, since a later edit that quietly
+restores one would put an unrequested panel in front of the committee.
+
+**Two things this cut deliberately did not touch.** "What is computable, and
+what is not" on Retention and Disposal looked like a candidate, because it maps
+to no requirement by title, but its contents are the disposal due windows and
+records beyond retention period, which are S/N 40 and S/N 95 and are drawn on
+s34 and s43. It was **renamed** to "Records falling due, and records past
+retention" rather than removed. And **"Records with and without a schedule" was
+cut with a known consequence**: records carrying no retention label have no due
+date and drop out of the disposal KPI silently, so that panel was the thing
+keeping them visible. If the disposal KPI ships before this returns, the
+omission has to be stated on the page some other way.
 
 **AvePoint is an export, not an integration.** Cloud Governance cannot write to
 the database. If it holds the requesting department, that is a CSV loaded once.

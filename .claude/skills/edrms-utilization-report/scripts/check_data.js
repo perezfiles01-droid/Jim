@@ -90,62 +90,68 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(d.LIBS_ACTIVE<=d.SITE_LIBRARIES,"active libraries cannot exceed the libraries that exist");
   eq(d.IDLE_DAYS,90,"the site inactivity threshold is 90 days, the deck's figure");
 
-  console.log("\nWhat the absorbed panels landed on");
   await page.evaluate(()=>switchTo("bw"));
-  const fmtRows=await page.$$eval(".dash-bw #bw-formats .drow",els=>els.length);
-  eq(fmtRows,8,"the format groups survive as a panel on Bank-wide, per PPT s12");
-  const fmtTot=await page.$eval(".dash-bw #bw-formats .dtot",e=>
-    +e.children[1].textContent.replace(/[^0-9]/g,""));
-  eq(fmtTot,d.DECLARED,"the format panel totals the declared record count");
-  const body=await page.$eval(".dash-bw",e=>e.textContent);
-  ok(/Site health/.test(body),"site health survives as a panel, per the Risk and Compliance metrics");
-  ok(/Library health/.test(body),"library health survives as a panel");
-  ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
-  ok(/Most used libraries/.test(body),"most used libraries is shown as asked");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
      the metrics document heading by heading, and were added back. This block
      is that walk, kept so the same content cannot quietly disappear again in a
      later edit. Each entry names the document heading it comes from. */
-  console.log("\nEvery metrics document heading has somewhere to live");
+  console.log("\nMetrics document headings: slide-backed stay, doc-only stay off");
   const pages={};
   for(const k of ["bw","dp","pj","fp","rd","ra"]){
     await page.evaluate(key=>switchTo(key),k);
     pages[k]=await page.$eval(`.dash-${k}`,e=>e.textContent.replace(/\s+/g," "));
   }
   const all=Object.values(pages).join(" ");
+  /* Split on 14 Aug 2026. The prototype previously had to give every heading in
+     the proposed metrics document somewhere to live. The client's instruction
+     is now narrower: if a thing is not drawn on a slide, it comes off the page
+     until they confirm they still want it. So this check runs both ways.
+
+     STILL REQUIRED: headings the client drew, which must not disappear. */
   const required=[
     ["Records declared by year",        "Records Declaration",     /declared by year/i],
     ["Records declared this month",     "Records Declaration",     /declared this month/i],
     ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
-    ["Largest libraries by record volume","Library usage",         /record volume/i],
-    ["Largest libraries by storage",    "Library usage",           /storage consumed/i],
-    ["Libraries dormant over 180 days", "Library usage",           /dormant over 180/i],
-    ["Site activity trend by month",    "Site Trends",             /site visits by month/i],
-    ["Duplicated records",              "Records Quality",         /duplicated records/i],
-    ["Orphaned records",                "Records Quality",         /orphaned records/i],
-    ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
-    ["Restricted records",              "Access Management",       /restricted records/i],
-    ["Confidential records",            "Access Management",       /confidential records/i],
-    ["External sharing instances",      "Access Management",       /external sharing/i],
-    ["Permission exceptions",           "Access Management",       /permission exceptions/i],
-    ["Searches performed",              "Information Retrieval",   /searches performed/i],
-    ["Most viewed records",             "Top Content",             /most viewed/i],
-    ["Most downloaded records",         "Top Content",             /most downloaded/i],
-    ["Most accessed libraries",         "Top Content",             /most accessed libraries/i],
     ["Records declared by classification","Records Declaration",   /by classification/i],
     ["Records declared by business process","Records Declaration", /business process/i],
-    ["Format groups",                   "Format and Storage Analysis",/format group/i],
-    ["Orphaned sites",                  "Risk Indicators",         /orphaned, no owner/i],
-    ["Physical records overdue for transfer","Risk and Compliance",/overdue for transfer/i],
-    ["Inventory health",                "Inventory Health",        /unverified physical files/i],
     ["Storage locations",               "Storage Location Dashboard",/offsite storage/i],
   ];
   const missing=required.filter(([,,re_])=>!re_.test(all));
   ok(missing.length===0,
-     `every metrics document heading is represented somewhere${
+     `every slide-backed metrics heading is still on the page${
        missing.length?": missing "+missing.map(m=>m[0]).join(", "):` (${required.length} checked)`}`);
+
+  /* WITHDRAWN: in the metrics document and on no slide. These were cut on
+     14 Aug and must stay off until the client says otherwise. Asserting their
+     absence is the point: a later edit that quietly restores one would put an
+     unrequested panel back in front of the committee. */
+  const withdrawn=[
+    ["Largest libraries by record volume",   /record volume/i],
+    ["Largest libraries by storage",         /storage consumed/i],
+    ["Libraries dormant over 180 days",      /dormant over 180/i],
+    ["Site activity trend by month",         /site visits by month/i],
+    ["Duplicated records",                   /duplicated records/i],
+    ["Orphaned records",                     /orphaned records/i],
+    ["Records with sensitivity labels",      /sensitivity label/i],
+    ["Restricted records",                   /restricted records/i],
+    ["Confidential records",                 /confidential records/i],
+    ["External sharing instances",           /external sharing/i],
+    ["Permission exceptions",                /permission exceptions/i],
+    ["Searches performed",                   /searches performed/i],
+    ["Most viewed records",                  /most viewed/i],
+    ["Most downloaded records",              /most downloaded/i],
+    ["Most accessed libraries",              /most accessed libraries/i],
+    ["Format groups",                        /format group/i],
+    ["Orphaned sites",                       /orphaned, no owner/i],
+    ["Physical records overdue for transfer",/overdue for transfer/i],
+    ["Inventory health",                     /unverified physical files/i],
+  ];
+  const returned=withdrawn.filter(([,re_])=>re_.test(all));
+  ok(returned.length===0,
+     `the withdrawn metrics-only headings stay off the page${
+       returned.length?": back on screen "+returned.map(m=>m[0]).join(", "):` (${withdrawn.length} checked)`}`);
 
   console.log("\nThe absorbed content works, not merely present");
   await page.evaluate(()=>switchTo("bw"));
@@ -155,61 +161,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(years.length,4,"the by-year chart shows three closed years plus the current window");
   eq(years[3].value,d.DECLARED,
      "the last column equals the declared record count, so it agrees with the monthly chart");
-  const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
-  eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
-  const libRows=await page.$$eval(".dash-bw #bw-libs .hbar",els=>els.length);
-  eq(libRows,d.TOP_LIBRARIES.length,"the library ranking lists every library");
-  const withSite=await page.$$eval(".dash-bw #bw-libs .hbar .hl small",els=>els.map(e=>e.textContent));
-  ok(withSite.length===libRows&&withSite.every(t=>t.trim().length>0),
-     "every library is shown with its parent site, since library names repeat across sites");
-  /* the ranking must actually re-rank, not merely redraw */
-  const byRec=await page.$$eval(".dash-bw #bw-libs .hf",els=>
-    els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
-  ok(byRec.every((v,i)=>i===0||byRec[i-1]>=v),"ranking by record volume orders highest first");
-  await page.selectOption(".dash-bw #bw-librank","gb");
-  const rankGB=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
-  ok(rankGB.every((v,i)=>i===0||rankGB[i-1]>=v),"ranking by storage orders highest first");
-  await page.selectOption(".dash-bw #bw-librank","rate");
-  const byRate=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
-  ok(byRate.every((v,i)=>i===0||byRate[i-1]>=v),"ranking by declaration rate orders highest first");
-
-  console.log("\nSite activity trend, restored filterable 13 Aug");
-  await page.evaluate(()=>switchTo("bw"));
-  const vcols=async()=>await page.$$eval(".dash-bw #bw-visits .ccol",els=>els.map(e=>
-    ({l:e.querySelector(".cl").textContent.trim(),
-      v:+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"")})));
-  let vc=await vcols();
-  eq(vc.length,12,"the trend opens on twelve months");
-  eq(vc[11].v,d.SITE_VISITS_MONTHLY[11],"the last column is the latest month's visits");
-  await page.selectOption(".dash-bw #bw-visit-months","3");
-  vc=await vcols();
-  eq(vc.length,3,"the period filter narrows the series");
-  ok(vc[2].l===d.MONTH_LABELS[11],"a shorter period keeps the most recent months, not the earliest");
-  await page.selectOption(".dash-bw #bw-visit-months","12");
-  /* the reconciliation worth having: every department series must add back up
-     to the bank-wide one, month by month. A split that drifts here would show
-     a department with more visits than the whole estate. */
-  const drift=await page.evaluate(()=>{
-    const sel=document.getElementById("bw-visit-dept");
-    const months=DATA.MONTH_LABELS.length, totals=new Array(months).fill(0);
-    const codes=DATA.DEPTS.map(x=>x.code);
-    for(const c of codes){
-      sel.value=c; sel.dispatchEvent(new Event("change"));
-      [...document.querySelectorAll("#bw-visits .ccol")].forEach((e,i)=>{
-        totals[i]+=+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"");
-      });
-    }
-    sel.value="all"; sel.dispatchEvent(new Event("change"));
-    return totals.map((t,i)=>t-DATA.SITE_VISITS_MONTHLY[i]).filter(x=>x!==0).length;
-  });
-  eq(drift,0,"every department's visits sum to the bank-wide series, in all twelve months");
-  await page.selectOption(".dash-bw #bw-visit-dept","ITD");
-  const oneDept=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
-  ok(/ITD/.test(oneDept),"the summary names the department in scope");
-  ok(!/[0-9]{3,}/.test(oneDept),"the summary carries no computed total");
-  await page.click(".dash-bw #bw-visit-reset");
-  const back=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
-  ok(/All departments/.test(back)&&/12 months/.test(back),"Reset restores all departments and twelve months");
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
   ok(errors.length===0,"no console errors, which is how the DATA reconciliation asserts surface");
