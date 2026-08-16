@@ -90,18 +90,34 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(d.LIBS_ACTIVE<=d.SITE_LIBRARIES,"active libraries cannot exceed the libraries that exist");
   eq(d.IDLE_DAYS,90,"the site inactivity threshold is 90 days, the deck's figure");
 
-  console.log("\nWhat the absorbed panels landed on");
+  console.log("\nWhat the client removed on 16 August stays removed");
   await page.evaluate(()=>switchTo("bw"));
-  const fmtRows=await page.$$eval(".dash-bw #bw-formats .drow",els=>els.length);
-  eq(fmtRows,8,"the format groups survive as a panel on Bank-wide, per PPT s12");
-  const fmtTot=await page.$eval(".dash-bw #bw-formats .dtot",e=>
-    +e.children[1].textContent.replace(/[^0-9]/g,""));
-  eq(fmtTot,d.DECLARED,"the format panel totals the declared record count");
-  const body=await page.$eval(".dash-bw",e=>e.textContent);
-  ok(/Site health/.test(body),"site health survives as a panel, per the Risk and Compliance metrics");
-  ok(/Library health/.test(body),"library health survives as a panel");
-  ok(/Orphaned, no owner/.test(body),"orphaned sites, which the metrics document asks for, are on the page");
-  ok(!/Most used libraries/.test(body),"most used libraries stays off, no per library activity feed exists");
+  const body=await page.$eval(".dash-bw",e=>e.textContent.replace(/\s+/g," "));
+  /* Ten panels were absorbed onto Bank-wide on 13 Aug when five dashboards
+     were deleted. The client looked at the result on 16 Aug and asked for them
+     off, so Bank-wide is the compact screen they designed. Asserting their
+     absence is the point: restoring one would put a panel in front of the
+     committee that the client has explicitly asked not to see. */
+  const cutPanels=[
+    ["Records declared by year",        /declared by year/i],
+    ["Retention and disposal rollup",   /retention and disposal rollup/i],
+    ["Permanent and temporary retention",/permanent and temporary retention/i],
+    ["Supporting detail",               /supporting detail/i],
+    ["Site visits by month",            /site visits by month/i],
+    ["Format and storage",              /format and storage/i],
+    ["Declared records by format group",/by format group/i],
+    ["Risk and compliance",             /risk and compliance/i],
+    ["Site health",                     /site health/i],
+    ["Library health",                  /library health/i],
+  ];
+  const restored=cutPanels.filter(([,re_])=>re_.test(body));
+  ok(restored.length===0,
+     `the ten panels removed on 16 Aug stay off Bank-wide${
+       restored.length?": back on screen "+restored.map(m=>m[0]).join(", "):` (${cutPanels.length} checked)`}`);
+  /* What the client kept, so the cut cannot quietly overshoot. */
+  ok(/Records quality/.test(body),"records quality survives, it was not in the cut");
+  ok(/Information classification/.test(body),"information classification survives, it was not in the cut");
+  ok(/Comparison/.test(body),"the comparison panel survives, it is on their own slide");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
@@ -122,13 +138,8 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
      STILL REQUIRED: drawn on a slide, or buildable now and kept. */
   const required=[
-    ["Records declared by year",        "Records Declaration",     /declared by year/i],
     ["Records declared this month",     "Records Declaration",     /declared this month/i],
     ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
-    ["Largest libraries by record volume","Library usage",         /record volume/i],
-    ["Largest libraries by storage",    "Library usage",           /storage consumed/i],
-    ["Libraries dormant over 180 days", "Library usage",           /dormant over 180/i],
-    ["Site activity trend by month",    "Site Trends",             /site visits by month/i],
     ["Duplicated records",              "Records Quality",         /duplicated records/i],
     ["Orphaned records",                "Records Quality",         /orphaned records/i],
     ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
@@ -136,8 +147,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Confidential records",            "Access Management",       /confidential records/i],
     ["Records declared by classification","Records Declaration",   /by classification/i],
     ["Records declared by business process","Records Declaration", /business process/i],
-    ["Format groups",                   "Format and Storage Analysis",/format group/i],
-    ["Orphaned sites",                  "Risk Indicators",         /orphaned, no owner/i],
     ["Physical records overdue for transfer","Risk and Compliance",/overdue for transfer/i],
     ["Storage locations",               "Storage Location Dashboard",/offsite storage/i],
   ];
@@ -169,69 +178,69 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
      `the withdrawn unsourceable headings stay off the page${
        returned.length?": back on screen "+returned.map(m=>m[0]).join(", "):` (${withdrawn.length} checked)`}`);
 
-  console.log("\nThe absorbed content works, not merely present");
+  console.log("\nWhat survived the cut still works");
   await page.evaluate(()=>switchTo("bw"));
-  const years=await page.$$eval(".dash-bw #bw-years .ccol",els=>els.map(e=>
-    ({label:e.querySelector(".cl").textContent.trim(),
-      value:+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"")})));
-  eq(years.length,4,"the by-year chart shows three closed years plus the current window");
-  eq(years[3].value,d.DECLARED,
-     "the last column equals the declared record count, so it agrees with the monthly chart");
   const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
   eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
-  const libRows=await page.$$eval(".dash-bw #bw-libs .hbar",els=>els.length);
-  eq(libRows,d.TOP_LIBRARIES.length,"the library ranking lists every library");
-  const withSite=await page.$$eval(".dash-bw #bw-libs .hbar .hl small",els=>els.map(e=>e.textContent));
-  ok(withSite.length===libRows&&withSite.every(t=>t.trim().length>0),
-     "every library is shown with its parent site, since library names repeat across sites");
-  /* the ranking must actually re-rank, not merely redraw */
-  const byRec=await page.$$eval(".dash-bw #bw-libs .hf",els=>
-    els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
-  ok(byRec.every((v,i)=>i===0||byRec[i-1]>=v),"ranking by record volume orders highest first");
-  await page.selectOption(".dash-bw #bw-librank","gb");
-  const rankGB=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
-  ok(rankGB.every((v,i)=>i===0||rankGB[i-1]>=v),"ranking by storage orders highest first");
-  await page.selectOption(".dash-bw #bw-librank","rate");
-  const byRate=await page.$$eval(".dash-bw #bw-libs .hf",els=>els.map(e=>parseFloat(e.textContent)));
-  ok(byRate.every((v,i)=>i===0||byRate[i-1]>=v),"ranking by declaration rate orders highest first");
 
-  console.log("\nSite activity trend, restored filterable 13 Aug");
+  /* The Records Declaration Trend, rebuilt 16 Aug to the client's own slide:
+     a cumulative curve over a date range, no department filter.
+
+     The reconciliation that matters here is NOT a sum. A per month series adds
+     up to the declared total; a cumulative one ends at it. Asserting the wrong
+     one passes on a chart that is wrong by a factor of six. */
+  const pts=async()=>await page.$$eval(".dash-bw #bw-trend circle title",
+    els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
+  let curve=await pts();
+  eq(curve.length,12,"the trend opens on the twelve closed months");
+  eq(curve[11],d.DECLARED,"the curve ENDS at the declared record count, it does not sum to it");
+  ok(curve.every((v,i)=>i===0||curve[i-1]<=v),"a cumulative curve never falls");
+  ok(curve[0]<curve[11],"the curve actually rises across the window");
+
+  const noDeptFilter=await page.$(".dash-bw #bw-trend-sel");
+  ok(noDeptFilter===null,"the department filter is gone from the trend, as the client asked");
+  const cap=await page.$eval(".dash-bw #bw-trend-tiles",e=>e.parentElement.querySelector(".psub").textContent);
+  ok(/across all EDRMS compliant sites/i.test(cap),"the caption names the population, not a period");
+  ok(!/[0-9]{3,}/.test(cap),"the caption carries no computed figure");
+
+  /* The date range narrows the window and restarts the running total, so the
+     last point of a narrowed curve is what was declared inside it. */
+  await page.fill(".dash-bw #bw-trend-from","2026-05-01");
+  curve=await pts();
+  eq(curve.length,3,"the date range narrows the series to the months inside it");
+  const lastThree=d.MONTH_VALUES.slice(9).reduce((a,v)=>a+v,0);
+  eq(curve[2],lastThree,"the narrowed curve ends at what was declared inside the range");
+  const sum3=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
+  ok(/3 closed months/.test(sum3),"the summary says how many months are actually shown");
+
+  /* A range with no closed month in it must say so rather than draw nothing. */
+  await page.fill(".dash-bw #bw-trend-from","2026-07-05");
+  await page.fill(".dash-bw #bw-trend-to","2026-07-20");
+  const empty=await page.$eval(".dash-bw #bw-trend",e=>e.textContent);
+  ok(/No closed month/i.test(empty),"an empty range explains itself rather than drawing a blank chart");
+
+  await page.click(".dash-bw #bw-trend-reset");
+  curve=await pts();
+  eq(curve.length,12,"Reset restores the full window");
+  eq(curve[11],d.DECLARED,"Reset restores the full declared total");
+
+  /* The Overview of EDRMS sites table carries the client's own column names
+     word for word, and each name opens that unit's dashboard. */
+  console.log("\nOverview of EDRMS sites, the client's wording and their click");
+  const heads=await page.$$eval(".dash-bw #bw-depts .dhead .hd",els=>els.map(e=>
+    e.textContent.replace(/[↑↓]/g,"").trim()));
+  const want=["Department / office / RM","Number of EDRMS SharePoint sites",
+              "Total number of documents","Total number of records declared",
+              "Total number of physical counterparts"];
+  ok(JSON.stringify(heads)===JSON.stringify(want),
+     `the column names are the client's, verbatim${heads.join(" | ")!==want.join(" | ")?": got "+heads.join(" | "):""}`);
+  await page.click(".dash-bw #bw-depts .drow.go[data-dept]");
+  const landed=await page.$eval("#crumb-b",e=>e.textContent);
+  ok(/Department Insights/.test(landed),"clicking a department name opens Department Insights");
   await page.evaluate(()=>switchTo("bw"));
-  const vcols=async()=>await page.$$eval(".dash-bw #bw-visits .ccol",els=>els.map(e=>
-    ({l:e.querySelector(".cl").textContent.trim(),
-      v:+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"")})));
-  let vc=await vcols();
-  eq(vc.length,12,"the trend opens on twelve months");
-  eq(vc[11].v,d.SITE_VISITS_MONTHLY[11],"the last column is the latest month's visits");
-  await page.selectOption(".dash-bw #bw-visit-months","3");
-  vc=await vcols();
-  eq(vc.length,3,"the period filter narrows the series");
-  ok(vc[2].l===d.MONTH_LABELS[11],"a shorter period keeps the most recent months, not the earliest");
-  await page.selectOption(".dash-bw #bw-visit-months","12");
-  /* the reconciliation worth having: every department series must add back up
-     to the bank-wide one, month by month. A split that drifts here would show
-     a department with more visits than the whole estate. */
-  const drift=await page.evaluate(()=>{
-    const sel=document.getElementById("bw-visit-dept");
-    const months=DATA.MONTH_LABELS.length, totals=new Array(months).fill(0);
-    const codes=DATA.DEPTS.map(x=>x.code);
-    for(const c of codes){
-      sel.value=c; sel.dispatchEvent(new Event("change"));
-      [...document.querySelectorAll("#bw-visits .ccol")].forEach((e,i)=>{
-        totals[i]+=+e.querySelector(".cv").textContent.replace(/[^0-9]/g,"");
-      });
-    }
-    sel.value="all"; sel.dispatchEvent(new Event("change"));
-    return totals.map((t,i)=>t-DATA.SITE_VISITS_MONTHLY[i]).filter(x=>x!==0).length;
-  });
-  eq(drift,0,"every department's visits sum to the bank-wide series, in all twelve months");
-  await page.selectOption(".dash-bw #bw-visit-dept","ITD");
-  const oneDept=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
-  ok(/ITD/.test(oneDept),"the summary names the department in scope");
-  ok(!/[0-9]{3,}/.test(oneDept),"the summary carries no computed total");
-  await page.click(".dash-bw #bw-visit-reset");
-  const back=await page.$eval(".dash-bw #bw-visits-sum",e=>e.textContent);
-  ok(/All departments/.test(back)&&/12 months/.test(back),"Reset restores all departments and twelve months");
+  await page.click(".dash-bw #bw-depts .drow.go[data-fac]");
+  const landedPj=await page.$eval("#crumb-b",e=>e.textContent);
+  ok(/Project Insights/.test(landedPj),"clicking a project row opens Project Insights");
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
   ok(errors.length===0,"no console errors, which is how the DATA reconciliation asserts surface");

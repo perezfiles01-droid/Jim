@@ -100,20 +100,40 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   }
 
 
-  console.log("\nTrend, PPT s10 and s18");
-  await page.selectOption(".dash-bw #bw-trend-sel","ITD");
-  const itd=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(/ITD/.test(itd),"choosing a department relabels the trend summary");
-  await page.selectOption(".dash-bw #bw-trend-sel","all");
-  const all=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(/All departments/.test(all),"the summary names the scope, with no figure in it");
-  ok(!/[0-9]/.test(all),"the summary carries no computed number, per the 13 Aug instruction");
-  await page.selectOption(".dash-bw #bw-trend-sel","FIN");
+  console.log("\nRecords Declaration Trend, rebuilt 16 Aug to the client's slide");
+  /* Their drawing is a cumulative curve with a date range and nothing else.
+     The department filter is gone by instruction, so its absence is asserted
+     rather than assumed. */
+  const sel=await page.$(".dash-bw #bw-trend-sel");
+  ok(sel===null,"the department filter is gone from the trend");
+  const marks=async()=>await page.$$eval(".dash-bw #bw-trend circle title",
+    els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
+  let curve=await marks();
+  eq(curve.length,12,"the trend opens on twelve closed months, the default range");
+  ok(curve.every((v,i)=>i===0||curve[i-1]<=v),"the series is cumulative, so it never falls");
+
+  const title=await page.$eval(".dash-bw #bw-trend-tiles",
+    e=>e.parentElement.querySelector(".ptitle").textContent.trim());
+  eq(title,"Records Declaration Trend","the panel carries the client's own title");
+
+  await page.fill(".dash-bw #bw-trend-from","2026-01-01");
+  curve=await marks();
+  eq(curve.length,7,"moving the from date narrows the window to the months inside it");
+  await page.fill(".dash-bw #bw-trend-to","2026-03-31");
+  curve=await marks();
+  eq(curve.length,3,"moving the to date narrows it further");
+
+  /* A from date after the to date would otherwise draw an empty chart with no
+     explanation, so the inputs clamp each other. */
+  await page.fill(".dash-bw #bw-trend-from","2026-06-01");
+  const clamped=await page.$eval(".dash-bw #bw-trend-to",e=>e.value);
+  ok(clamped>="2026-06-01","a from date past the to date drags the to date with it");
+
   await page.click(".dash-bw #bw-trend-reset");
-  const reset=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(/All departments/.test(reset),"Reset returns the trend to all departments");
-  const cols=await page.$$eval(".dash-bw #bw-trend .tcol",els=>els.length);
-  eq(cols,12,"the trend shows twelve closed months, the default range");
+  curve=await marks();
+  eq(curve.length,12,"Reset returns the trend to the full window");
+  const sum=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
+  ok(/Aug 2025/.test(sum)&&/Jul 2026/.test(sum),"the summary names the range actually shown");
 
   console.log("\nComparison, PPT s6 and s17");
   for(const [v,label] of [["docsrec","Records declared"],["userdoc","Documents"],["userrec","Records declared"]]){

@@ -60,6 +60,70 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const nameNow=await page.$eval(".dash-pj #pj-pname",e=>e.textContent);
   ok(/Human Capital/.test(nameNow),"choosing a project changes the profile");
 
+  /* Rebuilt 16 Aug 2026 to the client's Project Insights slide 1. Their table
+     column names are used verbatim, all seven top panel tiles are clickable
+     because all seven are underlined on their drawing, and the three charts
+     they drew are on the page. */
+  console.log("\nProject Insights, the client's slide of 16 Aug");
+  const pHeads=await page.$$eval(".dash-pj #pj-list .dhead div",els=>els.map(e=>e.textContent.trim()));
+  const pWant=["Project number and name","Number of EDRMS SharePoint sites",
+               "Total number of documents","Total number of records declared",
+               "Total number of physical counterparts"];
+  ok(JSON.stringify(pHeads)===JSON.stringify(pWant),
+     `the project table column names are the client's, verbatim${
+       pHeads.join(" | ")!==pWant.join(" | ")?": got "+pHeads.join(" | "):""}`);
+
+  const tiles=await page.$$eval(".dash-pj #pj-kpis .kpi",els=>els.map(e=>
+    e.querySelector(".lab").textContent.trim()));
+  eq(tiles.length,7,"seven top panel tiles, as their slide draws");
+  eq(tiles[0],"Total number of sites created","the tiles carry the client's own labels");
+  eq(tiles[6],"Total number of records due for disposal","and the last one too");
+  const tapped=await page.$$eval(".dash-pj #pj-kpis .kpi .tap",els=>els.length);
+  eq(tapped,7,"all seven are clickable, because all seven are underlined on their drawing");
+
+  /* Every tile must actually open a distinct table, not merely look clickable. */
+  const seen=new Set();
+  for(const k of ["sites","users","visitors","docs","rec","phys","due"]){
+    await page.click(`.dash-pj #pj-kpis .kpi[data-k="${k}"]`);
+    const t=await page.$eval(".dash-pj #pj-drill .ptitle",e=>e.textContent.trim());
+    ok(t.length>0&&!seen.has(t),`tile ${k} opens its own table (${t})`);
+    seen.add(t);
+    const open=await page.$$eval(".dash-pj #pj-kpis .kpi.on",els=>els.length);
+    eq(open,1,`exactly one tile reads as open on ${k}`);
+  }
+
+  /* The site rows behind a project must sum to the project, or the drill
+     disagrees with the tile immediately above it. */
+  await page.click('.dash-pj #pj-kpis .kpi[data-k="rec"]');
+  const drillRows=await page.$$eval(".dash-pj #pj-drill .drow",els=>els.map(e=>
+    [...e.children].map(c=>c.textContent.trim())));
+  const projRec=n(await page.$eval('.dash-pj #pj-kpis .kpi[data-k="rec"] .val',e=>e.textContent));
+  eq(drillRows.reduce((a,r)=>a+n(r[1]),0),projRec,
+     "the site rows sum to the project's declared record count");
+
+  /* The three charts on their slide. */
+  const mix=await page.$$eval(".dash-pj #pj-mix .lg span",els=>els.map(e=>e.textContent.trim()));
+  ok(mix.includes("Staff")&&mix.includes("Consultants")&&mix.includes("Contractors"),
+     "the users chart splits staff, consultants and contractors, as they drew it");
+  const curve=await page.$$eval(".dash-pj #pj-trend circle title",
+    els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
+  eq(curve.length,12,"the project declaration trend runs over twelve closed months");
+  ok(curve.every((v,i)=>i===0||curve[i-1]<=v),"the project trend is cumulative, so it never falls");
+  eq(curve[11],projRec,"the project curve ENDS at that project's declared count");
+  const cmp=await page.$$eval(".dash-pj #pj-cmp .cmp",els=>els.length);
+  ok(cmp>=2,`the documents against records comparison is drawn site by site (${cmp} sites)`);
+  const rates=await page.$$eval(".dash-pj #pj-cmp .cmp .cl small",els=>els.map(e=>
+    parseFloat(e.textContent)));
+  ok(rates.every(r=>r>=0&&r<=100),"no site declares more records than it holds documents");
+
+  /* Reset, the house pattern, and the two pickers agreeing with each other. */
+  await page.selectOption(".dash-pj #pj-sel","57298-002");
+  const facAfter=await page.$eval(".dash-pj #pj-fac",e=>e.value);
+  eq(facAfter,"Nonsovereign","picking a nonsovereign project moves the facility filter with it");
+  await page.click(".dash-pj #pj-reset");
+  const facReset=await page.$eval(".dash-pj #pj-fac",e=>e.value);
+  eq(facReset,"Sovereign","Reset returns the facility filter to sovereign");
+
   /* ---------------- Institutional File Plan, PPT s29 to s52 ---------------- */
   console.log("\nInstitutional File Plan");
   await page.evaluate(()=>switchTo("fp"));

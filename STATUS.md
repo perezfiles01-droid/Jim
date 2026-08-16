@@ -84,9 +84,9 @@ on purpose, and their content was absorbed rather than dropped.
 
 | Dashboard | Key | What is on it |
 | --- | --- | --- |
-| Bank-wide Oversight | `bw` | 8 top tiles, 5 drill tables, department table, 3 comparisons, declaration trend by month and by year, retention rollup, format groups, site and library health, records quality, classification, access and search |
+| Bank-wide Oversight | `bw` | 8 top tiles, 5 drill tables, Overview of EDRMS sites, 3 comparisons, Records Declaration Trend, records quality, classification. **Cut back to the client's own screen on 16 Aug**, see below |
 | Department Insights | `dp` | Department picker driving everything. 8 tiles, 5 drills, site list, library usage by file plan category, trend, conventions, programme dates |
-| Project Insights | `pj` | Sovereign and nonsovereign lists, single project profile. Layout only |
+| Project Insights | `pj` | Sovereign and nonsovereign lists with the client's column names, project profile, 7 clickable tiles with drills, 3 charts. **Rebuilt to their slide on 16 Aug.** Still layout only, and now blocked on two sources, not one |
 | Institutional File Plan | `fp` | 5 categories, terms per category, most and least used terms, classification and business process |
 | Retention and Disposal | `rd` | Permanent and temporary screens, disposition risk, retention compliance |
 | Records and Archive Holdings | `ra` | Storage, retrieval, inventory health. Layout only |
@@ -101,6 +101,86 @@ health and the library rankings.
 the Data Design reference page (`utilizationdb.md` holds all of it), and the
 standalone File Plan dashboard. **The last of those has since been reversed**,
 see section 7.
+
+### The 16 August revision: Bank-wide cut back, Project Insights rebuilt
+
+The client supplied **twelve slides on 16 August**, transcribed and analysed in
+`CLIENT_SLIDES_2026-08-16.md`. The image files themselves are not in the repo,
+they arrived as chat attachments; that file is the record. Two dashboards were
+then revised to follow those slides and nothing else.
+
+**Bank-wide lost ten panels, by instruction.** The screen had grown because five
+dashboards were deleted on 13 August and their content was absorbed here rather
+than dropped. The client looked at the result and asked for it off. Removed:
+records declared by year, the retention and disposal rollup with its permanent
+and temporary split, the Supporting detail band, site visits by month, format
+and storage with the declared records by format group panel, the Risk and
+compliance band, site health and library health.
+
+**Nothing was deleted from `DATA`.** Retention and Disposal still reads
+`PERMANENT` and `LABEL_TOTAL`, and every figure behind a removed panel is
+untouched. The panels are unshown, not unsourced, so any of them can be restored
+in one edit if the client changes their mind. `check_data.js` asserts all ten
+stay off, in the same way it asserts the retained headings stay on.
+
+**One thing was kept that the instruction would have removed.** Records declared
+this month is a metrics document requirement and its only home was a tile on the
+by-year panel. It moved to the trend panel rather than being lost. That is the
+single deviation from the instruction, and it is a restoration, not an addition.
+
+**Overview of EDRMS sites now carries the client's column names verbatim:**
+Department / office / RM, Number of EDRMS SharePoint sites, Total number of
+documents, Total number of records declared, Total number of physical
+counterparts. Their table has no disposal column so ours no longer does either.
+The names run long, so the header cells wrap and bottom align and the table
+scrolls inside its panel. **Every name is now a link**: a department opens
+Department Insights on that department, and the two project rows open Project
+Insights on that facility type. That is their clickable note, and it is wired
+through a new shared `openDashboard()` helper plus an optional `focus()` on the
+target dashboard.
+
+**Records Declaration Trend replaced Records declared over the last 12 months.**
+It is now what they drew: a **cumulative** curve, a date range filter, no
+department filter, the caption "Records declared across all EDRMS compliant
+sites", and the Reset button kept.
+
+**The reconciliation changed shape with it, and this is the part worth
+remembering.** A per month series **sums** to the declared total. A cumulative
+one does not: its **last point** equals the total. Asserting the wrong one
+passes happily on a chart that is wrong by a factor of six. Both the sum on the
+underlying monthly series and the endpoint on the derived curve are now
+asserted, on Bank-wide and again per project.
+
+**The date range snaps to whole months**, and the summary line says which months
+are actually shown. The 12 August rule "no day level picker" was taken for the
+**usage panels**, where a week is the smallest unit the M365 data holds. It does
+not apply here: `public."Records"` carries a declaration timestamp per record, so
+a day level cut is producible later. What cannot honour one today is this
+prototype's monthly totals, which is a different limitation and a temporary one.
+
+**Project Insights was rebuilt to their slide 1.** The eight field profile grid
+stays. The tiles are now **seven, with the client's own labels, and all seven are
+clickable** because all seven are underlined on their drawing; each opens its own
+drill table, site by site, and the site rows sum to the project. The two donuts
+were replaced by the three charts they drew: a users pie split staff,
+consultants and contractors, the cumulative declaration trend, and documents
+against records declared read site by site with the declaration rate alongside.
+The project tables carry their column names verbatim and each row opens that
+project below.
+
+**A new blocker was found doing it.** Project Insights was recorded as waiting on
+one missing thing, a site to project register. Their slide 1 adds a second: the
+eight profile fields, facility type, modality, country, status, effectivity and
+closing dates, come from an **ADB project system that has never been named in
+this work**. Even with the register, the top third of that screen stays empty
+without it. Both are now questions 2 and 7 in `CLIENT_SLIDES_2026-08-16.md`.
+
+**One defect was found by reading the slides, and it is still open.** Bank-wide's
+physical counterpart drill prints "Turned over to RAC" as 58 percent of the
+counterpart count. Nothing sources it, and by the 13 August rule an unsourceable
+cell prints "no source" rather than a plausible number. It was left alone in this
+revision because the client did not raise it and it sits inside a panel they kept,
+but it should be fixed.
 
 ### The source marker convention, agreed 13 August
 
@@ -475,6 +555,10 @@ term store does not hold it either. **This is a question for the client.**
 | Base figures live in `DATA`, not in a dashboard | 13 Aug | Defined once, read six times, asserted on load |
 | Unsourceable cells print "no source" | 13 Aug | Never a plausible number |
 | **A panel comes off only if it is undrawn AND unsourceable** | 14 Aug | Client instruction, then narrowed. 3 panels cut, see below |
+| **Bank-wide returns to the client's own screen** | 16 Aug | Client instruction. The ten panels absorbed on 13 Aug come off. Figures kept in `DATA`, panels unshown not unsourced |
+| **The declaration trend is cumulative, not per month** | 16 Aug | Their drawing. A cumulative series ENDS at the total, it does not sum to it. Asserted both ways |
+| **A day level range is allowed on declaration panels** | 16 Aug | The 12 Aug "no day level picker" rule was about the usage panels, where a week is the smallest unit the data holds. `Records` carries a per record declaration date, so it does not bind here |
+| **Client column names are used verbatim** | 16 Aug | Client instruction. The design accommodates the long names rather than shortening them |
 
 ### The 14 August cut: undrawn and unsourceable
 
@@ -642,8 +726,13 @@ check_bankwide.js      Bank-wide: tiles, drills, department table, comparisons, 
 check_department.js    Department: walks all 16 departments, sites sum to the header
 check_division.js      the division tier: children sum to parent, on screen
 check_stage3.js        Project, File Plan, Retention and Disposal, Holdings
+check_responsive.js    layout at 13 widths, 1920px down to 400px, which is zoom
 check_tree.py          drill depth and every total matches its parent
 ```
+
+**They take an absolute path.** `check_data.js index.html` fails with
+`ERR_INVALID_URL`; it needs `/home/user/Jim/index.html`. `verify.js` tolerates
+the relative form, which makes the difference easy to trip over.
 
 **Retired on 13 Aug** with the dashboards they tested: `check_metrics.js`,
 `check_retention.js`, `check_retention_fileplan.js`, `check_sitefilter.js`,

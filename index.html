@@ -126,6 +126,7 @@
   /* A treemap has a floor below which its labels stop fitting. Let it scroll
      sideways at that point rather than crushing the blocks. */
   .tmwrap{overflow-x:auto}
+  .areawrap{overflow-x:auto}
   @media(max-width:760px){
     section{padding:14px 14px 36px}
     .panel{padding:14px 14px}
@@ -179,6 +180,14 @@
   /* department table */
   .dash-bw .scrollx{overflow-x:auto}
   .dash-bw .dtab{--dc:210px 108px 118px 130px 128px 120px;min-width:820px}
+  /* The Overview of EDRMS sites table carries the client's own column names,
+     which run to five words. Its columns are wider, its header cells wrap onto
+     as many lines as they need, and the whole table scrolls inside its panel,
+     so the words are never truncated and never squeezed. Headers bottom align
+     so a one line and a three line heading share a baseline. */
+  .dash-bw .dtab.wide{--dc:minmax(200px,1.5fr) repeat(4,minmax(122px,1fr));min-width:880px}
+  .dash-bw .dtab.wide .dhead{align-items:end}
+  .dash-bw .dtab.wide .dhead .hd{white-space:normal;line-height:1.35;hyphens:auto}
   .dash-bw .dhead,.dash-bw .drow,.dash-bw .dtot{display:grid;grid-template-columns:var(--dc);gap:12px;align-items:center}
   .dash-bw .dhead{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);
     padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:8px}
@@ -191,6 +200,14 @@
   .dash-bw .drow .dn small{display:block;font-weight:400;color:var(--mut);font-size:11px;margin-top:1px}
   .dash-bw .drow.grp{background:#F6FAFE}
   /* the division tier, reinstated 13 Aug 2026 */
+  /* A row that navigates. The name is the affordance, so it carries the link
+     colour and the underline, and the whole row is the target so a reader does
+     not have to hit the text exactly. */
+  .dash-bw .drow.go{cursor:pointer}
+  .dash-bw .drow.go .lk{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+  .dash-bw .drow.go:hover{background:#F7FBFF}
+  .dash-bw .drow.go:hover .lk{color:var(--deepblue)}
+  .dash-bw .drow.go:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;border-radius:6px}
   .dash-bw .drow.exp{cursor:pointer}
   .dash-bw .drow.exp:hover{background:#F7FBFF}
   .dash-bw .drow.exp .tw{display:inline-block;width:14px;color:var(--blue);font-weight:700}
@@ -226,6 +243,13 @@
   .dash-bw .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;
     color:var(--ink2);border-radius:8px;padding:6px 12px;cursor:pointer}
   .dash-bw .resetbtn:hover{border-color:var(--blue);color:var(--blue)}
+  /* Date inputs are styled to sit with the selects rather than inheriting the
+     browser default, which is a different height and breaks the toolbar line. */
+  .dash-bw input[type=date]{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink);font-variant-numeric:tabular-nums}
+  .dash-bw input[type=date]:focus{outline:none;border-color:var(--blue)}
+  .dash-bw .empty{padding:26px 14px;text-align:center;color:var(--mut);font-size:13px;
+    background:#F7FAFD;border:1px dashed var(--line);border-radius:9px}
   /* horizontal ranked bars, reused by several drill panels */
   .dash-bw .lbar{display:grid;grid-template-columns:200px 1fr 74px;gap:12px;align-items:center;margin-bottom:7px}
   .dash-bw .lbar .ll{font-size:12.5px;font-weight:600}
@@ -374,6 +398,33 @@
   .dash-pj .pf{background:#F7FAFD;border:1px solid var(--line);border-radius:9px;padding:10px 13px}
   .dash-pj .pf .k{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
   .dash-pj .pf .v{font-size:13.5px;font-weight:600;margin-top:4px}
+  /* The project tables carry the client's own column names, which run long,
+     so the same treatment as the Bank-wide overview table: wider columns,
+     wrapping headers, bottom aligned, and the table scrolls in its panel. */
+  .dash-pj .dtab.wide{--dc:minmax(220px,1.7fr) repeat(4,minmax(122px,1fr));min-width:900px}
+  .dash-pj .dtab.wide .dhead{align-items:end}
+  .dash-pj .dtab.wide .dhead div{white-space:normal;line-height:1.35}
+  .dash-pj .drow.go{cursor:pointer}
+  .dash-pj .drow.go .lk{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+  .dash-pj .drow.go:hover{background:#F7FBFF}
+  .dash-pj .drow.go.on{background:#EAF3FB}
+  .dash-pj .drow.go:focus-visible{outline:2px solid var(--blue);outline-offset:-2px;border-radius:6px}
+  .dash-pj .resetbtn{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;
+    color:var(--ink2);border-radius:8px;padding:6px 12px;cursor:pointer}
+  .dash-pj .resetbtn:hover{border-color:var(--blue);color:var(--blue)}
+  /* The KPI grid, matching Department Insights, which their tile note points at
+     as the template to follow. */
+  .dash-pj .kpi .lab{min-height:2.4em}
+  /* Comparison bars, documents against records declared, one pair per site. */
+  .dash-pj .cmp{display:grid;grid-template-columns:180px 1fr;gap:12px;align-items:center;margin-bottom:9px}
+  .dash-pj .cmp .cl{font-size:12.5px;font-weight:600}
+  .dash-pj .cmp .cl small{display:block;font-weight:400;color:var(--mut);font-size:11px}
+  .dash-pj .cbars{display:flex;flex-direction:column;gap:4px}
+  .dash-pj .cbar{height:17px;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;
+    padding:0 7px;color:#fff;font-size:10.5px;font-weight:700;min-width:34px}
+  .dash-pj .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--ink2)}
+  .dash-pj .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  @media(max-width:700px){.dash-pj .cmp{grid-template-columns:120px 1fr}}
   /* ranked bars, used by the file plan term usage panel */
   .dash-fp .lbar{display:grid;grid-template-columns:230px 1fr 74px;gap:12px;align-items:center;margin-bottom:7px}
   .dash-fp .lbar .ll{font-size:12.5px;font-weight:600}
@@ -441,6 +492,27 @@ const F=n=>Number(Math.round(n)).toLocaleString();
 function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
 
 const DASHBOARDS={};
+
+/* Cross dashboard navigation, added 16 Aug 2026.
+
+   The client's Bank-wide table asks for each department, office or resident
+   mission name to open that unit's own dashboard, and for the two project rows
+   to open Project Insights. A dashboard cannot call switchTo() and then reach
+   into another module's closure to set its selection, so the target exposes an
+   optional focus(arg) instead and this helper calls it before mounting.
+
+   Order matters. focus() runs first so the target's init() draws the requested
+   selection on its first pass, rather than drawing a default and then visibly
+   redrawing. switchTo() is defined in app.js, which runs last, so this is a
+   function declaration rather than a const: it only has to exist by the time a
+   reader clicks something. */
+function openDashboard(key,arg){
+  const d=DASHBOARDS[key];
+  if(!d)return;
+  if(arg!==undefined&&typeof d.focus==="function")d.focus(arg);
+  switchTo(key);
+  window.scrollTo(0,0);
+}
 
 
 /* =================================================================
@@ -580,7 +652,58 @@ const CHART=(function(){
     return `<div class="tmwrap"><svg viewBox="0 0 ${W} ${y}" width="100%" preserveAspectRatio="xMidYMin meet" style="display:block;min-width:520px">${svg}</svg></div>`;
   }
 
-  return {donut,hbars,columns,stacked,treemap,C,PALETTE};
+  /* Area chart with a plotted line and point markers, added 16 Aug 2026 for
+     the client's Record Declaration Trend on their slide of the same name.
+     Power BI equivalent: Area chart. Their drawing is a rising cumulative
+     curve with a shaded fill, a left axis with four gridlines and a marker on
+     every month, which is what this reproduces.
+
+     It carries its own axis rather than borrowing the column chart's, because
+     a cumulative series is read off the axis and a column chart here prints
+     the value on each bar instead. */
+  function area(items,opts){
+    const o=opts||{}, W=920, H=o.height||230;
+    const padL=54, padR=14, padT=14, padB=30;
+    const iw=W-padL-padR, ih=H-padT-padB;
+    const mx=Math.max(...items.map(i=>i.value),1);
+    /* Round the axis top up to a clean step so the gridline labels read as
+       round numbers rather than as the maximum plus three arbitrary fractions. */
+    const pow=Math.pow(10,Math.floor(Math.log10(mx)));
+    const top=Math.ceil(mx/(pow/2))*(pow/2);
+    const n=items.length;
+    const X=i=>padL+(n===1?iw/2:iw*i/(n-1));
+    const Y=v=>padT+ih-ih*v/top;
+    const short=v=>v>=1000?(v/1000)+"k":String(v);
+
+    let grid="";
+    for(let g=0;g<=4;g++){
+      const v=top*g/4, y=Y(v);
+      grid+=`<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}"
+        stroke="#E7EEF5" stroke-width="1"/>
+        <text x="${padL-9}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="10"
+          fill="var(--mut)" style="font-variant-numeric:tabular-nums">${short(v)}</text>`;
+    }
+    const pts=items.map((i,k)=>`${X(k).toFixed(1)},${Y(i.value).toFixed(1)}`).join(" ");
+    const fill=`${padL},${(padT+ih).toFixed(1)} ${pts} ${X(n-1).toFixed(1)},${(padT+ih).toFixed(1)}`;
+    const colour=o.color||C.deep;
+    const marks=items.map((i,k)=>
+      `<circle cx="${X(k).toFixed(1)}" cy="${Y(i.value).toFixed(1)}" r="3.4" fill="${colour}">
+        <title>${i.label}: ${F(i.value)}</title></circle>`).join("");
+    const labs=items.map((i,k)=>
+      `<text x="${X(k).toFixed(1)}" y="${(H-9).toFixed(1)}" text-anchor="middle" font-size="10.5"
+        fill="var(--mut)">${i.short||i.label}</text>`).join("");
+
+    return `<div class="areawrap"><svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}"
+      preserveAspectRatio="none" style="display:block;min-width:520px">
+      ${grid}
+      <polygon points="${fill}" fill="${colour}" fill-opacity="0.14"/>
+      <polyline points="${pts}" fill="none" stroke="${colour}" stroke-width="2"
+        stroke-linejoin="round" stroke-linecap="round"/>
+      ${marks}${labs}
+    </svg></div>`;
+  }
+
+  return {donut,hbars,columns,stacked,treemap,area,C,PALETTE};
 })();
 
 
@@ -643,6 +766,21 @@ const DATA=(function(){
   const MONTH_LABELS=["Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"];
   DEPTS.forEach((d,i)=>{d.mrec=monthly(d.rec,d.code.length+i+1);});
   const MONTH_VALUES=MONTH_LABELS.map((m,i)=>DEPTS.reduce((a,d)=>a+d.mrec[i],0));
+
+  /* The same twelve months as ISO first-of-month dates, so a date range filter
+     has something to compare against. A month is in range when its first day
+     falls on or after the from date and on or before the to date, which is the
+     coarsest honest reading: the declaration date exists per record in the
+     database, but this prototype carries monthly totals, so the range snaps to
+     whole months rather than pretending to a day level cut it cannot make. */
+  const MONTH_KEYS=["2025-08-01","2025-09-01","2025-10-01","2025-11-01","2025-12-01",
+                    "2026-01-01","2026-02-01","2026-03-01","2026-04-01","2026-05-01",
+                    "2026-06-01","2026-07-01"];
+  const MONTH_FULL=["Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026",
+                    "Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"];
+  const RANGE_FROM=MONTH_KEYS[0], RANGE_TO="2026-07-31";
+  console.assert(MONTH_KEYS.length===MONTH_LABELS.length&&MONTH_FULL.length===MONTH_LABELS.length,
+    "Every month in the declaration series must carry a label, a full label and a date key");
 
   /* Records declared by year, and the current month against its average. Both
      read Records.CreatedDate, which is populated today, so neither waits on
@@ -770,7 +908,7 @@ const DATA=(function(){
     "Dormant libraries must be a subset of the libraries that are not active");
 
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
-    MONTH_LABELS,MONTH_VALUES,
+    MONTH_LABELS,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,LIB_GROWTH,
     FORMATS,TOTAL_FILES,TOTAL_GB,
@@ -848,8 +986,8 @@ DASHBOARDS.bw=(function(){
      They are kept visible because the client asked for the split three times
      (PPT s4, s15, s34) and hiding it would misrepresent the design. */
   const PROJECTS=[
-    {code:"Sovereign projects",     sites:112, docs:186000, rec:2140, phys:305, due:44, users:640},
-    {code:"Nonsovereign projects",  sites:68,  docs:74000,  rec:915,  phys:120, due:19, users:280},
+    {code:"Sovereign projects",    fac:"Sovereign",    sites:112, docs:186000, rec:2140, phys:305, due:44, users:640},
+    {code:"Nonsovereign projects", fac:"Nonsovereign", sites:68,  docs:74000,  rec:915,  phys:120, due:19, users:280},
   ];
   const PROJ_SITES=PROJECTS.reduce((a,p)=>a+p.sites,0);
 
@@ -913,34 +1051,29 @@ DASHBOARDS.bw=(function(){
   console.assert(DEPTS.every(d=>divisionsFor(d.code).reduce((a,v)=>a+v.users,0)===d.users),
     "Division users must total the department they belong to");
 
-  /* ===== site visits by month, per department =====
-     The site activity table holds a visit count per site per snapshot, and a
-     department owner on the same row, so the series can be cut by department
-     exactly the way the declaration trend is. Each month is split across the
-     departments by their share of sites, so a department series always adds
-     back up to the bank-wide one.
+  /* ===== the cumulative declaration series =====
+     The client's Record Declaration Trend slide draws a rising curve, not a
+     bar per month. That is a running total of records declared to date, so it
+     is derived here from the monthly series rather than held as a second set
+     of figures that could drift from it.
 
-     The arithmetic rule that governs this: a range sums the 7 day visit
-     figure and never the 30, 90 or 180 day ones. Consecutive 7 day windows
-     tile exactly, longer ones overlap and would count most days several times
-     over. Getting it wrong produces a plausible wrong number, not an error. */
-  const VISITS_BY_DEPT={};
-  DATA.SITE_VISITS_MONTHLY.forEach((total,m)=>{
-    const parts=split(total,DEPTS.map(d=>d.sites));
-    DEPTS.forEach((d,i)=>{
-      (VISITS_BY_DEPT[d.code]=VISITS_BY_DEPT[d.code]||[])[m]=parts[i];
-    });
-  });
-  console.assert(DATA.SITE_VISITS_MONTHLY.every((t,m)=>
-    DEPTS.reduce((a,d)=>a+VISITS_BY_DEPT[d.code][m],0)===t),
-    "Departmental site visits must total the bank-wide figure in every month");
+     Note what this does to the reconciliation. A per month series SUMS to the
+     declared total. A cumulative one does not: its LAST POINT equals the
+     total. Both are asserted, because getting this wrong produces a chart that
+     looks entirely reasonable and is wrong by a factor of six. */
+  const CUMULATIVE=DATA.MONTH_VALUES.reduce((acc,v)=>{
+    acc.push((acc.length?acc[acc.length-1]:0)+v); return acc;
+  },[]);
+  console.assert(CUMULATIVE[CUMULATIVE.length-1]===TOTAL_REC,
+    "The cumulative declaration trend must end at the declared record count");
+  console.assert(CUMULATIVE.every((v,i)=>i===0||v>=CUMULATIVE[i-1]),
+    "A cumulative series can never fall");
 
   /* ===== state ===== */
   let openKpi="users";          /* which drill table is showing */
   let sortDept="rec", dirDept="desc";
   let cmpMode="docsrec";
-  let trendDept="all";
-  let visitDept="all", visitMonths=12;
+  let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
   let expanded={};              /* which department rows have their divisions open */
 
   /* ===== top panel, PPT s15 and s34 ===== */
@@ -1109,10 +1242,24 @@ DASHBOARDS.bw=(function(){
     });
   }
 
-  /* ===== overview of EDRMS sites, PPT s16 and s35 ===== */
-  const DCOLS=[{k:"code",lab:"Department / Office / RM"},{k:"sites",lab:"Sites",num:1},
-               {k:"docs",lab:"Documents",num:1},{k:"rec",lab:"Records declared",num:1},
-               {k:"phys",lab:"Physical counterparts",num:1},{k:"due",lab:"Due for disposal",num:1}];
+  /* ===== overview of EDRMS sites, PPT s16 and s35 =====
+     The column headings are the client's own words from their table, kept
+     verbatim rather than shortened. They are long, so the header cells wrap
+     and bottom align, and the table scrolls sideways inside its panel rather
+     than squeezing the words into one character columns. The first column is
+     the alphabetical list of departments, offices and resident missions their
+     drawing calls for.
+
+     Their note asks for each name to be clickable, opening that unit's own
+     dashboard, and for the two project rows to open Project Insights. Both
+     are wired, which is why the row carries a role and a keyboard handler as
+     well as a click: a thing that navigates has to be reachable without a
+     mouse. */
+  const DCOLS=[{k:"code",lab:"Department / office / RM"},
+               {k:"sites",lab:"Number of EDRMS SharePoint sites",num:1},
+               {k:"docs", lab:"Total number of documents",num:1},
+               {k:"rec",  lab:"Total number of records declared",num:1},
+               {k:"phys", lab:"Total number of physical counterparts",num:1}];
 
   function drawDeptTable(){
     const rows=[...DEPTS].sort((a,b)=>{
@@ -1122,26 +1269,34 @@ DASHBOARDS.bw=(function(){
     let h=`<div class="dhead">`+DCOLS.map(c=>
       `<div class="hd${c.num?" num":""}${sortDept===c.k?" on":""}" data-s="${c.k}">${c.lab}${
         sortDept===c.k?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")+`</div>`;
-    h+=rows.map(d=>`<div class="drow">
-        <div class="dn">${d.code}<small>${d.name}</small></div>
+    h+=rows.map(d=>`<div class="drow go" data-dept="${d.code}" role="link" tabindex="0"
+          title="Open Department Insights for ${d.code}">
+        <div class="dn"><span class="lk">${d.code}</span><small>${d.name}</small></div>
         <div class="num">${F(d.sites)}</div><div class="num">${F(d.docs)}</div>
-        <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div>
-        <div class="num">${F(d.due)}</div></div>`).join("");
-    h+=PROJECTS.map(p=>`<div class="drow grp">
-        <div class="dn">${p.code}<small>Across all ${F(p.sites)} project sites</small></div>
+        <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("");
+    h+=PROJECTS.map(p=>`<div class="drow grp go" data-fac="${p.fac}" role="link" tabindex="0"
+          title="Open Project Insights for ${p.code}">
+        <div class="dn"><span class="lk">${p.code}</span><small>Across all ${F(p.sites)} project sites</small></div>
         <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
-        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div>
-        <div class="num">${F(p.due)}</div></div>`).join("");
+        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("");
     const t=(f)=>DEPTS.reduce((a,d)=>a+d[f],0)+PROJECTS.reduce((a,p)=>a+p[f],0);
     h+=`<div class="dtot"><div>Total</div><div class="num">${F(t("sites"))}</div>
         <div class="num">${F(t("docs"))}</div><div class="num">${F(t("rec"))}</div>
-        <div class="num">${F(t("phys"))}</div><div class="num">${F(t("due"))}</div></div>`;
+        <div class="num">${F(t("phys"))}</div></div>`;
     document.getElementById("bw-depts").innerHTML=h;
     document.querySelectorAll("#bw-depts .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortDept===k)dirDept=dirDept==="asc"?"desc":"asc";
       else{sortDept=k;dirDept=k==="code"?"asc":"desc";}
       drawDeptTable();
+    });
+    document.querySelectorAll("#bw-depts .drow.go").forEach(el=>{
+      const go=()=>{
+        if(el.dataset.dept)openDashboard("dp",el.dataset.dept);
+        else openDashboard("pj",el.dataset.fac);
+      };
+      el.onclick=go;
+      el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
     });
   }
 
@@ -1171,84 +1326,65 @@ DASHBOARDS.bw=(function(){
       </div>`).join("");
   }
 
-  /* ===== declaration trend, PPT s10 and s18 ===== */
+  /* ===== Records Declaration Trend, the client's slide of that name =====
+     A cumulative curve over a date range, across every EDRMS compliant site.
+     No department filter: the client's drawing has a date range and nothing
+     else, and the departmental cut is already the whole of the drill table
+     above and the comparison panel.
+
+     The range snaps to whole months, because that is the grain this prototype
+     holds. Rather than let a reader pick 8 to 15 January and be answered with
+     an invented number, the inputs are month bounded and the summary line says
+     which months are actually being shown. The underlying declaration date is
+     per record in the database, so a day level cut is producible later; it is
+     the prototype's monthly totals that cannot honour one today.
+
+     The curve restarts at zero for the chosen window. It is the running total
+     of what was declared within the range, not the estate's all time total
+     offset upward, which would make every window look identical in shape and
+     differ only in its starting height. */
+  function monthsInRange(){
+    return DATA.MONTH_KEYS.map((k,i)=>({k,i})).filter(m=>m.k>=trendFrom&&m.k<=trendTo);
+  }
+
   function drawTrend(){
-    const share=trendDept==="all"?1:DEPTS.find(d=>d.code===trendDept).rec/TOTAL_REC;
-    const vals=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
-    const mx=Math.max(...vals);
-    document.getElementById("bw-trend").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
-      <div class="tcol"><div class="tval">${F(vals[i])}</div>
-        <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
-        <div class="tlab">${m}</div></div>`).join("");
-    document.getElementById("bw-trend-sum").textContent=
-      trendDept==="all"?"All departments":trendDept;
-  }
+    const inRange=monthsInRange();
+    const wrap=document.getElementById("bw-trend");
+    const sum=document.getElementById("bw-trend-sum");
 
-  function drawFormats(){
-    const mxf=Math.max(...FMT.map(f=>f.files));
-    document.getElementById("bw-formats").innerHTML=
-      `<div class="dhead"><div>Format group</div><div class="num">Files</div>
-        <div class="num">Share of files</div><div class="num">Storage</div>
-        <div class="num">Average file size</div></div>`+
-      [...FMT].sort((a,b)=>b.files-a.files).map(f=>
-        `<div class="drow"><div class="dn">${f.label}</div>
-          <div class="num">${F(f.files)}</div>
-          <div class="num">${(f.files/DATA.TOTAL_FILES*100).toFixed(1)}%</div>
-          <div class="num">${f.gb.toFixed(1)} GB</div>
-          <div class="num">${f.avg.toFixed(1)} MB</div></div>`).join("")+
-      `<div class="dtot"><div>Total</div><div class="num">${F(DATA.TOTAL_FILES)}</div>
-        <div class="num">100.0%</div><div class="num">${DATA.TOTAL_GB.toFixed(1)} GB</div>
-        <div class="num">${(DATA.TOTAL_GB*1024/DATA.TOTAL_FILES).toFixed(1)} MB</div></div>`;
-  }
+    if(!inRange.length){
+      wrap.innerHTML=`<div class="empty">No closed month falls inside this range.
+        The series runs from ${DATA.MONTH_FULL[0]} to ${DATA.MONTH_FULL[DATA.MONTH_FULL.length-1]}.</div>`;
+      sum.textContent="Nothing to show for the selected range.";
+      document.getElementById("bw-trend-tiles").innerHTML="";
+      return;
+    }
 
-  function drawVisits(){
-    const series=visitDept==="all"?DATA.SITE_VISITS_MONTHLY:VISITS_BY_DEPT[visitDept];
-    const from=DATA.MONTH_LABELS.length-visitMonths;
-    const labels=DATA.MONTH_LABELS.slice(from), vals=series.slice(from);
-    document.getElementById("bw-visits").innerHTML=CHART.columns(
-      labels.map((m,i)=>({label:m,value:vals[i]})),{height:190,color:"var(--teal)"});
-    document.getElementById("bw-visits-sum").textContent=
-      (visitDept==="all"?"All departments":visitDept)+", last "+visitMonths+" months";
-  }
+    let run=0;
+    const pts=inRange.map(m=>{
+      run+=DATA.MONTH_VALUES[m.i];
+      return {label:DATA.MONTH_FULL[m.i],short:DATA.MONTH_LABELS[m.i],value:run};
+    });
+    wrap.innerHTML=CHART.area(pts,{height:240});
 
-  function drawYears(){
-    document.getElementById("bw-years").innerHTML=CHART.columns(
-      DATA.YEARS.map((y,i)=>({label:y.label,value:y.value,
-        color:i===DATA.YEARS.length-1?"var(--teal)":"var(--blue)"})),{height:170});
-  }
+    const first=DATA.MONTH_FULL[inRange[0].i];
+    const last=DATA.MONTH_FULL[inRange[inRange.length-1].i];
+    sum.textContent=inRange.length===1
+      ? "Showing "+first+", one closed month."
+      : "Showing "+first+" to "+last+", "+inRange.length+" closed months.";
 
-  function drawFormatDonuts(){
-    const files=FMT.map(f=>({label:f.label,value:f.files}));
-    const gb=FMT.map(f=>({label:f.label,value:f.gb}));
-    document.getElementById("bw-fmt-files").innerHTML=
-      CHART.donut(files,{centreValue:F(DATA.TOTAL_FILES),centreLabel:"files"});
-    document.getElementById("bw-fmt-gb").innerHTML=
-      CHART.donut(gb,{centreValue:DATA.TOTAL_GB.toFixed(0)+" GB",centreLabel:"storage"});
-  }
-
-  function drawRetSplit(){
-    document.getElementById("bw-retsplit").innerHTML=CHART.stacked([
-      {label:"Temporary retention, falls due",value:DATA.LABEL_TOTAL-DATA.PERMANENT,color:"var(--blue)"},
-      {label:"Permanent retention, never due",value:DATA.PERMANENT,color:"var(--greyblue)"},
-    ],{caption:F(DATA.LABEL_TOTAL)+" declared records, by whether they will ever fall due"});
-  }
-
-  function drawSiteHealth(){
-    document.getElementById("bw-sitehealth").innerHTML=CHART.stacked([
-      {label:"Active",value:DATA.SITES_CREATED-DATA.SITES_INACTIVE,color:"var(--green)"},
-      {label:"Inactive over "+IDLE_DAYS+" days",value:DATA.SITES_INACTIVE,color:"var(--orange)"},
-    ],{caption:F(DATA.SITES_CREATED)+" compliant sites"});
-  }
-
-  let libRank="rec";
-  function drawLibRank(){
-    const key=l=>libRank==="rate"?l.rec/l.docs*100:l[libRank];
-    const rows=[...DATA.TOP_LIBRARIES].sort((a,b)=>key(b)-key(a));
-    const show=l=>libRank==="gb"?l.gb.toFixed(1)+" GB"
-               :libRank==="rate"?(l.rec/l.docs*100).toFixed(2)+"%":F(l.rec);
-    const colour=libRank==="gb"?"var(--deepblue)":libRank==="rate"?"var(--green)":"var(--blue)";
-    document.getElementById("bw-libs").innerHTML=CHART.hbars(
-      rows.map(l=>({label:l.lib,sub:l.site+", "+l.dept,value:key(l),display:show(l),color:colour})));
+    /* Records declared this month is kept as a tile even though the client's
+       drawing of this panel carries none. It is a metrics document requirement
+       in its own right and it had no other home on the page once the by-year
+       panel came off, so dropping it here would have quietly lost a
+       requirement rather than removed a panel. */
+    const total=run;
+    document.getElementById("bw-trend-tiles").innerHTML=[
+      ["Records declared in range",F(total)],
+      ["Monthly average in range",F(Math.round(total/inRange.length))],
+      ["Records declared this month",F(DATA.DECLARED_THIS_MONTH)],
+      ["Closed months shown",F(inRange.length)],
+    ].map(([l,v])=>`<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("");
   }
 
 
@@ -1263,30 +1399,25 @@ DASHBOARDS.bw=(function(){
         <div class="lp">${(s.count/DATA.SENSITIVITY_TOTAL*100).toFixed(1)}%</div></div>`).join("");
   }
 
-  /* ===== retention rollup, PPT s44 ===== */
-  /* ===== absorbed from the dashboards the redesign removes =====
-     The client's deck drops Format and Storage as a dashboard (PPT s12, "there
-     is no new information derived from this except the total size and storage
-     growth, perhaps this could be amalgamated somewhere") but their proposed
-     metrics document still asks for the eight format groups under Format and
-     Storage Analysis. So it is amalgamated here as a panel rather than kept as
-     a screen or dropped entirely.
+  /* ===== what came off on 16 August 2026, by client instruction =====
+     Ten panels were absorbed onto Bank-wide on 13 August, when five dashboards
+     were deleted and their content was moved here rather than dropped. The
+     client has now looked at the result and asked for them off, so Bank-wide
+     returns to the compact screen they designed: the top tiles and their drill,
+     the Overview of EDRMS sites table, the comparison, the declaration trend,
+     and the records quality and classification panels.
 
-     The same applies to site and library health, which the metrics document
-     lists under Risk and Compliance, inside Bankwide oversight. */
-  const FMT=DATA.FORMATS.map(f=>({...f, avg:f.files?f.gb*1024/f.files:0}));
-  const FMT_TOP_FILES=[...FMT].sort((a,b)=>b.files-a.files)[0];
-  const FMT_TOP_GB=[...FMT].sort((a,b)=>b.gb-a.gb)[0];
-  console.assert(DATA.TOTAL_FILES===TOTAL_REC,
-    "Format groups must decompose the declared record total exactly");
+     Removed here: records declared by year, the retention and disposal rollup
+     with its permanent and temporary split, the Supporting detail band, site
+     visits by month, format and storage with the declared records by format
+     group panel, the Risk and compliance band, site health and library health.
 
-  const RETROWS=[
-    {lab:"Permanent retention", depts:11, libs:64, rec:DATA.PERMANENT, phys:Math.round(DATA.PERMANENT*0.21), due:0},
-    {lab:"Temporary retention", depts:16, libs:203, rec:DATA.LABEL_TOTAL-DATA.PERMANENT,
-     phys:TOTAL_PHYS-Math.round(DATA.PERMANENT*0.21), due:TOTAL_DUE},
-  ];
-  console.assert(RETROWS.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
-    "Permanent plus temporary must total every labelled record");
+     The figures behind them are untouched in DATA, and Retention and Disposal
+     still reads PERMANENT and LABEL_TOTAL, so nothing was lost, only unshown.
+     check_data.js asserts these headings are absent, in the same way it asserts
+     the retained ones are present, because a later edit that quietly restores
+     one would put a panel in front of the committee that the client has
+     explicitly asked not to see. */
 
   const html=`<section class="dash-bw">
     <div class="band">
@@ -1302,15 +1433,15 @@ DASHBOARDS.bw=(function(){
       <div class="bd">Every department, office and resident mission, with what it holds.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Sites, documents, records and counterparts by department</div>
-      <div class="psub">Sized by records declared. Click a column heading in the table to re-sort.</div>
+      <div class="ptitle">Number of active EDRMS SharePoint sites for department, office and resident mission</div>
+      <div class="psub">Click a name to open its own dashboard. Click a column heading to re-sort.</div>
       <div class="tiles">
         <div class="tile"><div class="tl">Sites created, last ${IDLE_DAYS} days</div><div class="tv">${F(SITES_CREATED_90)}</div></div>
-        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(SITES_INACTIVE)}</div></div>
         <div class="tile"><div class="tl">Sites deleted</div><div class="tv">${F(12)}</div></div>
         <div class="tile"><div class="tl">Sites archived</div><div class="tv">${F(31)}</div></div>
+        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(SITES_INACTIVE)}</div></div>
       </div>
-      <div class="scrollx"><div class="dtab" id="bw-depts"></div></div>
+      <div class="scrollx"><div class="dtab wide" id="bw-depts"></div></div>
     </div>
 
     <div class="band">
@@ -1333,140 +1464,22 @@ DASHBOARDS.bw=(function(){
     </div>
 
     <div class="band">
-      <h2>Bank-wide record declaration trend</h2>
-      <div class="bd">Records declared over the last twelve closed months, bank-wide or for one department.</div>
+      <h2>Records Declaration Trend</h2>
+      <div class="bd">Records declared over time, as a running total, for a date range you choose.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="psub">Records declared each month, for all departments or one.</div>
+      <div class="ptitle">Records Declaration Trend</div>
+      <div class="psub">Records declared across all EDRMS compliant sites.</div>
       <div class="toolbar">
-        <span class="lbl">Show</span>
-        <select id="bw-trend-sel"></select>
+        <span class="lbl">Date range</span>
+        <input type="date" id="bw-trend-from" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}" value="${DATA.RANGE_FROM}">
+        <span class="lbl">to</span>
+        <input type="date" id="bw-trend-to" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}" value="${DATA.RANGE_TO}">
         <button class="resetbtn" id="bw-trend-reset">Reset</button>
       </div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Records declared this month</div><div class="tv">${F(DATA.DECLARED_THIS_MONTH)}</div></div>
-        <div class="tile"><div class="tl">Monthly average, last 12 months</div><div class="tv">${F(DATA.MONTH_AVERAGE)}</div></div>
-        <div class="tile"><div class="tl">Declared, last 12 months</div><div class="tv">${F(TOTAL_REC)}</div></div>
-      </div>
-      <div class="trend" id="bw-trend"></div>
+      <div class="tiles" id="bw-trend-tiles"></div>
+      <div id="bw-trend"></div>
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records declared by year</div>
-      <div class="psub">Records declared in each of the last three years, and in the last twelve months.</div>
-      <div id="bw-years"></div>
-    </div>
-
-    <div class="band">
-      <h2>Retention and disposal rollup</h2>
-      <div class="bd">Permanent and temporary retention as a share of the declared holding.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Permanent and temporary retention</div>
-      <div class="psub">Permanent and temporary retention as a share of the declared holding.</div>
-      <div id="bw-retsplit" style="margin-bottom:16px"></div>
-      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(6,1fr)">
-        <div class="dhead"><div>Retention</div><div class="num">Departments</div><div class="num">Libraries</div>
-          <div class="num">Records declared</div><div class="num">Counterparts</div>
-          <div class="num">Due for disposal</div><div class="num">Disposed</div></div>
-        ${RETROWS.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
-          <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
-          <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
-          <div class="num">${F(r.due)}</div><div class="num">${F(Math.round(r.rec*0.11))}</div></div>`).join("")}
-        <div class="dtot"><div>Total</div>
-          <div class="num">${F(DEPTS.length)}</div>
-          <div class="num">${F(RETROWS.reduce((a,r)=>a+r.libs,0))}</div>
-          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
-          <div class="num">${F(TOTAL_PHYS)}</div>
-          <div class="num">${F(TOTAL_DUE)}</div>
-          <div class="num">${F(Math.round(TOTAL_DUE*0.42))}</div></div>
-      </div></div>
-    </div>
-
-    <div class="band">
-      <h2>Supporting detail</h2>
-      <div class="bd">Estate activity, storage, site and library health, and record quality. These sit below the eight key figures and their drill-downs.</div>
-    </div>
-
-    <div class="band">
-      <h2>Site activity trend</h2>
-      <div class="bd">Site visits each month, across the estate or for one department.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Site visits by month</div>
-      <div class="psub">Choose a department and a period.</div>
-      <div class="toolbar">
-        <span class="lbl">Department</span>
-        <select id="bw-visit-dept"></select>
-        <span class="lbl">Period</span>
-        <select id="bw-visit-months">
-          <option value="12">Last 12 months</option>
-          <option value="6">Last 6 months</option>
-          <option value="3">Last 3 months</option>
-        </select>
-        <button class="resetbtn" id="bw-visit-reset">Reset</button>
-      </div>
-      <div id="bw-visits"></div>
-      <div class="psub" style="margin-top:12px" id="bw-visits-sum"></div>
-    </div>
-
-
-    <div class="band">
-      <h2>Format and storage</h2>
-      <div class="bd">What the declared records are held in, and which formats consume the storage.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Declared records by format group</div>
-      <div class="psub">Share of files held and share of storage consumed, by format group.</div>
-      <div class="crow" style="margin-bottom:16px">
-        <div class="chart"><div class="ctitle">Share of files held</div><div id="bw-fmt-files"></div></div>
-        <div class="chart"><div class="ctitle">Share of storage consumed</div><div id="bw-fmt-gb"></div></div>
-      </div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Storage consumed</div><div class="tv">${DATA.TOTAL_GB.toFixed(1)} GB</div></div>
-        <div class="tile hi"><div class="tl">Most common format</div><div class="tv">${FMT_TOP_FILES.label}</div></div>
-        <div class="tile"><div class="tl">Largest by storage</div><div class="tv">${FMT_TOP_GB.label}</div></div>
-        <div class="tile"><div class="tl">Files held</div><div class="tv">${F(DATA.TOTAL_FILES)}</div></div>
-      </div>
-      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(4,1fr)" id="bw-formats"></div></div>
-    </div>
-
-    <div class="band">
-      <h2>Risk and compliance</h2>
-      <div class="bd">Which sites and libraries are healthy, and which need attention.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Site health</div>
-      <div class="psub">Active, inactive and unowned sites across the estate.</div>
-      <div id="bw-sitehealth" style="margin-bottom:16px"></div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Compliant sites</div><div class="tv">${F(DATA.SITES_CREATED)}</div></div>
-        <div class="tile"><div class="tl">Active sites</div><div class="tv">${F(DATA.SITES_CREATED-DATA.SITES_INACTIVE)}</div></div>
-        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(DATA.SITES_INACTIVE)}</div></div>
-        <div class="tile"><div class="tl">Orphaned, no owner</div><div class="tv">19</div></div>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Library health</div>
-      <div class="psub">Library counts, activity, growth and the largest libraries.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Libraries across sites</div><div class="tv">${F(DATA.SITE_LIBRARIES)}</div></div>
-        <div class="tile"><div class="tl">Active, last ${DATA.LIB_IDLE} days</div><div class="tv">${F(DATA.LIBS_ACTIVE)}</div></div>
-        <div class="tile hi"><div class="tl">With no declared records</div><div class="tv">${F(DATA.LIBS_NO_RECORDS)}</div></div>
-        <div class="tile"><div class="tl">Library growth rate</div><div class="tv">${(DATA.LIB_GROWTH*100).toFixed(1)}%</div></div>
-        <div class="tile"><div class="tl">Dormant over ${DATA.LIB_DORMANT} days</div><div class="tv">${F(DATA.LIBS_DORMANT_180)}</div></div>
-      </div>
-      <div class="psub" style="margin-top:6px">Ranked by record volume, storage consumed or declaration rate. Each library is shown with its parent site.</div>
-      <div class="toolbar">
-        <span class="lbl">Rank libraries by</span>
-        <select id="bw-librank">
-          <option value="rec">Record volume</option>
-          <option value="gb">Storage consumed</option>
-          <option value="rate">Declaration rate</option>
-        </select>
-      </div>
-      <div id="bw-libs"></div>
     </div>
 
     <div class="band">
@@ -1502,32 +1515,30 @@ DASHBOARDS.bw=(function(){
     drawDrill();
     drawDeptTable();
     drawCmp();
-    drawFormats();
-    drawYears();
-    drawVisits();
-    drawFormatDonuts();
-    drawRetSplit();
-    drawSiteHealth();
-    drawLibRank();
     drawSensitivity();
-    document.getElementById("bw-librank").onchange=e=>{libRank=e.target.value;drawLibRank();};
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
-    const sel=document.getElementById("bw-trend-sel");
-    sel.innerHTML=`<option value="all">All departments</option>`+
-      DEPTS.map(d=>`<option value="${d.code}">${d.code} - ${d.name}</option>`).join("");
-    sel.onchange=e=>{trendDept=e.target.value;drawTrend();};
+
+    /* The two date inputs clamp each other, so a reader cannot set a from date
+       later than the to date and be shown an empty chart with no explanation
+       of why. Whichever they moved is respected and the other follows. */
+    const from=document.getElementById("bw-trend-from");
+    const to=document.getElementById("bw-trend-to");
+    from.onchange=()=>{
+      trendFrom=from.value||DATA.RANGE_FROM;
+      if(trendFrom>trendTo){trendTo=trendFrom;to.value=trendTo;}
+      drawTrend();
+    };
+    to.onchange=()=>{
+      trendTo=to.value||DATA.RANGE_TO;
+      if(trendTo<trendFrom){trendFrom=trendTo;from.value=trendFrom;}
+      drawTrend();
+    };
     document.getElementById("bw-trend-reset").onclick=()=>{
-      trendDept="all";sel.value="all";drawTrend();
+      trendFrom=DATA.RANGE_FROM; trendTo=DATA.RANGE_TO;
+      from.value=trendFrom; to.value=trendTo;
+      drawTrend();
     };
-    const vd=document.getElementById("bw-visit-dept");
-    const vm=document.getElementById("bw-visit-months");
-    vd.innerHTML=`<option value="all">All departments</option>`+
-      DEPTS.map(d=>`<option value="${d.code}">${d.code} - ${d.name}</option>`).join("");
-    vd.onchange=e=>{visitDept=e.target.value;drawVisits();};
-    vm.onchange=e=>{visitMonths=+e.target.value;drawVisits();};
-    document.getElementById("bw-visit-reset").onclick=()=>{
-      visitDept="all";visitMonths=12;vd.value="all";vm.value="12";drawVisits();
-    };
+    from.value=trendFrom; to.value=trendTo;
     drawTrend();
   }
 
@@ -2036,6 +2047,11 @@ DASHBOARDS.dp=(function(){
       categories:CATS.length,
       programmeDates:PROGRAMME.length
     },
+    /* Called by openDashboard() before this dashboard mounts, so arriving from
+       a department name on Bank-wide lands on that department rather than on
+       the default one. An unknown code is ignored rather than blanking the
+       screen. */
+    focus(code){ if(DEPTS.some(d=>d.code===code)){dept=code;sitePage=1;libPage=1;drillOpen={};} },
     html,init
   };
 })();
@@ -2045,23 +2061,33 @@ DASHBOARDS.dp=(function(){
    project.js
    ================================================================= */
 /* ===================================================================
-   Project Insights. PPT s36, s37 and s38.
+   Project Insights. Rebuilt 16 Aug 2026 to the client's own slides.
 
-   The cleanest single ask in the client's deck, and the one that hinges
-   entirely on one missing thing: nothing anywhere classifies a site as a
-   project site, let alone as sovereign or nonsovereign. Every figure on
-   PPT s38 is one this report can already produce. It is purely the
-   classification that is absent, so the whole dashboard is marked.
+   Three of their drawings govern this screen. Two are the sovereign and
+   nonsovereign tables, keyed on project number and project name, with
+   four measures whose column names are used here verbatim. The third is
+   Project Insights slide 1: a project name header, an eight field
+   profile grid, seven clickable top panel tiles, and three charts, a
+   users pie, the record declaration trend and a documents against
+   records comparison read site by site.
 
-   If AvePoint Cloud Governance captures a project number when a site is
-   requested, this becomes one CSV load and the dashboard is real. That is
-   worth checking before telling the client it cannot be done.
+   Their note on the tiles says "Clickable top panel stats to show data;
+   see Departmental Insights for template", so the tiles open a drill
+   table beneath them exactly as Department Insights does.
+
+   What has not changed is the blocker. Nothing anywhere classifies a
+   site as a project site, let alone maps it to a project number, and
+   their slide 1 adds a second missing source: facility type, modality,
+   country, status, effectivity and closing dates all live in an ADB
+   project system that has never been named in this work. The figures
+   here are illustrative and the checker workbook records that.
    =================================================================== */
 DASHBOARDS.pj=(function(){
   const BW=DASHBOARDS.bw.summary;
 
-  /* The three examples are the client's own, taken from PPT s36 and s37 so the
-     format question they raised there has something concrete attached to it. */
+  /* The six examples are the client's own, taken from their sovereign and
+     nonsovereign tables so the format question they raised there has
+     something concrete attached to it. */
   const PROJECTS=[
     {no:"57318-001", name:"Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project",
      facility:"Sovereign", modality:"Grant", modNo:"0923", country:"Vanuatu", status:"Closed",
@@ -2089,58 +2115,244 @@ DASHBOARDS.pj=(function(){
      sites:2, users:19, visitors:7, docs:3640, rec:2810, phys:36, due:1},
   ];
 
+  /* ===== sites within a project =====
+     The comparison chart on their slide 1 is read site by site, so a project
+     needs its sites broken out. Every measure is split from the project total
+     and the remainder lands on the first site, so the site rows always add
+     back up to the project. A declaration rate that varies between sites is
+     the whole point of the chart: their drawing shows 100 percent, 60 percent
+     and 20 percent side by side. */
+  function split(total,weights){
+    const s=weights.reduce((a,b)=>a+b,0);
+    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
+    out[0]+=total-out.reduce((a,b)=>a+b,0);
+    if(out[0]<0)out[0]=0;
+    return out;
+  }
+  /* Fixed weights, so a site keeps the same shape between draws. The declared
+     weights deliberately differ from the document weights, which is what makes
+     one site declare nearly everything and another very little. */
+  const DOC_W=[5,4,3,3,2], REC_W=[5,2,4,1,3];
+  const SITES={};
+  PROJECTS.forEach(p=>{
+    const n=p.sites;
+    const docs=split(p.docs,DOC_W.slice(0,n));
+    const rec=split(p.rec,REC_W.slice(0,n));
+    const phys=split(p.phys,REC_W.slice(0,n));
+    const users=split(p.users,DOC_W.slice(0,n));
+    const vis=split(p.visitors,DOC_W.slice(0,n));
+    SITES[p.no]=docs.map((d,i)=>({
+      name:p.no+" site "+(i+1),
+      docs:d,
+      /* A site can never declare more than it holds. Without this clamp the
+         two independent splits can cross and print a rate above 100 percent,
+         which is the kind of plausible wrong number that survives review. */
+      rec:Math.min(d,rec[i]),
+      phys:Math.min(d,phys[i]), users:users[i], visitors:vis[i]
+    }));
+    /* Whatever the clamp took off the declared total is returned to the first
+       site that has room, so the site rows still sum to the project. */
+    let short=p.rec-SITES[p.no].reduce((a,s)=>a+s.rec,0);
+    for(const s of SITES[p.no]){ if(short<=0)break;
+      const room=s.docs-s.rec; const add=Math.min(room,short); s.rec+=add; short-=add; }
+  });
+  PROJECTS.forEach(p=>{
+    const s=SITES[p.no];
+    console.assert(s.reduce((a,x)=>a+x.docs,0)===p.docs,
+      "Site documents must total the project document count, "+p.no);
+    console.assert(s.reduce((a,x)=>a+x.rec,0)===p.rec,
+      "Site declarations must total the project declared count, "+p.no);
+    console.assert(s.every(x=>x.rec<=x.docs),
+      "A site can never declare more records than it holds documents, "+p.no);
+  });
+
+  /* The user mix is the client's own split from their pie: staff three
+     quarters, consultants a sixth, contractors the rest. */
+  const MIX=[{k:"Staff",w:0.75,c:"var(--blue)"},
+             {k:"Consultants",w:0.17,c:"var(--green)"},
+             {k:"Contractors",w:0.08,c:"var(--teal)"}];
+  function mixFor(p){
+    const parts=split(p.users,MIX.map(m=>Math.round(m.w*1000)));
+    return MIX.map((m,i)=>({label:m.k,value:parts[i],color:m.c}));
+  }
+
   let facility="Sovereign";
   let selected=PROJECTS[0].no;
+  let openKpi="sites";
 
   const inScope=()=>PROJECTS.filter(p=>p.facility===facility);
   const P=()=>PROJECTS.find(p=>p.no===selected);
   const sum=(list,k)=>list.reduce((a,p)=>a+p[k],0);
+  const PCT=(a,b)=>b?(a/b*100):0;
+
+  /* ===== the sovereign and nonsovereign tables =====
+     Column names are the client's, word for word. A row opens that project in
+     the profile panel below, which is what their clickable note asks for. */
+  const PCOLS=["Project number and name","Number of EDRMS SharePoint sites",
+               "Total number of documents","Total number of records declared",
+               "Total number of physical counterparts"];
 
   function drawList(){
     const rows=inScope();
     document.getElementById("pj-list").innerHTML=
-      `<div class="dhead"><div>Project number and name</div><div class="num">Sites</div>
-        <div class="num">Documents</div><div class="num">Records declared</div>
-        <div class="num">Counterparts</div><div class="num">Due for disposal</div></div>`+
-      rows.map(p=>`<div class="drow"><div class="dn">${p.no}<small>${p.name}</small></div>
+      `<div class="dhead">`+PCOLS.map((c,i)=>
+        `<div class="${i?"num":""}">${c}</div>`).join("")+`</div>`+
+      rows.map(p=>`<div class="drow go${p.no===selected?" on":""}" data-no="${p.no}"
+          role="link" tabindex="0" title="Open the profile for ${p.no}">
+        <div class="dn"><span class="lk">${p.no}</span><small>${p.name}</small></div>
         <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
-        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div>
-        <div class="num">${F(p.due)}</div></div>`).join("")+
-      `<div class="dtot"><div>${facility} total, ${rows.length} projects</div>
+        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("")+
+      `<div class="dtot"><div>${facility} projects, total</div>
         <div class="num">${F(sum(rows,"sites"))}</div><div class="num">${F(sum(rows,"docs"))}</div>
-        <div class="num">${F(sum(rows,"rec"))}</div><div class="num">${F(sum(rows,"phys"))}</div>
-        <div class="num">${F(sum(rows,"due"))}</div></div>`;
+        <div class="num">${F(sum(rows,"rec"))}</div><div class="num">${F(sum(rows,"phys"))}</div></div>`;
+
+    document.querySelectorAll("#pj-list .drow.go").forEach(el=>{
+      const go=()=>{ selected=el.dataset.no; drawList(); drawProfile(); };
+      el.onclick=go;
+      el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
+    });
   }
 
-  function drawBars(){
-    const rows=inScope();
-    document.getElementById("pj-bars").innerHTML=CHART.hbars(
-      [...rows].sort((a,b)=>b.rec-a.rec).map(p=>({label:p.no,sub:p.country+", "+p.modality,value:p.rec})));
+  /* ===== the seven top panel tiles, and the drill behind each =====
+     Labels are the client's own wording from their slide. All seven are
+     clickable, because on their drawing all seven are underlined, so every
+     one carries the tap chevron and its own handler. */
+  const TILES=[
+    {k:"sites",   lab:"Total number of sites created",                  val:p=>F(p.sites)},
+    {k:"users",   lab:"Total number of EDRMS users",                    val:p=>F(p.users)},
+    {k:"visitors",lab:"Total number of site visitors",                  val:p=>F(p.visitors)},
+    {k:"docs",    lab:"Total number of documents in EDRMS",             val:p=>F(p.docs)},
+    {k:"rec",     lab:"Total number of records declared in EDRMS",      val:p=>F(p.rec)},
+    {k:"phys",    lab:"Total number of physical counterparts identified",val:p=>F(p.phys)},
+    {k:"due",     lab:"Total number of records due for disposal",       val:p=>F(p.due)},
+  ];
+
+  const DRILL={
+    sites:{title:"Sites created for this project",
+      cols:["Site","Documents","Records declared","Counterparts","Declaration rate"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.docs),F(s.rec),F(s.phys),
+        PCT(s.rec,s.docs).toFixed(1)+"%"])},
+    users:{title:"EDRMS users on this project",
+      cols:["Site","Users","Staff","Consultants","Contractors"],
+      rows:p=>SITES[p.no].map(s=>{
+        const st=Math.round(s.users*0.75), cs=Math.round(s.users*0.17);
+        return [s.name,F(s.users),F(st),F(cs),F(Math.max(0,s.users-st-cs))];})},
+    visitors:{title:"Site visitors on this project",
+      cols:["Site","Visitors","Users","Visitors per user","Documents"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.visitors),F(s.users),
+        (s.visitors/Math.max(1,s.users)).toFixed(2),F(s.docs)])},
+    docs:{title:"Documents held on this project",
+      cols:["Site","Documents","Share of project","Records declared","Not declared"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.docs),PCT(s.docs,p.docs).toFixed(1)+"%",
+        F(s.rec),F(s.docs-s.rec)])},
+    rec:{title:"Records declared on this project",
+      cols:["Site","Records declared","Share of project","Documents","Declaration rate"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.rec),PCT(s.rec,p.rec).toFixed(1)+"%",
+        F(s.docs),PCT(s.rec,s.docs).toFixed(1)+"%"])},
+    phys:{title:"Physical counterparts identified on this project",
+      cols:["Site","Counterparts","Records declared","Share with a counterpart","Documents"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.phys),F(s.rec),
+        PCT(s.phys,s.rec).toFixed(1)+"%",F(s.docs)])},
+    due:{title:"Records due for disposal on this project",
+      cols:["Site","Records due","Records declared","Share due","Counterparts"],
+      rows:p=>{
+        const parts=split(p.due,SITES[p.no].map(s=>s.rec));
+        return SITES[p.no].map((s,i)=>[s.name,F(parts[i]),F(s.rec),
+          PCT(parts[i],s.rec).toFixed(2)+"%",F(s.phys)]);}},
+  };
+
+  function drawTiles(){
+    const p=P();
+    document.getElementById("pj-kpis").innerHTML=
+      `<div class="kpigrp act">
+         <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${TILES.map(t=>
+           `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
+              <div class="val">${t.val(p)}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+       </div>`;
+  }
+
+  /* Per card, updating the rail in place rather than rebuilding the grid, for
+     the same reason as the other dashboards: rebuilding destroys the node
+     being clicked part way through the event and the selection is lost. */
+  function wireTiles(){
+    document.querySelectorAll("#pj-kpis .kpi[data-k]").forEach(card=>{
+      card.onclick=()=>{
+        openKpi=card.dataset.k;
+        document.querySelectorAll("#pj-kpis .kpi[data-k]").forEach(el=>
+          el.classList.toggle("on",el.dataset.k===openKpi));
+        drawDrill();
+      };
+    });
+  }
+
+  function drawDrill(){
+    const p=P(), d=DRILL[openKpi], rows=d.rows(p);
+    document.getElementById("pj-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">Every site carrying this project, and what it holds.</div>
+       <div class="scrollx"><div class="dtab" style="--dc:190px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${rows.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>`;
   }
 
   function drawProfile(){
     const p=P();
+    document.getElementById("pj-pname").textContent=p.name;
     document.getElementById("pj-profile").innerHTML=[
-      ["Facility type",p.facility],["Project number",p.no],["Modality",p.modality],
-      ["Modality number",p.modNo],["Country or economy",p.country],["Project status",p.status],
+      ["Facility type",p.facility],["Project number",p.no],
+      ["Project type, modality of assistance",p.modality],["Modality number",p.modNo],
+      ["Country or economy",p.country],["Project status",p.status],
       ["Effectivity date",p.effective],["Closing date, actual",p.closing],
     ].map(([k,v])=>`<div class="pf"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
-    document.getElementById("pj-pname").textContent=p.name;
-    document.getElementById("pj-kpis").innerHTML=[
-      ["Sites Created",F(p.sites)],["EDRMS Users",F(p.users)],["Site Visitors",F(p.visitors)],
-      ["Documents in EDRMS",F(p.docs)],["Records Declared",F(p.rec)],
-      ["Physical Counterparts",F(p.phys)],["Records Due for Disposal",F(p.due)],
-      ["Declaration Rate",(p.rec/p.docs*100).toFixed(1)+"%"],
-    ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
-      <div class="sub">Across the project</div></div>`).join("");
-    document.getElementById("pj-donut").innerHTML=CHART.donut([
-      {label:"Declared as records",value:p.rec,color:"var(--teal)"},
-      {label:"Not declared",value:p.docs-p.rec,color:"var(--greyblue)"},
-    ],{centreValue:(p.rec/p.docs*100).toFixed(1)+"%",centreLabel:"declaration rate",size:150});
-    document.getElementById("pj-phys").innerHTML=CHART.donut([
-      {label:"With a physical counterpart",value:p.phys,color:"var(--deepblue)"},
-      {label:"Digital only",value:p.rec-p.phys,color:"var(--greyblue)"},
-    ],{centreValue:F(p.phys),centreLabel:"counterparts",size:150});
+    drawTiles(); wireTiles(); drawDrill();
+    drawMix(); drawTrend(); drawCompare();
+  }
+
+  /* ===== the three charts on their slide 1 ===== */
+  function drawMix(){
+    const p=P(), parts=mixFor(p);
+    document.getElementById("pj-mix").innerHTML=CHART.donut(parts,
+      {centreValue:F(p.users),centreLabel:"users",size:170});
+  }
+
+  /* Cumulative, matching the Records Declaration Trend on Bank-wide and the
+     curve the client drew on this slide. The project's monthly shape is the
+     bank-wide one scaled to its own declared total, so the last point of the
+     curve is the project's declared count and not an unrelated number. */
+  function drawTrend(){
+    const p=P();
+    const share=p.rec/DATA.MONTH_VALUES.reduce((a,v)=>a+v,0);
+    const monthly=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
+    monthly[monthly.length-1]+=p.rec-monthly.reduce((a,v)=>a+v,0);
+    let run=0;
+    const pts=DATA.MONTH_VALUES.map((v,i)=>{
+      run+=monthly[i];
+      return {label:DATA.MONTH_FULL[i],short:DATA.MONTH_LABELS[i],value:run};
+    });
+    console.assert(pts[pts.length-1].value===p.rec,
+      "The project declaration curve must end at the project declared count");
+    document.getElementById("pj-trend").innerHTML=CHART.area(pts,{height:200});
+  }
+
+  /* Documents against records declared, site by site, with the declaration
+     rate alongside. Their drawing puts the rate on a second axis; two bars
+     and a printed percentage says the same thing without a dual axis, which
+     Power BI supports but reads badly at this width. */
+  function drawCompare(){
+    const p=P(), sites=SITES[p.no];
+    const mx=Math.max(...sites.map(s=>s.docs),1);
+    document.getElementById("pj-cmp").innerHTML=sites.map(s=>`
+      <div class="cmp">
+        <div class="cl">${s.name}<small>${PCT(s.rec,s.docs).toFixed(1)}% declared</small></div>
+        <div class="cbars">
+          <div class="cbar" style="width:${Math.max(4,100*s.docs/mx)}%;background:var(--orange)">${F(s.docs)}</div>
+          <div class="cbar" style="width:${Math.max(4,100*s.rec/mx)}%;background:var(--green)">${F(s.rec)}</div>
+        </div>
+      </div>`).join("");
   }
 
   const html=`<section class="dash-pj">
@@ -2149,23 +2361,22 @@ DASHBOARDS.pj=(function(){
       <div class="bd">How project sites are being used and maintained.</div>
     </div>
 
-
     <div class="band">
       <h2>Projects</h2>
-      <div class="bd">Sovereign and nonsovereign projects, keyed by project number.</div>
+      <div class="bd">Sovereign and nonsovereign projects, keyed by project number and project name.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Project sites, documents and records</div>
-      <div class="psub">Switch between the two facility types below.</div>
+      <div class="ptitle">Total number of active EDRMS SharePoint sites by project</div>
+      <div class="psub">Click a project to open its profile below.</div>
       <div class="toolbar">
         <span class="lbl">Facility type</span>
         <select id="pj-fac">
           <option value="Sovereign">Sovereign projects</option>
           <option value="Nonsovereign">Nonsovereign projects</option>
         </select>
+        <button class="resetbtn" id="pj-reset">Reset</button>
       </div>
-      <div id="pj-bars" style="margin-bottom:18px"></div>
-      <div class="scrollx"><div class="dtab" id="pj-list"></div></div>
+      <div class="scrollx"><div class="dtab wide" id="pj-list"></div></div>
     </div>
 
     <div class="band">
@@ -2180,14 +2391,22 @@ DASHBOARDS.pj=(function(){
         <select id="pj-sel"></select>
       </div>
       <div class="profile" id="pj-profile"></div>
-      <div class="kpigrp">
-        <div class="gh"><b>At a glance</b><span>every figure here is producible today</span></div>
-        <div class="kpis" id="pj-kpis"></div>
+      <div id="pj-kpis"></div>
+    </div>
+    <div class="panel" id="pj-drill"></div>
+    <div class="panel">
+      <div class="ptitle">Users, declaration trend and documents against records</div>
+      <div class="psub">The user mix, records declared over time, and how each site compares.</div>
+      <div class="crow">
+        <div class="chart"><div class="ctitle">Number of users</div><div id="pj-mix"></div></div>
+        <div class="chart"><div class="ctitle">Record declaration trend</div><div id="pj-trend"></div></div>
       </div>
-      <div class="crow" style="margin-top:6px">
-        <div class="chart"><div class="ctitle">Declared against everything held</div><div id="pj-donut"></div></div>
-        <div class="chart"><div class="ctitle">Physical counterparts</div><div id="pj-phys"></div></div>
+      <div class="ctitle" style="margin-top:18px">Comparison: documents against records declared</div>
+      <div class="legend">
+        <span><i style="background:var(--orange)"></i>Number of documents</span>
+        <span><i style="background:var(--green)"></i>Number of records declared</span>
       </div>
+      <div id="pj-cmp"></div>
     </div>
   </section>`;
 
@@ -2198,9 +2417,26 @@ DASHBOARDS.pj=(function(){
       sel.innerHTML=PROJECTS.map(p=>
         `<option value="${p.no}" ${p.no===selected?"selected":""}>${p.no} - ${p.country}</option>`).join("");
     }
-    fac.onchange=e=>{facility=e.target.value;drawList();drawBars();};
-    sel.onchange=e=>{selected=e.target.value;drawProfile();};
-    fillSel();drawList();drawProfile();drawBars();
+    /* Switching facility type moves the selected project into the list being
+       shown, so the table and the profile below it never disagree about which
+       project the reader is looking at. */
+    fac.onchange=e=>{
+      facility=e.target.value;
+      if(!inScope().some(p=>p.no===selected))selected=inScope()[0].no;
+      fillSel(); drawList(); drawProfile();
+    };
+    sel.onchange=e=>{
+      selected=e.target.value;
+      const p=P();
+      if(p.facility!==facility){facility=p.facility;fac.value=facility;}
+      drawList(); drawProfile();
+    };
+    document.getElementById("pj-reset").onclick=()=>{
+      facility="Sovereign"; selected=inScope()[0].no; openKpi="sites";
+      fac.value=facility; fillSel(); drawList(); drawProfile();
+    };
+    fac.value=facility;
+    fillSel(); drawList(); drawProfile();
   }
 
   return {
@@ -2210,6 +2446,13 @@ DASHBOARDS.pj=(function(){
     summary:{projects:PROJECTS.length,
       sovereign:PROJECTS.filter(p=>p.facility==="Sovereign").length,
       nonsovereign:PROJECTS.filter(p=>p.facility==="Nonsovereign").length},
+    /* Called by openDashboard() when a reader clicks the sovereign or
+       nonsovereign row on Bank-wide, so they land on that facility type. */
+    focus(fac){
+      if(fac!=="Sovereign"&&fac!=="Nonsovereign")return;
+      facility=fac;
+      if(!inScope().some(p=>p.no===selected))selected=inScope()[0].no;
+    },
     html,init
   };
 })();
