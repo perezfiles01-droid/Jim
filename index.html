@@ -250,15 +250,7 @@
   .dash-bw input[type=date]:focus{outline:none;border-color:var(--blue)}
   .dash-bw .empty{padding:26px 14px;text-align:center;color:var(--mut);font-size:13px;
     background:#F7FAFD;border:1px dashed var(--line);border-radius:9px}
-  /* horizontal ranked bars, reused by several drill panels */
-  .dash-bw .lbar{display:grid;grid-template-columns:200px 1fr 74px;gap:12px;align-items:center;margin-bottom:7px}
-  .dash-bw .lbar .ll{font-size:12.5px;font-weight:600}
-  .dash-bw .lbar .ll small{display:block;font-weight:400;color:var(--mut);font-size:11px}
-  .dash-bw .lbar .lt{background:#F3F7FB;border-radius:5px;height:23px;overflow:hidden}
-  .dash-bw .lbar .lf{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;
-    padding:0 8px;color:#fff;font-size:11px;font-weight:700;min-width:40px}
-  .dash-bw .lbar .lp{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
-  @media(max-width:700px){.dash-bw .lbar{grid-template-columns:130px 1fr 62px}.dash-bw .cmp{grid-template-columns:120px 1fr}}
+  @media(max-width:700px){.dash-bw .cmp{grid-template-columns:120px 1fr}}
 
 /* ================= department.css ================= */
 /* Department Insights: scoped styles. Everything under .dash-dp.
@@ -1388,17 +1380,6 @@ DASHBOARDS.bw=(function(){
   }
 
 
-  function drawSensitivity(){
-    const mx=Math.max(...DATA.SENSITIVITY.map(s=>s.count));
-    const colour=s=>s.label==="Restricted"?"var(--orange)"
-                  :s.label==="Confidential"?"var(--deepblue)"
-                  :s.label==="No sensitivity label"?"var(--mut)":"var(--blue)";
-    document.getElementById("bw-sens").innerHTML=DATA.SENSITIVITY.map(s=>
-      `<div class="lbar"><div class="ll">${s.label}</div>
-        <div class="lt"><div class="lf" style="width:${Math.max(6,100*s.count/mx)}%;background:${colour(s)}">${F(s.count)}</div></div>
-        <div class="lp">${(s.count/DATA.SENSITIVITY_TOTAL*100).toFixed(1)}%</div></div>`).join("");
-  }
-
   /* ===== what came off on 16 August 2026, by client instruction =====
      Ten panels were absorbed onto Bank-wide on 13 August, when five dashboards
      were deleted and their content was moved here rather than dropped. The
@@ -1482,31 +1463,6 @@ DASHBOARDS.bw=(function(){
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
     </div>
 
-    <div class="band">
-      <h2>Records quality and classification</h2>
-      <div class="bd">Duplicates, classification, access and search.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records quality</div>
-      <div class="psub">Declared records sharing a filename, and records whose parent site or library no longer resolves.</div>
-      <div class="tiles">
-        <div class="tile hi"><div class="tl">Duplicated records</div><div class="tv">${F(DATA.DUPLICATE_RECORDS)}</div></div>
-        <div class="tile"><div class="tl">Share of declared records</div><div class="tv">${(DATA.DUPLICATE_RECORDS/TOTAL_REC*100).toFixed(1)}%</div></div>
-        <div class="tile"><div class="tl">Orphaned records</div><div class="tv">${F(DATA.ORPHANED_RECORDS)}</div></div>
-        <div class="tile"><div class="tl">Records checked</div><div class="tv">${F(TOTAL_REC)}</div></div>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Information classification</div>
-      <div class="psub">Declared records by sensitivity label, and how many carry no label at all.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">With a sensitivity label</div><div class="tv">${F(DATA.SENSITIVITY_TOTAL-DATA.UNLABELLED)}</div></div>
-        <div class="tile hi"><div class="tl">Without a sensitivity label</div><div class="tv">${F(DATA.UNLABELLED)}</div></div>
-        <div class="tile"><div class="tl">Confidential records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Confidential").count)}</div></div>
-        <div class="tile"><div class="tl">Restricted records</div><div class="tv">${F(DATA.SENSITIVITY.find(s=>s.label==="Restricted").count)}</div></div>
-      </div>
-      <div id="bw-sens"></div>
-    </div>
   </section>`;
 
   function init(){
@@ -1515,7 +1471,6 @@ DASHBOARDS.bw=(function(){
     drawDrill();
     drawDeptTable();
     drawCmp();
-    drawSensitivity();
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
 
     /* The two date inputs clamp each other, so a reader cannot set a from date

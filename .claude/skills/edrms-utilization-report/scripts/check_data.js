@@ -90,7 +90,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(d.LIBS_ACTIVE<=d.SITE_LIBRARIES,"active libraries cannot exceed the libraries that exist");
   eq(d.IDLE_DAYS,90,"the site inactivity threshold is 90 days, the deck's figure");
 
-  console.log("\nWhat the client removed on 16 August stays removed");
+  console.log("\nWhat the client removed on 16 and 17 August stays removed");
   await page.evaluate(()=>switchTo("bw"));
   const body=await page.$eval(".dash-bw",e=>e.textContent.replace(/\s+/g," "));
   /* Ten panels were absorbed onto Bank-wide on 13 Aug when five dashboards
@@ -109,15 +109,25 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Risk and compliance",             /risk and compliance/i],
     ["Site health",                     /site health/i],
     ["Library health",                  /library health/i],
+    /* Removed 17 Aug on the same instruction, one step further: these two
+       panels traced to no slide in the deck at all. They came from the
+       proposed metrics document, which is a word list with no screen drawn.
+       They were sourceable, which is why the 14 Aug rule had kept them, so
+       this is the client overriding that rule rather than applying it. */
+    ["Records quality",                 /records quality/i],
+    ["Information classification",      /information classification/i],
+    ["Duplicated records",              /duplicated records/i],
+    ["Orphaned records",                /orphaned records/i],
+    ["Sensitivity labels",              /sensitivity label/i],
   ];
   const restored=cutPanels.filter(([,re_])=>re_.test(body));
   ok(restored.length===0,
-     `the ten panels removed on 16 Aug stay off Bank-wide${
+     `every panel the client removed stays off Bank-wide${
        restored.length?": back on screen "+restored.map(m=>m[0]).join(", "):` (${cutPanels.length} checked)`}`);
   /* What the client kept, so the cut cannot quietly overshoot. */
-  ok(/Records quality/.test(body),"records quality survives, it was not in the cut");
-  ok(/Information classification/.test(body),"information classification survives, it was not in the cut");
   ok(/Comparison/.test(body),"the comparison panel survives, it is on their own slide");
+  ok(/Overview of EDRMS sites/.test(body),"the overview table survives, PPT s16 and s35");
+  ok(/Records Declaration Trend/.test(body),"the declaration trend survives, PPT s10 and s18");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
      still ask for. Fourteen items were found missing on 13 Aug 2026 by walking
@@ -140,11 +150,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   const required=[
     ["Records declared this month",     "Records Declaration",     /declared this month/i],
     ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
-    ["Duplicated records",              "Records Quality",         /duplicated records/i],
-    ["Orphaned records",                "Records Quality",         /orphaned records/i],
-    ["Records with sensitivity labels", "Information Classification",/sensitivity label/i],
-    ["Restricted records",              "Access Management",       /restricted records/i],
-    ["Confidential records",            "Access Management",       /confidential records/i],
     ["Records declared by classification","Records Declaration",   /by classification/i],
     ["Records declared by business process","Records Declaration", /business process/i],
     ["Physical records overdue for transfer","Risk and Compliance",/overdue for transfer/i],
@@ -180,9 +185,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nWhat survived the cut still works");
   await page.evaluate(()=>switchTo("bw"));
-  const sens=await page.$$eval(".dash-bw #bw-sens .lbar",els=>els.length);
-  eq(sens,d.SENSITIVITY.length,"every sensitivity state is drawn");
-
   /* The Records Declaration Trend, rebuilt 16 Aug to the client's own slide:
      a cumulative curve over a date range, no department filter.
 

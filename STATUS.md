@@ -175,6 +175,38 @@ closing dates, come from an **ADB project system that has never been named in
 this work**. Even with the register, the top third of that screen stays empty
 without it. Both are now questions 2 and 7 in `CLIENT_SLIDES_2026-08-16.md`.
 
+### The 17 August follow-up: everything undrawn comes off
+
+Asked which Bank-wide elements trace to a slide, two did not: **Records quality**
+(duplicated and orphaned records) and **Information classification** (sensitivity
+labels, confidential and restricted counts). Both came from the proposed metrics
+document, which is a word list with no screen drawn. The client asked for them
+off, and they are off.
+
+**This overrides the 14 August rule, it does not apply it.** That rule said a
+panel comes off only if it is undrawn **and** unsourceable. Both of these are
+buildable today: duplicates are a self join on `T1 c4 Title`, and
+`T1 c34 SensitivityLabelName` is in the design. So the standard for Bank-wide is
+now stricter than for the rest of the suite: **on this dashboard, undrawn is
+enough.** Whether that standard should spread to the other five is not decided.
+
+**Five metrics document requirements now have no home anywhere on the page:**
+duplicated records, orphaned records, records with sensitivity labels, restricted
+records, confidential records. They moved in `check_data.js` from the list
+asserted present to the list asserted absent, so the loss is recorded rather than
+silent, and any of them can be restored in one edit.
+
+**Every band left on Bank-wide traces to a slide:** the top panel and its five
+drills (`s15`, `s34`, `s39` to `s43`), Overview of EDRMS sites (`s16`, `s35`,
+sortable per `s5`), Comparison (`s6`, `s17`), and Records Declaration Trend
+(`s10`, `s18`, redrawn to the 16 August image).
+
+**One caveat on all slide numbers in this file.** The deck itself,
+`EDRMS_Dashboard_requirements_1.pptx`, is **not in the repo**. Every slide
+reference traces to `REQUIREMENTS_2026-08-13.md`, which was built by walking the
+deck on 13 August. The twelve images of 16 August are a separate, unnumbered set
+and cannot be cited by slide.
+
 **One defect was found by reading the slides, and it is still open.** Bank-wide's
 physical counterpart drill prints "Turned over to RAC" as 58 percent of the
 counterpart count. Nothing sources it, and by the 13 August rule an unsourceable
