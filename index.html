@@ -380,6 +380,26 @@
     background:#EAF3FB;border-color:#CFE0F3}
   .dash-pj .tile .tl,.dash-fp .tile .tl,.dash-rd .tile .tl,.dash-ra .tile .tl{
     font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
+  /* A cell whose measure has no source prints what is true rather than a
+     plausible number. Same convention as Bank-wide. */
+  .dash-pj .nosrc,.dash-fp .nosrc,.dash-rd .nosrc,.dash-ra .nosrc{
+    color:var(--mut);font-weight:400;font-style:italic;font-size:12px}
+  .dash-ra .kpi .val .nosrc{font-size:15px}
+  /* The notice panel, and the list of measures a slide asks for that cannot be
+     drawn without inventing them. */
+  .dash-ra .panel.notice{background:#F5F8FC;border-color:#CFE0F3}
+  .dash-ra .asks{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .dash-ra .asks .ah{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--mut);margin-bottom:8px}
+  .dash-ra .asks ul{margin:0;padding-left:20px}
+  .dash-ra .asks li{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
+  /* The italic "Not captured" overhangs a right aligned cell by a pixel or two,
+     which clipped the last column against the panel edge. The trailing gap
+     gives it room without moving the columns. */
+  .dash-ra .dtab.wide{--dc:minmax(150px,1.2fr) repeat(6,minmax(110px,1fr));min-width:900px;
+    padding-right:6px}
+  .dash-ra .dtab.wide .dhead{align-items:end}
+  .dash-ra .dtab.wide .dhead div{white-space:normal;line-height:1.35}
   .dash-pj .tile .tv,.dash-fp .tile .tv,.dash-rd .tile .tv,.dash-ra .tile .tv{
     font-size:19px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
   .dash-pj .toolbar,.dash-fp .toolbar,.dash-rd .toolbar,.dash-ra .toolbar{
@@ -3020,31 +3040,69 @@ DASHBOARDS.rd=(function(){
 /* ===================================================================
    Records and Archive Holdings. PPT s33, s67, s68 and s69.
 
-   The client's own slide s33 says "RAC suggestions?", so this screen is
-   unfinished on their side too. Nothing on it can be sourced: physical
-   boxes, folders, storage rooms, transfers and retrievals exist in no
-   system this report reads, and s67 says retrievals are processed in
-   eServe, which is a separate system with no established feed.
+   Rewritten 17 Aug 2026. This screen printed invented figures: 1,840
+   boxes, 9,260 folders, 78 percent of capacity used, retrieval counts
+   per location. Not one of them had a source, and the capacity chart
+   answered a question the client had asked US, on s68: "Can room
+   capacity and % available storage capacity be included?"
 
-   It is laid out so the shape of the ask is visible and can be costed,
-   and it carries one loud notice rather than a marker on every panel,
-   because a marker repeated eight times stops being read.
+   Three facts govern what this dashboard may show:
 
-   Recommendation recorded on the page: split this into its own workstream
-   rather than letting it block the other five dashboards.
+     s33 is, in full, "RAC suggestions?". The client has not specified
+     this screen.
+     s67 is a screenshot of the IR Dashboard with "We would also like to
+     learn what is available in Opus and how we can apply the features
+     for our dashboard", and it puts retrieval in eServe.
+     s68 and s69 ARE drawn, with real column headings, so the SHAPE is a
+     requirement even though the content is not available.
+
+   So the tables are laid out with the client's own column names, and
+   every measure reads "Not captured", because no system this report can
+   reach holds a box, a folder, a storage room, a transfer or a
+   retrieval. Nothing here is taken from Opus or the IR Dashboard.
+
+   This is deliberately a specification of the ask rather than a mock of
+   an answer. A reader can see exactly what was requested and that
+   nothing fills it, which is the conversation this dashboard needs to
+   start. Audit question 17.
    =================================================================== */
 DASHBOARDS.ra=(function(){
-  const LOCATIONS=[
-    {loc:"Archives Room",  req:34, deptReq:12, rmReq:4, boxes:1840, folders:9260, cap:78},
-    {loc:"Records Center", req:61, deptReq:19, rmReq:7, boxes:3220, folders:16400, cap:64},
-    {loc:"Offsite Storage",req:18, deptReq:8,  rmReq:2, boxes:5410, folders:22800, cap:41},
+  const NS=`<span class="nosrc">Not captured</span>`;
+  const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
+
+  /* s68, storage. The client's own column names, including Remarks. */
+  const STORE_COLS=["Location","No. of requests","Total number of requestors (departments)",
+                    "Total number of requestors (RMs)","Total number of boxes stored",
+                    "Total number of folders stored","Remarks"];
+  /* s69, retrieval. Note their status vocabulary: Loan, Return to owner, For Disposal. */
+  const RETR_COLS=["Location","No. of requests","Total number of requestors (departments and RMs)",
+                   "Total number of boxes retrieved","Total number of folders retrieved",
+                   "Status","Remarks"];
+
+  const row=(loc,n)=>`<div class="drow"><div class="dn">${loc}</div>`+
+    Array.from({length:n},()=>`<div class="num">${NS}</div>`).join("")+`</div>`;
+  const table=(cols,id)=>`
+    <div class="scrollx"><div class="dtab wide" id="${id}">
+      <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+      ${LOCATIONS.map(l=>row(l,cols.length-1)).join("")}
+      <div class="dtot"><div>Total</div>${
+        Array.from({length:cols.length-1},()=>`<div class="num">${NS}</div>`).join("")}</div>
+    </div></div>`;
+
+  /* The indicators each slide asks for, listed rather than drawn, because
+     drawing them would mean inventing them a second time. */
+  const STORE_ASKS=[
+    "Number of new boxes and folders stored month on month, per department",
+    "Outstanding and pending requests, and physical records awaiting transfer",
+    "Physical counterparts identified but not transferred",
+    "Room capacity and percentage of storage capacity available",
   ];
-  const RETRIEVAL=[
-    {loc:"Archives Room",  req:22, dept:9,  boxes:64,  folders:210, status:"Loan"},
-    {loc:"Records Center", req:39, dept:14, boxes:118, folders:470, status:"Return to owner"},
-    {loc:"Offsite Storage",req:11, dept:5,  boxes:41,  folders:160, status:"For disposal"},
+  const RETR_ASKS=[
+    "Retrieval requests, and boxes and folders retrieved, month on month per department",
+    "Outstanding and pending requests",
+    "Number of boxes and folders disposed",
+    "Whether room activity updates the capacity and the storage freed up",
   ];
-  const T=(list,k)=>list.reduce((a,r)=>a+r[k],0);
 
   const html=`<section class="dash-ra">
     <div class="band">
@@ -3052,12 +3110,22 @@ DASHBOARDS.ra=(function(){
       <div class="bd">Physical holdings, transfers, storage and retrieval, managed by RAC.</div>
     </div>
 
+    <div class="panel notice">
+      <div class="ptitle">This dashboard is not yet specified</div>
+      <div class="psub">The layout below follows the two tables in the requirements. The measures are
+        shown as not captured because no system this report reads holds a box, a folder, a storage
+        room, a transfer or a retrieval. Storage and retrieval are managed outside EDRMS.</div>
+    </div>
 
     <div class="kpis">
-      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${F(T(LOCATIONS,"boxes"))}</div><div class="sub">Across all storage locations</div></div>
-      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${F(T(LOCATIONS,"folders"))}</div><div class="sub">Across all storage locations</div></div>
-      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${F(T(LOCATIONS,"req"))}</div><div class="sub">Last 12 months</div></div>
-      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${F(T(RETRIEVAL,"req"))}</div><div class="sub">Last 12 months</div></div>
+      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${NS}</div>
+        <div class="sub">Across all storage locations</div></div>
+      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${NS}</div>
+        <div class="sub">Across all storage locations</div></div>
+      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${NS}</div>
+        <div class="sub">Requests to place records into storage</div></div>
+      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${NS}</div>
+        <div class="sub">Requests to take records out of storage</div></div>
     </div>
 
     <div class="band">
@@ -3065,22 +3133,13 @@ DASHBOARDS.ra=(function(){
       <div class="bd">What is held at each storage location.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Holdings by storage location</div>
-      <div class="psub">Boxes and folders held at each location, with capacity used.</div>
-      <div class="ctitle">Capacity used by location</div>
-      <div id="ra-cap" style="margin-bottom:18px"></div>
-      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
-        <div class="dhead"><div>Location</div><div class="num">Requests</div>
-          <div class="num">Requestors, departments</div><div class="num">Requestors, RMs</div>
-          <div class="num">Boxes stored</div><div class="num">Folders stored</div></div>
-        ${LOCATIONS.map(l=>`<div class="drow"><div class="dn">${l.loc}<small>${l.cap}% of capacity used</small></div>
-          <div class="num">${F(l.req)}</div><div class="num">${F(l.deptReq)}</div>
-          <div class="num">${F(l.rmReq)}</div><div class="num">${F(l.boxes)}</div>
-          <div class="num">${F(l.folders)}</div></div>`).join("")}
-        <div class="dtot"><div>Total</div><div class="num">${F(T(LOCATIONS,"req"))}</div>
-          <div class="num">${F(T(LOCATIONS,"deptReq"))}</div><div class="num">${F(T(LOCATIONS,"rmReq"))}</div>
-          <div class="num">${F(T(LOCATIONS,"boxes"))}</div><div class="num">${F(T(LOCATIONS,"folders"))}</div></div>
-      </div></div>
+      <div class="ptitle">Records and archives holdings, storage</div>
+      <div class="psub">Requests, requestors, boxes and folders held at each location.</div>
+      ${table(STORE_COLS,"ra-store")}
+      <div class="asks">
+        <div class="ah">Also asked for on this screen</div>
+        <ul>${STORE_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
+      </div>
     </div>
 
     <div class="band">
@@ -3088,30 +3147,18 @@ DASHBOARDS.ra=(function(){
       <div class="bd">Records taken out of the holdings, by location.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Retrieval by storage location</div>
-      <div class="psub">Boxes and folders taken out of the holdings, by location.</div>
-      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(5,1fr)">
-        <div class="dhead"><div>Location</div><div class="num">Requests</div>
-          <div class="num">Requestors</div><div class="num">Boxes retrieved</div>
-          <div class="num">Folders retrieved</div><div class="num">Status</div></div>
-        ${RETRIEVAL.map(r=>`<div class="drow"><div class="dn">${r.loc}</div>
-          <div class="num">${F(r.req)}</div><div class="num">${F(r.dept)}</div>
-          <div class="num">${F(r.boxes)}</div><div class="num">${F(r.folders)}</div>
-          <div class="num">${r.status}</div></div>`).join("")}
-        <div class="dtot"><div>Total</div><div class="num">${F(T(RETRIEVAL,"req"))}</div>
-          <div class="num">${F(T(RETRIEVAL,"dept"))}</div><div class="num">${F(T(RETRIEVAL,"boxes"))}</div>
-          <div class="num">${F(T(RETRIEVAL,"folders"))}</div><div class="num"></div></div>
-      </div></div>
+      <div class="ptitle">Records and archives holdings, retrieval</div>
+      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings.
+        Status is one of loan, return to owner, or for disposal.</div>
+      ${table(RETR_COLS,"ra-retrieve")}
+      <div class="asks">
+        <div class="ah">Also asked for on this screen</div>
+        <ul>${RETR_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
+      </div>
     </div>
-
   </section>`;
 
-  function init(){
-    document.getElementById("ra-cap").innerHTML=CHART.hbars(
-      LOCATIONS.map(l=>({label:l.loc,sub:F(l.boxes)+" boxes, "+F(l.folders)+" folders",
-        value:l.cap,display:l.cap+"%",
-        color:l.cap>70?"var(--orange)":l.cap>50?"var(--blue)":"var(--teal)"})));
-  }
+  function init(){}
 
   return {
     ver:"Records and Archive Holdings Dashboard",

@@ -175,6 +175,38 @@ closing dates, come from an **ADB project system that has never been named in
 this work**. Even with the register, the top third of that screen stays empty
 without it. Both are now questions 2 and 7 in `CLIENT_SLIDES_2026-08-16.md`.
 
+### 17 August: Records and Archive Holdings stripped of invented figures
+
+**Client instruction: nothing from Opus.** Slide 67 is a screenshot of the IR
+Dashboard with "We would also like to learn what is available in Opus and how we
+can apply the features for our dashboard", and it puts retrieval in eServe. None
+of that is a source we have, and the client has confirmed nothing from Opus goes
+in.
+
+**The dashboard was worse than an Opus dependency.** It printed 1,840 boxes,
+9,260 folders, 78 percent of capacity used and retrieval counts per location,
+none of which had any source. The capacity chart was the sharpest case: s68 asks
+**us** "Can room capacity and % available storage capacity be included?", and we
+were answering their open question with an invented chart.
+
+**What it is now.** The two tables the client actually drew, s68 and s69, with
+their own column headings including Remarks and their status vocabulary (loan,
+return to owner, for disposal), and **every measure reading "Not captured"**. The
+indicators each slide asks for are listed rather than drawn, because drawing them
+means inventing them a second time. A notice at the top says the dashboard is not
+yet specified and why.
+
+**Why keep it at all.** s13 names it as one of the six key views, and s68 and s69
+are drawn with real column headings, so the **shape is a requirement even though
+the content has no source**. A reader can now see exactly what was asked for and
+that nothing fills it, which is the conversation this dashboard needs to start.
+Audit question 17.
+
+**The general rule this settles.** Where a measure has no source anywhere, the
+prototype prints "Not captured" rather than a plausible figure. Applied so far to
+Turned over to RAC (s42), the disposal approver and the three status columns
+(s43), and now the whole of Records and Archive Holdings.
+
 ### 17 August: the deck arrived, and the audit that followed
 
 **`EDRMS_Dashboard_requirements_1.pptx` is now in the repo**, 69 slides, with its
