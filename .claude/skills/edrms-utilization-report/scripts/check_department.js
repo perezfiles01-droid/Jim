@@ -35,28 +35,41 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   console.log("\nThe picker, which drives every panel");
   const opts=await page.$$eval(".dash-dp #dp-sel option",els=>els.map(e=>e.value));
   eq(opts.length,16,"every department is offered");
-  const golive=await page.$eval(".dash-dp #dp-golive",e=>e.textContent);
-  ok(/Go-live date/.test(golive),"the go-live date the client asked for on PPT s19 is shown");
+  /* s19 and s53 both put a Go-Live date at the top of this screen. It has no
+     source: Cloud Governance records when the SharePoint site was created,
+     which for a converted site is not when it became EDRMS compliant. So the
+     field is present, as the deck draws it, and says it is not captured
+     rather than showing an invented date. Audit question 4. */
+  const golive=await page.$eval(".dash-dp #dp-golive",e=>e.textContent.trim());
+  eq(golive,"Not captured","the Go-Live date is drawn but has no source, so it says so");
 
   console.log("\nTop panel, PPT s19 and s53");
   const tiles=await page.$$eval(".dash-dp #dp-kpis .kpi",els=>els.map(e=>({
     lab:e.querySelector(".lab").textContent.trim(),
     val:e.querySelector(".val").textContent.trim(),
     tap:!!e.querySelector(".tap"),stat:e.classList.contains("stat")})));
-  eq(tiles.length,8,"eight top panel tiles");
-  eq(tiles.filter(t=>t.tap).length,5,"five tiles promise a click");
-  ok(tiles.every(t=>t.tap!==t.stat),"no tile both promises and refuses a click");
+  /* s53 draws SEVEN tiles, and their note says "Clickable top panel stats to
+     show data", so all seven open a table. */
+  eq(tiles.length,7,"seven top panel tiles, one per PPT s53 stat");
+  eq(tiles.filter(t=>t.tap).length,7,"every tile promises a click, as their note asks");
+  eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
+  eq(tiles[0].lab,"Total number of sites created","the tiles carry the client's own labels");
+  eq(tiles[6].lab,"Total number of records due for disposal","and the last one too");
 
   /* The reconciliation that matters. Walk every department, not just the one
      that happens to be selected: a weighted split can be exact for a large
      department and one out for a small one. */
   console.log("\nEvery department reconciles, all 16 walked");
+  /* The site list is now the drill behind tile 1, s55, rather than a separate
+     panel further down: s20 and s55 draw the same table. */
+  await page.click('.dash-dp #dp-kpis .kpi[data-k="sites"]');
   const bad=await page.evaluate(()=>{
     const BW=DASHBOARDS.bw.summary, out=[];
     const sel=document.getElementById("dp-sel");
     for(const d of BW.departments){
       sel.value=d.code; sel.dispatchEvent(new Event("change"));
+      document.querySelector('#dp-kpis .kpi[data-k="sites"]').click();
       const rows=[...document.querySelectorAll("#dp-sites .drow")];
       /* the visible page is 10 rows, so read the department total row instead
          and compare it against Bank-wide, then check the split separately */
@@ -66,7 +79,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
       if(n(tot[3])!==d.rec) out.push(d.code+" records "+tot[3]+" vs "+d.rec);
       if(n(tot[4])!==d.phys)out.push(d.code+" counterparts "+tot[4]+" vs "+d.phys);
       if(n(tot[5])!==d.due) out.push(d.code+" due "+tot[5]+" vs "+d.due);
-      if(n(tot[1])!==d.sites)out.push(d.code+" site count "+tot[1]+" vs "+d.sites);
     }
     return out;
   });
@@ -82,6 +94,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     const sel=document.getElementById("dp-sel");
     for(const d of BW.departments.slice(0,6)){
       sel.value=d.code; sel.dispatchEvent(new Event("change"));
+      document.querySelector('#dp-kpis .kpi[data-k="sites"]').click();
       let rec=0,docs=0,seen=0,guard=0;
       while(guard++<40){
         document.querySelectorAll("#dp-sites .drow").forEach(r=>{
@@ -103,7 +116,8 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nThe five drill tables, PPT s21 to s23 and s54 to s60");
   await page.selectOption(".dash-dp #dp-sel","ITD");
-  const expect={users:"users",visitors:"visitor",docs:"documents",rec:"declaration",disp:"disposal"};
+  const expect={sites:"overview of edrms sites",users:"users",visitors:"visitor",
+                docs:"documents",rec:"declaration",phys:"physical",disp:"disposal"};
   for(const k of Object.keys(expect)){
     await settle(page,`.dash-dp #dp-kpis .kpi[data-k="${k}"]`);
     const t=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
@@ -112,10 +126,11 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     eq(open,1,`exactly one tile reads as open on ${k}`);
   }
 
-  console.log("\nSorting and paging the site list, PPT s20");
+  console.log("\nSorting and paging the site list, PPT s20 and s55");
+  await page.click('.dash-dp #dp-kpis .kpi[data-k="sites"]');
   await page.click('.dash-dp #dp-sites .hd[data-s="name"]');
-  const names=await page.$$eval(".dash-dp #dp-sites .drow .dn",els=>
-    els.map(e=>e.childNodes[0].textContent.trim()));
+  const names=await page.$$eval(".dash-dp #dp-sites .drow",els=>
+    els.map(e=>e.children[0].textContent.trim()));
   ok(names.every((v,i)=>i===0||names[i-1].localeCompare(v)<=0),"sorting by site name is alphabetical");
   await page.click('.dash-dp #dp-sites .hd[data-s="rec"]');
   const recs=await page.$$eval(".dash-dp #dp-sites .drow",els=>
@@ -127,20 +142,37 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(p1!==p2,"the pager advances a page");
   ok(/Showing 11 to/.test(p2),"page two starts at row 11, the house pattern of 10 a page");
 
-  console.log("\nLibrary usage grouped by file plan category, PPT s61 to s66");
-  const cats=await page.$$eval(".dash-dp #dp-libs .drow.cat .dn",els=>els.map(e=>e.textContent.trim()));
-  ok(cats.length>0,`libraries are grouped under category headings (${cats.length} on this page)`);
+  console.log("\nLibrary usage by file plan category, PPT s61 to s66");
+  /* Six slides with one layout, built as one screen with a category picker.
+     Number of users per library reads Not captured: Microsoft 365 publishes
+     activity per site, never per library. */
+  const libHead=await page.$$eval(".dash-dp #dp-libs .dhead div",els=>els.map(e=>e.textContent.trim()));
+  const libWant=["Library names","Number of users","Number of documents",
+                 "Number of records declared","Number of physical counterparts"];
+  ok(JSON.stringify(libHead)===JSON.stringify(libWant),
+     `the library table column names are the client's, verbatim${
+       libHead.join(" | ")!==libWant.join(" | ")?": got "+libHead.join(" | "):""}`);
+  const libRows=await page.$$eval(".dash-dp #dp-libs .drow",els=>els.length);
+  ok(libRows>0,`the first category lists its libraries (${libRows})`);
+  await page.selectOption(".dash-dp #dp-cat","Programs and Operations");
+  const po=await page.$$eval(".dash-dp #dp-libs .drow .dn small",els=>els.map(e=>e.textContent.trim()));
+  ok(po.length>0&&po.every(t=>t==="Programs and Operations"),
+     "choosing a category shows only that category's libraries");
+  const noUsers=await page.$$eval(".dash-dp #dp-libs .drow .nosrc",els=>els.length);
+  eq(noUsers,libRows>0?po.length:0,"every library says its user count is not captured");
 
   console.log("\nTrend, PPT s24");
-  const cols=await page.$$eval(".dash-dp #dp-trend .tcol",els=>els.length);
-  eq(cols,12,"the department trend shows twelve closed months");
-  await page.selectOption(".dash-dp #dp-sel","ITD");
-  const a=await page.$eval(".dash-dp #dp-trend-sum",e=>e.textContent);
-  await page.selectOption(".dash-dp #dp-sel","ERCD");
-  const b=await page.$eval(".dash-dp #dp-trend-sum",e=>e.textContent);
-  ok(/ITD/.test(a)&&/ERCD/.test(b),"the trend follows the department picker");
-  ok(!/[0-9]/.test(a)&&!/[0-9]/.test(b),
-     "the trend summary names the department only, with no computed figure");
+  /* Cumulative, matching Bank-wide and the curve the client drew. A cumulative
+     series ENDS at the total; it does not sum to it. */
+  const curve=await page.$$eval(".dash-dp #dp-trend circle title",
+    els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
+  eq(curve.length,12,"the department trend shows twelve closed months");
+  ok(curve.every((v,i)=>i===0||curve[i-1]<=v),"the trend is cumulative, so it never falls");
+  const deptRec=await page.evaluate(()=>{
+    const sel=document.getElementById("dp-sel");
+    return DASHBOARDS.bw.summary.departments.find(d=>d.code===sel.value).rec;
+  });
+  eq(curve[11],deptRec,"the curve ENDS at this department's declared record count");
 
   console.log("\nReference lists, PPT s26 and s28");
   const prog=await page.$$eval(".dash-dp .reflist .refrow",els=>els.length);

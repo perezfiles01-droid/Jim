@@ -322,6 +322,21 @@
   .dash-dp .tlab{font-size:11px;color:var(--mut)}
   .dash-dp .tval{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
 
+  /* Added 17 Aug with the rebuild to s53 to s66. */
+  .dash-dp .nosrc{color:var(--mut);font-weight:400;font-style:italic;font-size:12px}
+  .dash-dp .kpi .lab{min-height:2.4em}
+  .dash-dp .golive{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;
+    padding:9px 13px;background:#F5F8FC;border:1px solid var(--line);border-radius:9px}
+  .dash-dp .golive .gl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+  .dash-dp .dtab.wide{min-width:900px}
+  .dash-dp .dtab.wide .dhead{align-items:end}
+  .dash-dp .dtab.wide .dhead div{white-space:normal;line-height:1.35}
+  .dash-dp .asks{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .dash-dp .asks .ah{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--mut);margin-bottom:8px}
+  .dash-dp .asks ul{margin:0;padding-left:20px}
+  .dash-dp .asks li{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
+
 /* ================= stage3.css ================= */
 /* Project Insights, Institutional File Plan, Retention and Disposal, and
    Records and Archive Holdings. Stage 3 of the client redesign.
@@ -382,6 +397,16 @@
     font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
   /* A cell whose measure has no source prints what is true rather than a
      plausible number. Same convention as Bank-wide. */
+  .dash-fp .dtab.wide,.dash-rd .dtab.wide{min-width:920px}
+  .dash-fp .dtab.wide .dhead,.dash-rd .dtab.wide .dhead{align-items:end}
+  .dash-fp .dtab.wide .dhead div,.dash-rd .dtab.wide .dhead div{white-space:normal;line-height:1.35}
+  .dash-fp .dtab.wide{--dc:minmax(190px,1.4fr) repeat(6,minmax(104px,1fr))}
+  .dash-fp .panel.notice{background:#F5F8FC;border-color:#CFE0F3}
+  .dash-fp .asks{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .dash-fp .asks .ah{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--mut);margin-bottom:8px}
+  .dash-fp .asks ul{margin:0;padding-left:20px}
+  .dash-fp .asks li{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
   .dash-pj .nosrc,.dash-fp .nosrc,.dash-rd .nosrc,.dash-ra .nosrc{
     color:var(--mut);font-weight:400;font-style:italic;font-size:12px}
   .dash-ra .kpi .val .nosrc{font-size:15px}
@@ -506,6 +531,38 @@
    =================================================================== */
 const F=n=>Number(Math.round(n)).toLocaleString();
 function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
+
+
+/* Split a whole number across weights so the parts sum to it EXACTLY and none
+   is negative. Added 17 Aug 2026 to replace five near-identical copies, two of
+   which were wrong in different ways.
+
+   The old version did `Math.max(1, round(total*w/s))` and then dumped the
+   remainder on the first element. With 104 sites sharing 75 records due, the
+   forced minimum of 1 pushed the sum to 104 and the first row went to minus 29.
+   Three of the five copies then clamped that to zero, which fixed the negative
+   and silently broke the total: a department showed 103 records due against a
+   real 75, and every assert that checked the sum was reading the clamped
+   figure.
+
+   Largest remainder instead: floor every share, then hand the leftover units to
+   the rows with the largest fractional parts. Non-negative by construction, and
+   the sum is exact by construction. A row can legitimately be zero, which is
+   truthful: a site with no records due should say none, not one. */
+function splitTotal(total,weights){
+  const s=weights.reduce((a,b)=>a+b,0)||1;
+  const raw=weights.map(w=>total*w/s);
+  const out=raw.map(v=>Math.floor(v));
+  let rem=total-out.reduce((a,b)=>a+b,0);
+  const order=raw.map((v,i)=>({frac:v-Math.floor(v),i}))
+                 .sort((a,b)=>b.frac-a.frac||a.i-b.i);
+  for(let k=0;rem>0&&order.length;k++,rem--)out[order[k%order.length].i]++;
+  return out;
+}
+console.assert(splitTotal(75,new Array(104).fill(1)).reduce((a,b)=>a+b,0)===75,
+  "splitTotal must be exact when the total is smaller than the number of parts");
+console.assert(splitTotal(75,new Array(104).fill(1)).every(v=>v>=0),
+  "splitTotal must never produce a negative part");
 
 const DASHBOARDS={};
 
@@ -964,12 +1021,7 @@ DASHBOARDS.bw=(function(){
   /* Deterministic split of a total across n weighted slots. Same shape as the
      Records Management helper: the remainder lands on the first slot so the
      parts always total the whole exactly, never one out from rounding. */
-  function split(total,weights){
-    const s=weights.reduce((a,b)=>a+b,0);
-    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);
-    return out;
-  }
+  const split=splitTotal;
   const GB=v=>v>=1024?(v/1024).toFixed(2)+" TB":v.toFixed(1)+" GB";
   const PCT=(a,b)=>b?(a/b*100):0;
 
@@ -1616,23 +1668,10 @@ DASHBOARDS.bw=(function(){
      The figures behind the removed panels are untouched in DATA, so any of
      them is one edit from returning. check_data.js asserts they stay off. */
 
-  /* s44. Two retention classes and a total. The split needs a rule that turns
-     53 Purview labels into permanent and temporary; T1 c33 RetentionStatus is
-     designed for it and has never been verified against the real file plan.
-     Records disposed waits on the disposal change request, so it is the one
-     column here with no source at all. */
-  const RETROWS=[
-    {lab:"Permanent retention", depts:11, libs:64, rec:DATA.PERMANENT,
-     phys:Math.round(DATA.PERMANENT*0.21), due:0},
-    {lab:"Temporary retention", depts:16, libs:203, rec:DATA.LABEL_TOTAL-DATA.PERMANENT,
-     phys:TOTAL_PHYS-Math.round(DATA.PERMANENT*0.21), due:TOTAL_DUE},
-  ];
-  console.assert(RETROWS.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
-    "Permanent plus temporary must total every labelled record");
-  console.assert(RETROWS.reduce((a,r)=>a+r.phys,0)===TOTAL_PHYS,
-    "Permanent plus temporary must total every physical counterpart");
-  console.assert(RETROWS.reduce((a,r)=>a+r.due,0)===TOTAL_DUE,
-    "Permanent plus temporary must total every record due for disposal");
+  /* s44, the retention and disposal rollup, lives on the Retention and
+     Disposal dashboard, which is where the deck puts it: s44 is that
+     dashboard's slide 1, reached from the Bank-wide tile of the same name.
+     Drawing it here as well would have shown the same table twice. */
 
   const html=`<section class="dash-bw">
     <div class="band">
@@ -1679,35 +1718,6 @@ DASHBOARDS.bw=(function(){
       <div class="tiles" id="bw-trend-tiles"></div>
       <div id="bw-trend"></div>
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
-    </div>
-
-    <div class="band">
-      <h2>Retention and disposal insights</h2>
-      <div class="bd">The declared holding split into permanent and temporary retention.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">EDRMS retention and disposal insights</div>
-      <div class="psub">Permanent and temporary retention, with what each holds.</div>
-      <div class="scrollx"><div class="dtab" style="--dc:200px repeat(6,1fr)">
-        <div class="dhead"><div>Heading</div>
-          <div class="num">Departments, offices and RMs provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div>
-          <div class="num">Number of records due for disposal</div>
-          <div class="num">Number of records disposed</div></div>
-        ${RETROWS.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
-          <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
-          <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
-          <div class="num">${F(r.due)}</div><div class="num nosrc">Not captured</div></div>`).join("")}
-        <div class="dtot"><div>Total</div>
-          <div class="num">${F(DEPTS.length)}</div>
-          <div class="num">${F(RETROWS.reduce((a,r)=>a+r.libs,0))}</div>
-          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
-          <div class="num">${F(TOTAL_PHYS)}</div>
-          <div class="num">${F(TOTAL_DUE)}</div>
-          <div class="num nosrc">Not captured</div></div>
-      </div></div>
     </div>
 
   </section>`;
@@ -1799,13 +1809,7 @@ DASHBOARDS.dp=(function(){
   const DEPTS=BW.departments;
   const IDLE=BW.idleDays;
 
-  function split(total,weights){
-    const s=weights.reduce((a,b)=>a+b,0);
-    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);
-    if(out[0]<0)out[0]=0;
-    return out;
-  }
+  const split=splitTotal;
   const GB=v=>v>=1024?(v/1024).toFixed(2)+" TB":v.toFixed(1)+" GB";
   const PCT=(a,b)=>b?(a/b*100):0;
 
@@ -1896,12 +1900,13 @@ DASHBOARDS.dp=(function(){
 
   /* ===== state ===== */
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
-  let openKpi="users";
+  let openKpi="sites";         /* tile 1 on s53 */
   let sitePage=1, sortSite="rec", dirSite="desc";
-  let libPage=1;
-  let drillOpen={};   /* which site rows have their divisions open, PPT s58 */
+  let libCat=CATS[0];
+  let drillOpen={};            /* which site rows have their divisions open, s58 */
 
   const D=()=>DEPTS.find(x=>x.code===dept);
+  const NOSRC=`<span class="nosrc">Not captured</span>`;
 
   function pager(total,page,pages,noun){
     if(pages<=1)return `<div class="pager"><div class="pinfo">Showing ${F(total)} ${noun}</div></div>`;
@@ -1915,38 +1920,36 @@ DASHBOARDS.dp=(function(){
       <button data-pg="next" ${page===pages?'disabled':''}>Next &rsaquo;</button></div></div>`;
   }
 
-  /* ===== top panel, PPT s19 and s53 ===== */
+  /* ===== top panel, s53 =====
+     Seven tiles, the client's own labels, all clickable per their note
+     "Clickable top panel stats to show data". The Go-Live date sits above them
+     as s53 draws it, and reads Not captured: nothing in Cloud Governance
+     records when a site became EDRMS compliant, only when the SharePoint site
+     was created, and for a converted site those are different dates. Audit
+     question 4. */
+  const TILES=[
+    {k:"sites", lab:"Total number of sites created",                   val:d=>F(d.sites)},
+    {k:"users", lab:"Total number of EDRMS users",                     val:d=>F(d.users)},
+    {k:"visitors",lab:"Total number of site visitors",                 val:d=>F(Math.round(d.users*1.9))},
+    {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
+    {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
+    {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
+    {k:"disp",  lab:"Total number of records due for disposal",        val:d=>F(d.due)},
+  ];
+
   function drawTiles(){
-    const d=D(), sites=sitesFor(dept);
-    const visitors=Math.round(d.users*1.9);
-    const TILES=[
-      {lab:"Sites Created", val:F(d.sites), stat:"Owned by this department"},
-      {lab:"Total EDRMS Users", val:F(d.users), k:"users"},
-      {lab:"Total Site Visitors", val:F(visitors), k:"visitors"},
-      {lab:"Documents in EDRMS", val:F(d.docs), k:"docs"},
-      {lab:"Records Declared", val:F(d.rec), k:"rec"},
-      {lab:"Physical Counterparts", val:F(d.phys), stat:"Records with a physical copy"},
-      {lab:"Records Due for Disposal", val:F(d.due), k:"disp"},
-      {lab:"Sites Inactive over "+IDLE+" Days", val:F(sites.filter(s=>s.idle>IDLE).length),
-       stat:"No activity since"},
-    ];
-    const act=TILES.filter(t=>t.k), st=TILES.filter(t=>!t.k);
+    const d=D();
     document.getElementById("dp-kpis").innerHTML=
       `<div class="kpigrp act">
-         <div class="gh"><b>Open a breakdown</b><span>${act.length} cards, each opens the table beneath</span></div>
-         <div class="kpis">${act.map(t=>
+         <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${TILES.map(t=>
            `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
-              <div class="val">${t.val}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
-       </div>
-       <div class="kpigrp">
-         <div class="gh"><b>At a glance</b><span>${st.length} figures, nothing to click</span></div>
-         <div class="kpis">${st.map(t=>
-           `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val}</div>
-              <div class="sub">${t.stat}</div></div>`).join("")}</div>
+              <div class="val">${t.val(d)}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
        </div>`;
   }
 
-  /* Per card, updating in place, for the same reasons as Bank-wide. */
+  /* Per card, updating the rail in place, for the same reason as every other
+     dashboard here: rebuilding the grid destroys the node mid click. */
   function wireTiles(){
     document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(card=>{
       card.onclick=()=>{
@@ -1958,83 +1961,156 @@ DASHBOARDS.dp=(function(){
     });
   }
 
-  /* ===== the drill tables behind the tiles, PPT s21 to s23, s54 to s60 ===== */
+  /* ===== the seven drills, s55 to s60 =====
+     Column names are the client's, verbatim. Where a measure has no source in
+     any system this report reads, the cell says so rather than printing a
+     plausible number. */
   function drawDrill(){
     const d=D(), sites=sitesFor(dept), DIVS=BW.divisionsFor(dept);
-    let title,src,sub,cols,rows,tiles,kids=null;
+    const vis=s=>Math.round(s.users*1.9);
+    let title,sub,cols,rows,tiles,asks=[],kids=null,keyed=null;
 
-    if(openKpi==="users"){
-      title="Users, by division";
-      sub="Active users in each division, split by staff, contractor and consultant.";
-      cols=["Division","Active users","Staff","Contractors","Consultants","Training complete"];
-      rows=DIVS.map(v=>{const st=Math.round(v.users*0.62),c=Math.round(v.users*0.24);
-        return [v.name,F(v.users),F(st),F(c),F(Math.max(0,v.users-st-c)),
-                Math.round(62+((v.name.length*7)%31))+"%"];});
-      tiles=[["Active users",F(d.users)],["Divisions",F(DIVS.length)],
-             ["Never accessed",F(Math.round(d.users*0.11))],["Training completion","74%"]];
+    if(openKpi==="sites"){
+      /* s55. Site owners are real: Cloud Governance carries a Primary Business
+         Owner on every workspace.
+
+         Sorted and paged at ten rows, the house pattern. The deck asks for
+         neither, but ITD alone owns 104 sites and an unpaged list of that
+         length is unreadable, so this is a usability addition rather than a
+         change to what is reported. */
+      return drawSites(d,sites);
     }
+
+    else if(openKpi==="users"){
+      /* s54. Rows are divisions, as their detail slide draws it. Four of the
+         five measures have no source: nothing tells us whether a person is
+         staff, a contractor or a consultant, whether they were trained, or
+         when they were onboarded. s54 asks that of itself, "Source: Database
+         of end users? Owned and maintained by?". Audit question 3. */
+      title="Users";
+      sub="Users by division, with their status and training.";
+      cols=["Division","Total number of users (staff)","Total number of users (Contractors)",
+            "Total number of users (Consultants)","Completion of training","Onboarded since go-live"];
+      rows=DIVS.map(v=>[v.name,NOSRC,NOSRC,NOSRC,NOSRC,NOSRC]);
+      tiles=[["Total number of active users",F(d.users)],
+             ["Total number of staff",NOSRC],
+             ["Total number of contractors",NOSRC],
+             ["Total number of consultants",NOSRC],
+             ["Training completion rate",NOSRC]];
+      asks=["Active users month on month, per department and division",
+            "Users who have not accessed their site, to track transfers and leavers",
+            "New users, listed for onboarding"];
+    }
+
     else if(openKpi==="visitors"){
-      title="Site visitors";
-      sub="Visitors to each site, and access requests granted or declined.";
-      cols=["Site","Visitors, all time","Visitors, 7 days","External","Requests granted","Requests declined"];
-      rows=sites.map(s=>[s.name,F(Math.round(s.users*1.9)),F(Math.round(s.users*0.42)),
-                         F(Math.round(s.users*0.18)),F(Math.round(s.users*0.22)),
-                         F(Math.round(s.users*0.04))]);
-      tiles=[["Visitors, all time",F(Math.round(d.users*1.9))],["Visitors, last 7 days",F(Math.round(d.users*0.42))],
-             ["External visitors",F(Math.round(d.users*0.18))],
-             ["Access requests granted",F(Math.round(d.users*0.22))]];
+      /* s56. The client asks on the slide "Is this data available in
+         SharePoint/Cloud Governance?". Visitors: yes. The internal and
+         external split and the access request counts have not been confirmed
+         against the Cloud Governance guest and request reports. Audit
+         question 15. */
+      title="Visitors";
+      sub="Site visitors, and requests for access.";
+      cols=["Name of sites","Total number of visitors","Visitors (external)",
+            "Visitors (internal) by department","Access requests granted","Access requests denied"];
+      rows=sites.map(s=>[s.name,F(vis(s)),NOSRC,NOSRC,NOSRC,NOSRC]);
+      tiles=[["Total number of visitors",F(sites.reduce((a,s)=>a+vis(s),0))],
+             ["Total number of visitors (external)",NOSRC],
+             ["Total number of visitors (internal)",NOSRC],
+             ["Total number of access requests granted",NOSRC],
+             ["Total number of access requests denied",NOSRC]];
     }
+
     else if(openKpi==="docs"){
-      title="Documents in EDRMS, by site";
-      sub="Documents held, who is creating them, and the storage they consume.";
-      cols=["Site","Documents","Users creating","Storage","Share of department"];
-      rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.gb),
-                         PCT(s.docs,d.docs).toFixed(1)+"%"]);
-      tiles=[["Documents held",F(d.docs)],["Storage consumed",GB(d.gb)],
-             ["Sites holding documents",F(sites.length)]];
+      /* s57. The migration figures are drawn here, but s11 says of the
+         migration dashboard "I do not believe this is required at all", and
+         nothing marks a document as migrated in any case. Audit question 9. */
+      title="Total number of documents in EDRMS";
+      sub="Documents created or uploaded, by site.";
+      cols=["Name of sites","Number of documents created / uploaded",
+            "Number of users creating documents","Documents size (in GB)"];
+      rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.docs/3400)]);
+      tiles=[["Total number of documents",F(d.docs)],
+             ["Total documents size",GB(d.docs/3400)],
+             ["Total number of documents migrated",NOSRC],
+             ["Total number of users migrating documents",NOSRC],
+             ["Total migrated documents size",NOSRC]];
+      asks=["New documents created month on month, per department and division",
+            "Average monthly storage growth in content"];
     }
+
     else if(openKpi==="rec"){
-      title="Record declaration, by site and division";
-      sub="Records declared and the declaration rate for each site. Click a site to open its divisions.";
-      cols=["Site","Records declared","Users declaring","Declaration rate","No declaration in "+IDLE+" days"];
-      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
-                         PCT(s.rec,s.docs).toFixed(2)+"%", s.idle>IDLE?"yes":"no"]);
-      /* One row per division of this site, split from the site's own total so a
-         site's divisions always add back up to the site, exactly as the sites
-         add back up to the department. */
+      /* s58. Their note asks for collapsible rows for divisions, so a site
+         opens to show them and the division rows sum to the site. */
+      title="Compliance review, record declaration";
+      sub="Click a site to open its divisions.";
+      cols=["Name of sites","Total number of records declared","Total number of users declaring records",
+            "Number of records declared per division","Number of users declaring records per division"];
+      keyed=sites;
+      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),NOSRC,NOSRC]);
       kids=s=>{
-        const w=DIVS.map((v,i)=>1+((i*3+s.name.length)%5)*0.3);
-        const rec=split(s.rec,w), dec=split(Math.max(1,Math.round(s.users*0.34)),w);
-        return DIVS.map((v,i)=>[v.name.replace(dept+" ",""),F(rec[i]),F(dec[i]),
-          PCT(rec[i],Math.max(1,Math.round(s.docs*rec[i]/Math.max(1,s.rec)))).toFixed(2)+"%",""]);
+        const w=DIVS.map((v,i)=>1+((i*3+s.name.length)%5)*0.4);
+        const r=split(s.rec,w), u=split(Math.max(DIVS.length,Math.round(s.users*0.34)),w);
+        return DIVS.map((v,i)=>[v.name,F(r[i]),F(u[i]),F(r[i]),F(u[i])]);
       };
-      tiles=[["Records declared",F(d.rec)],["Declaration rate",PCT(d.rec,d.docs).toFixed(2)+"%"],
-             ["Users declaring",F(d.declaring)],
-             ["Sites with no declaration in "+IDLE+" days",F(sites.filter(s=>s.idle>IDLE).length)]];
+      tiles=[["Total number of records declared",F(d.rec)],
+             ["Total number of users declaring records",F(d.declaring)],
+             ["Total declared record size",GB(d.rec/3400)],
+             ["Sites with no declared record in "+IDLE+" days",
+              F(sites.filter(s=>s.idle>IDLE).length)]];
+      asks=["Records declared month on month, and declaration rate per site",
+            "Sites with no declared record in "+IDLE+" days"];
     }
-    else{
-      title="Disposal, by library";
-      sub="Records falling due in each library, with the next due date and its approver.";
-      cols=["Library","Records due","Next due date","With counterpart","Approver","Status"];
-      const libs=librariesFor(dept), dues=split(d.due,libs.map(l=>Math.max(1,l.phys)));
-      rows=libs.map((l,i)=>[l.lib,F(dues[i]),DUE_DATES[i%DUE_DATES.length],
-                            F(Math.round(dues[i]*0.31)),
-                            APPROVERS[i%APPROVERS.length], DSTATUS[i%DSTATUS.length]]);
-      tiles=[["Records due, next 12 months",F(d.due)],["Next due date",DUE_DATES[0]],
-             ["Records disposed",F(Math.round(d.due*0.42))],
-             ["Disposal backlog",F(Math.round(d.due*0.15))]];
+
+    else if(openKpi==="phys"){
+      /* s59. Note the client's slide repeats s58's last three columns
+         unchanged and only edits the measure to physical. Built as drawn,
+         with the copy queried in the audit, question 10. */
+      title="Physical counterpart";
+      sub="Records with a physical counterpart, by site.";
+      cols=["Name of sites","Total number of physical records declared",
+            "Total number of users declaring records","Number of records declared per division",
+            "Number of users declaring records per division"];
+      rows=sites.map(s=>[s.name,F(s.phys),F(Math.max(1,Math.round(s.users*0.34))),NOSRC,NOSRC]);
+      tiles=[["Total number of physical records declared",F(d.phys)],
+             ["Total number of users declaring records",F(d.declaring)],
+             ["Share of declared records",PCT(d.phys,d.rec).toFixed(1)+"%"],
+             ["Physical counterpart completion rate",NOSRC]];
+      asks=["Physical records declared month on month, per division",
+            "Physical counterpart completion rate, records turned over for RAC storage against records declared with a counterpart"];
     }
-    const shown=rows.slice(0,10);
-    const bodyRows=shown.map((r,i)=>{
+
+    else {
+      /* s60. Three of the eight columns are producible. The approver and the
+         three status columns need fields the EDRMS application does not have.
+         Audit question 7 specifies the change request. */
+      title="Disposal";
+      sub="Records due for disposal, by library.";
+      const libs=librariesFor(dept).slice(0,10);
+      cols=["Library name","Number of records due for disposal","Next due date for disposal",
+            "Disposal approver","With physical counterpart?","Status (Approved)",
+            "Status (Declined)","Status (Extended)"];
+      const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
+      rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
+                            NOSRC,l.phys>0?"Yes":"No",NOSRC,NOSRC,NOSRC]);
+      tiles=[["Total number of records due for disposal",F(d.due)],
+             ["Total number of records disposed",NOSRC],
+             ["Total disposed record size",NOSRC]];
+      asks=["Records disposed month on month, per department and division",
+            "Overdue disposal actions and pending approvals",
+            "Disposal completion rate, including physical counterparts",
+            "Records due next quarter, for planning and advance notice"];
+    }
+
+    const body=rows.map((r,i)=>{
       if(!kids)
         return `<div class="drow">${r.map((c,j)=>
           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`;
-      const site=sites[i], open=!!drillOpen[site.name];
-      let h=`<div class="drow exp" data-row="${site.name}">
+      const s=keyed[i], open=!!drillOpen[s.name];
+      let h=`<div class="drow exp" data-site="${s.name}">
         <div class="dn"><span class="tw">${open?"▾":"▸"}</span>${r[0]}
           <small>${DIVS.length} divisions</small></div>
         ${r.slice(1).map(c=>`<div class="num">${c}</div>`).join("")}</div>`;
-      if(open)h+=kids(site).map(k=>`<div class="drow kid">${k.map((c,j)=>
+      if(open)h+=kids(s).map(k=>`<div class="drow kid">${k.map((c,j)=>
         j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
       return h;
     }).join("");
@@ -2044,188 +2120,195 @@ DASHBOARDS.dp=(function(){
        <div class="psub">${sub}</div>
        <div class="tiles">${tiles.map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
-       <div class="scrollx"><div class="dtab" style="--dc:230px repeat(${cols.length-1},1fr)">
-         <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${bodyRows}
+       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(${cols.length-1},minmax(110px,1fr))">
+         <div class="dhead">${cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${body}
        </div></div>
-       ${rows.length>10?`<div class="psub" style="margin-top:10px">The full list is on the panel below.</div>`:""}`;
+       ${asks.length?`<div class="asks"><div class="ah">Also asked for on this screen</div>
+         <ul>${asks.map(a=>`<li>${a}</li>`).join("")}</ul></div>`:""}`;
 
     document.querySelectorAll("#dp-drill .drow.exp").forEach(el=>el.onclick=()=>{
-      const k=el.dataset.row;
-      drillOpen[k]=!drillOpen[k];
+      const n=el.dataset.site;
+      drillOpen[n]=!drillOpen[n];
       drawDrill();
     });
   }
-  const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
-                   "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
-                   "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
-  const APPROVERS=["R. Tan","M. Reyes","A. Mendoza","L. Fernandez","J. Cruz","P. Santos"];
-  const DSTATUS=["Approved","Approved","Pending","Extended","Approved","Declined"];
 
-  /* ===== sites list, PPT s20 and s55 ===== */
-  const SCOLS=[{k:"name",lab:"Site"},{k:"owner",lab:"Site owner"},{k:"docs",lab:"Documents",num:1},
-               {k:"rec",lab:"Records",num:1},{k:"phys",lab:"Counterparts",num:1},{k:"due",lab:"Due",num:1}];
-  function drawSites(){
-    const d=D();
-    const all=[...sitesFor(dept)].sort((a,b)=>{
-      const k=sortSite, cmp=(k==="name"||k==="owner")?String(a[k]).localeCompare(String(b[k])):a[k]-b[k];
+  const SITECOLS=[{k:"name",lab:"Name of sites"},{k:"owner",lab:"Site owners"},
+                  {k:"docs",lab:"Number of documents",num:1},{k:"rec",lab:"Number of records",num:1},
+                  {k:"phys",lab:"Number of physical counterparts",num:1},
+                  {k:"due",lab:"Number of records due for disposal",num:1}];
+
+  function drawSites(d,sites){
+    const rows=[...sites].sort((a,b)=>{
+      const cmp=(sortSite==="name"||sortSite==="owner")
+        ? String(a[sortSite]).localeCompare(String(b[sortSite])) : a[sortSite]-b[sortSite];
       return dirSite==="asc"?cmp:-cmp;
     });
-    const pages=Math.max(1,Math.ceil(all.length/10));
+    const pages=Math.max(1,Math.ceil(rows.length/10));
     if(sitePage>pages)sitePage=pages;
-    const view=all.slice((sitePage-1)*10,sitePage*10);
-    let h=`<div class="dhead">`+SCOLS.map(c=>
-      `<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${
-        sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):""}</div>`).join("")+`</div>`;
-    h+=view.map(s=>`<div class="drow">
-      <div class="dn">${s.name}<small>${s.idle>IDLE?"No activity for "+s.idle+" days":"Active, last activity "+s.idle+" days ago"}</small></div>
-      <div class="num">${s.owner}</div><div class="num">${F(s.docs)}</div>
-      <div class="num">${F(s.rec)}</div><div class="num">${F(s.phys)}</div>
-      <div class="num">${F(s.due)}</div></div>`).join("");
-    h+=`<div class="dtot"><div>Department total</div><div class="num">${F(all.length)} sites</div>
-      <div class="num">${F(d.docs)}</div><div class="num">${F(d.rec)}</div>
-      <div class="num">${F(d.phys)}</div><div class="num">${F(d.due)}</div></div>`;
-    document.getElementById("dp-sites").innerHTML=h;
-    document.getElementById("dp-sites-pager").innerHTML=pager(all.length,sitePage,pages,"sites");
+    const page=rows.slice((sitePage-1)*10,sitePage*10);
+    const t=f=>sites.reduce((a,s)=>a+s[f],0);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Overview of EDRMS sites</div>
+       <div class="psub">Every site owned by this department, and what it holds.</div>
+       <div class="tiles">
+         <div class="tile"><div class="tl">Total number of sites created</div><div class="tv">${F(d.sites)}</div></div>
+         <div class="tile"><div class="tl">Total number of documents in EDRMS</div><div class="tv">${F(d.docs)}</div></div>
+         <div class="tile"><div class="tl">Total number of records declared in EDRMS</div><div class="tv">${F(d.rec)}</div></div>
+         <div class="tile"><div class="tl">Total number of physical counterparts identified</div><div class="tv">${F(d.phys)}</div></div>
+         <div class="tile"><div class="tl">Total number of records due for disposal</div><div class="tv">${F(d.due)}</div></div>
+       </div>
+       <div class="scrollx"><div class="dtab wide" id="dp-sites"
+            style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) repeat(4,minmax(110px,1fr))">
+         <div class="dhead">${SITECOLS.map(c=>
+           `<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${
+             sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
+         ${page.map(s=>`<div class="drow"><div class="dn">${s.name}</div>
+           <div class="dn" style="font-weight:400">${s.owner}</div>
+           <div class="num">${F(s.docs)}</div><div class="num">${F(s.rec)}</div>
+           <div class="num">${F(s.phys)}</div><div class="num">${F(s.due)}</div></div>`).join("")}
+         <div class="dtot"><div>Total</div><div></div>
+           <div class="num">${F(t("docs"))}</div><div class="num">${F(t("rec"))}</div>
+           <div class="num">${F(t("phys"))}</div><div class="num">${F(t("due"))}</div></div>
+       </div></div>
+       <div id="dp-sites-pager">${pager(rows.length,sitePage,pages,"sites")}</div>
+       <div class="asks"><div class="ah">Also asked for on this screen</div>
+         <ul><li>Sites with no activity in ${IDLE} days: ${F(sites.filter(s=>s.idle>IDLE).length)}</li>
+             <li>Records declared month on month, per department and division</li></ul></div>`;
+
     document.querySelectorAll("#dp-sites .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortSite===k)dirSite=dirSite==="asc"?"desc":"asc";
       else{sortSite=k;dirSite=(k==="name"||k==="owner")?"asc":"desc";}
-      sitePage=1;drawSites();
+      sitePage=1; drawDrill();
     });
-    wirePager("#dp-sites-pager",v=>{
-      sitePage=v==="prev"?Math.max(1,sitePage-1):v==="next"?Math.min(pages,sitePage+1):+v;
-      drawSites();
+    wirePager("#dp-sites-pager",go=>{
+      sitePage=go==="prev"?Math.max(1,sitePage-1):go==="next"?Math.min(pages,sitePage+1):+go;
+      drawDrill();
     });
   }
 
-  function drawDeptCharts(){
-    const d=D(), sites=sitesFor(dept);
-    document.getElementById("dp-donut").innerHTML=CHART.donut([
-      {label:"Declared as records",value:d.rec,color:"var(--teal)"},
-      {label:"Not declared",value:d.docs-d.rec,color:"var(--greyblue)"},
-    ],{centreValue:PCT(d.rec,d.docs).toFixed(1)+"%",centreLabel:"declaration rate"});
-    document.getElementById("dp-sitebars").innerHTML=CHART.hbars(
-      [...sites].sort((a,b)=>b.rec-a.rec).slice(0,6)
-        .map(x=>({label:x.name.replace(dept+" ",""),sub:x.owner,value:x.rec})));
-  }
+  const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
+                   "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027"];
 
-  /* ===== library usage, PPT s25 and s61 to s66 ===== */
+  /* ===== library usage, s61 to s66 =====
+     One screen per file plan category, with a picker rather than six separate
+     screens. Every figure here needs the term to document join, which does not
+     exist: nothing links a library to a file plan term. The libraries are
+     grouped by category on the assumption their slides hint at, that the
+     library name is the term. Audit questions 12 and 13. */
   function drawLibs(){
-    const d=D(), libs=librariesFor(dept);
-    const pages=Math.max(1,Math.ceil(libs.length/10));
-    if(libPage>pages)libPage=pages;
-    const view=libs.slice((libPage-1)*10,libPage*10);
-    let h=`<div class="dhead"><div>Library</div><div class="num">Users</div>
-      <div class="num">Documents</div><div class="num">Records declared</div>
-      <div class="num">Counterparts</div><div class="num">Idle days</div></div>`;
-    let cat="";
-    view.forEach(l=>{
-      if(l.cat!==cat){cat=l.cat;h+=`<div class="drow cat"><div class="dn">${cat}</div>
-        <div></div><div></div><div></div><div></div><div></div></div>`;}
-      h+=`<div class="drow"><div class="dn">${l.lib}<small>${dept}</small></div>
-        <div class="num">${F(Math.max(2,Math.round(l.rec/26)))}</div><div class="num">${F(l.docs)}</div>
-        <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
-        <div class="num">${l.idle}</div></div>`;
-    });
-    h+=`<div class="dtot"><div>Department total</div><div class="num">${F(d.users)}</div>
-      <div class="num">${F(d.docs)}</div><div class="num">${F(d.rec)}</div>
-      <div class="num">${F(d.phys)}</div><div class="num"></div></div>`;
-    document.getElementById("dp-libs").innerHTML=h;
-    document.getElementById("dp-libs-pager").innerHTML=pager(libs.length,libPage,pages,"libraries");
-    wirePager("#dp-libs-pager",v=>{
-      libPage=v==="prev"?Math.max(1,libPage-1):v==="next"?Math.min(pages,libPage+1):+v;
-      drawLibs();
-    });
+    /* Number of users per library has no source. Microsoft 365 publishes
+       activity per SITE, not per library, so a per library user count cannot
+       be produced from anything we hold. */
+    const libs=librariesFor(dept).filter(l=>l.cat===libCat);
+    const t=f=>libs.reduce((a,l)=>a+l[f],0);
+    document.getElementById("dp-libs").innerHTML=
+      `<div class="tiles">
+         <div class="tile"><div class="tl">Total library names</div><div class="tv">${F(libs.length)}</div></div>
+         <div class="tile"><div class="tl">Total number of libraries provisioned</div><div class="tv">${F(libs.length)}</div></div>
+         <div class="tile"><div class="tl">Total number of documents</div><div class="tv">${F(t("docs"))}</div></div>
+         <div class="tile"><div class="tl">Total number of records declared</div><div class="tv">${F(t("rec"))}</div></div>
+         <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
+       </div>
+       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(4,minmax(110px,1fr))">
+         <div class="dhead"><div>Library names</div><div class="num">Number of users</div>
+           <div class="num">Number of documents</div><div class="num">Number of records declared</div>
+           <div class="num">Number of physical counterparts</div></div>
+         ${libs.map(l=>`<div class="drow"><div class="dn">${l.lib}<small>${l.cat}</small></div>
+           <div class="num">${NOSRC}</div><div class="num">${F(l.docs)}</div>
+           <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
+       </div></div>
+       <div class="asks"><div class="ah">Also asked for on this screen</div>
+         <ul><li>Libraries with no declared record in ${IDLE} days</li>
+             <li>Records declared month on month, and declaration rate per site</li></ul></div>`;
   }
 
-  /* ===== declaration trend for one department, PPT s24 ===== */
+  /* ===== record declaration trend, s24 =====
+     Cumulative, matching the Bank-wide trend and the curve the client drew.
+     Scaled to this department, so the curve ends at its declared count. */
   function drawTrend(){
-    const d=D(), share=d.rec/DATA.DECLARED;
-    const vals=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
-    const mx=Math.max(...vals,1);
-    document.getElementById("dp-trend").innerHTML=DATA.MONTH_LABELS.map((m,i)=>`
-      <div class="tcol"><div class="tval">${F(vals[i])}</div>
-        <div class="tbar" style="height:${Math.max(2,100*vals[i]/mx)}%"></div>
-        <div class="tlab">${m}</div></div>`).join("");
-    document.getElementById("dp-trend-sum").textContent=d.code;
+    const d=D();
+    const share=d.rec/DATA.MONTH_VALUES.reduce((a,v)=>a+v,0);
+    const monthly=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
+    monthly[monthly.length-1]+=d.rec-monthly.reduce((a,v)=>a+v,0);
+    let run=0;
+    const pts=DATA.MONTH_VALUES.map((v,i)=>{
+      run+=monthly[i];
+      return {label:DATA.MONTH_FULL[i],short:DATA.MONTH_LABELS[i],value:run};
+    });
+    console.assert(pts[pts.length-1].value===d.rec,
+      "The department declaration curve must end at its declared record count");
+    document.getElementById("dp-trend").innerHTML=CHART.area(pts,{height:220});
   }
 
   function drawAll(){
     const d=D();
-    document.getElementById("dp-golive").innerHTML=
-      `Go-live date <b>${GOLIVE[d.code]||"not recorded"}</b>`;
     document.getElementById("dp-name").textContent=d.code+" - "+d.name;
-    sitePage=1;libPage=1;drillOpen={};
-    drawTiles();wireTiles();drawDrill();drawSites();drawLibs();drawTrend();drawDeptCharts();
+    document.getElementById("dp-golive").innerHTML=NOSRC;
+    drawTiles(); wireTiles(); drawDrill(); drawLibs(); drawTrend();
   }
 
   const html=`<section class="dash-dp">
     <div class="band">
       <h2>Department insights</h2>
-      <div class="bd">How one department is managing its records: sites, people, declaration, libraries and disposal.</div>
+      <div class="bd">How one department, office or resident mission is managing its records.</div>
     </div>
-
-    <div class="picker">
-      <span class="lbl">Department, office or resident mission</span>
-      <select id="dp-sel"></select>
-      <span class="golive" id="dp-golive"></span>
+    <div class="panel">
+      <div class="ptitle" id="dp-name"></div>
+      <div class="psub">Choose a department, office or resident mission.</div>
+      <div class="toolbar">
+        <span class="lbl">Department / office / RM</span>
+        <select id="dp-sel"></select>
+      </div>
+      <div class="golive"><span class="gl">Go-Live date</span><span id="dp-golive"></span></div>
+      <div id="dp-kpis"></div>
     </div>
-
-    <div id="dp-kpis"></div>
     <div class="panel" id="dp-drill"></div>
 
     <div class="band">
-      <h2>EDRMS sites</h2>
-      <div class="bd">Every site the department owns, its owner, and what it holds.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Sites owned by <span id="dp-name"></span></div>
-      <div class="psub">Click any column heading to sort.</div>
-      <div class="crow" style="margin-bottom:18px">
-        <div class="chart"><div class="ctitle">Declared against everything held</div><div id="dp-donut"></div></div>
-        <div class="chart wide"><div class="ctitle">Largest sites by records declared</div><div id="dp-sitebars"></div></div>
-      </div>
-      <div class="scrollx"><div class="dtab" id="dp-sites"></div></div>
-      <div id="dp-sites-pager"></div>
-    </div>
-
-    <div class="band">
       <h2>Library usage</h2>
-      <div class="bd">The department's libraries, grouped by institutional file plan category.</div>
+      <div class="bd">Libraries grouped by institutional file plan category.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Libraries by file plan category</div>
-      <div class="psub">The department's libraries, grouped by institutional file plan category.</div>
-      <div class="scrollx"><div class="dtab" id="dp-libs"></div></div>
-      <div id="dp-libs-pager"></div>
+      <div class="ptitle">Departmental library usage</div>
+      <div class="psub">Choose a file plan category.</div>
+      <div class="toolbar">
+        <span class="lbl">Category</span>
+        <select id="dp-cat">${CATS.map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
+      </div>
+      <div id="dp-libs"></div>
     </div>
 
     <div class="band">
       <h2>Record declaration trend</h2>
-      <div class="bd">The bank-wide trend, scoped to this department.</div>
+      <div class="bd">Records declared over time for this department, as a running total.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Records declared over the last 12 months</div>
-      <div class="psub">Records declared each month.</div>
-      <div class="trend" id="dp-trend"></div>
-      <div class="psub" style="margin-top:12px" id="dp-trend-sum"></div>
+      <div class="ptitle">Record declaration trend</div>
+      <div class="psub">Records declared across this department's EDRMS sites.</div>
+      <div id="dp-trend"></div>
     </div>
 
     <div class="band">
       <h2>Conventions and programme dates</h2>
-      <div class="bd">The department's approved convention and its records management calendar.</div>
+      <div class="bd">The approved convention, and the records management programme.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Approved convention</div>
-      <div class="psub">The naming convention this department's sites, libraries and folders follow.</div>
+      <div class="ptitle">Approved SharePoint site, library, and folder convention</div>
+      <div class="psub">The convention in force for this department.</div>
       <div class="reflist">
-        <div class="refrow"><b>${CONVENTION.link}</b><div class="rv">Approved ${CONVENTION.approved}</div><div class="rs">${CONVENTION.version}</div></div>
+        <div class="refrow"><b>Link</b><div class="rv">${CONVENTION.link}</div><div class="rs"></div></div>
+        <div class="refrow"><b>Date of approval</b><div class="rv">${CONVENTION.approved}</div><div class="rs"></div></div>
         <div class="refrow"><b>Last updated</b><div class="rv">${CONVENTION.updated}</div><div class="rs"></div></div>
+        <div class="refrow"><b>Version no.</b><div class="rv">${CONVENTION.version}</div><div class="rs"></div></div>
       </div>
     </div>
     <div class="panel">
-      <div class="ptitle">Records management programme dates</div>
+      <div class="ptitle">Records management programme</div>
       <div class="psub">Key records management dates for this department.</div>
       <div class="reflist">
         ${PROGRAMME.map(p=>`<div class="refrow"><b>${p.lab}</b><div class="rv">${p.date}</div>
@@ -2238,7 +2321,10 @@ DASHBOARDS.dp=(function(){
     const sel=document.getElementById("dp-sel");
     sel.innerHTML=DEPTS.map(d=>
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
-    sel.onchange=e=>{dept=e.target.value;drawAll();};
+    sel.onchange=e=>{dept=e.target.value;sitePage=1;drillOpen={};drawAll();};
+    const cat=document.getElementById("dp-cat");
+    cat.value=libCat;
+    cat.onchange=e=>{libCat=e.target.value;drawLibs();};
     drawAll();
   }
 
@@ -2251,11 +2337,9 @@ DASHBOARDS.dp=(function(){
       categories:CATS.length,
       programmeDates:PROGRAMME.length
     },
-    /* Called by openDashboard() before this dashboard mounts, so arriving from
-       a department name on Bank-wide lands on that department rather than on
-       the default one. An unknown code is ignored rather than blanking the
-       screen. */
-    focus(code){ if(DEPTS.some(d=>d.code===code)){dept=code;sitePage=1;libPage=1;drillOpen={};} },
+    /* Called by openDashboard() when a reader clicks a department name on
+       Bank-wide, so they land on that department rather than the default. */
+    focus(code){ if(DEPTS.some(d=>d.code===code)){dept=code;sitePage=1;drillOpen={};} },
     html,init
   };
 })();
@@ -2301,13 +2385,7 @@ DASHBOARDS.pj=(function(){
      back up to the project. A declaration rate that varies between sites is
      the whole point of the chart: their drawing shows 100 percent, 60 percent
      and 20 percent side by side. */
-  function split(total,weights){
-    const s=weights.reduce((a,b)=>a+b,0);
-    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);
-    if(out[0]<0)out[0]=0;
-    return out;
-  }
+  const split=splitTotal;
   /* Fixed weights, so a site keeps the same shape between draws. The declared
      weights deliberately differ from the document weights, which is what makes
      one site declare nearly everything and another very little. */
@@ -2674,12 +2752,7 @@ DASHBOARDS.fp=(function(){
     {cat:"Other", terms:["Photos and Audiovisual","Legacy Content","Unclassified"]},
   ];
 
-  function split(total,weights){
-    const s=weights.reduce((a,b)=>a+b,0);
-    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);
-    return out;
-  }
+  const split=splitTotal;
 
   /* Every term gets a share of the bank-wide totals, so the categories sum to
      the whole and the panel cannot quietly disagree with Records Management. */
@@ -2702,139 +2775,138 @@ DASHBOARDS.fp=(function(){
     "File plan categories must total the document count");
 
   const TOTAL_TERMS=FLAT.length;
+  const NOSRC=`<span class="nosrc">Not captured</span>`;
   let cat=PLAN[0].cat;
 
+  /* ===== s47, the rollup =====
+     The client's own column names. Five categories and a total, which is the
+     landing screen reached from the Institutional File Plan insights tile on
+     Bank-wide, s34.
+
+     Note a disagreement inside the deck. The outline, s29, lists four top
+     panel stats: total terms, Administration, People management, Programs and
+     operations. The detailed screen, s47, lists five categories including
+     Institutional Management and Other. The detail is followed here, because
+     it is the drawn screen and because omitting two categories that exist
+     would raise a question on the first reading. */
   function drawCats(){
     document.getElementById("fp-cats").innerHTML=
-      `<div class="dhead"><div>Category</div><div class="num">Terms</div>
-        <div class="num">Departments</div><div class="num">Libraries</div>
-        <div class="num">Documents</div><div class="num">Records declared</div>
-        <div class="num">Counterparts</div></div>`+
-      CATTOT.map(c=>`<div class="drow"><div class="dn">${c.cat}</div>
+      `<div class="dhead"><div>Heading</div><div class="num">Total terms</div>
+        <div class="num">Departments, offices and RMs provisioned</div>
+        <div class="num">Number of libraries provisioned</div>
+        <div class="num">Number of documents</div>
+        <div class="num">Number of records declared</div>
+        <div class="num">Number of physical counterparts</div></div>`+
+      CATTOT.map(c=>`<div class="drow"><div class="dn">Total ${c.cat} terms</div>
         <div class="num">${F(c.terms)}</div><div class="num">${F(c.depts)}</div>
         <div class="num">${F(c.libs)}</div><div class="num">${F(c.docs)}</div>
         <div class="num">${F(c.rec)}</div><div class="num">${F(c.phys)}</div></div>`).join("")+
-      `<div class="dtot"><div>Total</div><div class="num">${F(TOTAL_TERMS)}</div>
-        <div class="num">${F(96)}</div>
+      `<div class="dtot"><div>Total terms</div><div class="num">${F(TOTAL_TERMS)}</div>
+        <div class="num">${F(Math.max(...CATTOT.map(c=>c.depts)))}</div>
         <div class="num">${F(CATTOT.reduce((a,c)=>a+c.libs,0))}</div>
-        <div class="num">${F(DATA.DOCUMENTS)}</div><div class="num">${F(DATA.DECLARED)}</div>
+        <div class="num">${F(DATA.DOCUMENTS)}</div>
+        <div class="num">${F(DATA.DECLARED)}</div>
         <div class="num">${F(DATA.WITH_PHYSICAL)}</div></div>`;
   }
 
+  /* ===== s48 to s52, one screen per category =====
+     Five slides with identical layout, built as one screen with a picker
+     rather than five, because the only thing that changes between them is
+     which category is in scope. Each carries the top stats and the term table
+     the slides draw, and the five indicators they all repeat. */
   function drawTerms(){
     const rows=FLAT.filter(f=>f.cat===cat);
+    const t=f=>rows.reduce((a,r)=>a+r[f],0);
+    const ranked=[...rows].sort((a,b)=>b.rec-a.rec);
     document.getElementById("fp-terms").innerHTML=
-      `<div class="dhead"><div>Term, top level</div><div class="num">Departments</div>
-        <div class="num">Libraries</div><div class="num">Documents</div>
-        <div class="num">Records declared</div><div class="num">Counterparts</div></div>`+
-      rows.map(t=>`<div class="drow"><div class="dn">${t.term}<small>${cat}</small></div>
-        <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
-        <div class="num">${F(t.docs)}</div><div class="num">${F(t.rec)}</div>
-        <div class="num">${F(t.phys)}</div></div>`).join("")+
-      `<div class="dtot"><div>${cat} total</div>
-        <div class="num"></div>
-        <div class="num">${F(rows.reduce((a,r)=>a+r.libs,0))}</div>
-        <div class="num">${F(rows.reduce((a,r)=>a+r.docs,0))}</div>
-        <div class="num">${F(rows.reduce((a,r)=>a+r.rec,0))}</div>
-        <div class="num">${F(rows.reduce((a,r)=>a+r.phys,0))}</div></div>`;
-  }
-
-  function drawCatCharts(){
-    document.getElementById("fp-tree").innerHTML=CHART.treemap(
-      CATTOT.map(c=>({label:c.cat,value:c.rec})),{height:250});
-    document.getElementById("fp-donut").innerHTML=CHART.donut(
-      CATTOT.map(c=>({label:c.cat,value:c.rec})),
-      {centreValue:F(DATA.DECLARED),centreLabel:"declared records",size:150});
-  }
-
-  function drawUsage(){
-    const sorted=[...FLAT].sort((a,b)=>b.rec-a.rec);
-    const top=sorted.slice(0,6), bottom=sorted.slice(-6).reverse();
-    const mx=top[0].rec;
-    const bar=(list,colour)=>CHART.hbars(
-      list.map(t=>({label:t.term,sub:t.cat,value:t.rec,color:colour})));
-    document.getElementById("fp-top").innerHTML=bar(top,"var(--blue)");
-    document.getElementById("fp-bottom").innerHTML=bar(bottom,"var(--orange)");
+      `<div class="tiles">
+         <div class="tile"><div class="tl">Total terms (top level)</div><div class="tv">${F(rows.length)}</div></div>
+         <div class="tile"><div class="tl">Total number of libraries provisioned</div><div class="tv">${F(t("libs"))}</div></div>
+         <div class="tile"><div class="tl">Total number of documents</div><div class="tv">${F(t("docs"))}</div></div>
+         <div class="tile"><div class="tl">Total number of records declared</div><div class="tv">${F(t("rec"))}</div></div>
+         <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
+       </div>
+       <div class="scrollx"><div class="dtab wide">
+         <div class="dhead"><div>Term (top level)</div>
+           <div class="num">Departments, offices and RMs provisioned</div>
+           <div class="num">Number of libraries provisioned</div>
+           <div class="num">Number of documents</div>
+           <div class="num">Number of records declared</div>
+           <div class="num">Number of physical counterparts</div></div>
+         ${rows.map(r=>`<div class="drow"><div class="dn">${r.term}</div>
+           <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
+           <div class="num">${F(r.docs)}</div><div class="num">${F(r.rec)}</div>
+           <div class="num">${F(r.phys)}</div></div>`).join("")}
+         <div class="dtot"><div>Total</div><div class="num">${F(Math.max(...rows.map(r=>r.depts)))}</div>
+           <div class="num">${F(t("libs"))}</div><div class="num">${F(t("docs"))}</div>
+           <div class="num">${F(t("rec"))}</div><div class="num">${F(t("phys"))}</div></div>
+       </div></div>
+       <div class="crow" style="margin-top:18px">
+         <div class="chart"><div class="ctitle">Most used terms</div>
+           ${CHART.hbars(ranked.slice(0,5).map(r=>({label:r.term,value:r.rec})))}</div>
+         <div class="chart"><div class="ctitle">Least used terms</div>
+           ${CHART.hbars(ranked.slice(-5).reverse().map(r=>({label:r.term,value:r.rec,color:"var(--greyblue)"})))}</div>
+       </div>
+       <div class="asks"><div class="ah">Also asked for on this screen</div>
+         <ul>
+           <li>Unused terms, candidates for review and deletion</li>
+           <li>New libraries created outside the convention: ${NOSRC}</li>
+           <li>Requests for new library creation or deletion: ${NOSRC}</li>
+           <li>Requests for a new term: ${NOSRC}</li>
+         </ul></div>`;
   }
 
   const html=`<section class="dash-fp">
     <div class="band">
       <h2>Institutional file plan insights</h2>
-      <div class="bd">How file plan terms are being applied across sites and libraries.</div>
+      <div class="bd">How the file plan is being applied across sites and libraries.</div>
     </div>
 
+    <div class="panel notice">
+      <div class="ptitle">Two things are missing behind this dashboard</div>
+      <div class="psub">The five categories exist in neither the SharePoint term store nor the Purview
+        file plan, so the file plan itself has no source yet. Separately, nothing links a term to a
+        library or to a document, so every count per term needs a join that does not exist. The
+        layout below follows the requirements so the shape can be agreed while both are resolved.</div>
+    </div>
 
-    <div class="kpis" id="fp-kpis"></div>
+    <div class="kpis">
+      <div class="kpi stat"><div class="lab">Total terms</div><div class="val">${F(TOTAL_TERMS)}</div>
+        <div class="sub">Across all five categories</div></div>
+      ${CATTOT.map(c=>`<div class="kpi stat"><div class="lab">Total ${c.cat} terms</div>
+        <div class="val">${F(c.terms)}</div><div class="sub">Top level terms</div></div>`).join("")}
+    </div>
 
     <div class="band">
       <h2>Terms by category</h2>
-      <div class="bd">The five top level groupings of the institutional file plan.</div>
+      <div class="bd">The five file plan categories, and what each holds.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">The five categories</div>
-      <div class="psub">Sized by records declared against each category.</div>
-      <div class="crow" style="margin-bottom:16px">
-        <div class="chart wide"><div class="ctitle">Records declared by category</div><div id="fp-tree"></div></div>
-        <div class="chart"><div class="ctitle">Share of the declared holding</div><div id="fp-donut"></div></div>
-      </div>
-      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(6,1fr)" id="fp-cats"></div></div>
+      <div class="ptitle">EDRMS institutional file plan insights</div>
+      <div class="psub">Every category, with its terms, libraries, documents, records and counterparts.</div>
+      <div class="scrollx"><div class="dtab wide" id="fp-cats"></div></div>
     </div>
 
     <div class="band">
       <h2>Terms within a category</h2>
-      <div class="bd">The terms within each category, and how heavily each is used.</div>
+      <div class="bd">Top level terms, their usage, and what each carries.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Top level terms</div>
-      <div class="psub">Choose a category to see its terms.</div>
+      <div class="ptitle">EDRMS institutional file plan insights, by category</div>
+      <div class="psub">Choose a category.</div>
       <div class="toolbar">
         <span class="lbl">Category</span>
-        <select id="fp-cat"></select>
+        <select id="fp-cat">${PLAN.map(c=>`<option value="${c.cat}">${c.cat}</option>`).join("")}</select>
       </div>
-      <div class="scrollx"><div class="dtab" style="--dc:230px repeat(5,1fr)" id="fp-terms"></div></div>
-    </div>
-
-    <div class="band">
-      <h2>Term usage</h2>
-      <div class="bd">Which terms are being used, and which are candidates for review or deletion.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Most used terms</div>
-      <div class="psub">By records declared against the term.</div>
-      <div id="fp-top"></div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Least used terms</div>
-      <div class="psub">The least applied terms, as candidates for review or deletion.</div>
-      <div id="fp-bottom"></div>
-    </div>
-
-    <div class="band">
-      <h2>Declaration by classification and business process</h2>
-      <div class="bd">How declared records divide across classification and business process.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records declared by classification and by business process</div>
-      <div class="psub">How declared records divide across the file plan and the business processes behind it.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Records by classification</div><div class="tv">${F(DATA.DECLARED)}</div></div>
-        <div class="tile"><div class="tl">Records by business process</div><div class="tv">${F(Math.round(DATA.DECLARED*0.83))}</div></div>
-        <div class="tile"><div class="tl">Classified records</div><div class="tv">${F(Math.round(DATA.DECLARED*0.83))}</div></div>
-        <div class="tile"><div class="tl">Unclassified records</div><div class="tv">${F(DATA.DECLARED-Math.round(DATA.DECLARED*0.83))}</div></div>
-      </div>
+      <div id="fp-terms"></div>
     </div>
   </section>`;
 
   function init(){
-    document.getElementById("fp-kpis").innerHTML=[
-      ["Total Terms",F(TOTAL_TERMS)],
-      ...CATTOT.slice(0,3).map(c=>[c.cat+" Terms",F(c.terms)]),
-    ].map(([l,v])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
-      <div class="sub">Across the institutional file plan</div></div>`).join("");
     const sel=document.getElementById("fp-cat");
-    sel.innerHTML=PLAN.map(c=>`<option value="${c.cat}">${c.cat}</option>`).join("");
+    sel.value=cat;
     sel.onchange=e=>{cat=e.target.value;drawTerms();};
-    drawCats();drawTerms();drawUsage();drawCatCharts();
+    drawCats(); drawTerms();
   }
 
   return {
@@ -2865,12 +2937,7 @@ DASHBOARDS.fp=(function(){
 DASHBOARDS.rd=(function(){
   const BW=DASHBOARDS.bw.summary;
 
-  function split(total,weights){
-    const s=weights.reduce((a,b)=>a+b,0);
-    const out=weights.map(w=>Math.max(1,Math.round(total*w/s)));
-    out[0]+=total-out.reduce((a,b)=>a+b,0);
-    return out;
-  }
+  const split=splitTotal;
 
   const PERM_REC=DATA.PERMANENT;
   const TEMP_REC=DATA.LABEL_TOTAL-DATA.PERMANENT;
@@ -2908,121 +2975,124 @@ DASHBOARDS.rd=(function(){
 
   let mode="temporary";
 
-  function drawTerms(){
-    const temp=mode==="temporary";
-    const rows=temp?TEMP:PERM;
-    document.getElementById("rd-terms").innerHTML=
-      `<div class="dhead"><div>Term, top level</div><div class="num">Departments</div>
-        <div class="num">Libraries</div><div class="num">Records declared</div>
-        <div class="num">Counterparts</div><div class="num">${temp?"Retention label":"Retention"}</div>
-        <div class="num">${temp?"Due for disposal":"Due"}</div><div class="num">Disposed</div></div>`+
-      rows.map(t=>`<div class="drow"><div class="dn">${t.term}${t.note?`<small>${t.note}</small>`:""}</div>
-        <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
-        <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
-        <div class="num">${temp?t.label:"Permanent"}</div>
-        <div class="num">${temp?F(t.due):"never"}</div>
-        <div class="num">${temp?F(Math.round(t.due*0.42)):"0"}</div></div>`).join("")+
-      `<div class="dtot"><div>${temp?"Temporary":"Permanent"} total</div>
-        <div class="num"></div>
-        <div class="num">${F(rows.reduce((a,t)=>a+t.libs,0))}</div>
-        <div class="num">${F(rows.reduce((a,t)=>a+t.rec,0))}</div>
-        <div class="num">${F(rows.reduce((a,t)=>a+t.phys,0))}</div>
-        <div class="num"></div>
-        <div class="num">${temp?F(DATA.DUE_NEXT_12):"never"}</div>
-        <div class="num">${temp?F(Math.round(DATA.DUE_NEXT_12*0.42)):"0"}</div></div>`;
-    document.getElementById("rd-mode-note").textContent=temp
-      ? "Temporary retention carries a duration, so every record under it eventually falls due. The durations below are the ones the client drew on PPT s46."
-      : "Permanent retention never falls due for disposal, which is why the whole disposal pipeline excludes it.";
-  }
+  const NOSRC=`<span class="nosrc">Not captured</span>`;
+
+  /* Permanent retention carries a document count on s45 that temporary does
+     not, so the two tables genuinely differ and are drawn separately rather
+     than collapsed into one. Documents per term need the same term to document
+     join the file plan needs. */
+  const pDocs=split(Math.round(DATA.DOCUMENTS*PERM_REC/DATA.LABEL_TOTAL),pw);
+  PERM.forEach((t,i)=>{t.docs=pDocs[i];});
+
+  /* ===== s44, the landing screen =====
+     Reached from the Retention and disposal insights tile on Bank-wide, s34.
+     Records disposed is the one column with no source: the EDRMS application
+     has no disposal status, approver or disposal date. Audit question 7. */
+  const ROLLUP=[
+    {lab:"Permanent retention", depts:PERM.reduce((a,t)=>a+t.depts,0),
+     libs:PERM.reduce((a,t)=>a+t.libs,0), rec:PERM_REC, phys:PERM_PHYS, due:0},
+    {lab:"Temporary retention", depts:TEMP.reduce((a,t)=>a+t.depts,0),
+     libs:TEMP.reduce((a,t)=>a+t.libs,0), rec:TEMP_REC, phys:TEMP_PHYS, due:DATA.DUE_NEXT_12},
+  ];
+  console.assert(ROLLUP.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
+    "The rollup must total every labelled record");
+  console.assert(ROLLUP.reduce((a,r)=>a+r.phys,0)===DATA.WITH_PHYSICAL,
+    "The rollup must total every physical counterpart");
+  console.assert(ROLLUP.reduce((a,r)=>a+r.due,0)===DATA.DUE_NEXT_12,
+    "The rollup must total every record due for disposal");
 
   const html=`<section class="dash-rd">
     <div class="band">
       <h2>Retention and disposal insights</h2>
-      <div class="bd">Records approaching disposal, retention labels, and disposal progress.</div>
+      <div class="bd">What records require action under the RRDS.</div>
     </div>
 
-    <div class="kpis" id="rd-kpis"></div>
-
-    <div class="band">
-      <h2>Permanent and temporary retention</h2>
-      <div class="bd">Permanent and temporary retention, as one panel with a switch.</div>
-    </div>
     <div class="panel">
-      <div class="ptitle">Terms by retention type</div>
-      <div class="psub">Each top level term with its retention label, what falls due, and what has been disposed.</div>
-      <div id="rd-split" style="margin-bottom:16px"></div>
-      <div class="toolbar">
-        <span class="lbl">Retention type</span>
-        <select id="rd-mode">
-          <option value="temporary">Temporary retention</option>
-          <option value="permanent">Permanent retention</option>
-        </select>
-      </div>
-      <div class="psub" id="rd-mode-note"></div>
-      <div class="scrollx"><div class="dtab" style="--dc:210px repeat(7,1fr)" id="rd-terms"></div></div>
-    </div>
-
-    <div class="band">
-      <h2>Disposition risk</h2>
-      <div class="bd">What is falling due, what is overdue, and what is waiting on approval.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records falling due, and records past retention</div>
-      <div class="psub">What falls due in each window, what has passed its retention period, and what is waiting on approval.</div>
-      <div id="rd-windows" style="margin-bottom:16px"></div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Due within 30 days</div><div class="tv">${F(DATA.DUE_30)}</div></div>
-        <div class="tile"><div class="tl">Due within 90 days</div><div class="tv">${F(DATA.DUE_90)}</div></div>
-        <div class="tile hi"><div class="tl">Due within 12 months</div><div class="tv">${F(DATA.DUE_NEXT_12)}</div></div>
-        <div class="tile"><div class="tl">Beyond retention period</div><div class="tv">${F(DATA.BEYOND_RETENTION)}</div></div>
-        <div class="tile"><div class="tl">Records disposed</div><div class="tv">${F(Math.round(DATA.DUE_NEXT_12*0.42))}</div></div>
-        <div class="tile"><div class="tl">Awaiting approval</div><div class="tv">${F(74)}</div></div>
-        <div class="tile"><div class="tl">Disposition backlog</div><div class="tv">${F(112)}</div></div>
-        <div class="tile"><div class="tl">Approval backlog</div><div class="tv">${F(29)}</div></div>
-      </div>
+      <div class="ptitle">EDRMS retention and disposal insights</div>
+      <div class="psub">The declared holding split into permanent and temporary retention.</div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(6,minmax(110px,1fr))">
+        <div class="dhead"><div>Heading</div>
+          <div class="num">Departments, offices and RMs provisioned</div>
+          <div class="num">Number of libraries provisioned</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Number of physical counterparts</div>
+          <div class="num">Number of records due for disposal</div>
+          <div class="num">Number of records disposed</div></div>
+        ${ROLLUP.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
+          <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
+          <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
+          <div class="num">${F(r.due)}</div><div class="num">${NOSRC}</div></div>`).join("")}
+        <div class="dtot"><div>Total</div>
+          <div class="num">${F(ROLLUP.reduce((a,r)=>a+r.depts,0))}</div>
+          <div class="num">${F(ROLLUP.reduce((a,r)=>a+r.libs,0))}</div>
+          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
+          <div class="num">${F(DATA.WITH_PHYSICAL)}</div>
+          <div class="num">${F(DATA.DUE_NEXT_12)}</div>
+          <div class="num">${NOSRC}</div></div>
+      </div></div>
     </div>
 
     <div class="band">
-      <h2>Retention compliance</h2>
-      <div class="bd">Whether each declared record carries a retention schedule at all.</div>
+      <h2>Permanent retention</h2>
+      <div class="bd">Records that never fall due for disposal.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Records with and without a schedule</div>
-      <div class="psub">Declared records with and without a retention schedule.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">With a retention schedule</div><div class="tv">${F(DATA.WITH_SCHEDULE)}</div></div>
-        <div class="tile hi"><div class="tl">Without a retention schedule</div><div class="tv">${F(DATA.LABEL_TOTAL-DATA.WITH_SCHEDULE)}</div></div>
-        <div class="tile"><div class="tl">Libraries without a mapping</div><div class="tv">${F(147)}</div></div>
-        <div class="tile"><div class="tl">Physical records overdue for transfer</div><div class="tv">${F(46)}</div></div>
-      </div>
+      <div class="ptitle">EDRMS retention and disposal insights, permanent retention</div>
+      <div class="psub">Top level terms under permanent retention, and what each holds.</div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(5,minmax(110px,1fr))">
+        <div class="dhead"><div>Term (top level)</div>
+          <div class="num">Departments, offices and RMs provisioned</div>
+          <div class="num">Number of libraries provisioned</div>
+          <div class="num">Number of documents</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Number of physical counterparts</div></div>
+        ${PERM.map(t=>`<div class="drow"><div class="dn">${t.term}<small>${t.note}</small></div>
+          <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
+          <div class="num">${F(t.docs)}</div><div class="num">${F(t.rec)}</div>
+          <div class="num">${F(t.phys)}</div></div>`).join("")}
+        <div class="dtot"><div>Total</div>
+          <div class="num">${F(PERM.reduce((a,t)=>a+t.depts,0))}</div>
+          <div class="num">${F(PERM.reduce((a,t)=>a+t.libs,0))}</div>
+          <div class="num">${F(PERM.reduce((a,t)=>a+t.docs,0))}</div>
+          <div class="num">${F(PERM_REC)}</div>
+          <div class="num">${F(PERM_PHYS)}</div></div>
+      </div></div>
+    </div>
+
+    <div class="band">
+      <h2>Temporary retention</h2>
+      <div class="bd">Records that fall due for disposal, and when.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">EDRMS retention and disposal insights, temporary retention</div>
+      <div class="psub">Top level terms under temporary retention, with their retention label.</div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(7,minmax(104px,1fr))">
+        <div class="dhead"><div>Term (top level)</div>
+          <div class="num">Departments, offices and RMs provisioned</div>
+          <div class="num">Number of libraries provisioned</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Number of physical counterparts</div>
+          <div class="num">Retention label</div>
+          <div class="num">Number of records due for disposal</div>
+          <div class="num">Number of records disposed</div></div>
+        ${TEMP.map(t=>`<div class="drow"><div class="dn">${t.term}</div>
+          <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
+          <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
+          <div class="num">${t.label}</div><div class="num">${F(t.due)}</div>
+          <div class="num">${NOSRC}</div></div>`).join("")}
+        <div class="dtot"><div>Total</div>
+          <div class="num">${F(TEMP.reduce((a,t)=>a+t.depts,0))}</div>
+          <div class="num">${F(TEMP.reduce((a,t)=>a+t.libs,0))}</div>
+          <div class="num">${F(TEMP_REC)}</div>
+          <div class="num">${F(TEMP_PHYS)}</div>
+          <div class="num"></div>
+          <div class="num">${F(DATA.DUE_NEXT_12)}</div>
+          <div class="num">${NOSRC}</div></div>
+      </div></div>
     </div>
   </section>`;
 
-  function drawSplit(){
-    document.getElementById("rd-split").innerHTML=CHART.stacked([
-      {label:"Temporary retention",value:TEMP_REC,color:"var(--blue)"},
-      {label:"Permanent retention",value:PERM_REC,color:"var(--greyblue)"},
-    ],{caption:F(DATA.LABEL_TOTAL)+" declared records"});
-    document.getElementById("rd-windows").innerHTML=CHART.columns([
-      {label:"30 days",value:DATA.DUE_30,color:"var(--orange)"},
-      {label:"90 days",value:DATA.DUE_90,color:"var(--blue)"},
-      {label:"12 months",value:DATA.DUE_NEXT_12,color:"var(--deepblue)"},
-      {label:"Beyond retention",value:DATA.BEYOND_RETENTION,color:"var(--mut)"},
-    ],{height:150});
-  }
-
-  function init(){
-    document.getElementById("rd-kpis").innerHTML=[
-      ["Records Due for Disposal",F(DATA.DUE_NEXT_12),"Next 12 months"],
-      ["Next Due Date",DATA.NEXT_DUE?DATA.NEXT_DUE:"see Retention","Earliest scheduled disposal"],
-      ["Permanent Retention",F(PERM_REC),"Retained permanently"],
-      ["Records Disposed",F(Math.round(DATA.DUE_NEXT_12*0.42)),"Completed in the last 12 months"],
-    ].map(([l,v,s])=>`<div class="kpi stat"><div class="lab">${l}</div><div class="val">${v}</div>
-      <div class="sub">${s}</div></div>`).join("");
-    const sel=document.getElementById("rd-mode");
-    sel.onchange=e=>{mode=e.target.value;drawTerms();};
-    drawTerms();drawSplit();
-  }
+  function init(){}
 
   return {
     ver:"Retention and Disposal Dashboard",

@@ -144,33 +144,50 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const poTerms=await page.$$eval(".dash-fp #fp-terms .drow .dn",els=>els.map(e=>e.textContent));
   ok(poTerms.some(t=>/Portfolio Management/.test(t)),
      "choosing a category shows that category's terms, as drawn on PPT s51");
-  const top=await page.$$eval(".dash-fp #fp-top .hbar",els=>els.length);
-  const bottom=await page.$$eval(".dash-fp #fp-bottom .hbar",els=>els.length);
-  ok(top>0&&bottom>0,`most used and least used term panels are populated (${top} and ${bottom})`);
-  const topVals=await page.$$eval(".dash-fp #fp-top .hf",els=>els.map(e=>+e.textContent.replace(/[^0-9]/g,"")));
-  ok(topVals.every((v,i)=>i===0||topVals[i-1]>=v),"most used terms are ordered highest first");
+  const bars=await page.$$eval(".dash-fp #fp-terms .hbar",els=>els.length);
+  ok(bars>0,`most used and least used term panels are populated (${bars} bars)`);
+  /* s48 to s52 all repeat five indicators. Three have no source. */
+  const asks=await page.$eval(".dash-fp #fp-terms .asks",e=>e.textContent);
+  ok(/outside the convention/i.test(asks)&&/new term/i.test(asks),
+     "the indicators s48 to s52 repeat are listed rather than invented");
 
-  /* ---------------- Retention and Disposal, PPT s32 and s44 to s46 ---------------- */
+  /* ---------------- Retention and Disposal, PPT s44 to s46 ---------------- */
   console.log("\nRetention and Disposal");
   await page.evaluate(()=>switchTo("rd"));
-  const rt=await page.evaluate(()=>({labelTotal:DATA.LABEL_TOTAL,dueNext12:DATA.DUE_NEXT_12}));
   const rd=await page.evaluate(()=>DASHBOARDS.rd.summary);
-  eq(rd.permanent+rd.temporary,rt.labelTotal,"permanent plus temporary total every labelled record");
+  const rt=await page.evaluate(()=>({dueNext12:DATA.DUE_NEXT_12,labelled:DATA.LABEL_TOTAL,
+    phys:DATA.WITH_PHYSICAL}));
+  eq(rd.permanent+rd.temporary,rt.labelled,"permanent plus temporary total every labelled record");
   eq(rd.due,rt.dueNext12,"records due agree with the shared disposal window");
-  const tempRows=await page.$$eval(".dash-rd #rd-terms .drow",els=>els.map(e=>
+
+  /* s44 is this dashboard's slide 1, reached from the Bank-wide tile. */
+  const body=await page.$eval(".dash-rd",e=>e.textContent);
+  ok(/EDRMS retention and disposal insights/.test(body),"the s44 rollup opens this dashboard");
+  ok(!/disposition risk/i.test(body),"Disposition risk is gone, it appears nowhere in the deck");
+  ok(!/without a schedule/i.test(body),"Records with and without a schedule is gone, likewise");
+
+  /* s45 and s46 are two DIFFERENT tables: permanent carries a document count
+     and no retention label, temporary carries the label, the due date and the
+     disposed count. They are drawn separately rather than collapsed into one. */
+  const heads=await page.$$eval(".dash-rd .dhead",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
-  eq(tempRows.reduce((a,r)=>a+n(r[6]),0),rt.dueNext12,
+  eq(heads.length,3,"three tables: the rollup, permanent, and temporary");
+  ok(heads[1].includes("Number of documents")&&!heads[1].includes("Retention label"),
+     "the permanent table carries documents and no retention label, PPT s45");
+  ok(heads[2].includes("Retention label")&&heads[2].includes("Number of records disposed"),
+     "the temporary table carries the label and the disposed count, PPT s46");
+
+  const tabs=await page.$$eval(".dash-rd .dtab",els=>els.map(t=>
+    [...t.querySelectorAll(".drow")].map(r=>[...r.children].map(c=>c.textContent.trim()))));
+  eq(tabs[1].reduce((a,r)=>a+n(r[4]),0),rd.permanent,"the permanent terms total the permanent count");
+  eq(tabs[2].reduce((a,r)=>a+n(r[3]),0),rd.temporary,"the temporary terms total the temporary count");
+  eq(tabs[2].reduce((a,r)=>a+n(r[6]),0),rt.dueNext12,
      "the temporary terms carry every record due for disposal");
-  eq(tempRows.reduce((a,r)=>a+n(r[3]),0),rd.temporary,
-     "the temporary terms total the temporary record count");
-  ok(tempRows.every(r=>/years|declaration|separation|closure/.test(r[5])),
+  ok(tabs[2].every(r=>/years|declaration|separation|closure/.test(r[5])),
      "every temporary term shows its duration, as drawn on PPT s46");
-  await page.selectOption(".dash-rd #rd-mode","permanent");
-  const permRows=await page.$$eval(".dash-rd #rd-terms .drow",els=>els.map(e=>
-    [...e.children].map(c=>c.textContent.trim())));
-  eq(permRows.reduce((a,r)=>a+n(r[3]),0),rd.permanent,"the permanent terms total the permanent count");
-  const note=await page.$eval(".dash-rd #rd-mode-note",e=>e.textContent);
-  ok(/never falls due/.test(note),"the permanent note explains why it carries no due figure");
+  /* Records disposed has no source on either table. */
+  const disposed=await page.$$eval(".dash-rd .nosrc",els=>els.length);
+  ok(disposed>0,`records disposed says it is not captured (${disposed} cells)`);
 
   /* ---------------- Records and Archive Holdings, PPT s67 to s69 ---------------- */
   console.log("\nRecords and Archive Holdings");

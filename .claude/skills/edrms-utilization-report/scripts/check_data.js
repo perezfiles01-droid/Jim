@@ -118,6 +118,17 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Orphaned records",                /orphaned records/i],
     ["Sensitivity labels",              /sensitivity label/i],
   ];
+  /* Removed 17 Aug when the deck itself was read. None of these three appears
+     anywhere in its 69 slides; they came from the proposed metrics document.
+     "classification", "business process" and "overdue for transfer" are all
+     absent from the client's own file. */
+  const notInDeck=[
+    ["Records declared by classification", /by classification/i],
+    ["Records declared by business process",/business process/i],
+    ["Physical records overdue for transfer",/overdue for transfer/i],
+    ["Disposition risk",                   /disposition risk/i],
+    ["Records with and without a schedule",/without a schedule/i],
+  ];
   const restored=cutPanels.filter(([,re_])=>re_.test(body));
   ok(restored.length===0,
      `every panel the client removed stays off Bank-wide${
@@ -126,8 +137,11 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(/Comparison/.test(body),"the comparison panel survives, it is on their own slide");
   ok(/Number of active EDRMS SharePoint sites for Department/.test(body),
      "the sites table survives as the drill behind tile 1, PPT s16 and s35");
-  ok(/EDRMS retention and disposal insights/.test(body),
-     "the retention rollup is back, PPT s44 draws it under the Bank-wide banner");
+  /* s44 lives on Retention and Disposal, which is the dashboard it is slide 1
+     of. Bank-wide reaches it through the tile of the same name, so drawing it
+     here as well would show one table twice. */
+  ok(!/EDRMS retention and disposal insights/.test(body),
+     "the s44 rollup is not duplicated on Bank-wide, it lives on the dashboard it opens");
   ok(/Records Declaration Trend/.test(body),"the declaration trend survives, PPT s10 and s18");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
@@ -151,11 +165,12 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   const required=[
     ["Records declared this month",     "Records Declaration",     /declared this month/i],
     ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
-    ["Records declared by classification","Records Declaration",   /by classification/i],
-    ["Records declared by business process","Records Declaration", /business process/i],
-    ["Physical records overdue for transfer","Risk and Compliance",/overdue for transfer/i],
     ["Storage locations",               "Storage Location Dashboard",/offsite storage/i],
   ];
+  const backFromMetrics=notInDeck.filter(([,re_])=>re_.test(all));
+  ok(backFromMetrics.length===0,
+     `headings that appear nowhere in the deck stay off every dashboard${
+       backFromMetrics.length?": found "+backFromMetrics.map(m=>m[0]).join(", "):` (${notInDeck.length} checked)`}`);
   const missing=required.filter(([,,re_])=>!re_.test(all));
   ok(missing.length===0,
      `every retained metrics heading is on the page${

@@ -95,21 +95,26 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   await page.evaluate(()=>switchTo("dp"));
   await page.selectOption(".dash-dp #dp-sel","ITD");
   await settle(page,'.dash-dp #dp-kpis .kpi[data-k="users"]');
-  const uTitle=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
-  ok(/division/.test(uTitle),"the users table is by division, as drawn on PPT s54");
+  /* s54 draws this table with DIVISION rows, and five measures none of which
+     has a source: nothing tells us whether a person is staff, a contractor or
+     a consultant, whether they were trained, or when they were onboarded. The
+     rows are divisions as drawn; the cells say they are not captured. Audit
+     question 3. */
+  const uHead=await page.$$eval(".dash-dp #dp-drill .dhead div",els=>els.map(e=>e.textContent.trim()));
+  const uWant=["Division","Total number of users (staff)","Total number of users (Contractors)",
+               "Total number of users (Consultants)","Completion of training","Onboarded since go-live"];
+  ok(JSON.stringify(uHead)===JSON.stringify(uWant),
+     `the users table column names are the client's, verbatim${
+       uHead.join(" | ")!==uWant.join(" | ")?": got "+uHead.join(" | "):""}`);
   const uRows=await page.$$eval(".dash-dp #dp-drill .drow .dn",els=>els.map(e=>e.textContent.trim()));
-  ok(uRows.every(t=>/Division/.test(t)),`every users row is a division (${uRows.length} rows)`);
-  const uSum=await page.evaluate(()=>{
-    const rows=[...document.querySelectorAll("#dp-drill .drow")];
-    return rows.reduce((a,r)=>a+ +r.children[1].textContent.replace(/[^0-9]/g,""),0);
-  });
-  const deptUsers=await page.evaluate(()=>
-    DASHBOARDS.bw.summary.departments.find(d=>d.code==="ITD").users);
-  eq(uSum,deptUsers,"the division rows on screen total the department's users");
+  ok(uRows.length>=2&&uRows.every(t=>/Division/.test(t)),
+     `every users row is a division (${uRows.length} rows)`);
+  const uNos=await page.$$eval(".dash-dp #dp-drill .drow .nosrc",els=>els.length);
+  eq(uNos,uRows.length*5,"all five user measures say they are not captured, none is invented");
 
   await settle(page,'.dash-dp #dp-kpis .kpi[data-k="rec"]');
-  const rTitle=await page.$eval(".dash-dp #dp-drill .ptitle",e=>e.textContent.toLowerCase());
-  ok(/division/.test(rTitle),"the declaration table offers the division tier, as drawn on PPT s58");
+  const rSub=await page.$eval(".dash-dp #dp-drill .psub",e=>e.textContent.toLowerCase());
+  ok(/division/.test(rSub),"the declaration table offers the division tier, as drawn on PPT s58");
   const startClosed=await page.$$eval(".dash-dp #dp-drill .drow.kid",els=>els.length);
   eq(startClosed,0,"site divisions start closed");
   await page.click(".dash-dp #dp-drill .drow.exp");

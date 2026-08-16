@@ -148,7 +148,15 @@ function check(name, ok, detail) {
     if (isRef) {
       check('reference page, KPI check not applicable', true);
     } else {
-      check('has at least one KPI card', kpis > 0, String(kpis));
+      /* Retention and Disposal is the one dashboard the client's deck gives no
+         top panel stats at all: s44, s45 and s46 are three tables and nothing
+         else. So a missing KPI row there is the requirement, not a defect.
+         Every other dashboard must carry one. */
+      const NO_TOP_PANEL = ['rd'];
+      if (NO_TOP_PANEL.includes(key))
+        check('no top panel, which is what the deck draws for this one', kpis === 0, String(kpis));
+      else
+        check('has at least one KPI card', kpis > 0, String(kpis));
     }
     const emptyKpis = await page.locator('#view .kpi .val').evaluateAll(
       els => els.filter(e => !e.textContent.trim()).length);

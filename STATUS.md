@@ -175,6 +175,60 @@ closing dates, come from an **ADB project system that has never been named in
 this work**. Even with the register, the top third of that screen stays empty
 without it. Both are now questions 2 and 7 in `CLIENT_SLIDES_2026-08-16.md`.
 
+### 17 August: all six dashboards rebuilt to the deck
+
+Department Insights, Institutional File Plan and Retention and Disposal were
+rebuilt against `EDRMS_Dashboard_requirements_1.pptx` itself. **All six
+dashboards now trace to a slide, and nothing on any of them traces to a word
+list.**
+
+**Department Insights, s53 to s66.** Seven tiles with the client's own labels,
+all clickable per their note. The Go-Live date sits above them as s53 draws it
+and reads Not captured. Seven drills, one per tile, with verbatim column names:
+sites (s55, sorted and paged), users by division (s54), visitors (s56),
+documents (s57), record declaration with collapsible division rows (s58),
+physical counterpart (s59), disposal by library (s60). Library usage by file
+plan category (s61 to s66) behind a picker rather than six screens. Cumulative
+trend (s24). Conventions and programme dates (s26, s28).
+
+**Institutional File Plan, s47 to s52.** The rollup with all five categories and
+their column names, then one screen per category with the top stats, the term
+table and the five indicators every one of s48 to s52 repeats. **Removed:
+"Declaration by classification and business process". Neither "classification"
+nor "business process" appears anywhere in 69 slides.**
+
+**Retention and Disposal, s44 to s46.** The s44 rollup is now this dashboard's
+landing screen, which is what the deck makes it: s44 is its slide 1, reached
+from the Bank-wide tile of the same name. It was briefly duplicated on Bank-wide
+and is not any more. s45 and s46 are drawn as **two tables**, because they carry
+different columns: permanent has a document count and no retention label,
+temporary has the label, the due date and the disposed count. **Removed:
+"Disposition risk" and "Records with and without a schedule". Neither appears in
+the deck.**
+
+### The split bug: five copies, two ways wrong, totals silently broken
+
+Found by an assert while rebuilding Department Insights, and it is the most
+serious defect this project has had.
+
+`split()` shared out a whole number across weights and existed in **five
+near-identical copies**. It did `Math.max(1, round(total*w/s))` and then dumped
+the remainder on the first element. With ITD's 104 sites sharing 75 records due,
+the forced minimum of one pushed the sum to 104 and **the first row went to
+minus 29**. Three of the five copies then clamped the negative to zero, which
+fixed the appearance and **silently broke the total**: a department showed 103
+records due against a real 75, and every assert checking that sum was reading
+the clamped figure and passing.
+
+Replaced with one shared `splitTotal()` using largest remainder: floor each
+share, then hand the leftover units to the rows with the largest fractional
+parts. Non-negative by construction, exact by construction, with its own asserts
+for the case that broke it. **One definition, five call sites.**
+
+The lesson is the one this project keeps relearning: a plausible number that
+reconciles against another plausible number is not verification. The bug
+survived because the checker compared two figures that were both wrong.
+
 ### 17 August: Records and Archive Holdings stripped of invented figures
 
 **Client instruction: nothing from Opus.** Slide 67 is a screenshot of the IR
