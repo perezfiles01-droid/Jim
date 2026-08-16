@@ -37,13 +37,28 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
     lab:e.querySelector(".lab").textContent.trim(),
     val:e.querySelector(".val").textContent.trim(),
     tap:!!e.querySelector(".tap"), stat:e.classList.contains("stat")})));
-  eq(tiles.length,8,"eight top panel tiles, one per PPT s34 stat");
-  eq(tiles.filter(t=>t.tap).length,5,"five tiles promise a click");
-  eq(tiles.filter(t=>t.stat).length,3,"three tiles are static");
-  ok(tiles.every(t=>t.tap!==t.stat),"no tile both promises and refuses a click");
+  /* PPT s34 draws TEN tiles, not eight. Eight open a table on this screen; two
+     navigate to Retention and Disposal and to the Institutional File Plan,
+     which is why s44 and s47 carry the Bank-wide banner while the slides behind
+     them do not. All ten do something, so all ten carry the chevron. */
+  eq(tiles.length,10,"ten top panel tiles, one per PPT s34 stat");
+  eq(tiles.filter(t=>t.tap).length,10,"every tile promises a click, because every tile does something");
+  eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
   ok(tiles.some(t=>/Sovereign/.test(t.lab))&&tiles.some(t=>/Nonsovereign/.test(t.lab)),
      "the sovereign and nonsovereign split the client asked for three times is present");
+  ok(tiles.some(t=>/Retention and disposal insights/.test(t.lab)),
+     "the Retention and disposal insights navigation tile is present, PPT s34");
+  ok(tiles.some(t=>/Institutional File Plan insights/.test(t.lab)),
+     "the Institutional File Plan insights navigation tile is present, PPT s34");
+  /* The two navigation tiles must actually navigate. */
+  for(const [k,crumb] of [["rd","Retention and Disposal"],["fp","Institutional File Plan"]]){
+    await page.evaluate(()=>switchTo("bw"));
+    await page.click(`.dash-bw #bw-kpis .kpi[data-go="${k}"]`);
+    const c=await page.$eval("#crumb-b",e=>e.textContent);
+    ok(new RegExp(crumb).test(c),`the ${k} tile opens ${crumb} (${c})`);
+  }
+  await page.evaluate(()=>switchTo("bw"));
 
   console.log("\nReconciliation against the other dashboards");
   const s=await page.evaluate(()=>({
@@ -56,35 +71,45 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   eq(s.bw.departmentalSites+s.bw.projectSites,s.d.SITES_CREATED,
      "departmental plus project sites total compliant sites created");
 
-  console.log("\nDepartment table, PPT s16 and s35");
-  const rows=await page.$$eval(".dash-bw #bw-depts .drow",els=>els.map(e=>
+  console.log("\nSites table, PPT s16 and s35, now the drill behind tile 1");
+  /* s16 and s35 draw the SAME table. It appears once, as the drill behind the
+     sites tile, rather than as a tile and a second panel further down. The
+     project rows are no longer in it: s36 and s37 give them their own tables
+     behind their own tiles. */
+  await page.click('.dash-bw #bw-kpis .kpi[data-k="sites"]');
+  const rows=await page.$$eval(".dash-bw #bw-drill .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
-  eq(rows.length,18,"sixteen departments plus the two project groupings");
-  eq(rows.filter((r,i)=>i>=16).length,2,"two project rows sit beneath the departments");
-  const tot=await page.$$eval(".dash-bw #bw-depts .dtot > div",els=>els.map(e=>e.textContent.trim()));
-  for(const [i,label] of [[1,"sites"],[2,"documents"],[3,"records"],[4,"counterparts"],[5,"due"]]){
-    const summed=rows.reduce((a,r)=>a+num(r[i]),0);
-    eq(summed,num(tot[i]),`${label} column sums to its total row`);
+  eq(rows.length,16,"the sixteen departments, offices and RMs");
+  const tot=await page.$$eval(".dash-bw #bw-drill .dtot > div",els=>els.map(e=>e.textContent.trim()));
+  for(const [i,label] of [[1,"sites"],[2,"documents"],[3,"records"],[4,"counterparts"]]){
+    eq(rows.reduce((a,r)=>a+num(r[i]),0),num(tot[i]),`${label} column sums to its total row`);
   }
-  eq(num(tot[1]),s.d.SITES_CREATED,"the site total is the compliant site count, not a new number");
-  /* The total row covers the project groupings as well as the departments, so
-     it is deliberately larger than the declared record count. It is the
-     departments alone that must agree with Records Management. */
-  const deptOnly=rows.slice(0,16).reduce((a,r)=>a+num(r[3]),0);
-  eq(deptOnly,s.d.DECLARED,"the sixteen departments alone total the declared record count");
-  eq(num(tot[3]),deptOnly+rows.slice(16).reduce((a,r)=>a+num(r[3]),0),
-     "the total row adds the project groupings on top of the departments");
+  eq(num(tot[3]),s.d.DECLARED,"the departments total the declared record count");
+  eq(num(tot[4]),s.d.WITH_PHYSICAL,"the departments total the physical counterpart count");
 
   console.log("\nSorting, which answers the question on PPT s5");
-  const firstBefore=rows[0][0].split("\n")[0];
-  await page.click('.dash-bw #bw-depts .hd[data-s="code"]');
-  const afterCode=await page.$eval(".dash-bw #bw-depts .drow .dn",e=>e.textContent.trim());
+  await page.click('.dash-bw #bw-drill .hd[data-s="code"]');
+  const afterCode=await page.$eval(".dash-bw #bw-drill .drow .dn",e=>e.textContent.trim());
   ok(/^BRM/.test(afterCode),"sorting by department gives an alphabetical list, BRM first ("+afterCode.split("\n")[0]+")");
-  await page.click('.dash-bw #bw-depts .hd[data-s="docs"]');
-  const afterDocs=await page.$$eval(".dash-bw #bw-depts .drow",els=>
-    els.slice(0,16).map(e=>+e.children[2].textContent.replace(/[^0-9]/g,"")));
+  await page.click('.dash-bw #bw-drill .hd[data-s="docs"]');
+  const afterDocs=await page.$$eval(".dash-bw #bw-drill .drow",els=>
+    els.map(e=>+e.children[2].textContent.replace(/[^0-9]/g,"")));
   ok(afterDocs.every((v,i)=>i===0||afterDocs[i-1]>=v),"sorting by documents orders highest first");
-  ok(firstBefore.length>0,"the table had a first row before sorting");
+
+  console.log("\nProject tables, PPT s36 and s37, on Bank-wide where the deck puts them");
+  for(const [k,fac] of [["sov","Sovereign"],["nonsov","Nonsovereign"]]){
+    await page.evaluate(()=>switchTo("bw"));
+    await page.click(`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
+    const pr=await page.$$eval(".dash-bw #bw-drill .drow",els=>els.map(e=>
+      [...e.children].map(c=>c.textContent.trim())));
+    ok(pr.length>=3,`the ${fac} table lists its projects (${pr.length})`);
+    const ptot=await page.$$eval(".dash-bw #bw-drill .dtot > div",els=>els.map(e=>e.textContent.trim()));
+    ok(/${fac}/.test(ptot[0])||ptot[0].includes(fac),`the total row names the facility type (${ptot[0]})`);
+    for(const i of [1,2,3,4]){
+      eq(pr.reduce((a,r)=>a+num(r[i]),0),num(ptot[i]),`${fac} column ${i} sums to its total row`);
+    }
+  }
+  await page.evaluate(()=>switchTo("bw"));
 
   console.log("\nThe five drill tables, PPT s39 to s43");
   const expect={users:"users",docs:"documents",rec:"records declared",

@@ -1,0 +1,778 @@
+
+=== SLIDE 1 ===
+EDRMS Dashboard
+For monitoring and reporting
+1
+
+=== SLIDE 2 ===
+Objective
+The EDRMS Dashboard should be a tool to facilitate the ongoing monitoring of the:
+number of active EDRMS SharePoint sites
+usage of EDRMS SharePoint sites by department/office/RM/project
+Application of the Institutional File Plan
+Compliance with AO4.08
+Application of the RRDS
+Disposal processing
+
+The objective of the dashboard is beyond the delivery of the EDRMS project and is a key deliverable of the project.
+2
+
+=== SLIDE 3 ===
+Audience
+3
+Audience caveat | Required for
+Management | Oversight
+HoDs / CDs / ROs | Mandate compliance
+Enable the provision of support and advocacy
+Leadership | Division / team / unit level advocacy
+General users | Insights
+CSIS – IR | Operational monitoring and support
+DRGC | Governance level monitoring capability
+ORM | Risk management factors and statistics.
+
+=== SLIDE 4 ===
+Overview – top panel
+4
+We do not want to encourage migration so I am not sure that this is relevant as a top panel highlight?
+
+Also, I do not think this will be required beyond the project. This is not a Project dashboard.
+I propose that this is not presented as a total (because it will be 1000’s). I propose that this is broken down into:
+Number of active EDRMS SharePoint sites (Department, RM, office)
+Number of active EDRMS SharePoint sites for Nonsovereign projects
+Number of active EDRMS SharePoint sites for Sovereign projects
+We want users to know that information is consolidated!
+
+=== SLIDE 5 ===
+Overview – Total created sites
+5
+There will be many sites. As suggested on slide 4 – this needs to be broken down into departments/RMs/offices/Projects
+I think it would be more beneficial to list all departments/offices/RMs alphabetically and then provide stats for each:
+Number of sites
+Number of users (for context)
+Number of documents
+Number of records
+Number of physical counterparts
+
+Can each of these be used to arrange in order, e.g. by number of documents, by number of records, by number of users?
+Will there be EDRMS sites NOT created in Cloud Governance? If not, what is the value of this? I do not think users will understand what this means?
+
+=== SLIDE 6 ===
+Overview - Compare
+6
+Larger departments with more users will obviously have more documents and more records… as well as comparing docs/records which is obvious, can we also compare using analysis and context? 
+Eg: Compare departments by number of users against number of documents against number of records declared?
+How is the comparison going to be helpful from a project site perspective?
+Compare by library – Is this relevant here? How do you intend to show 100s of library options
+
+=== SLIDE 7 ===
+Overview – Site rollout
+7
+Only relevant to the Project. Will not be needed once project is completed.
+
+Suggest removing from EDRMS Dashboard.
+
+=== SLIDE 8 ===
+Overview – Active users per site
+8
+Suggest incorporating it into the table for total number of sites.
+
+Also suggest providing breakdown on the Department dashboard.
+
+=== SLIDE 9 ===
+Records management dashboard
+9
+The stats are relevant to the Overview dashboard.
+
+It does not provide additional insights….
+
+=== SLIDE 10 ===
+Records management dashboard
+10
+Really useful – I like the date range as well. What would be the default (current year?)
+
+This should be on the Overview dashboard for Bankwide trend.
+
+Should also be able to see the trend per department/office/RM/Projects
+
+=== SLIDE 11 ===
+Migration dashboard
+11
+I do not believe this is required at all.
+
+=== SLIDE 12 ===
+Content volume dashboard
+12
+There is no new information derived from this except the total size of documents and storage growth. 
+
+Perhaps this could be amalgamated somewhere?
+
+=== SLIDE 13 ===
+EDRMS insights dashboard key views (using linked data)
+13
+Bankwide oversight
+Department insights
+Detailed profile, site-level details, users, library usage, compliance, disposal, program dates
+Project insights
+project dashboard for Sovereign and Nonsovereign project sites
+Institutional File Plan insights
+Term usage, library mapping, documents, records, physical counterparts by term
+Retention and disposal insights
+Records due for disposal, overdue disposal, disposed records, retention labels / RRDS
+Records and archive holdings
+Physical holdings, transfers to RAC, storage requests and retrievals
+
+=== SLIDE 14 ===
+14
+EDRMS insights dashboard key views
+Key View | Answers the Question | Output | Action
+Bank-wide Oversight | How is EDRMS performing across ADB? | Bank-wide EDRMS adoption, usage, compliance, and trends across departments ADB | Identify departments requiring support, monitor overall adoption, generate required reports.
+Department Insights | How is a specific department managing its records? | Detailed view of a department's profile, sites and users activities, records compliance, conventions, and disposal readiness. | Follow up with focals, address compliance gaps, schedule training, review conventions, plan records management activities.
+Project Insights | Are project sites being used and maintained appropriately? | Site usage, records compliance and other information for Sovereign and Nonsovereign project sites. | Monitor recordkeeping practices, support project teams.
+Institutional File Plan Insights | Are users classifying records correctly? | Visibility on how File Plan terms are being applied across sites and libraries. | Identify underused terms, validate file plan application, improve site design, update conventions if needed.
+Retention and Disposal Insights | What records require action under the RRDS? | Records due for disposal, retention label application, disposal status and compliance. | Initiate disposal reviews, monitor retention compliance, prioritize departments with upcoming or overdue disposal actions.
+Records and Archive Holdings | What records and archives are being managed by RAC? | Physical records holdings, archival collections, transfers to RAC, and retrieval activity. | Plan storage requirements, monitor transfer activities, support retrieval requests, identify records for archival review.
+
+=== SLIDE 15 ===
+EDRMS Bank-wide oversights
+Top panel stats:
+Number of active EDRMS SharePoint sites for Department, RM, office
+Number of active EDRMS SharePoint sites for Nonsovereign projects
+Number of active EDRMS SharePoint sites for Sovereign projects
+Total number of EDRMS users
+Total number of documents in EDRMS
+Total number of records declared in EDRMS
+Total number of physical counterparts identified
+15
+
+=== SLIDE 16 ===
+EDRMS Bank-wide oversights
+Overview of EDRMS sites
+16
+Department / office / RM | Number of EDRMS SharePoint sites | Total number of documents | Total number of records declared | Total number of physical counterparts
+Alphabetical list of all Departments, offices, RMs. | # | # | # | #
+Nonsovereign projects | # | # | # | #
+Sovereign projects | # | # | # | #
+Note: Each department/office/RM name should be clickable so that when you click on the name, it opens the Dashboard for that department/office/RM. The Nonsovereign projects / sovereign projects should also be clickable, taking the user to Project insights.
+
+=== SLIDE 17 ===
+EDRMS Bank-wide oversights
+Comparison
+17
+See comments on slide 6
+Note: Required comparisons:
+Active users / number of documents
+Active users  / number of records declared
+Number of documents / number of records declared.
+
+=== SLIDE 18 ===
+EDRMS Bank-wide oversights
+4. Bankwide record declaration trend
+18
+
+=== SLIDE 19 ===
+EDRMS Department insights
+Top panel stats:
+Go-Live date
+Total number of sites
+Total number of EDRMS users
+Total number of documents in EDRMS
+Total number of records declared in EDRMS
+Total number of physical counterparts identified
+19
+
+=== SLIDE 20 ===
+EDRMS Department insights
+Overview of EDRMS sites
+20
+Name of sites | Site owners | Number of documents | Number of records | Number of physical counterparts
+Site 1 | Names | # | # | #
+Site 2 | Names | # | # | #
+Site 3 | Names | # | # | #
+
+=== SLIDE 21 ===
+EDRMS Department insights
+Users
+21
+ | Total number of users (staff) | Total number of users (Contractorsand consultants) | Completion of training | Onboarded since go-live.
+Site 1 | # | # | # | #
+Site 2 | # | # | # | #
+Site 3 | # | # | # | #
+
+=== SLIDE 22 ===
+EDRMS Department insights
+Visitors
+22
+ | Total number of visitors | Visitors (external) | Visitors (internal) by department
+Site 1 | # | # | #
+Site 2 | # | # | #
+Site 3 | # | # | #
+
+=== SLIDE 23 ===
+EDRMS Department insights
+Compliance review – record declaration
+23
+ | Total number of records declared | Total number of users declaring records | Number of records declared per division | Number of users declaring records per division
+Site 1 | # | # | # | #
+Site 2 | # | # | # | #
+Site 3 | # | # | # | #
+
+=== SLIDE 24 ===
+EDRMS Department insights
+6. Record declaration trend (per department/office/rm/project)
+24
+
+=== SLIDE 25 ===
+EDRMS Department insights
+7. Library usage
+25
+Heading | Library name | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+e.g. Programs and operations | Country planning | # | # | # | #
+ |  |  |  |  | 
+ |  |  |  |  | 
+
+=== SLIDE 26 ===
+EDRMS Department insights
+8. Conventions
+Link
+Date of approval
+Last updated
+26
+
+=== SLIDE 27 ===
+EDRMS Department insights
+9. Disposal
+27
+Library name | Number of records due for disposal | Next due date for disposal | Disposal approver
+e.g. Country planning | # | Date | Name
+ |  |  | 
+ |  |  | 
+
+=== SLIDE 28 ===
+EDRMS Department insights
+10. Records management program dates:
+CSIS-IR audit of EDRMS: 
+Convention review:
+Physical records review:
+Refresher training due date:
+Focals CoP schedule:
+28
+
+=== SLIDE 29 ===
+EDRMS Institutional File Plan insights
+Top panel stats:
+Total terms
+Total Administration terms
+Total People management terms
+Total Programs and operations terms
+29
+
+=== SLIDE 30 ===
+EDRMS Institutional File Plan insights
+30
+Term (Top level) | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. |  |  |  | 
+1. Administration terms
+Term (Top level) | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. |  |  |  | 
+2. People management terms
+
+=== SLIDE 31 ===
+EDRMS Institutional File Plan insights
+31
+Term (Top level) | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. |  |  |  | 
+3. Programs and operations terms
+Term (Top level) | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. |  |  |  | 
+4. Other terms
+
+=== SLIDE 32 ===
+EDRMS Retention and disposal insights
+32
+Term (Top level) | Number of libraries provisioned | Number of records declared | Retention label | Number of records due for disposal | Number of records disposed
+. |  |  |  |  | 
+1. Temporary retention
+Term (Top level) | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. |  |  |  | 
+2. Permanent retention.
+
+=== SLIDE 33 ===
+Records and archives holdings
+RAC suggestions?
+33
+
+=== SLIDE 34 ===
+EDRMS Bank-wide oversights
+Total number of EDRMS users
+Total number of records declared in EDRMS
+Total Number of active EDRMS SharePoint sites for Nonsovereign projects
+Total Number of active EDRMS SharePoint sites for Sovereign projects
+Total number of documents in EDRMS
+Total number of physical counterparts identified
+Retention and disposal insights
+Institutional File Plan insights
+Total number of records due for disposal
+Slide 1
+
+=== SLIDE 35 ===
+Number of active EDRMS SharePoint sites for Department, RM, office
+Department / office / RM | Number of EDRMS SharePoint sites | Total number of documents | Total number of records declared | Total number of physical counterparts
+Alphabetical list of all Departments, offices, RMs. | # | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination |  |  |  | 
+BPMSD - Budget, People, and Management Systems Department |  |  |  | 
+CCSD - Climate Change and Sustainable Development Department |  |  |  | 
+Etc. |  |  |  | 
+Note: Each department/office/RM name should be clickable so that when you click on the name, it opens the Dashboard for that department/office/RM. The Nonsovereign projects / sovereign projects should also be clickable, taking the user to Project insights.
+EDRMS Bank-wide oversights
+Include indicators for no. of sites created, sites deleted, sites archived, inactive site for 90 days
+
+=== SLIDE 36 ===
+Total Number of active EDRMS SharePoint sites for Sovereign projects
+Sovereign projects | Number of EDRMS SharePoint sites | Total number of documents | Total number of records declared | Total number of physical counterparts
+Sovereign projects (format?)
+Project Number
+Project Name? | # | # | # | #
+54461-003
+Loan 4723-INO: Boosting Productivity Through Human Capital Development (Subprogram 3) |  |  |  | 
+58499-001
+Grant 0998-NEP: 2024 Floods and Landslides Emergency Response |  |  |  | 
+57318-001
+Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project |  |  |  | 
+Etc. |  |  |  | 
+Note: Each department/office/RM name should be clickable so that when you click on the name, it opens the Dashboard for that department/office/RM. The Nonsovereign projects / sovereign projects should also be clickable, taking the user to Project insights.
+EDRMS Bank-wide oversights
+
+=== SLIDE 37 ===
+Total Number of active EDRMS SharePoint sites for Nonsovereign projects
+Nonsovereign projects | Number of EDRMS SharePoint sites | Total number of documents | Total number of records declared | Total number of physical counterparts
+Nonsovereign projects (format?)
+Project Number
+Project Name | # | # | # | #
+57298-002
+TA 10304-PAK: Bio Tech Energy Sustainable Aviation Fuel Project |  |  |  | 
+56189-001
+Tiger Digital Infrastructure for Rural Connectivity Project |  |  |  | 
+55106-001
+ECOM COVID-19 Smallholder Farmer Climate Resilience and Livelihood Support Project |  |  |  | 
+Etc. |  |  |  | 
+Note: Each department/office/RM name should be clickable so that when you click on the name, it opens the Dashboard for that department/office/RM. The Nonsovereign projects / sovereign projects should also be clickable, taking the user to Project insights.
+EDRMS Bank-wide oversights
+
+=== SLIDE 38 ===
+[Project Name] Tropical Cyclone Lola Emergency Response Project
+Project Insights
+Facility Type: Sovereign |  |  |  | Project Number: 57318-001 |  |  | 
+Project Type / Modality of Assistance: Grant |  |  |  | Modality Number: 0923 |  |  | 
+Country / Economy: Vanuatu |  |  |  | Project Status: Closed |  |  | 
+Effectivity Date: 13 Dec 2023 |  |  |  | Closing Date (Actual): 10 Sep 2024 |  |  | 
+Total number of sites created | Total number of EDRMS users | Total number of site visitors | Total number of documents in EDRMS |  | Total number of records declared in EDRMS | Total number of physical counterparts identified | Total number of records due for disposal
+Note: Clickable top panel stats to show data; see Departmental Insights for template
+Slide 1
+
+=== SLIDE 39 ===
+EDRMS Bank-wide oversights
+Total number of EDRMS users
+Department / office / RM | Total number of users (staff) | Total number of users (Contractors) | Total number of users (Consultants) | Completion of training | Onboarded since go-live.
+Alphabetical list of all Departments, offices, RMs. | # | # | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination |  |  |  |  | 
+BPMSD - Budget, People, and Management Systems Department |  |  |  |  | 
+CCSD - Climate Change and Sustainable Development Department |  |  |  |  | 
+Etc. |  |  |  |  | 
+Include indicators for % of active users, Number of users who have never accessed EDRMS (for re-training) or have not accessed in the last 90 days (candidate for cleanup)
+
+=== SLIDE 40 ===
+EDRMS Bank-wide oversights
+Total number of documents in EDRMS
+Department / office / RM | Number of documents created / uploaded | Number of users creating documents | Documents size (in GB)
+Alphabetical list of all Departments, offices, RMs. | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination |  |  | 
+BPMSD - Budget, People, and Management Systems Department |  |  | 
+CCSD - Climate Change and Sustainable Development Department |  |  | 
+Etc. |  |  | 
+Include indicators for new documents created month-on-month per department, division
+Average monthly storage growth in content
+
+=== SLIDE 41 ===
+EDRMS Bank-wide oversights
+Total number of records declared in EDRMS
+Department / office / RM | Total number of records declared | Total number of users declaring records | Number of records declared per division | Number of users declaring records per division
+Alphabetical list of all Departments, offices, RMs. | # | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department | # | # | # | #
+CCSD - Climate Change and Sustainable Development Department |  |  |  | 
+Etc. |  |  |  | 
+Include indicators for new records declared, % of users declaring records, month-on-month per department, division
+Highlight departments/ offices / RMs with zero record declarations Record declaration rate (%) compared to documents created
+
+=== SLIDE 42 ===
+EDRMS Bank-wide oversights
+Total number of physical counterparts identified
+Department / office / RM | Total number of physical records declared | Total number of users declaring records | Number of records declared per division | Number of users declaring records per division
+Alphabetical list of all Departments, offices, RMs. | # | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department | # | # | # | #
+CCSD - Climate Change and Sustainable Development Department |  |  |  | 
+Etc. |  |  |  | 
+Include indicators for no. of physical records declared month-on-month per department, division
+Physical counterpart completion rate (no. of records turned over for RAC storage vs. no. of records declared with physical counterpart)
+
+=== SLIDE 43 ===
+EDRMS Bank-wide oversights
+Total number of records due for disposal
+Department / office / RM | Number of records due for disposal | Next due date for disposal | Disposal approver | With physical counterpart? | Status
+(Approved) | Status
+(Declined) | Status
+(Extended)
+Alphabetical list of all Departments, offices, RMs. | # | Date | Name | (Yes/No) | # | # | #
+BIOC - Office of Business Intelligence and Operations Coordination |  |  |  |  |  |  | 
+BPMSD - Budget, People, and Management Systems Department |  |  |  |  |  |  | 
+CCSD - Climate Change and Sustainable Development Department |  |  |  |  |  |  | 
+Etc. |  |  |  |  |  |  | 
+Include indicators for records disposed month-on-month per department, division
+List of overdue disposal actions, pending approvals
+Disposal completion rate % (including physical counterparts)
+List of upcoming records due for next quarter (for planning and advance notice)
+
+=== SLIDE 44 ===
+EDRMS Bank-wide oversights
+Retention and disposal insights
+EDRMS Retention and disposal insights
+Heading | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of records declared | Number of physical counterparts | Number of records due for disposal | Number of records disposed
+Permanent retention | list | # | # | # | # | #
+Temporary retention |  |  |  |  |  | 
+Total |  |  |  |  |  | 
+Slide 1
+
+=== SLIDE 45 ===
+EDRMS Retention and disposal insights
+Retention and disposal insights
+EDRMS Retention and disposal insights - Permanent retention
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. | list |  |  |  | 
+
+=== SLIDE 46 ===
+EDRMS Retention and disposal insights
+Retention and disposal insights
+EDRMS Retention and disposal insights - Temporary retention
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of records declared | Number of physical counterparts | Retention label | Number of records due for disposal | Number of records disposed
+. | list |  |  |  | 5, 10, 20, 5, etc. years |  | 
+
+=== SLIDE 47 ===
+EDRMS Bank-wide oversights
+EDRMS Institutional File Plan insights
+Heading | Total terms | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+Total Institutional Management terms | # | list | # | # | # | #
+Total Administration terms |  |  |  |  |  | 
+Total People management terms |  |  |  |  |  | 
+Total Programs and operations terms |  |  |  |  |  | 
+Total other terms |  |  |  |  |  | 
+Total terms |  |  |  |  |  | 
+Institutional File Plan insights
+Slide 1
+
+=== SLIDE 48 ===
+EDRMS Institutional File Plan insights
+Institutional File Plan insights
+EDRMS Institutional File Plan insights - Institutional Management |  |  |  | 
+Total terms (Top level) | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. Annual Meetings | list | # | # | # | #
+Include indicators (no. of and list) for 
+top most-used terms (usage pattern) in terms of documents created and records declared
+least-used and unused terms (candidates for review and deletion)
+New libraries created outside convention
+Request for new library creation and/or deletion?
+Request for new term?
+
+=== SLIDE 49 ===
+EDRMS Institutional File Plan insights
+Institutional File Plan insights
+EDRMS Institutional File Plan insights - Administration |  |  |  | 
+Total terms (Top level) | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. Budgeting | list | # | # | # | #
+Include indicators (no. of and list) for 
+top most-used terms (usage pattern) in terms of documents created and records declared
+least-used and unused terms (candidates for review and deletion)
+New libraries created outside convention
+Request for new library creation and/or deletion?
+Request for new term?
+
+=== SLIDE 50 ===
+Institutional File Plan insights
+EDRMS Institutional File Plan insights - People management |  |  |  | 
+Total terms (Top level) | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+EDRMS Institutional File Plan insights
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. Learning and Development | list | # | # | # | #
+Include indicators (no. of and list) for 
+top most-used terms (usage pattern) in terms of documents created and records declared
+least-used and unused terms (candidates for review and deletion)
+New libraries created outside convention
+Request for new library creation and/or deletion?
+Request for new term?
+
+=== SLIDE 51 ===
+Institutional File Plan insights
+EDRMS Institutional File Plan insights - Programs and operations terms |  |  |  | 
+Total terms (Top level) | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+EDRMS Institutional File Plan insights
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. Portfolio Management | list | # | # | # | #
+Include indicators (no. of and list) for 
+top most-used terms (usage pattern) in terms of documents created and records declared
+least-used and unused terms (candidates for review and deletion)
+New libraries created outside convention
+Request for new library creation and/or deletion?
+Request for new term?
+
+=== SLIDE 52 ===
+Institutional File Plan insights
+EDRMS Institutional File Plan insights - Other terms |  |  |  | 
+Total terms (Top level) | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+EDRMS Institutional File Plan insights
+Term (Top level) | Departments / Offices / RMs provisioned | Number of libraries provisioned | Number of documents | Number of records declared | Number of physical counterparts
+. Photos and Audiovisual | list | # | # | # | #
+Include indicators (no. of and list) for 
+top most-used terms (usage pattern) in terms of documents created and records declared
+least-used and unused terms (candidates for review and deletion)
+New libraries created outside convention
+Request for new library creation and/or deletion?
+Request for new term?
+
+=== SLIDE 53 ===
+BPMSD - Budget, People, and Management Systems Department
+Go-Live date: [Year Month Date] |  |  |  |  |  | 
+Total number of sites created | Total number of EDRMS users | Total number of site visitors | Total number of documents in EDRMS | Total number of records declared in EDRMS | Total number of physical counterparts identified | Total number of records due for disposal
+Note: Clickable top panel stats to show data
+Approved SharePoint site, library, and folder convention
+Date of approval | Last updated | Version no.
+List of SharePoint sites and Library Usage
+Institutional Management 
+Site 2
+Site 3
+Records management program | Date | Status
+CSIS-IR audit of EDRMS: | 8-Aug-26 | Done
+Convention review: |  | 
+Physical records review: |  | 
+Refresher training due date: |  | 
+Focals CoP schedule: |  | 
+3
+46
+19
+10,684
+9,596
+156
+2
+Slide 1
+
+=== SLIDE 54 ===
+Users and Activity |  |  |  |  | 
+Total number of active users
+(% compared to total no. of staff) | Total number of staff | Total number of staff
+(#, %) | Total number of contractors
+(#, %) | Total number of consultants
+(#, %) | Training completion rate
+(%)
+BPMSD - Budget, People, and Management Systems Department
+ | Total number of users (staff) | Total number of users (Contractors) | Total number of users (Consultants) | Completion of training | Onboarded since go-live.
+Division 1 | # | # | # | # | #
+Division 2 | # | # | # | # | #
+Division 3 | # | # | # | # | #
+Source: Database of end users? Owned and maintained by? |  |  |  |  | 
+Name | Staff status
+Dropdown: Staff, Contractor, Consultant, External party given access? | Onboarded since go-live
+(yes / no) | Training completed?
+(yes / no) | Date completed
+(dd-mmm-yy) | Notes
+EDRMS Department insights
+Include indicators for month-on-month per department, division: no. of active users, no. of users who have not accessed their site (is this possible? This is to track those that may have already transferred or left the Bank), no. of new users (to list for onboarding)
+
+=== SLIDE 55 ===
+Name of sites | Site owners | Number of documents | Number of records | Number of physical counterparts | Number of records due for disposal
+Institutional Management | Names | # | # | # | 
+Site 2 | Names | # | # | # | 
+Site 3 | Names | # | # | # | 
+EDRMS sites |  |  |  | 
+Total number of sites created | Total number of documents in EDRMS | Total number of records declared in EDRMS | Total number of physical counterparts identified | Total number of records due for disposal
+BPMSD - Budget, People, and Management Systems Department
+EDRMS Department insights
+Include indicators per department, division: 
+No. and list of sites with no activity in 90 days
+Records declared month-on-month
+
+=== SLIDE 56 ===
+Site visitors |  |  |  | 
+Total number of visitors | Total number of visitors (external)
+(#, %) | Total number of visitors (internal) 
+(#, %) | Total number of access requests granted (#, %) | Total number of access requests denied (#, %)
+BPMSD - Budget, People, and Management Systems Department
+ | Total number of visitors | Visitors (external) | Visitors (internal) by department | Access requests granted | Access requests denied
+Institutional Management | # | # | # | # | #
+Site 2 | # | # | # | # | #
+Site 3 | # | # | # | # | #
+Is this data available in SharePoint/Cloud Governance?
+EDRMS Department insights
+
+=== SLIDE 57 ===
+BPMSD - Budget, People, and Management Systems Department
+Total number of documents in EDRMS |  |  |  | 
+Total number of of documents migrated | Total number of users migrating documents | Total migrated documents size (in GB?) |  | 
+ | Number of documents created /uploaded | Number of users creating documents | Documents size  (in GB)
+Institutional Management | # | # | #
+Site 2 | # | # | #
+Site 3 | # | # | #
+EDRMS Department insights
+
+=== SLIDE 58 ===
+BPMSD - Budget, People, and Management Systems Department
+ | Total number of records declared | Total number of users declaring records | Number of records declared per division | Number of users declaring records per division
+Institutional Management | # | # | # | #
+Site 2 | # | # | # | #
+Site 3 | # | # | # | #
+Records declaration |  |  |  | 
+Total number of of records declared | Total number of users declaring records | Total declared record size (in GB) |  | 
+Proposed table: |  | 
+ | Number of records declared | Number of users declaring records
+Institutional Management |  | 
+Division 1 |  | 
+Division 2 |  | 
+Division 3 |  | 
+Site 2 |  | 
+Division 1 |  | 
+Division 2 |  | 
+Division 3 |  | 
+Note: Collapsible rows for divisions
+EDRMS Department insights
+Include indicators per site, per division: 
+No. and list of sites with no declared record in 90 days
+Records declared month-on-month, declaration rate per site (%)
+
+=== SLIDE 59 ===
+BPMSD - Budget, People, and Management Systems Department
+ | Total number of records declared | Total number of users declaring records | Number of records declared per division | Number of users declaring records per division
+Institutional Management | # | # | # | #
+Site 2 | # | # | # | #
+Site 3 | # | # | # | #
+Physical Counterpart |  |  |  | 
+Total number of of records declared | Total number of users declaring records | Total declared record size (in GB) |  | 
+EDRMS Department insights
+Include indicators for no. of physical records declared month-on-month per division
+Physical counterpart completion rate (no. of records turned over for RAC storage vs. no. of records declared with physical counterpart)
+
+=== SLIDE 60 ===
+BPMSD - Budget, People, and Management Systems Department
+Disposal |  |  |  | 
+Total number of records due for disposal | Total number of records disposed
+(can this be expanded per year, month) | Total disposed record size (in GB) |  | 
+Library name | Number of records due for disposal | Next due date for disposal | Disposal approver | With physical counterpart? | Status
+(Approved) | Status
+(Declined) | Status
+(Extended)
+e.g. Country planning | # | Date | Name | (Yes/No) | # | # | #
+ |  |  |  |  |  |  | 
+ |  |  |  |  |  |  | 
+EDRMS Department insights
+
+=== SLIDE 61 ===
+Departmental Library usage - Institutional Management |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Annual Meetings | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department
+EDRMS Department insights
+Include indicators per library, per division: 
+No. and list of libraries with no declared record in 90 days
+Records declared month-on-month, declaration rate per site (%)
+
+=== SLIDE 62 ===
+Departmental Library usage - Institutional Management |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Annual Meetings | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department
+Departmental Library usage
+
+=== SLIDE 63 ===
+Departmental Library usage - Administration |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Budgeting | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department
+Departmental Library usage
+
+=== SLIDE 64 ===
+Departmental Library usage - People management |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Learning and Development | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department
+Departmental Library usage
+
+=== SLIDE 65 ===
+Departmental Library usage - Programs and operations terms |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Portfolio Management | # | # | # | #
+BPMSD - Budget, People, and Management Systems Department
+Departmental Library usage
+
+=== SLIDE 66 ===
+BPMSD - Budget, People, and Management Systems Department
+Departmental Library usage - Other terms |  |  |  | 
+Total Library names | Total Number of libraries provisioned | Total Number of documents | Total Number of records declared | Total Number of physical counterparts
+Library names | Number of users | Number of documents | Number of records declared | Number of physical counterparts
+. Photos and Audiovisual | # | # | # | #
+Departmental Library usage
+
+=== SLIDE 67 ===
+Records and archive holdings
+Slide 1
+Screenshot from IR Dashboard
+We would also like to learn what is available in Opus and how we can apply the features for our dashboard.
+Retrieval as processed from eServe, retrieval here should reflect physical records/archives that are removed from the holdings
+
+=== SLIDE 68 ===
+Records and archive holdings
+Records and Archives holdings
+Location | No. of requests | Total number of requestors (departments)
+(year, month) | Total number of requestors (RMs)
+(year, month) | Total number of boxes stored
+(year, month) | Total number of folders stored
+(year, month) | Remarks
+Archives Room |  |  |  |  |  | 
+Records Center |  |  |  |  |  | 
+Offsite Storage |  |  |  |  |  | 
+Storage |  |  |  | 
+Total Requests
+(year, month) | Total number of requestors (departments)
+(year, month) | Total number of requestors (RMs)
+(year, month) | Total number of boxes stored
+(year, month) | Total number of folders stored
+(year, month)
+Include indicators for no. of new boxes and folders stored month-on-month per department
+No. and list of outstanding/pending requests/physical records awaiting transfer, physical counterparts identified but not transferred
+Can room capacity and % available storage capacity be included?
+
+=== SLIDE 69 ===
+Records and archive holdings
+Records and Archives holdings
+Location | No. of requests | Total number of requestors (departments/ RMS)
+(year, month) | Total number of boxes retrieved
+(year, month) | Total number of folders  retrieved 
+(year, month) | Status
+(Loan, Return to owner, For Disposal) | Remarks
+Archives Room |  |  |  |  |  | 
+Records Center |  |  |  |  |  | 
+Offsite Storage |  |  |  |  |  | 
+Retrieval |  |  |  | 
+Total Requests
+(year, month) | Total number of requestors (departments)
+(year, month) | Total number of requestors (RMs)
+(year, month) | Total number of boxes stored
+(year, month) | Total number of folders stored
+(year, month)
+Include indicators for no. of retrieval requests and no. of boxes / folders retrieved month-on-month per department
+No. and list of outstanding/pending requests
+No. of boxes / folders disposed
+Can room activities here update the capacity and % available storage capacity (freed up storage)?

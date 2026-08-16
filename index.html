@@ -214,6 +214,10 @@
   .dash-bw .drow.kid{background:#FAFCFE;font-size:12.5px}
   .dash-bw .drow.kid .dn{font-weight:400;color:var(--ink2);padding-left:14px}
   .dash-bw .dtot{padding-top:10px;margin-top:4px;border-top:2px solid var(--line);font-weight:700;font-size:13px}
+  /* A cell whose measure has no source anywhere prints what is true rather than
+     a plausible number. This is not the source marker convention removed on
+     13 August, which badged sourceable figures; it is the value of the cell. */
+  .dash-bw .nosrc{color:var(--mut);font-weight:400;font-style:italic;font-size:12px}
   .dash-bw .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
   .dash-bw .tile,.dash-dp .tile{min-width:0;overflow-wrap:anywhere}
   .dash-bw .tile{background:#F5F8FC;border:1px solid var(--line);border-radius:9px;padding:11px 13px}
@@ -983,6 +987,80 @@ DASHBOARDS.bw=(function(){
   ];
   const PROJ_SITES=PROJECTS.reduce((a,p)=>a+p.sites,0);
 
+  /* The named projects behind those two summary rows, PPT s36 and s37, using
+     the client's own six examples. They live here rather than on Project
+     Insights because both those slides carry the Bank-wide banner: the lists
+     are a Bank-wide drill, and s38, one project's profile, is what Project
+     Insights actually is. Project Insights reads this list rather than keeping
+     a second copy, so the two screens can never disagree about a project.
+
+     Six named projects cannot add up to 180 project sites, so the summary rows
+     stay the authority for the totals and these are the ones drawn by name.
+     That is asserted rather than assumed: a named project may never claim more
+     than its facility type holds. */
+  /* The client's six example projects, from s36, s37 and s38. Their identity is
+     the client's; their figures are derived here rather than copied from the
+     slide, and the reason matters.
+
+     A project site is owned by a department AND belongs to a project, so the
+     project tables are a RE-CUT of the same records, not an addition to them.
+     Departments sum to the bank-wide total; the two facility rows sum to less,
+     because only project sites are in them; and the named projects sum to less
+     again, because only some projects are drawn by name. Copying the slide's
+     own numbers broke that: s38 shows one project holding 9,596 declared
+     records, which is 44 percent of this prototype's entire declared holding.
+     The slide's numbers are illustrative, its structure is the requirement, so
+     the structure is kept and the figures are made to reconcile. */
+  const NAMED=[
+    {no:"57318-001", name:"Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project",
+     facility:"Sovereign", modality:"Grant", modNo:"0923", country:"Vanuatu", status:"Closed",
+     effective:"13 Dec 2023", closing:"10 Sep 2024", sites:3, w:5},
+    {no:"54461-003", name:"Loan 4723-INO: Boosting Productivity Through Human Capital Development (Subprogram 3)",
+     facility:"Sovereign", modality:"Loan", modNo:"4723", country:"Indonesia", status:"Active",
+     effective:"04 Mar 2024", closing:"31 Dec 2027", sites:5, w:9},
+    {no:"58499-001", name:"Grant 0998-NEP: 2024 Floods and Landslides Emergency Response",
+     facility:"Sovereign", modality:"Grant", modNo:"0998", country:"Nepal", status:"Active",
+     effective:"22 Nov 2024", closing:"30 Jun 2026", sites:2, w:3},
+    {no:"57298-002", name:"TA 10304-PAK: Bio Tech Energy Sustainable Aviation Fuel Project",
+     facility:"Nonsovereign", modality:"TA", modNo:"10304", country:"Pakistan", status:"Active",
+     effective:"18 Jan 2025", closing:"17 Jan 2028", sites:2, w:4},
+    {no:"56189-001", name:"Tiger Digital Infrastructure for Rural Connectivity Project",
+     facility:"Nonsovereign", modality:"Loan", modNo:"4811", country:"Regional", status:"Active",
+     effective:"09 Sep 2024", closing:"08 Sep 2029", sites:3, w:6},
+    {no:"55106-001", name:"ECOM COVID-19 Smallholder Farmer Climate Resilience and Livelihood Support Project",
+     facility:"Nonsovereign", modality:"Loan", modNo:"4402", country:"Regional", status:"Closed",
+     effective:"14 Jun 2022", closing:"13 Jun 2025", sites:2, w:3},
+  ];
+  /* Roughly half of each facility's holding sits in the projects drawn by name;
+     the rest is spread across the projects the slides did not list. */
+  const NAMED_SHARE=0.52;
+  const PROJECT_ROWS=(function(){
+    const out=[];
+    PROJECTS.forEach(fac=>{
+      const mine=NAMED.filter(n=>n.facility===fac.fac);
+      const w=mine.map(n=>n.w);
+      const parts={};
+      ["docs","rec","phys","due","users"].forEach(f=>{
+        parts[f]=split(Math.round(fac[f]*NAMED_SHARE),w);
+      });
+      mine.forEach((n,i)=>out.push({...n,
+        docs:parts.docs[i], rec:parts.rec[i], phys:parts.phys[i],
+        due:parts.due[i], users:parts.users[i],
+        visitors:Math.round(parts.users[i]*1.9)}));
+    });
+    return out;
+  })();
+  PROJECTS.forEach(p=>{
+    const named=PROJECT_ROWS.filter(r=>r.facility===p.fac);
+    ["sites","docs","rec","phys","due","users"].forEach(f=>{
+      console.assert(named.reduce((a,r)=>a+r[f],0)<=p[f],
+        "Named "+p.fac+" projects cannot exceed the facility total for "+f);
+    });
+  });
+  /* A project can never declare more records than it holds documents. */
+  PROJECT_ROWS.forEach(r=>console.assert(r.rec<=r.docs,
+    "A project cannot declare more records than it holds documents, "+r.no));
+
   const DEPT_SITES=DEPTS.reduce((a,d)=>a+d.sites,0);
   const TOTAL_USERS=DATA.MONTHLY_ACTIVE_USERS;
   const TOTAL_DOCS=DATA.DOCUMENTS;
@@ -990,6 +1068,15 @@ DASHBOARDS.bw=(function(){
   const TOTAL_PHYS=DATA.WITH_PHYSICAL;
   const TOTAL_DUE=DATA.DUE_NEXT_12;
   const DECL_RATE=PCT(TOTAL_REC,TOTAL_DOCS);
+
+  /* Project sites are a re-cut of the estate, not an addition to it, so the two
+     facility rows can never exceed the bank-wide figure they are drawn from.
+     This sits below the totals because it needs them. */
+  ["docs","rec","phys"].forEach(f=>{
+    const all={docs:TOTAL_DOCS,rec:TOTAL_REC,phys:TOTAL_PHYS}[f];
+    console.assert(PROJECTS.reduce((a,p)=>a+p[f],0)<=all,
+      "Project sites are a subset of the estate, so they cannot exceed the bank-wide "+f);
+  });
 
   /* Site movement indicators, PPT s35. Created and inactive are sourceable:
      SiteCreatedDate is confirmed from Graph, LastActivityDate from the usage
@@ -1069,36 +1156,57 @@ DASHBOARDS.bw=(function(){
   let expanded={};              /* which department rows have their divisions open */
 
   /* ===== top panel, PPT s15 and s34 ===== */
+  /* The client's top panel, PPT s34, has TEN tiles, not eight. Eight open a
+     table on this dashboard; two navigate to another dashboard entirely. Those
+     last two are why s44 and s47 carry the Bank-wide banner while the slides
+     behind them do not: the banner marks the route in, not the ownership.
+
+     Every tile label is the client's own wording from s34 and s15. */
   const TILES=[
-    {k:null,   lab:"Active EDRMS Sites, Department / RM / Office", val:()=>F(DEPT_SITES),
-     sub:"Departments, offices and resident missions"},
-    {k:null,   lab:"Active EDRMS Sites, Sovereign Projects", val:()=>F(PROJECTS[0].sites),
-     sub:"Sovereign project sites"},
-    {k:null,   lab:"Active EDRMS Sites, Nonsovereign Projects", val:()=>F(PROJECTS[1].sites),
-     sub:"Nonsovereign project sites"},
-    {k:"users",lab:"Total EDRMS Users", val:()=>F(TOTAL_USERS), to:"users by department"},
-    {k:"docs", lab:"Total Documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M", to:"documents by department"},
-    {k:"rec",  lab:"Total Records Declared", val:()=>F(TOTAL_REC), to:"records by department"},
-    {k:"phys", lab:"Total Physical Counterparts", val:()=>F(TOTAL_PHYS), to:"counterparts by department"},
-    {k:"disp", lab:"Total Records Due for Disposal", val:()=>F(TOTAL_DUE), to:"disposal by department"},
+    {k:"sites",lab:"Number of active EDRMS SharePoint sites for Department, RM, office",
+     val:()=>F(DEPT_SITES)},
+    {k:"sov",  lab:"Total number of active EDRMS SharePoint sites for Sovereign projects",
+     val:()=>F(PROJECTS[0].sites)},
+    {k:"nonsov",lab:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+     val:()=>F(PROJECTS[1].sites)},
+    {k:"users",lab:"Total number of EDRMS users", val:()=>F(TOTAL_USERS)},
+    {k:"docs", lab:"Total number of documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M"},
+    {k:"rec",  lab:"Total number of records declared in EDRMS", val:()=>F(TOTAL_REC)},
+    {k:"phys", lab:"Total number of physical counterparts identified", val:()=>F(TOTAL_PHYS)},
+    {k:"disp", lab:"Total number of records due for disposal", val:()=>F(TOTAL_DUE)},
+  ];
+  /* The two navigation tiles, s34. They carry no drill of their own because
+     their whole content is another dashboard.
+
+     Their values are read from the target dashboard's own summary rather than
+     recomputed here, so the number on the tile can never disagree with the
+     screen it opens. That read has to be lazy: File Plan and Retention are
+     defined after this module, so the value is a function called at draw time,
+     by which point every module exists. */
+  const NAVTILES=[
+    {to:"rd", lab:"Retention and disposal insights",
+     val:()=>F(TOTAL_DUE), sub:"Records due for disposal, retention and disposal status"},
+    {to:"fp", lab:"Institutional File Plan insights",
+     val:()=>F(DASHBOARDS.fp.summary.totalTerms), sub:"Term usage across sites and libraries"},
   ];
 
-  /* The two kinds of card are drawn into two separate groups with their own
-     headings, so which cards do something is visible rather than deducible. */
+  /* Both kinds of card do something when clicked, so both carry the chevron.
+     They are drawn as two groups because what they do differs: eight open a
+     table on this screen, two leave for another dashboard. A reader should be
+     able to tell those apart before clicking, not after. */
   function drawTiles(){
-    const act=TILES.filter(t=>t.k), stat=TILES.filter(t=>!t.k);
     document.getElementById("bw-kpis").innerHTML=
       `<div class="kpigrp act">
-         <div class="gh"><b>Open a breakdown</b><span>${act.length} cards, each opens the table beneath</span></div>
-         <div class="kpis">${act.map(t=>
+         <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${TILES.map(t=>
            `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
               <div class="val">${t.val()}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
        </div>
        <div class="kpigrp">
-         <div class="gh"><b>At a glance</b><span>${stat.length} figures, nothing to click</span></div>
-         <div class="kpis">${stat.map(t=>
-           `<div class="kpi stat"><div class="lab">${t.lab}</div><div class="val">${t.val()}</div>
-              <div class="sub">${t.sub}</div></div>`).join("")}</div>
+         <div class="gh"><b>Open another dashboard</b><span>${NAVTILES.length} cards, each leaves this screen</span></div>
+         <div class="kpis">${NAVTILES.map(t=>
+           `<div class="kpi" data-go="${t.to}"><div class="lab">${t.lab}</div>
+              <div class="val">${t.val()}</div><div class="tap">&#8594; Open dashboard</div></div>`).join("")}</div>
        </div>`;
   }
 
@@ -1117,10 +1225,52 @@ DASHBOARDS.bw=(function(){
         drawDrill();
       };
     });
+    document.querySelectorAll("#bw-kpis .kpi[data-go]").forEach(card=>{
+      card.onclick=()=>openDashboard(card.dataset.go);
+    });
   }
 
   /* ===== the five drill tables, PPT s39 to s43 ===== */
+  /* Printed in any cell whose measure has no source in any system we can
+     reach. Naming it once means the page cannot drift into showing an invented
+     number for one of them and an honest blank for another. */
+  const NOSRC=`<span class="nosrc">Not captured</span>`;
+
   const DRILL={
+    /* s35. This is the same table the outline draws at s16, so it appears once,
+       here, as the drill behind the sites tile rather than as a second panel
+       further down the page. Every name opens that unit's own dashboard. */
+    sites:{
+      title:"Number of active EDRMS SharePoint sites for Department, RM, office",
+      sub:"Click a name to open its own dashboard. Click a column heading to re-sort.",
+      sortable:true,
+      cols:["Department / office / RM","Number of EDRMS SharePoint sites",
+            "Total number of documents","Total number of records declared",
+            "Total number of physical counterparts"],
+      tiles:()=>[["Sites created, last "+IDLE_DAYS+" days",F(SITES_CREATED_90)],
+                 ["Sites deleted",F(12)],
+                 ["Sites archived",F(31)],
+                 ["Inactive over "+IDLE_DAYS+" days",F(SITES_INACTIVE)]]
+    },
+    /* s36 and s37. Both carry the Bank-wide banner in the deck, so the project
+       lists belong here, and each row opens Project Insights, which is s38 and
+       is one project's profile. */
+    sov:{
+      title:"Total number of active EDRMS SharePoint sites for Sovereign projects",
+      sub:"Click a project to open Project Insights.",
+      projects:"Sovereign",
+      cols:["Project number and name","Number of EDRMS SharePoint sites",
+            "Total number of documents","Total number of records declared",
+            "Total number of physical counterparts"]
+    },
+    nonsov:{
+      title:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+      sub:"Click a project to open Project Insights.",
+      projects:"Nonsovereign",
+      cols:["Project number and name","Number of EDRMS SharePoint sites",
+            "Total number of documents","Total number of records declared",
+            "Total number of physical counterparts"]
+    },
     users:{
       title:"Total number of EDRMS users, by department",
       sub:"Active users by department, split by staff, contractor and consultant.",
@@ -1165,39 +1315,56 @@ DASHBOARDS.bw=(function(){
       title:"Total number of physical counterparts identified, by department and division",
       sub:"Click a department to open its divisions.",
       divisions:true,
+      /* s42 asks for a physical counterpart completion rate, defined on the
+         slide as records turned over for RAC storage against records declared
+         with a counterpart. We can produce the denominator. The numerator is a
+         physical custody event that no system we can reach records, so the
+         cell says so rather than printing a share of the counterpart count.
+         Audit question 6. */
       cols:["Department","Physical counterparts","Records declared","Share with counterpart","Turned over to RAC"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
-                             PCT(d.phys,d.rec).toFixed(1)+"%", F(Math.round(d.phys*0.58))]),
+                             PCT(d.phys,d.rec).toFixed(1)+"%", NOSRC]),
       kids:d=>divisionsFor(d.code).map(v=>[v.name, F(v.phys), F(v.rec),
-                             PCT(v.phys,v.rec).toFixed(1)+"%", F(Math.round(v.phys*0.58))]),
+                             PCT(v.phys,v.rec).toFixed(1)+"%", NOSRC]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
                  ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
-                 ["Turned over to RAC",F(Math.round(TOTAL_PHYS*0.58))],
-                 ["Completion rate","58.0%"]]
+                 ["Records declared",F(TOTAL_REC)],
+                 ["Departments reporting",F(DEPTS.length)]]
     },
     disp:{
       title:"Total number of records due for disposal, by department",
       sub:"Records due for disposal by department, with the next due date.",
-      cols:["Department","Records due","Next due date","With counterpart","Approver","Status"],
+      /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
+         and HasPhysical. The disposal approver and the three status columns,
+         Approved, Declined and Extended, need fields the EDRMS application does
+         not have, so they say so. Audit question 7 specifies the change request. */
+      cols:["Department","Records due","Next due date","With counterpart",
+            "Disposal approver","Status (Approved)","Status (Declined)","Status (Extended)"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(Math.round(d.due*0.31)),
-                                 APPROVERS[i%APPROVERS.length], DSTATUS[i%DSTATUS.length]]),
+                                 NOSRC, NOSRC, NOSRC, NOSRC]),
       tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
                  ["Due within 90 days",F(DATA.DUE_90)],
                  ["Due within 12 months",F(TOTAL_DUE)],
-                 ["Records disposed",F(Math.round(TOTAL_DUE*0.42))]]
+                 ["Due next quarter",F(DATA.DUE_90)]]
     }
   };
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
                    "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
-  const APPROVERS=["R. Tan","M. Reyes","A. Mendoza","L. Fernandez","J. Cruz","P. Santos"];
-  const DSTATUS=["Approved","Approved","Pending","Extended","Approved","Declined"];
 
 
   function drawDrill(){
     const d=DRILL[openKpi];
+
+    /* Three of the ten drills are not the department shape. The sites table is
+       sortable and its names navigate; the two project tables are keyed on a
+       project rather than a department and navigate to Project Insights. They
+       are drawn by their own small builders and share the panel chrome. */
+    if(d.sortable)  return drawSitesDrill(d);
+    if(d.projects)  return drawProjectDrill(d);
+
     const rows=d.rows(), tiles=d.tiles();
     /* A table with a division tier renders one row per department with a
        disclosure control, and the division rows beneath it when open. Without
@@ -1234,55 +1401,66 @@ DASHBOARDS.bw=(function(){
     });
   }
 
-  /* ===== overview of EDRMS sites, PPT s16 and s35 =====
-     The column headings are the client's own words from their table, kept
-     verbatim rather than shortened. They are long, so the header cells wrap
-     and bottom align, and the table scrolls sideways inside its panel rather
-     than squeezing the words into one character columns. The first column is
-     the alphabetical list of departments, offices and resident missions their
-     drawing calls for.
-
-     Their note asks for each name to be clickable, opening that unit's own
-     dashboard, and for the two project rows to open Project Insights. Both
-     are wired, which is why the row carries a role and a keyboard handler as
-     well as a click: a thing that navigates has to be reachable without a
-     mouse. */
-  const DCOLS=[{k:"code",lab:"Department / office / RM"},
-               {k:"sites",lab:"Number of EDRMS SharePoint sites",num:1},
-               {k:"docs", lab:"Total number of documents",num:1},
-               {k:"rec",  lab:"Total number of records declared",num:1},
-               {k:"phys", lab:"Total number of physical counterparts",num:1}];
-
-  function drawDeptTable(){
+  /* s35. Sortable, and every name opens that unit's own dashboard. */
+  function drawSitesDrill(d){
+    const KEYS=["code","sites","docs","rec","phys"];
     const rows=[...DEPTS].sort((a,b)=>{
       const cmp=sortDept==="code"?a.code.localeCompare(b.code):a[sortDept]-b[sortDept];
       return dirDept==="asc"?cmp:-cmp;
     });
-    let h=`<div class="dhead">`+DCOLS.map(c=>
-      `<div class="hd${c.num?" num":""}${sortDept===c.k?" on":""}" data-s="${c.k}">${c.lab}${
-        sortDept===c.k?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")+`</div>`;
-    h+=rows.map(d=>`<div class="drow go" data-dept="${d.code}" role="link" tabindex="0"
-          title="Open Department Insights for ${d.code}">
-        <div class="dn"><span class="lk">${d.code}</span><small>${d.name}</small></div>
-        <div class="num">${F(d.sites)}</div><div class="num">${F(d.docs)}</div>
-        <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("");
-    h+=PROJECTS.map(p=>`<div class="drow grp go" data-fac="${p.fac}" role="link" tabindex="0"
-          title="Open Project Insights for ${p.code}">
-        <div class="dn"><span class="lk">${p.code}</span><small>Across all ${F(p.sites)} project sites</small></div>
-        <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
-        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("");
-    const t=(f)=>DEPTS.reduce((a,d)=>a+d[f],0)+PROJECTS.reduce((a,p)=>a+p[f],0);
-    h+=`<div class="dtot"><div>Total</div><div class="num">${F(t("sites"))}</div>
-        <div class="num">${F(t("docs"))}</div><div class="num">${F(t("rec"))}</div>
-        <div class="num">${F(t("phys"))}</div></div>`;
-    document.getElementById("bw-depts").innerHTML=h;
-    document.querySelectorAll("#bw-depts .hd").forEach(el=>el.onclick=()=>{
+    const t=f=>DEPTS.reduce((a,x)=>a+x[f],0);
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${d.tiles().map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab wide">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="hd${i?" num":""}${sortDept===KEYS[i]?" on":""}" data-s="${KEYS[i]}">${c}${
+             sortDept===KEYS[i]?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
+         ${rows.map(x=>`<div class="drow go" data-dept="${x.code}" role="link" tabindex="0"
+             title="Open Department Insights for ${x.code}">
+           <div class="dn"><span class="lk">${x.code}</span><small>${x.name}</small></div>
+           <div class="num">${F(x.sites)}</div><div class="num">${F(x.docs)}</div>
+           <div class="num">${F(x.rec)}</div><div class="num">${F(x.phys)}</div></div>`).join("")}
+         <div class="dtot"><div>Total</div><div class="num">${F(t("sites"))}</div>
+           <div class="num">${F(t("docs"))}</div><div class="num">${F(t("rec"))}</div>
+           <div class="num">${F(t("phys"))}</div></div>
+       </div></div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortDept===k)dirDept=dirDept==="asc"?"desc":"asc";
       else{sortDept=k;dirDept=k==="code"?"asc":"desc";}
-      drawDeptTable();
+      drawDrill();
     });
-    document.querySelectorAll("#bw-depts .drow.go").forEach(el=>{
+    wireGo();
+  }
+
+  /* s36 and s37. Keyed on a project, and every row opens Project Insights. */
+  function drawProjectDrill(d){
+    const list=PROJECT_ROWS.filter(p=>p.facility===d.projects);
+    const t=f=>list.reduce((a,p)=>a+p[f],0);
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="scrollx"><div class="dtab wide">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${list.map(p=>`<div class="drow go" data-fac="${p.facility}" role="link" tabindex="0"
+             title="Open Project Insights for ${p.no}">
+           <div class="dn"><span class="lk">${p.no}</span><small>${p.name}</small></div>
+           <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
+           <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("")}
+         <div class="dtot"><div>${d.projects} projects, total</div>
+           <div class="num">${F(t("sites"))}</div><div class="num">${F(t("docs"))}</div>
+           <div class="num">${F(t("rec"))}</div><div class="num">${F(t("phys"))}</div></div>
+       </div></div>`;
+    wireGo();
+  }
+
+  function wireGo(){
+    document.querySelectorAll("#bw-drill .drow.go").forEach(el=>{
       const go=()=>{
         if(el.dataset.dept)openDashboard("dp",el.dataset.dept);
         else openDashboard("pj",el.dataset.fac);
@@ -1380,25 +1558,44 @@ DASHBOARDS.bw=(function(){
   }
 
 
-  /* ===== what came off on 16 August 2026, by client instruction =====
-     Ten panels were absorbed onto Bank-wide on 13 August, when five dashboards
-     were deleted and their content was moved here rather than dropped. The
-     client has now looked at the result and asked for them off, so Bank-wide
-     returns to the compact screen they designed: the top tiles and their drill,
-     the Overview of EDRMS sites table, the comparison, the declaration trend,
-     and the records quality and classification panels.
+  /* ===== what the deck asks for, and what it does not, settled 17 Aug 2026 =====
+     The deck itself, EDRMS_Dashboard_requirements_1.pptx, is now in the repo.
+     Every panel here was checked against its text rather than against notes,
+     and REQUIREMENTS_AUDIT_2026-08-17.md records the walk.
 
-     Removed here: records declared by year, the retention and disposal rollup
-     with its permanent and temporary split, the Supporting detail band, site
-     visits by month, format and storage with the declared records by format
-     group panel, the Risk and compliance band, site health and library health.
+     OFF, because no slide in 69 asks for them: records declared by year, site
+     visits by month, format and storage with the format group panel, site
+     health, library health, records quality with duplicates and orphans, and
+     information classification with sensitivity labels. The words "site
+     health", "library health", "duplicat", "orphan", "sensitivit" and
+     "classification" appear nowhere in the deck. Format groups are demoted by
+     s12 in the client's own words: "There is no new information derived from
+     this except the total size of documents and storage growth."
 
-     The figures behind them are untouched in DATA, and Retention and Disposal
-     still reads PERMANENT and LABEL_TOTAL, so nothing was lost, only unshown.
-     check_data.js asserts these headings are absent, in the same way it asserts
-     the retained ones are present, because a later edit that quietly restores
-     one would put a panel in front of the committee that the client has
-     explicitly asked not to see. */
+     BACK ON, because s44 draws it and it carries the Bank-wide banner: the
+     retention and disposal rollup. It was removed on 16 August by name, and
+     that was an error, corrected here.
+
+     The figures behind the removed panels are untouched in DATA, so any of
+     them is one edit from returning. check_data.js asserts they stay off. */
+
+  /* s44. Two retention classes and a total. The split needs a rule that turns
+     53 Purview labels into permanent and temporary; T1 c33 RetentionStatus is
+     designed for it and has never been verified against the real file plan.
+     Records disposed waits on the disposal change request, so it is the one
+     column here with no source at all. */
+  const RETROWS=[
+    {lab:"Permanent retention", depts:11, libs:64, rec:DATA.PERMANENT,
+     phys:Math.round(DATA.PERMANENT*0.21), due:0},
+    {lab:"Temporary retention", depts:16, libs:203, rec:DATA.LABEL_TOTAL-DATA.PERMANENT,
+     phys:TOTAL_PHYS-Math.round(DATA.PERMANENT*0.21), due:TOTAL_DUE},
+  ];
+  console.assert(RETROWS.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
+    "Permanent plus temporary must total every labelled record");
+  console.assert(RETROWS.reduce((a,r)=>a+r.phys,0)===TOTAL_PHYS,
+    "Permanent plus temporary must total every physical counterpart");
+  console.assert(RETROWS.reduce((a,r)=>a+r.due,0)===TOTAL_DUE,
+    "Permanent plus temporary must total every record due for disposal");
 
   const html=`<section class="dash-bw">
     <div class="band">
@@ -1408,22 +1605,6 @@ DASHBOARDS.bw=(function(){
 
     <div id="bw-kpis"></div>
     <div class="panel" id="bw-drill"></div>
-
-    <div class="band">
-      <h2>Overview of EDRMS sites</h2>
-      <div class="bd">Every department, office and resident mission, with what it holds.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Number of active EDRMS SharePoint sites for department, office and resident mission</div>
-      <div class="psub">Click a name to open its own dashboard. Click a column heading to re-sort.</div>
-      <div class="tiles">
-        <div class="tile"><div class="tl">Sites created, last ${IDLE_DAYS} days</div><div class="tv">${F(SITES_CREATED_90)}</div></div>
-        <div class="tile"><div class="tl">Sites deleted</div><div class="tv">${F(12)}</div></div>
-        <div class="tile"><div class="tl">Sites archived</div><div class="tv">${F(31)}</div></div>
-        <div class="tile hi"><div class="tl">Inactive over ${IDLE_DAYS} days</div><div class="tv">${F(SITES_INACTIVE)}</div></div>
-      </div>
-      <div class="scrollx"><div class="dtab wide" id="bw-depts"></div></div>
-    </div>
 
     <div class="band">
       <h2>Comparison</h2>
@@ -1463,13 +1644,41 @@ DASHBOARDS.bw=(function(){
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
     </div>
 
+    <div class="band">
+      <h2>Retention and disposal insights</h2>
+      <div class="bd">The declared holding split into permanent and temporary retention.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">EDRMS retention and disposal insights</div>
+      <div class="psub">Permanent and temporary retention, with what each holds.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:200px repeat(6,1fr)">
+        <div class="dhead"><div>Heading</div>
+          <div class="num">Departments, offices and RMs provisioned</div>
+          <div class="num">Number of libraries provisioned</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Number of physical counterparts</div>
+          <div class="num">Number of records due for disposal</div>
+          <div class="num">Number of records disposed</div></div>
+        ${RETROWS.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
+          <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
+          <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
+          <div class="num">${F(r.due)}</div><div class="num nosrc">Not captured</div></div>`).join("")}
+        <div class="dtot"><div>Total</div>
+          <div class="num">${F(DEPTS.length)}</div>
+          <div class="num">${F(RETROWS.reduce((a,r)=>a+r.libs,0))}</div>
+          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
+          <div class="num">${F(TOTAL_PHYS)}</div>
+          <div class="num">${F(TOTAL_DUE)}</div>
+          <div class="num nosrc">Not captured</div></div>
+      </div></div>
+    </div>
+
   </section>`;
 
   function init(){
     drawTiles();
     wireTiles();
     drawDrill();
-    drawDeptTable();
     drawCmp();
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
 
@@ -1516,6 +1725,9 @@ DASHBOARDS.bw=(function(){
          whichever dashboard the reader arrives from. */
       departments:DEPTS.map(d=>({...d})),
       idleDays:IDLE_DAYS,
+      /* Read by Project Insights, which profiles one of these rows. Owned here
+         because s36 and s37 are Bank-wide screens. */
+      projectRows:PROJECT_ROWS,
       /* The division tier, so Department Insights uses the same divisions with
          the same figures rather than inventing a second set. */
       divisionsFor
@@ -2040,35 +2252,10 @@ DASHBOARDS.dp=(function(){
 DASHBOARDS.pj=(function(){
   const BW=DASHBOARDS.bw.summary;
 
-  /* The six examples are the client's own, taken from their sovereign and
-     nonsovereign tables so the format question they raised there has
-     something concrete attached to it. */
-  const PROJECTS=[
-    {no:"57318-001", name:"Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project",
-     facility:"Sovereign", modality:"Grant", modNo:"0923", country:"Vanuatu", status:"Closed",
-     effective:"13 Dec 2023", closing:"10 Sep 2024",
-     sites:3, users:46, visitors:19, docs:10684, rec:9596, phys:156, due:2},
-    {no:"54461-003", name:"Loan 4723-INO: Boosting Productivity Through Human Capital Development (Subprogram 3)",
-     facility:"Sovereign", modality:"Loan", modNo:"4723", country:"Indonesia", status:"Active",
-     effective:"04 Mar 2024", closing:"31 Dec 2027",
-     sites:5, users:88, visitors:41, docs:24310, rec:19844, phys:402, due:7},
-    {no:"58499-001", name:"Grant 0998-NEP: 2024 Floods and Landslides Emergency Response",
-     facility:"Sovereign", modality:"Grant", modNo:"0998", country:"Nepal", status:"Active",
-     effective:"22 Nov 2024", closing:"30 Jun 2026",
-     sites:2, users:31, visitors:12, docs:6120, rec:4988, phys:71, due:1},
-    {no:"57298-002", name:"TA 10304-PAK: Bio Tech Energy Sustainable Aviation Fuel Project",
-     facility:"Nonsovereign", modality:"TA", modNo:"10304", country:"Pakistan", status:"Active",
-     effective:"18 Jan 2025", closing:"17 Jan 2028",
-     sites:2, users:24, visitors:9, docs:4380, rec:3402, phys:44, due:1},
-    {no:"56189-001", name:"Tiger Digital Infrastructure for Rural Connectivity Project",
-     facility:"Nonsovereign", modality:"Loan", modNo:"4811", country:"Regional", status:"Active",
-     effective:"09 Sep 2024", closing:"08 Sep 2029",
-     sites:3, users:37, visitors:16, docs:7920, rec:6144, phys:88, due:2},
-    {no:"55106-001", name:"ECOM COVID-19 Smallholder Farmer Climate Resilience and Livelihood Support Project",
-     facility:"Nonsovereign", modality:"Loan", modNo:"4402", country:"Regional", status:"Closed",
-     effective:"14 Jun 2022", closing:"13 Jun 2025",
-     sites:2, users:19, visitors:7, docs:3640, rec:2810, phys:36, due:1},
-  ];
+  /* The projects come from Bank-wide, which owns them because PPT s36 and s37
+     are Bank-wide screens. Reading them rather than keeping a second copy is
+     what stops this dashboard and that one disagreeing about a project. */
+  const PROJECTS=BW.projectRows;
 
   /* ===== sites within a project =====
      The comparison chart on their slide 1 is read site by site, so a project

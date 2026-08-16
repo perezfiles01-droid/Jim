@@ -100,8 +100,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
      committee that the client has explicitly asked not to see. */
   const cutPanels=[
     ["Records declared by year",        /declared by year/i],
-    ["Retention and disposal rollup",   /retention and disposal rollup/i],
-    ["Permanent and temporary retention",/permanent and temporary retention/i],
     ["Supporting detail",               /supporting detail/i],
     ["Site visits by month",            /site visits by month/i],
     ["Format and storage",              /format and storage/i],
@@ -126,7 +124,10 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
        restored.length?": back on screen "+restored.map(m=>m[0]).join(", "):` (${cutPanels.length} checked)`}`);
   /* What the client kept, so the cut cannot quietly overshoot. */
   ok(/Comparison/.test(body),"the comparison panel survives, it is on their own slide");
-  ok(/Overview of EDRMS sites/.test(body),"the overview table survives, PPT s16 and s35");
+  ok(/Number of active EDRMS SharePoint sites for Department/.test(body),
+     "the sites table survives as the drill behind tile 1, PPT s16 and s35");
+  ok(/EDRMS retention and disposal insights/.test(body),
+     "the retention rollup is back, PPT s44 draws it under the Bank-wide banner");
   ok(/Records Declaration Trend/.test(body),"the declaration trend survives, PPT s10 and s18");
 
   /* Cutting eleven dashboards to six risked dropping content the requirements
@@ -229,18 +230,20 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   /* The Overview of EDRMS sites table carries the client's own column names
      word for word, and each name opens that unit's dashboard. */
   console.log("\nOverview of EDRMS sites, the client's wording and their click");
-  const heads=await page.$$eval(".dash-bw #bw-depts .dhead .hd",els=>els.map(e=>
+  await page.click('.dash-bw #bw-kpis .kpi[data-k="sites"]');
+  const heads=await page.$$eval(".dash-bw #bw-drill .dhead .hd",els=>els.map(e=>
     e.textContent.replace(/[↑↓]/g,"").trim()));
   const want=["Department / office / RM","Number of EDRMS SharePoint sites",
               "Total number of documents","Total number of records declared",
               "Total number of physical counterparts"];
   ok(JSON.stringify(heads)===JSON.stringify(want),
      `the column names are the client's, verbatim${heads.join(" | ")!==want.join(" | ")?": got "+heads.join(" | "):""}`);
-  await page.click(".dash-bw #bw-depts .drow.go[data-dept]");
+  await page.click(".dash-bw #bw-drill .drow.go[data-dept]");
   const landed=await page.$eval("#crumb-b",e=>e.textContent);
   ok(/Department Insights/.test(landed),"clicking a department name opens Department Insights");
   await page.evaluate(()=>switchTo("bw"));
-  await page.click(".dash-bw #bw-depts .drow.go[data-fac]");
+  await page.click('.dash-bw #bw-kpis .kpi[data-k="sov"]');
+  await page.click(".dash-bw #bw-drill .drow.go[data-fac]");
   const landedPj=await page.$eval("#crumb-b",e=>e.textContent);
   ok(/Project Insights/.test(landedPj),"clicking a project row opens Project Insights");
 

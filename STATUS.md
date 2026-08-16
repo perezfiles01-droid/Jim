@@ -175,6 +175,64 @@ closing dates, come from an **ADB project system that has never been named in
 this work**. Even with the register, the top third of that screen stays empty
 without it. Both are now questions 2 and 7 in `CLIENT_SLIDES_2026-08-16.md`.
 
+### 17 August: the deck arrived, and the audit that followed
+
+**`EDRMS_Dashboard_requirements_1.pptx` is now in the repo**, 69 slides, with its
+text at `evidence_deck_text_2026-08-17.txt`. Until today every slide number in
+this project came from `REQUIREMENTS_2026-08-13.md`, which was somebody's notes
+on the deck. **`REQUIREMENTS_AUDIT_2026-08-17.md` replaces that**, and it is now
+the authority: every requirement, its source, the table and column it lands in,
+and where it fails, the exact question to put to the client.
+
+**What the deck's own structure told us, which the notes had missed.**
+
+1. **Bank-wide has TEN top panel tiles, not eight.** s34 lists two more:
+   Retention and disposal insights, and Institutional File Plan insights. They
+   are navigation tiles. **That is why s44 and s47 carry the Bank-wide banner
+   while s45, s46 and s48 to s52 do not**: the banner marks the route in, not
+   the ownership. This had puzzled the project for a week
+2. **s16 and s35 are the same table**, once in the outline and once as the drill.
+   It now appears once, as the drill behind tile 1
+3. **s36 and s37 are Bank-wide screens**, so the sovereign and nonsovereign
+   project lists moved there as the drills behind tiles 2 and 3. Project Insights
+   is s38, one project's profile, and it now reads the project list from
+   Bank-wide rather than keeping a second copy
+4. **The deck is two documents.** s1 to s12 are the client critiquing the OLD
+   prototype, s13 to s33 the outline of the new one, s34 to s69 the detailed
+   design. Where the outline and the detail disagree, the detail wins
+
+**One removal on 16 August was an error, and is corrected.** The retention and
+disposal rollup **is drawn, on s44**, under the Bank-wide banner. It came off
+because it was named in the instruction, not because it was undrawn. It is back.
+
+**Eleven of the twelve removals were right**, confirmed against the deck's text
+rather than a register. The words "site health", "library health", "duplicat",
+"orphan", "sensitivit" and "classification" appear **nowhere in 69 slides**.
+Format groups are demoted by s12 in the client's own words.
+
+**A new convention: a cell with no source prints "Not captured".** This is not
+the source marker convention removed on 13 August, which badged sourceable
+figures. It is the value of the cell. Applied to "Turned over to RAC" (s42, no
+system records a physical custody event) and to the disposal approver and the
+three status columns (s43, they need the change request). **An invented number in
+a cell nobody can fill is the failure mode that would embarrass this report.**
+
+**A reconciliation error found by an assert, worth recording.** The six named
+projects had been given the client's own figures from s38, where one project
+holds 9,596 declared records. This prototype's entire declared holding is 21,646,
+so one project was 44 percent of the bank. **Project sites are a re-cut of the
+estate, not an addition to it**, so project figures are now derived as a subset:
+named projects sum to no more than their facility row, and the two facility rows
+sum to no more than the bank-wide figure. All three are asserted.
+
+**The design recommendation to put to the client.** Their deck puts the same four
+measures, documents, records declared, physical counterparts and records due, on
+nine different screens, grouped nine different ways. That is not nine
+requirements, it is one measure set and six groupings. **Built once as a single
+document-level table with a different `GROUP BY` per screen**, every screen
+reconciles to the same bank-wide total by construction rather than by luck. This
+changes nothing the client sees and a great deal about what it costs to maintain.
+
 ### The 17 August follow-up: everything undrawn comes off
 
 Asked which Bank-wide elements trace to a slide, two did not: **Records quality**
