@@ -1149,7 +1149,7 @@ DASHBOARDS.bw=(function(){
     "A cumulative series can never fall");
 
   /* ===== state ===== */
-  let openKpi="users";          /* which drill table is showing */
+  let openKpi="sites";          /* which drill table is showing, tile 1 on s34 */
   let sortDept="rec", dirDept="desc";
   let cmpMode="docsrec";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
@@ -1206,7 +1206,8 @@ DASHBOARDS.bw=(function(){
          <div class="gh"><b>Open another dashboard</b><span>${NAVTILES.length} cards, each leaves this screen</span></div>
          <div class="kpis">${NAVTILES.map(t=>
            `<div class="kpi" data-go="${t.to}"><div class="lab">${t.lab}</div>
-              <div class="val">${t.val()}</div><div class="tap">&#8594; Open dashboard</div></div>`).join("")}</div>
+              <div class="val">${t.val()}</div><div class="sub">${t.sub}</div>
+              <div class="tap">&#8594; Open dashboard</div></div>`).join("")}</div>
        </div>`;
   }
 
@@ -1437,21 +1438,37 @@ DASHBOARDS.bw=(function(){
     wireGo();
   }
 
-  /* s36 and s37. Keyed on a project, and every row opens Project Insights. */
+  /* s36 and s37. Keyed on a project, and every row opens Project Insights.
+
+     The deck lists three projects by name per facility type and then "Etc.",
+     but the tile above this table counts every project site. Showing only the
+     named rows made the total read 10 against a tile reading 112, which a
+     reader spots at once and rightly distrusts. So the projects the slides did
+     not name are carried as one explicit row, and the total row reconciles to
+     the tile exactly. */
   function drawProjectDrill(d){
-    const list=PROJECT_ROWS.filter(p=>p.facility===d.projects);
-    const t=f=>list.reduce((a,p)=>a+p[f],0);
+    const named=PROJECT_ROWS.filter(p=>p.facility===d.projects);
+    const fac=PROJECTS.find(p=>p.fac===d.projects);
+    const rest={};
+    ["sites","docs","rec","phys"].forEach(f=>{
+      rest[f]=fac[f]-named.reduce((a,p)=>a+p[f],0);
+    });
+    const t=f=>fac[f];
     document.getElementById("bw-drill").innerHTML=
       `<div class="ptitle">${d.title}</div>
        <div class="psub">${d.sub}</div>
        <div class="scrollx"><div class="dtab wide">
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${list.map(p=>`<div class="drow go" data-fac="${p.facility}" role="link" tabindex="0"
+         ${named.map(p=>`<div class="drow go" data-fac="${p.facility}" role="link" tabindex="0"
              title="Open Project Insights for ${p.no}">
            <div class="dn"><span class="lk">${p.no}</span><small>${p.name}</small></div>
            <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
            <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("")}
+         <div class="drow grp"><div class="dn">All other ${d.projects.toLowerCase()} projects
+             <small>Not listed by name on the slide</small></div>
+           <div class="num">${F(rest.sites)}</div><div class="num">${F(rest.docs)}</div>
+           <div class="num">${F(rest.rec)}</div><div class="num">${F(rest.phys)}</div></div>
          <div class="dtot"><div>${d.projects} projects, total</div>
            <div class="num">${F(t("sites"))}</div><div class="num">${F(t("docs"))}</div>
            <div class="num">${F(t("rec"))}</div><div class="num">${F(t("phys"))}</div></div>
