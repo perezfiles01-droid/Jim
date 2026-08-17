@@ -95,8 +95,13 @@ function check(name, ok, detail) {
   check('at least one dashboard in the nav', keys.length > 0, String(keys.length));
   console.log('  dashboards found: ' + keys.join(', '));
   check('a dashboard is mounted on load', await page.locator('#view section').count() === 1);
-  check('header breadcrumb populated', ((await page.locator('#crumb-b').textContent()) || '').trim().length > 0);
-  check('data-as-of populated', ((await page.locator('#asof').textContent()) || '').trim().length > 0);
+  // The header breadcrumb, the sidebar subtitle and the "Data as of" stamp
+  // were all removed on 17 Aug 2026 at the client's instruction. Their absence
+  // is asserted, because restoring one would put a title that changes on every
+  // click back in front of the committee.
+  check('no header breadcrumb', await page.locator('#crumb-b').count() === 0);
+  check('no data-as-of stamp', await page.locator('#asof').count() === 0);
+  check('no sidebar subtitle', await page.locator('#side-ver').count() === 0);
 
   for (const key of keys) {
     console.log('\nDashboard: ' + key);
@@ -108,7 +113,6 @@ function check(name, ok, detail) {
       String(await page.locator('#view section').count()));
     check('section carries a .dash- scope class',
       await page.locator('#view section[class^="dash-"]').count() === 1);
-    check('sidebar subtitle populated', ((await page.locator('#side-ver').textContent()) || '').trim().length > 0);
 
     // Duplicate ids are the failure mode that scoped-CSS-plus-shared-ids would
     // cause if two dashboards were ever mounted together.

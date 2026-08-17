@@ -38,7 +38,6 @@
   header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
   .crumb{font-size:12px;color:var(--mut)}.crumb b{color:var(--ink);font-size:15px;font-family:var(--serif);display:block}
   .spacer{flex:1}
-  #asof{font-size:11.5px;color:var(--mut)}
   section{padding:20px 22px 46px}
   .band{background:#E9F0F7;border:1px solid #DAE5F0;border-radius:12px;padding:16px 18px;margin-bottom:16px;min-width:0;overflow-wrap:anywhere}
   .band h2{font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.3}
@@ -493,7 +492,12 @@
 </style></head>
 <body>
 <aside id="side">
-  <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div><div class="ver" id="side-ver"></div></div>
+  <!-- The sidebar subtitle and the header breadcrumb both restated the
+       selected view, which the highlighted nav row already says. Both were
+       removed on 17 Aug 2026 at the client's instruction: a title that
+       changes on every click is a third thing to read that carries no
+       information the nav does not. -->
+  <div class="brand"><div class="t1">EDRMS Utilization Report</div><div class="t2">Asian Development Bank</div></div>
   <nav id="nav">
     <!-- The six key views the client specified on PPT s13 and s14, in their
          order, and nothing else. The five dashboards that stood here until
@@ -512,9 +516,12 @@
 </aside>
 <div id="main">
   <header>
-    <div class="crumb">EDRMS Reporting Suite<b id="crumb-b"></b></div>
+    <!-- "Data as of ... refreshed ..." was removed on 17 Aug 2026 at the
+         client's instruction. It was a hardcoded pair of timestamps: in the
+         real report the refresh stamp belongs on the Power BI dataset, not
+         painted into the page header. -->
+    <div class="crumb">EDRMS Reporting Suite</div>
     <div class="spacer"></div>
-    <span id="asof"></span>
   </header>
   <div id="view"></div>
 </div>
@@ -994,6 +1001,20 @@ const DATA=(function(){
      The figures below are demo data like every other base figure here. What
      changed is that they are now INDEPENDENT of each other, so a ratio
      between any two of them varies the way real data varies. */
+  /* THE ACTIVITY WINDOW. "Users with recorded activity" had no period
+     attached to it, so a reader could not tell whether it meant this month,
+     the last 90 days, or ever. It is now stated on every label that carries
+     the measure.
+
+     180 is not a choice of ours. The Microsoft 365 SharePoint activity report
+     is only offered over 7, 30, 90 or 180 days, and 180 is the longest it
+     will serve. There is no "all time" and no custom date range, so a user
+     who last opened EDRMS 200 days ago is indistinguishable from one who
+     never opened it at all. That is a real limit on the measure and the label
+     has to say so rather than let the reader assume the count is complete.
+     Audit question 16. */
+  const ACTIVITY_WINDOW=180;
+
   const USERS_DECLARING=3186;
   const USERS_CREATING=6690;
   const USERS_NEVER=1032;         /* no recorded activity ever */
@@ -1143,7 +1164,7 @@ const DATA=(function(){
     MONTH_LABELS,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
-    USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,
+    USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,ACTIVITY_WINDOW,
     VISITORS,PAGE_VIEWS,STORAGE_GB,RECORD_GB,DUE_WITH_PHYS,PERM_PHYSICAL,
     FORMATS,TOTAL_FILES,TOTAL_GB,
     YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
@@ -1375,11 +1396,13 @@ DASHBOARDS.bw=(function(){
        "% of active users" as an indicator underneath, which only makes sense
        if the headline is the population, so the two are not the same measure
        and must not share a label. Audit question 3. */
-    {k:"users",lab:"EDRMS users with recorded activity", val:()=>F(TOTAL_USERS)},
+    {k:"users",lab:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
+     val:()=>F(TOTAL_USERS)},
     {k:"docs", lab:"Total number of documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M"},
     {k:"rec",  lab:"Total number of records declared in EDRMS", val:()=>F(TOTAL_REC)},
     {k:"phys", lab:"Total number of physical counterparts identified", val:()=>F(TOTAL_PHYS)},
-    {k:"disp", lab:"Total number of records due for disposal", val:()=>F(TOTAL_DUE)},
+    {k:"disp", lab:"Total number of records due for disposal, next 12 months",
+     val:()=>F(TOTAL_DUE)},
   ];
   /* The two navigation tiles, s34. They carry no drill of their own because
      their whole content is another dashboard.
@@ -1390,10 +1413,15 @@ DASHBOARDS.bw=(function(){
      defined after this module, so the value is a function called at draw time,
      by which point every module exists. */
   const NAVTILES=[
-    {to:"rd", lab:"Retention and disposal insights",
-     val:()=>F(TOTAL_DUE), sub:"Records due for disposal, retention and disposal status"},
-    {to:"fp", lab:"Institutional File Plan insights",
-     val:()=>F(DASHBOARDS.fp.summary.totalTerms), sub:"Term usage across sites and libraries"},
+    {to:"rd", lab:"Records due for disposal, next 12 months",
+     val:()=>F(TOTAL_DUE), sub:"Retention and disposal insights: due windows, retention terms and status"},
+    /* Both navigation tiles were labelled "... insights", which named the
+       destination but not the figure printed on them. A tile showing a number
+       has to say what the number counts, so the label is the measure now and
+       the destination has moved into the sub. */
+    {to:"fp", lab:"File plan terms in use",
+     val:()=>F(DASHBOARDS.fp.summary.totalTerms),
+     sub:"Institutional File Plan insights: term usage across sites and libraries"},
   ];
 
   /* Both kinds of card do something when clicked, so both carry the chevron.
@@ -1454,10 +1482,15 @@ DASHBOARDS.bw=(function(){
       cols:["Department / office / RM","Number of EDRMS SharePoint sites",
             "Total number of documents","Total number of records declared",
             "Total number of physical counterparts"],
+      /* "Used in the last 7 days" was removed 17 Aug 2026 at the client's
+         instruction. It was here to show that "active" is used two ways in
+         the deck and never defined, lifecycle-active against recently-used,
+         but showing both readings side by side on one strip asked the reader
+         to resolve an ambiguity that is ours to resolve with the client.
+         The question survives as audit question 16; the tile does not. */
       tiles:()=>[["Sites created, last "+IDLE_DAYS+" days",F(SITES_CREATED_90)],
                  ["Sites deleted",F(12)],
                  ["Sites archived",F(31)],
-                 ["Used in the last 7 days",F(DATA.SITES_USED_7)],
                  ["Inactive over "+IDLE_DAYS+" days",F(SITES_INACTIVE)]]
     },
     /* s36 and s37. Both carry the Bank-wide banner in the deck, so the project
@@ -1473,17 +1506,16 @@ DASHBOARDS.bw=(function(){
 
          What replaces them is what the activity report really supports:
          whether a person has used EDRMS, and how recently. */
-      title:"EDRMS users with recorded activity, by department",
-      sub:"Users with recorded activity, and how recently they were last active.",
-      cols:["Department","Users with activity","Never accessed","No access in 90 days",
-            "Share of users active"],
-      /* "Share of users active" printed (100-11) until 17 August: a literal
-         89 on every row, written as arithmetic so it read as though it had
-         been computed. It is now the two counts on the same row taken off
-         the user count, which is what the label says it is. */
+      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by department",
+      sub:"Users who opened an EDRMS site in the window, and how recently.",
+      /* "Share of users active" removed 17 Aug 2026 at the client's
+         instruction. Before the constants sweep earlier the same day it
+         printed a literal 89 on every row; corrected, it was still a fourth
+         column restating three that are already on the row. */
+      cols:["Department / office / RM","Users with activity","Never accessed",
+            "No access in 90 days"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
-                             F(d.never), F(d.idle90),
-                             PCT(d.users-d.never-d.idle90,d.users).toFixed(1)+"%"]),
+                             F(d.never), F(d.idle90)]),
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
                  ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
                  ["No access in 90 days",F(DATA.USERS_IDLE90)],
@@ -1492,7 +1524,7 @@ DASHBOARDS.bw=(function(){
     docs:{
       title:"Total number of documents in EDRMS, by department",
       sub:"Documents and storage by department.",
-      cols:["Department","Documents","Storage","Share of documents"],
+      cols:["Department / office / RM","Documents","Storage","Share of documents"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.docs), GB(d.gb),
                              PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]),
       tiles:()=>[["Documents held",(TOTAL_DOCS/1e6).toFixed(2)+"M"],
@@ -1502,7 +1534,7 @@ DASHBOARDS.bw=(function(){
     rec:{
       title:"Total number of records declared in EDRMS, by department",
       sub:"Records declared and the people declaring them, by department.",
-      cols:["Department","Records declared","People who declared a record","Documents declared","Share of records"],
+      cols:["Department / office / RM","Records declared","People who declared a record","Documents declared","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
                              PCT(d.rec,d.docs).toFixed(2)+"%", PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
@@ -1519,7 +1551,7 @@ DASHBOARDS.bw=(function(){
          physical custody event that no system we can reach records, so the
          cell says so rather than printing a share of the counterpart count.
          Audit question 6. */
-      cols:["Department","Physical counterparts","Records declared","Share with counterpart"],
+      cols:["Department / office / RM","Physical counterparts","Records declared","Share with counterpart"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                              PCT(d.phys,d.rec).toFixed(1)+"%"]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
@@ -1528,13 +1560,13 @@ DASHBOARDS.bw=(function(){
                  ["Departments in the list",F(DEPTS.length)]]
     },
     disp:{
-      title:"Total number of records due for disposal, by department",
+      title:"Total number of records due for disposal in the next 12 months, by department",
       sub:"Records due for disposal by department, with the next due date.",
       /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
          not have, so they say so. Audit question 7 specifies the change request. */
-      cols:["Department","Records due","Next due date","With counterpart"],
+      cols:["Department / office / RM","Records due","Next due date","With counterpart"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(d.duephys)]),
@@ -1687,23 +1719,21 @@ DASHBOARDS.bw=(function(){
     });
     wrap.innerHTML=CHART.area(pts,{height:240});
 
-    const first=DATA.MONTH_FULL[inRange[0].i];
-    const last=DATA.MONTH_FULL[inRange[inRange.length-1].i];
-    sum.textContent=inRange.length===1
-      ? "Showing "+first+", one closed month."
-      : "Showing "+first+" to "+last+", "+inRange.length+" closed months.";
+    /* The summary line said "Showing Aug 2025 to Jul 2026, 12 closed months".
+       Removed 17 Aug 2026 at the client's instruction, and it was against the
+       caption rule anyway: a summary line carries no computed numbers, because
+       a label must not change when the data behind it does. The date range
+       control above already states the range, in the reader's own input. */
+    sum.textContent="";
 
-    /* Records declared this month is kept as a tile even though the client's
-       drawing of this panel carries none. It is a metrics document requirement
-       in its own right and it had no other home on the page once the by-year
-       panel came off, so dropping it here would have quietly lost a
-       requirement rather than removed a panel. */
+    /* "Records declared this month" and "Closed months shown" came off with
+       it. Records declared this month is a metrics document requirement and
+       this tile was its only home, so it now has none anywhere on the page.
+       Recorded in STATUS.md rather than lost silently. */
     const total=run;
     document.getElementById("bw-trend-tiles").innerHTML=[
       ["Records declared in range",F(total)],
       ["Monthly average in range",F(Math.round(total/inRange.length))],
-      ["Records declared this month",F(DATA.DECLARED_THIS_MONTH)],
-      ["Closed months shown",F(inRange.length)],
     ].map(([l,v])=>`<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("");
   }
 
@@ -1737,7 +1767,6 @@ DASHBOARDS.bw=(function(){
   const html=`<section class="dash-bw">
     <div class="band">
       <h2>Bank-wide oversight</h2>
-      <div class="bd">Adoption, usage, compliance and trend across ADB, broken down by department, office or resident mission.</div>
     </div>
 
     <div id="bw-kpis"></div>
@@ -1826,9 +1855,6 @@ DASHBOARDS.bw=(function(){
   }
 
   return {
-    ver:"Bank-wide Oversight Dashboard",
-    crumb:"Bank-wide Oversight",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{
       departmentalSites:DEPT_SITES,
       users:TOTAL_USERS,
@@ -2046,7 +2072,7 @@ DASHBOARDS.dp=(function(){
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
     {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
-    {k:"disp",  lab:"Total number of records due for disposal",        val:d=>F(d.due)},
+    {k:"disp",  lab:"Total number of records due for disposal, next 12 months", val:d=>F(d.due)},
   ];
 
   function drawTiles(){
@@ -2214,7 +2240,7 @@ DASHBOARDS.dp=(function(){
       const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
       rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
                             l.phys>0?"Yes":"No",PCT(dueSplit[i],d.due).toFixed(1)+"%"]);
-      tiles=[["Total number of records due for disposal",F(d.due)],
+      tiles=[["Total number of records due for disposal, next 12 months",F(d.due)],
              ["Libraries with records due",F(libs.length)]];
       asks=["Records disposed month on month, per department and division",
             "Overdue disposal actions and pending approvals",
@@ -2265,7 +2291,7 @@ DASHBOARDS.dp=(function(){
          <div class="tile"><div class="tl">Total number of documents in EDRMS</div><div class="tv">${F(d.docs)}</div></div>
          <div class="tile"><div class="tl">Total number of records declared in EDRMS</div><div class="tv">${F(d.rec)}</div></div>
          <div class="tile"><div class="tl">Total number of physical counterparts identified</div><div class="tv">${F(d.phys)}</div></div>
-         <div class="tile"><div class="tl">Total number of records due for disposal</div><div class="tv">${F(d.due)}</div></div>
+         <div class="tile"><div class="tl">Total number of records due for disposal, next 12 months</div><div class="tv">${F(d.due)}</div></div>
        </div>
        <div class="scrollx"><div class="dtab wide" id="dp-sites"
             style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) repeat(4,minmax(110px,1fr))">
@@ -2431,9 +2457,6 @@ DASHBOARDS.dp=(function(){
   }
 
   return {
-    ver:"Department Insights Dashboard",
-    crumb:"Department Insights",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{
       departmentCount:DEPTS.length,
       categories:CATS.length,
@@ -2643,9 +2666,6 @@ DASHBOARDS.fp=(function(){
   }
 
   return {
-    ver:"Institutional File Plan Dashboard",
-    crumb:"Institutional File Plan Insights",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{totalTerms:TOTAL_TERMS,categories:PLAN.length},
     html,init
   };
@@ -2833,9 +2853,6 @@ DASHBOARDS.rd=(function(){
   function init(){}
 
   return {
-    ver:"Retention and Disposal Dashboard",
-    crumb:"Retention and Disposal Insights",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{permanent:PERM_REC,temporary:TEMP_REC,due:DATA.DUE_NEXT_12},
     html,init
   };
@@ -2971,9 +2988,6 @@ DASHBOARDS.ra=(function(){
   function init(){}
 
   return {
-    ver:"Records and Archive Holdings Dashboard",
-    crumb:"Records and Archive Holdings",
-    asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{locations:LOCATIONS.length,sourced:0},
     html,init
   };
@@ -2992,9 +3006,8 @@ function switchTo(key){
   const d=DASHBOARDS[key];
   if(!d)return;
   document.getElementById("view").innerHTML=d.html;
-  document.getElementById("side-ver").textContent=d.ver;
-  document.getElementById("crumb-b").textContent=d.crumb;
-  document.getElementById("asof").textContent=d.asof;
+  /* The highlighted nav row is now the only thing that says which view is
+     open, so it is the signal the checkers read to prove a tile navigated. */
   document.querySelectorAll("#nav a[data-d]").forEach(a=>a.classList.toggle("on",a.dataset.d===key));
   d.init();
 }

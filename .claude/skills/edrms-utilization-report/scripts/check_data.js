@@ -169,7 +169,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
      STILL REQUIRED: drawn on a slide, or buildable now and kept. */
   const required=[
-    ["Records declared this month",     "Records Declaration",     /declared this month/i],
     ["Libraries with highest declaration rates","Declaration Performance",/declaration rate/i],
     ["Storage locations",               "Storage Location Dashboard",/offsite storage/i],
   ];
@@ -250,8 +249,12 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(curve.length,3,"the date range narrows the series to the months inside it");
   const lastThree=d.MONTH_VALUES.slice(9).reduce((a,v)=>a+v,0);
   eq(curve[2],lastThree,"the narrowed curve ends at what was declared inside the range");
+  /* The summary line used to read "Showing May 2026 to Jul 2026, 3 closed
+     months". Removed 17 Aug 2026 at the client's instruction, and it broke the
+     caption rule anyway: a summary carries no computed numbers. Its absence is
+     asserted, since the range is already stated by the reader's own inputs. */
   const sum3=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(/3 closed months/.test(sum3),"the summary says how many months are actually shown");
+  ok(!/closed month/i.test(sum3),`the summary states no computed range ("${sum3}")`);
 
   /* A range with no closed month in it must say so rather than draw nothing. */
   await page.fill(".dash-bw #bw-trend-from","2026-07-05");
@@ -276,7 +279,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(JSON.stringify(heads)===JSON.stringify(want),
      `the column names are the client's, verbatim${heads.join(" | ")!==want.join(" | ")?": got "+heads.join(" | "):""}`);
   await page.click(".dash-bw #bw-drill .drow.go[data-dept]");
-  const landed=await page.$eval("#crumb-b",e=>e.textContent);
+  const landed=await page.$$eval("#nav a.on",e=>e.map(x=>x.textContent.trim()).join(""));
   ok(/Department Insights/.test(landed),"clicking a department name opens Department Insights");
   await page.evaluate(()=>switchTo("bw"));
   /* The sovereign and nonsovereign tiles are withdrawn, so nothing on this

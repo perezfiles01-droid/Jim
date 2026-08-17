@@ -56,7 +56,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
   eq(tiles[0].lab,"Total number of sites created","the tiles carry the client's own labels");
-  eq(tiles[6].lab,"Total number of records due for disposal","and the last one too");
+  eq(tiles[6].lab,"Total number of records due for disposal, next 12 months","and the last one too");
 
   /* The reconciliation that matters. Walk every department, not just the one
      that happens to be selected: a weighted split can be exact for a large
@@ -84,7 +84,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
       const checks=[["Total number of documents in EDRMS",d.docs,"documents"],
                     ["Total number of records declared in EDRMS",d.rec,"records"],
                     ["Total number of physical counterparts identified",d.phys,"counterparts"],
-                    ["Total number of records due for disposal",d.due,"due"]];
+                    ["Total number of records due for disposal, next 12 months",d.due,"due"]];
       for(const [lab,want,what] of checks){
         const got=tile(lab);
         if(got!==want)out.push(d.code+" "+what+" "+got+" vs "+want);

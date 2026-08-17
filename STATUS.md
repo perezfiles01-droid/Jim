@@ -75,6 +75,8 @@ yet. That single fact explains most of what is still open.
 | `evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv` | **The compliance answer.** 1,209 workspaces, 93 columns | Evidence |
 | `evidence_CG_GroupsExport_2026-08-14.csv` | 676 groups. Checked and rejected, see section 6 | Evidence |
 | `compliant_sites.csv` | The 1,032 EDRMS sites, shaped for `-CompliantSiteList` | Derived |
+| `EDRMS_Dashboard_Contents_2026-08-17.xlsx` | **The content workbook.** 233 rows, one sheet per dashboard, every name read off the prototype itself. What each thing is, what one of them counts, whether we can build it, from which file and column, and the steps | Current |
+| `EDRMS_Dashboard_Content_Checker_2026-08-17.xlsx` | The earlier content checker, hand-listed | **SUPERSEDED** by the generated workbook above |
 | `EDRMS_Utilization_Report_Checker_2026-08-14.xlsx` | The checker. 109 figures, each with the steps to reproduce it by hand | **STALE.** The 109 figures predate 16 and 17 Aug. Rerun `build_checker.py` |
 | `kpi_brief_total_documents.html` | Work order for the Total Documents KPI | Current |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | Element to source mapping, 25 findings | **STALE**, predates the 10 Aug cut |
@@ -1049,6 +1051,93 @@ ever revived, sweep it first.
 inside Bank-wide although the division tier was withdrawn on 17 August and
 nothing renders it. Dead code for a withdrawn requirement.
 
+### 17 August, last pass: the chrome comes off, and the labels name their window
+
+Client instruction, twelve items. All applied.
+
+**Removed from the shell.** The sidebar subtitle ("Bank-wide Oversight
+Dashboard"), the header breadcrumb and the "Data as of Mon 20 Jul 2026 23:59,
+refreshed Tue 21 Jul 06:00" stamp. The first two restated the selected view,
+which the highlighted nav row already says. The stamp was a hardcoded pair of
+timestamps: in the real report the refresh time belongs on the Power BI
+dataset, not painted into the header. **`verify.js` now asserts all three are
+absent**, and the checkers that used the breadcrumb to prove a tile navigated
+read the highlighted nav row instead.
+
+**Removed from Bank-wide.** The band caption "Adoption, usage, compliance and
+trend across ADB ...", the trend summary line "Showing Aug 2025 to Jul 2026, 12
+closed months", the "Closed months shown" tile, "Records declared this month",
+and the "Used in the last 7 days" indicator.
+
+Two of those are worth a note. The summary line **broke the caption rule
+anyway**: a caption carries no computed numbers, and the date range control
+above it already states the range in the reader's own input. And **"Records
+declared this month" now has no home anywhere on the page**: it is a metrics
+document requirement and this tile was its last home. Recorded here rather than
+lost silently, and it is one edit to restore.
+
+**"Used in the last 7 days" came off, "Inactive over 90 days" stayed.** The
+7 day tile existed to show that "active" is used two ways in the deck and never
+defined, lifecycle-active against recently-used. Showing both readings side by
+side asked the reader to resolve an ambiguity that is ours to resolve with the
+client. The question survives as audit question 16; the tile does not.
+
+**"Share of users active" came off.** Earlier the same day the constants sweep
+found it printing a literal 89 on every row. Corrected, it was still a fourth
+column restating three already on the row.
+
+**Titles now name the measure and its window.** "Total number of records due
+for disposal" became "... , next 12 months" everywhere it appears, on both
+dashboards and on the navigation tile. "Institutional File Plan insights"
+became "File plan terms in use": a tile showing a number has to say what the
+number counts, so the label is the measure and the destination moved to the
+sub.
+
+**THE ACTIVITY WINDOW, which was the client's sharpest question.** "Users with
+recorded activity" carried no period at all, so a reader could not tell whether
+it meant this month, 90 days, or ever. It now reads **"EDRMS users with
+recorded activity, last 180 days"**, from a single `DATA.ACTIVITY_WINDOW`.
+
+**180 is not our choice.** The Microsoft 365 SharePoint activity report is
+offered over 7, 30, 90 or 180 days and nothing longer. There is no all-time
+option and no custom range, so **a user who last opened EDRMS 200 days ago is
+indistinguishable from one who never opened it**. That is a real limit on the
+measure, not a display detail, and the label has to carry it or the reader
+assumes the count is complete. Audit question 16.
+
+**Column header renamed** from "Department" to "Department / office / RM" on
+all six Bank-wide drills, matching the client's own s39 vocabulary and the
+heading already used on the site table.
+
+### The content workbook, generated from the prototype rather than typed
+
+`EDRMS_Dashboard_Contents_2026-08-17.xlsx`, 233 rows over 5 sheets, one per
+dashboard.
+
+**The names are never typed.** `extract_contents.js` drives the live page,
+opens **every drill on every dashboard**, and reads each label off the rendered
+DOM. `build_content_workbook.py` writes the workbook from that JSON. So a name
+in the workbook and a name on screen cannot disagree, because the workbook
+holds no second copy of them. This was the client's own instruction: "do it
+similar to how exactly the prototype is named so I will not get confused". The
+previous checker workbook was hand-listed and described a prototype that no
+longer existed within four days.
+
+Ten columns: where on screen, what it is, the name verbatim, **what ONE of
+these counts**, the verdict, which file, which column, how the number is built
+one hop at a time, and what it is blocked on with the audit question.
+
+Verdicts: **Ready 56, Needs the weekly scan 13, Needs the client 11, Not a
+measure 37, To confirm 116.** "To confirm" means nothing has been checked
+against a real export and the cells are **left blank**, which is the standing
+rule: an expectation written into a source column is indistinguishable from a
+verified fact three weeks later.
+
+**A bug worth remembering from building it.** Setting `ws.freeze_panes` by
+calling `ws.cell()` to get the anchor **materialises that cell**, so every
+subsequent `append()` lands a row lower and each sheet began with a blank row.
+Set it by reference, `ws.freeze_panes = "A2"`.
+
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
 The most serious defect this project has had. It was in the file from 13 August
@@ -1137,6 +1226,18 @@ check_literals.js      the same sweep in the source. No browser, runs in a
                        second, catches the constants that never reach a table
 check_tree.py          drill depth and every total matches its parent
 ```
+
+### Generating the content workbook
+
+```
+node extract_contents.js /home/user/Jim/index.html > /tmp/contents.json
+python3 build_content_workbook.py /tmp/contents.json \
+        /home/user/Jim/EDRMS_Dashboard_Contents_2026-08-17.xlsx
+```
+
+The names come from the page, never from the script. Everything else comes
+from the `SOURCES` table in the builder, which is hand maintained and
+deliberately partial: an unknown stays blank and reads "To confirm".
 
 **They take an absolute path.** `check_data.js index.html` fails with
 `ERR_INVALID_URL`; it needs `/home/user/Jim/index.html`. `verify.js` tolerates

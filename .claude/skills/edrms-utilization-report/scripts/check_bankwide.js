@@ -51,16 +51,20 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
   ok(!tiles.some(t=>/[Ss]overeign/.test(t.lab)),
      "the project tiles are withdrawn, not shown empty");
-  ok(tiles.some(t=>/Retention and disposal insights/.test(t.lab)),
-     "the Retention and disposal insights navigation tile is present, PPT s34");
-  ok(tiles.some(t=>/Institutional File Plan insights/.test(t.lab)),
-     "the Institutional File Plan insights navigation tile is present, PPT s34");
+  ok(tiles.some(t=>/Records due for disposal, next 12 months/i.test(t.lab)),
+     "the records due for disposal navigation tile is present, PPT s34");
+  ok(tiles.some(t=>/File plan terms in use/i.test(t.lab)),
+     "the file plan terms navigation tile is present, PPT s34");
   /* The two navigation tiles must actually navigate. */
-  for(const [k,crumb] of [["rd","Retention and Disposal"],["fp","Institutional File Plan"]]){
+  /* The header breadcrumb was removed on 17 Aug 2026, so the highlighted nav
+     row is now the only thing that says which view is open, and it is what
+     these navigation assertions read. */
+  for(const [k,name] of [["rd","Retention and Disposal"],["fp","Institutional File Plan"]]){
     await page.evaluate(()=>switchTo("bw"));
     await page.click(`.dash-bw #bw-kpis .kpi[data-go="${k}"]`);
-    const c=await page.$eval("#crumb-b",e=>e.textContent);
-    ok(new RegExp(crumb).test(c),`the ${k} tile opens ${crumb} (${c})`);
+    const on=await page.$$eval("#nav a.on",e=>e.map(x=>x.textContent.trim()).join(""));
+    ok(new RegExp(name.replace("and","&")).test(on)||new RegExp(name).test(on),
+       `the ${k} tile opens ${name} (${on})`);
   }
   await page.evaluate(()=>switchTo("bw"));
 
@@ -176,7 +180,9 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   curve=await marks();
   eq(curve.length,12,"Reset returns the trend to the full window");
   const sum=await page.$eval(".dash-bw #bw-trend-sum",e=>e.textContent);
-  ok(/Aug 2025/.test(sum)&&/Jul 2026/.test(sum),"the summary names the range actually shown");
+  /* Removed 17 Aug 2026 with the rest of the computed captions. */
+  ok(!/Aug 2025/.test(sum)&&!/closed month/i.test(sum),
+     `the summary names no computed range ("${sum}")`);
 
   console.log("\nComparison, PPT s6 and s17");
   for(const [v,label] of [["docsrec","Records declared"],["userdoc","Documents"],["userrec","Records declared"]]){
