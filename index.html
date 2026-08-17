@@ -1551,9 +1551,15 @@ DASHBOARDS.bw=(function(){
     rec:{
       title:"Total number of records declared in EDRMS, by department, office or RM",
       sub:"Records declared and the people declaring them, by department, office or RM.",
-      cols:["Department / office / RM","Records declared","People who declared a record","Documents declared","Share of records"],
+      /* "Documents declared" removed 17 Aug 2026 at the client's instruction. It
+         was the declaration rate, records over documents held, and its
+         denominator does not exist in any system yet: the Records table holds
+         no row for an undeclared document, so the column was waiting on the
+         weekly scan. The rate survives as a single bank-wide tile, "Share of
+         documents declared as records". */
+      cols:["Department / office / RM","Records declared","People who declared a record","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
-                             PCT(d.rec,d.docs).toFixed(2)+"%", PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
+                             PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
                  ["Share of documents declared as records",DECL_RATE.toFixed(2)+"%"],
                  ["Departments, offices and RMs with zero declarations",F(DEPTS.filter(d=>d.rec===0).length)],
@@ -1568,7 +1574,14 @@ DASHBOARDS.bw=(function(){
          physical custody event that no system we can reach records, so the
          cell says so rather than printing a share of the counterpart count.
          Audit question 6. */
-      cols:["Department / office / RM","Physical counterparts","Records declared","Share with counterpart"],
+      /* Renamed 17 Aug 2026 at the client's instruction. "Share with
+         counterpart" did not say what it was a share OF, and the count beside
+         it was called "Physical counterparts", which names the paper object
+         rather than the record. The count now names the record, and the rate
+         names its denominator, per the rule that any label ending in a share
+         or a rate must say what it is divided by. */
+      cols:["Department / office / RM","Records with a counterpart","Records declared",
+            "Share of records with a counterpart"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                              PCT(d.phys,d.rec).toFixed(1)+"%"]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
@@ -1583,7 +1596,7 @@ DASHBOARDS.bw=(function(){
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
          not have, so they say so. Audit question 7 specifies the change request. */
-      cols:["Department / office / RM","Records due","Next due date","With counterpart"],
+      cols:["Department / office / RM","Records due within 12 months","Next due date","With counterpart"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(d.duephys)]),
@@ -2250,10 +2263,14 @@ DASHBOARDS.dp=(function(){
          sites. Audit question 5. */
       title="Compliance review, record declaration";
       sub="Records declared and the people declaring them, by site.";
+      /* "Documents declared" removed 17 Aug 2026, matching the Bank-wide
+         records drill. It was the declaration rate, and its denominator does
+         not exist in any system yet: the Records table holds no row for an
+         undeclared document, so the column was waiting on the weekly scan. */
       cols=["Name of sites","Total number of records declared","People who declared a record",
-            "Documents declared","Share of department / office / RM"];
+            "Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring),
-                         PCT(s.rec,s.docs).toFixed(2)+"%",PCT(s.rec,d.rec).toFixed(1)+"%"]);
+                         PCT(s.rec,d.rec).toFixed(1)+"%"]);
       tiles=[["Total number of records declared",F(d.rec)],
              ["Total number of users declaring records",F(d.declaring)],
              ["Total declared record size",GB(d.recgb)],
@@ -2269,8 +2286,8 @@ DASHBOARDS.dp=(function(){
          with the copy queried in the audit, question 10. */
       title="Physical counterpart";
       sub="Records with a physical counterpart, by site.";
-      cols=["Name of sites","Total number of physical records declared",
-            "Total number of users declaring records","Share with a counterpart",
+      cols=["Name of sites","Records with a counterpart",
+            "Total number of users declaring records","Share of records with a counterpart",
             "Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
                          PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);

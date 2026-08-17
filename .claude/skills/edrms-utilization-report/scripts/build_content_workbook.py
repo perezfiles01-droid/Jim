@@ -258,7 +258,7 @@ SOURCES = {
  "Physical counterparts": dict(counts="One declared record with a paper original.", verdict=R,
    file=DB, column="HasPhysical", build="Count HasPhysical, grouped by department.", blocked=""),
 
- "Records due": dict(counts="One record whose disposal date is inside the window.", verdict=R,
+ "Records due within 12 months": dict(counts="One record whose disposal date is inside the window.", verdict=R,
    file=DB, column="EDRMSDueDateForDisposal", build="Count by department.", blocked=""),
 
  "Next due date": dict(counts="The earliest disposal date still ahead, for this unit.",
@@ -312,10 +312,16 @@ SOURCES.update({
    build="This row's figure divided by the department total, times 100.", blocked=""),
  "Share of declared records": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
    build="Physical counterparts divided by declared records, times 100.", blocked=""),
- "Share with counterpart": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
+ "Share of records with a counterpart": dict(counts=_SHARE, verdict=R, file=DB,
+   column="HasPhysical",
    build="Records with a counterpart divided by records declared, times 100.", blocked=""),
- "Share with a counterpart": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
-   build="Records with a counterpart divided by records declared, times 100.", blocked=""),
+ "Records with a counterpart": dict(
+   counts="One declared record that also exists on paper. Named for the RECORD, not the "
+          "paper object, because that is what the row counts.",
+   verdict=R, file=DB, column="HasPhysical, SiteUrl",
+   build='SELECT COUNT(*) FROM public."Records" WHERE "HasPhysical" IS TRUE, grouped by unit or site.',
+   blocked=("Turned over to RAC is a DIFFERENT measure with no source: no system we can reach "
+            "records a physical custody event. Audit question 6.")),
  "Share of documents declared as records": dict(
    counts="A RATE: declared records over ALL documents held. Reads about 0.62%, which looks "
           "like a fault and is not.",

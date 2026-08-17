@@ -1182,6 +1182,50 @@ share now runs 27% to 41% across the sixteen and varies properly.
 its allowlist with their reasons, which is the point of that file: the only way
 past it is to write down why a constant is not an invented ratio.
 
+### 17 August: three column changes, and a label that did not match its number
+
+**"Documents declared" removed**, from the Bank-wide records drill and from the
+matching Department Insights drill, at the client's instruction. It was the
+declaration rate, records over documents held, and **its denominator does not
+exist in any system yet**: the Records table holds no row for an undeclared
+document, so the column was waiting on the weekly scan. The rate survives as a
+single bank-wide tile, "Share of documents declared as records".
+
+**"Records due" became "Records due within 12 months"**, so the column states
+the window rather than leaving the reader to find it in the panel title.
+
+**"Share with counterpart" was a label that did not match its number, and the
+rename requested would have made it worse.** The column held a PERCENTAGE,
+physical counterparts over records declared, and the requested new name,
+"Records with a counterpart", promises a count. Worse, the count already sat
+beside it in a column called "Physical counterparts". Renaming as asked would
+have printed 18.0% under a label promising a number, and duplicated the
+neighbouring column's meaning.
+
+Raised rather than shipped, and the client chose to **rename the COUNT
+column** instead:
+
+| Was | Now |
+| --- | --- |
+| Physical counterparts | **Records with a counterpart** |
+| Share with counterpart | **Share of records with a counterpart** |
+
+The count now names the RECORD rather than the paper object, which is what the
+row actually counts, and the rate names its denominator, per the standing rule
+that any label ending in a share or a rate must say what it is divided by. The
+same vocabulary was applied to the Department Insights physical drill so the
+two screens do not use different words for one measure.
+
+**Still inconsistent, deliberately not changed:** the stat tiles above that
+table read "Physical counterparts" and the top KPI card reads "Total number of
+physical counterparts identified". Those are the client's own s34 and s42
+wording, so they were left alone rather than quietly rewritten. Worth raising
+if the vocabulary should be aligned everywhere.
+
+**The workbook caught its own drift again.** Three lookup keys were orphaned by
+these renames and had to be repointed, which is exactly why the names are read
+off the page rather than typed into the builder.
+
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
 The most serious defect this project has had. It was in the file from 13 August
