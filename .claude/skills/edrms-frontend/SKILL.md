@@ -167,6 +167,17 @@ node <skill>/../edrms-utilization-report/scripts/verify.js /home/user/Jim/index.
 | `check_affordance.js` | Every card looks like what it is |
 | `check_data.js` | The `DATA` reconciliations, and that every requirement still has a home |
 | `check_bankwide.js` `check_department.js` `check_division.js` `check_stage3.js` | The numbers on each dashboard |
+| `check_constants.js` | **Fabricated constants.** Opens every drill on every dashboard, on every department, and fails on a column that never varies or two columns locked in a fixed ratio |
+| `check_literals.js` | The same class in the source rather than on screen: a percentage written as a literal string, or a data value scaled by an unexplained constant. Carries an allowlist where every accepted case states its reason |
+
+**The rule those last two enforce, which is easy to break by accident:** every
+measure on a table gets its OWN weight vector from `weights()`. Splitting two
+measures by one vector makes every ratio between them constant down the whole
+table, so a rate column reads one figure whatever the data. It looks like a
+finding and it is arithmetic. That defect has been found three times here, in
+the division tier, the library table and the site table. And **no figure may be
+a fixed fraction of a figure shown beside it**: if a measure has a source, give
+it its own base figure in `DATA`; if it has none, it comes off the page.
 
 **`verify.js` is a floor.** It passes on a page whose numbers are wrong. Add
 assertions for what a stakeholder would notice: exact values, totals, every sort

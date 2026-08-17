@@ -815,6 +815,8 @@ term store does not hold it either. **This is a question for the client.**
 | **A cell with no source prints "Not captured"** | 17 Aug | The value of the cell, not a badge on the panel. Distinct from the source marker convention |
 | **Nothing from Opus** | 17 Aug | Client instruction. s67 puts retrieval in eServe and asks what Opus offers. Neither is a source we hold |
 | **The detailed design beats the outline** | 17 Aug | The deck disagrees with itself in places. s34 to s69 win over s13 to s33 |
+| **No figure is a fixed fraction of a figure shown beside it** | 17 Aug | If the measure has a source it gets its own base figure in `DATA`. If it has none it comes off the page. Enforced by `check_literals.js` |
+| **Every measure gets its own weight vector** | 17 Aug | Sharing one makes every ratio between two measures constant down the table. Found three times. `weights()` and `check_constants.js` |
 
 ### Undrawn is enough, all six dashboards. Settled 17 August
 
@@ -954,10 +956,98 @@ Every one was caught by checking a real file rather than trusting an expectation
 | Named projects given the client's own s38 figures | One project became 44% of the bank's entire declared holding | An assert |
 | The sovereign tile read 112, the table beneath totalled 10 | The table showed only the three named projects, not the "Etc." row | Looking at the screen while taking a screenshot |
 | The s44 retention rollup removed as undrawn | **It is drawn, on s44.** It came off because it was named in an instruction | Reading the deck once it was in the repo |
+| "Share of users active" printed `(100-11)` | **89% on all 16 departments**, written as arithmetic so it read as computed | `check_constants.js`, which opens every drill |
+| "Views per visitor" printed the string `"7.0"` | Page views were built as visitors times seven, so the ratio could be nothing else | The same, once it stopped requiring a `%` sign |
+| `sitesFor()` split five measures by one weight vector | Every ratio constant down all 104 of ITD's sites. **Third time this fault has been found** | The same |
+| Periodic weights `((i*7+n)%9)` | Nine distinct values across 104 sites, so a sorted page showed ten identical rows | The same |
+| `SITES_CREATED*0.66` looked defensible | The 0.66 was a real measured ratio. Applying it to a **placeholder** total still prints a figure nobody counted | Reading the line while sweeping |
 
 **The pattern:** an expectation written into a source column is indistinguishable
 from a verified fact three weeks later. That is why the tracker keeps "my
 expectation, unverified" and "your finding" in separate columns.
+
+### 17 August, later still: the deliberate sweep for fabricated constants
+
+Four invented constants had been found by accident, one at a time, because
+somebody happened to ask what a number meant. Finding the fifth in front of the
+committee was not acceptable, so the whole class was searched for on purpose.
+**Two new checkers now do it, and they found eight more.**
+
+**What a fabricated constant is, stated precisely, because "hardcoded number"
+is the wrong test.** Every base figure in `DATA` is hardcoded on purpose and
+disclosed as demo data. The defect is narrower: **a fixed ratio applied to a
+figure displayed next to it.** It has no source, it reads as though it were
+computed, and it makes the column it feeds say the same thing on every row
+whatever the data. A reader sees "every department declares at 34%" and takes
+it for a finding.
+
+So the test is not "is this hardcoded" but **"does this vary when the data
+varies"**.
+
+| Found | Was | Now |
+| --- | --- | --- |
+| Share of users active, s39 drill | The literal `(100-11)`, printing **89% on all 16 departments**, written as arithmetic so it read as computed | The two counts on the row taken off the user count |
+| Never accessed, no access in 90 days | `users*0.11` and `users*0.19` | `USERS_NEVER`, `USERS_IDLE90`, split independently |
+| Users declaring, users creating | `users*0.34` and `users*0.71` | `USERS_DECLARING`, `USERS_CREATING`, split independently |
+| Views per visitor, s56 | The literal string `"7.0"` on every row, because page views were built as visitors times seven | `VISITORS` and `PAGE_VIEWS` measured apart. The column now runs about 9 to 22 |
+| Site visitors | `users*1.9` | `VISITORS`, split independently |
+| Storage, everywhere it appeared | `docs/3400`, an assumed average document size printed as a computed total | `STORAGE_GB` and `RECORD_GB`, read not inferred |
+| Records due with a counterpart | `due*0.31` | `DUE_WITH_PHYS` |
+| Permanent physical counterparts | `WITH_PHYSICAL*0.21` | `PERM_PHYSICAL` |
+| Sites used in the last 7 days | `SITES_CREATED*0.66` | `698`. The 0.66 was the test tenant's real 681 of 1,032, which is why it looked defensible: **applying a measured RATIO to a placeholder TOTAL still prints a figure nobody counted, and hides that behind arithmetic** |
+| `LIB_GROWTH=0.107` | An invented monthly growth rate sitting in `DATA`, displayed nowhere, waiting to be used | Deleted |
+
+**None of them came off the page**, because every one of these measures has a
+source. They were only ever *derived* wrongly. `USERS_DECLARING` is still the
+one line of SQL nobody has run, `SELECT COUNT(DISTINCT "CreatedBy")`.
+
+**The shared weight vector, found for the third time.** `sitesFor()` split
+records, documents, counterparts, disposals and users by ONE weight vector, so
+every ratio between them was constant down the site list: ITD's declaration
+rate read the same figure on all 104 of its sites. The same fault was in the
+Institutional File Plan and in Retention and Disposal. It had already been
+found and fixed twice, in the division tier and the library table, which is why
+the fix is now a shared `weights(n,seed)` helper with the reasoning attached
+rather than something to remember each time.
+
+**A second, quieter fault in the same code.** The old weights were of the form
+`((i*7+n)%9)`, which repeats every nine rows. ITD's 104 sites took only nine
+distinct values, so a sorted page of ten showed **ten identical rows**.
+`weights()` is deterministic but not periodic, and asserts that it is not.
+
+**What independent measures cost, and why it is worth paying.** When declaring
+was `users*0.34` it could not possibly exceed the user count: the nesting held
+by construction and nobody had to think about it. Independent figures have to
+be *made* to nest, which is what `splitWithin()` does, placing a total under
+per-row ceilings and **moving the overflow to a row with room rather than
+clamping it**. Clamping and losing the difference is exactly how the `split()`
+bug broke department totals for four days. The nesting is now asserted per
+department, not only bank-wide.
+
+**The two checkers, and why there are two.** `check_constants.js` drives the
+page and catches a constant by its effect. It found the two worst offenders
+only because it opens **every drill on every dashboard on every department**:
+the 89% was behind a card nobody had clicked, and `check_division.js` had
+carried the constant-column test since 17 August but only ever saw the drill
+that happens to be open on mount, and only matched values ending in `%`, so a
+bare `7.0` was invisible to it.
+
+`check_literals.js` reads the source instead, because **a constant that never
+reaches a table cannot be caught by walking tables**. The worst one this project
+has had reached none: "average monthly growth" was the string `"2.4%"` in a KPI
+tile. It flags a percentage written as a literal and a data value scaled by an
+unexplained constant, with an allowlist where **every accepted case states its
+reason**, so an unexplained 0.34 cannot get back in quietly. Both were tested by
+reintroducing the historical offenders and confirming they fail.
+
+**Still carrying the old constants:**
+`EDRMS_Prototype_with_project_sites_2026-08-17.html`, the frozen working copy
+kept from before the project screens were withdrawn. It was not swept. If it is
+ever revived, sweep it first.
+
+**Also noticed, not acted on:** `divisionsFor()` is still defined and asserted
+inside Bank-wide although the division tier was withdrawn on 17 August and
+nothing renders it. Dead code for a withdrawn requirement.
 
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
@@ -1041,6 +1131,10 @@ check_department.js    Department: walks all 16 departments, sites sum to the he
 check_division.js      the division tier: children sum to parent, on screen
 check_stage3.js        Project, File Plan, Retention and Disposal, Holdings
 check_responsive.js    layout at 13 widths, 1920px down to 400px, which is zoom
+check_constants.js     the fabricated constant sweep, on screen. Opens EVERY
+                       drill on every dashboard, on every department
+check_literals.js      the same sweep in the source. No browser, runs in a
+                       second, catches the constants that never reach a table
 check_tree.py          drill depth and every total matches its parent
 ```
 
@@ -1129,7 +1223,13 @@ detail-beats-outline rule, but this one needs confirming rather than inferring.
     August entirely
 14. **Two cheap unblocking checks**, neither needing anyone else:
     `GET /users?$select=userPrincipalName,department,jobTitle` against 7rkd12 for
-    user to department, and `COUNT(DISTINCT "CreatedBy")` on `public."Records"`
+    user to department, and `COUNT(DISTINCT "CreatedBy")` on `public."Records"`.
+    **The second one now has a hole waiting for it.** `DATA.USERS_DECLARING` is
+    demo data, and that single line of SQL replaces it with a measured figure.
+    It is the cheapest real number left in the project
+
+15. ~~The deliberate sweep for fabricated constants.~~ **DONE 17 Aug.** Eight more
+    found, all fixed, and two checkers now hold the line. See section 3
 
 ### The user to department gap, new on 16 August
 

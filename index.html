@@ -571,6 +571,75 @@ console.assert(splitTotal(75,new Array(104).fill(1)).reduce((a,b)=>a+b,0)===75,
 console.assert(splitTotal(75,new Array(104).fill(1)).every(v=>v>=0),
   "splitTotal must never produce a negative part");
 
+/* Weights for splitting a total across rows. Every measure on a table must
+   get its OWN weight vector, from its own seed.
+
+   This is not a cosmetic preference. Splitting two measures by one weight
+   vector makes every ratio between them constant: rec[i]/docs[i] collapses to
+   the department's own rate on every single row, so a declaration rate column
+   reads the same figure down the whole table whatever the data. It looks like
+   a finding and it is arithmetic. That defect has now been found three times
+   in this prototype, in the division tier, in the library table and in the
+   site table, so the fix lives here rather than being remembered each time.
+
+   The generator is deterministic, so a draw is stable between renders, and it
+   is NOT periodic. The earlier hand rolled weights were of the form
+   ((i*7+n)%9), which repeats every nine rows: ITD's 104 sites took only nine
+   distinct values, and a sorted page of ten showed ten identical rows.
+   check_constants.js guards both faults. */
+function weights(n,seed){
+  const out=[];
+  for(let i=0;i<n;i++){
+    const x=Math.sin((i+1)*(seed+1)*12.9898)*43758.5453;
+    out.push(0.55+(x-Math.floor(x))*1.1);
+  }
+  return out;
+}
+console.assert(new Set(weights(104,3).map(w=>w.toFixed(6))).size>100,
+  "weights must not repeat across a long table, or a sorted page shows identical rows");
+console.assert(weights(8,2).every((w,i)=>w===weights(8,2)[i]),
+  "weights must be deterministic, so a redraw does not move the numbers");
+
+/* Split a total across rows the way splitTotal does, but never letting a row
+   exceed its own ceiling, and without losing a unit doing it.
+
+   This is what independent measures cost. When "users declaring" was simply
+   users*0.34 it could not possibly exceed the user count, so nesting held by
+   construction and nobody thought about it. Independent figures have to be
+   made to nest, and the honest way is to move the overflow to a row that has
+   room rather than to clamp it and quietly lose the difference. Clamping and
+   losing the difference is exactly how the split() bug broke department
+   totals for four days in August. */
+function splitWithin(total,caps,seed){
+  const n=caps.length;
+  const room=caps.reduce((a,c)=>a+Math.max(0,c),0);
+  if(total>room)total=room;                    /* cannot place more than fits */
+  const out=new Array(n).fill(0);
+  let left=total, w=weights(n,seed);
+  for(let pass=0;pass<12&&left>0;pass++){
+    const open=[];for(let i=0;i<n;i++)if(out[i]<caps[i])open.push(i);
+    if(!open.length)break;
+    const part=splitTotal(left,open.map(i=>w[i]));
+    open.forEach((i,k)=>{
+      const take=Math.min(part[k],caps[i]-out[i]);
+      out[i]+=take; left-=take;
+    });
+  }
+  /* Anything the weighted passes could not place goes to whatever room is
+     left, in order, so the parts always total the whole exactly. */
+  for(let i=0;i<n&&left>0;i++){
+    const take=Math.min(left,caps[i]-out[i]);
+    if(take>0){out[i]+=take;left-=take;}
+  }
+  return out;
+}
+console.assert(splitWithin(100,[10,10,10,10,10,10,10,10,10,10],1)
+  .reduce((a,b)=>a+b,0)===100,"splitWithin must be exact when the caps are exactly full");
+console.assert(splitWithin(50,[3,80,4,90],2).every((v,i)=>v<=[3,80,4,90][i]),
+  "splitWithin must never breach a ceiling");
+console.assert(splitWithin(50,[3,80,4,90],2).reduce((a,b)=>a+b,0)===50,
+  "splitWithin must place every unit it was given");
+
 const DASHBOARDS={};
 
 /* Cross dashboard navigation, added 16 Aug 2026.
@@ -888,14 +957,63 @@ const DATA=(function(){
      somebody touched it: Last Active Time. They are very different figures.
      In the test tenant all 1,032 EDRMS sites are lifecycle active while only
      681 were used in the last seven days, so a screen that shows one and
-     labels it the other overstates the estate by a third. Audit question. */
-  const SITES_USED_7=Math.round(SITES_CREATED*0.66);
+     labels it the other overstates the estate by a third. Audit question.
+
+     This was written as SITES_CREATED*0.66 until 17 August. The 0.66 came
+     from the test tenant's real 681 of 1,032, so it looked defensible, but
+     applying a measured RATIO to a placeholder TOTAL prints a figure nobody
+     ever counted and hides that fact behind arithmetic. It is a plain
+     figure now, and the day the production Workspace report arrives it is
+     replaced by a count rather than recalculated. */
+  const SITES_USED_7=698;
   const SITE_LIBRARIES=1840;
   const LIBS_NO_RECORDS=604;
   const LIBS_WITH_RECORDS=SITE_LIBRARIES-LIBS_NO_RECORDS;
   const LIBS_ACTIVE=1102;         /* activity within LIB_IDLE days */
   const LIBS_DORMANT_180=411;     /* no activity for LIB_DORMANT days */
-  const LIB_GROWTH=0.107;
+
+  /* ===== the populations behind the people measures =====
+     Four separate populations, not one figure with fractions applied to it.
+     Until 17 August "users declaring" was MONTHLY_ACTIVE_USERS*0.34, "users
+     creating" was *0.71, "never accessed" *0.11 and "no access in 90 days"
+     *0.19. Every one of those was invented, and because they were fixed
+     multiples of a figure shown in the next column, every share column
+     derived from them read the same value for every department: the screen
+     said "every department declares at the same rate", which is not a
+     finding, it is the multiplier being read back.
+
+     All four are sourceable, which is why they stay on the page rather than
+     coming off under the 17 August rule:
+
+       declaring   SELECT COUNT(DISTINCT "CreatedBy") FROM public."Records"
+                   One line of SQL, never yet run. Next-steps item 4
+       creating    CreatedBy per document, from the weekly scan
+       never       activity report, no Last Activity Date at all
+       idle 90     activity report, Last Activity Date older than IDLE_DAYS
+
+     The figures below are demo data like every other base figure here. What
+     changed is that they are now INDEPENDENT of each other, so a ratio
+     between any two of them varies the way real data varies. */
+  const USERS_DECLARING=3186;
+  const USERS_CREATING=6690;
+  const USERS_NEVER=1032;         /* no recorded activity ever */
+  const USERS_IDLE90=1795;        /* last activity older than IDLE_DAYS */
+
+  /* Visitors and page views. A visitor is a person, from site analytics
+     actorCount. A page view is an event, from Page View Count in the usage
+     export. One person visiting fifty times is fifty page views and one
+     visitor, so they are two measures and not one measure scaled. They were
+     users*1.9 and visitors*7 until 17 August, which made "views per visitor"
+     print 7.0 on every row of every department. */
+  const VISITORS=17240;
+  const PAGE_VIEWS=142880;
+
+  /* Storage. This was docs/3400 wherever it appeared, an assumed average
+     document size dressed up as a computed total. Storage Used is a column
+     in both the usage export and the Cloud Governance Workspace report, so
+     it is read, never inferred from a document count. */
+  const STORAGE_GB=1188;
+  const RECORD_GB=43;             /* the declared records' own footprint */
 
   /* Library ranking, for the three "largest" and "highest" questions the
      metrics document asks under Library usage. A library is always shown with
@@ -974,6 +1092,14 @@ const DATA=(function(){
   const BEYOND_RETENTION=342;
   const DUE_30=71, DUE_90=196, DUE_NEXT_12=608;
   const NEXT_DUE="12 Sep 2026";
+  /* Two counts that were fixed fractions of a neighbouring figure until 17
+     August: records due for disposal that also carry a physical counterpart
+     was DUE_NEXT_12*0.31, and the permanent share of physical counterparts
+     was WITH_PHYSICAL*0.21. Both are producible from columns already on the
+     document row, HasPhysical against EDRMSDueDateForDisposal and against the
+     retention label, so both are counted rather than scaled. */
+  const DUE_WITH_PHYS=191;
+  const PERM_PHYSICAL=812;
 
   /* ===== reconciliation =====
      These are the three that would otherwise be discovered by a reader adding
@@ -994,11 +1120,31 @@ const DATA=(function(){
     "The current year in the by-year trend must match the declared record count");
   console.assert(LIBS_DORMANT_180<=SITE_LIBRARIES-LIBS_ACTIVE,
     "Dormant libraries must be a subset of the libraries that are not active");
+  /* The people populations nest. These replace the arithmetic that used to
+     guarantee it: when every figure was a multiple of the same one, nesting
+     held by construction and nobody had to think about it. Now that they are
+     independent, the nesting is a claim, so it is asserted. */
+  console.assert(USERS_DECLARING<=USERS_CREATING&&USERS_CREATING<=MONTHLY_ACTIVE_USERS,
+    "Users declaring records must be a subset of users creating documents, and both of all users");
+  console.assert(USERS_NEVER+USERS_IDLE90<=MONTHLY_ACTIVE_USERS,
+    "Users who never accessed EDRMS plus users idle 90 days cannot exceed all users");
+  console.assert(PAGE_VIEWS>=VISITORS,
+    "There cannot be fewer page views than visitors: one visit is at least one view");
+  console.assert(SITES_USED_7<=SITES_CREATED,
+    "Sites used in the last 7 days must be a subset of the sites that exist");
+  console.assert(DUE_WITH_PHYS<=DUE_NEXT_12&&DUE_WITH_PHYS<=WITH_PHYSICAL,
+    "Records due for disposal with a counterpart must be a subset of both parents");
+  console.assert(PERM_PHYSICAL<=WITH_PHYSICAL,
+    "Permanent physical counterparts must be a subset of all physical counterparts");
+  console.assert(RECORD_GB<=STORAGE_GB,
+    "Declared records cannot occupy more storage than every document holds");
 
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
     MONTH_LABELS,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
-    LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,LIB_GROWTH,
+    LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
+    USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,
+    VISITORS,PAGE_VIEWS,STORAGE_GB,RECORD_GB,DUE_WITH_PHYS,PERM_PHYSICAL,
     FORMATS,TOTAL_FILES,TOTAL_GB,
     YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
     TOP_LIBRARIES,LIBS_DORMANT_180,SITE_VISITS_MONTHLY,
@@ -1055,6 +1201,28 @@ DASHBOARDS.bw=(function(){
   const userSplit=split(DATA.MONTHLY_ACTIVE_USERS,W);
   const dueSplit=split(DATA.DUE_NEXT_12,BASE.map(d=>d.phys));
 
+  /* Each of the measures below gets its OWN weight vector. Until 17 August
+     they were fixed multiples of the user count on the same row, which meant
+     every share and rate column derived from them printed one number for all
+     sixteen departments. See the note on weights() and DATA's people block.
+
+     Storage is split in tenths of a gigabyte, because splitTotal allocates
+     whole units and a department's storage is not a whole number. */
+  const N=BASE.length;
+  /* The four people measures nest inside the user count, so they are placed
+     with ceilings: creating inside users, declaring inside creating, and
+     never plus idle 90 inside users. */
+  const createSplit=splitWithin(DATA.USERS_CREATING, userSplit,2);
+  const declSplit  =splitWithin(DATA.USERS_DECLARING,createSplit,1);
+  const neverSplit =splitWithin(DATA.USERS_NEVER,    userSplit.map(u=>Math.floor(u*0.6)),3);
+  const idleSplit  =splitWithin(DATA.USERS_IDLE90,
+                                userSplit.map((u,i)=>u-neverSplit[i]),4);
+  const gbSplit   =split(DATA.STORAGE_GB*10,   weights(N,5));
+  const recGbSplit=split(DATA.RECORD_GB*10,    weights(N,9));
+  const visSplit  =split(DATA.VISITORS,        weights(N,6));
+  const viewSplit =split(DATA.PAGE_VIEWS,      weights(N,7));
+  const duePhySplit=split(DATA.DUE_WITH_PHYS,  weights(N,8));
+
   const DEPTS=BASE.map((d,i)=>({
     code:d.code, name:d.name,
     sites:siteSplit[i], users:userSplit[i],
@@ -1062,10 +1230,34 @@ DASHBOARDS.bw=(function(){
     /* Users declaring records is a subset of active users. Documents are
        created by more people than declare records, which is the point of the
        comparison panel on PPT s17. */
-    declaring:Math.max(1,Math.round(userSplit[i]*0.34)),
-    creating:Math.max(1,Math.round(userSplit[i]*0.71)),
-    gb:+(d.docs/3400).toFixed(1)
+    declaring:declSplit[i], creating:createSplit[i],
+    never:neverSplit[i], idle90:idleSplit[i],
+    visitors:visSplit[i], views:viewSplit[i],
+    duephys:duePhySplit[i],
+    gb:+(gbSplit[i]/10).toFixed(1),
+    recgb:+(recGbSplit[i]/10).toFixed(1)
   }));
+
+  /* The nesting the ceilings above are there to guarantee, asserted per
+     department rather than only bank wide. A subset that overshoots its
+     parent on one row out of sixteen is exactly the kind of fault that is
+     invisible until somebody opens that department. */
+  console.assert(DEPTS.every(d=>d.declaring<=d.creating&&d.creating<=d.users),
+    "Per department, people declaring must nest inside people creating, and both inside users");
+  console.assert(DEPTS.every(d=>d.never+d.idle90<=d.users),
+    "Per department, users who never accessed plus users idle 90 days cannot exceed all users");
+  console.assert(DEPTS.reduce((a,d)=>a+d.declaring,0)===DATA.USERS_DECLARING,
+    "Department people declaring must total the bank-wide figure");
+  console.assert(DEPTS.reduce((a,d)=>a+d.never,0)===DATA.USERS_NEVER,
+    "Department users who never accessed EDRMS must total the bank-wide figure");
+  console.assert(DEPTS.reduce((a,d)=>a+d.idle90,0)===DATA.USERS_IDLE90,
+    "Department users idle 90 days must total the bank-wide figure");
+  console.assert(DEPTS.reduce((a,d)=>a+d.visitors,0)===DATA.VISITORS,
+    "Department visitors must total the bank-wide visitor count");
+  console.assert(DEPTS.reduce((a,d)=>a+d.views,0)===DATA.PAGE_VIEWS,
+    "Department page views must total the bank-wide page view count");
+  console.assert(DEPTS.reduce((a,d)=>a+d.duephys,0)===DATA.DUE_WITH_PHYS,
+    "Department records due with a counterpart must total the bank-wide figure");
 
 
   /* The named projects behind those two summary rows, PPT s36 and s37, using
@@ -1285,12 +1477,16 @@ DASHBOARDS.bw=(function(){
       sub:"Users with recorded activity, and how recently they were last active.",
       cols:["Department","Users with activity","Never accessed","No access in 90 days",
             "Share of users active"],
+      /* "Share of users active" printed (100-11) until 17 August: a literal
+         89 on every row, written as arithmetic so it read as though it had
+         been computed. It is now the two counts on the same row taken off
+         the user count, which is what the label says it is. */
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
-                             F(Math.round(d.users*0.11)), F(Math.round(d.users*0.19)),
-                             (100-11).toFixed(0)+"%"]),
+                             F(d.never), F(d.idle90),
+                             PCT(d.users-d.never-d.idle90,d.users).toFixed(1)+"%"]),
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
-                 ["Never accessed EDRMS",F(Math.round(TOTAL_USERS*0.11))],
-                 ["No access in 90 days",F(Math.round(TOTAL_USERS*0.19))],
+                 ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
+                 ["No access in 90 days",F(DATA.USERS_IDLE90)],
                  ["Departments in the list",F(DEPTS.length)]]
     },
     docs:{
@@ -1341,7 +1537,7 @@ DASHBOARDS.bw=(function(){
       cols:["Department","Records due","Next due date","With counterpart"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
-                                 F(Math.round(d.due*0.31))]),
+                                 F(d.duephys)]),
       tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
                  ["Due within 90 days",F(DATA.DUE_90)],
                  ["Due within 12 months",F(TOTAL_DUE)]]
@@ -1702,9 +1898,29 @@ DASHBOARDS.dp=(function(){
     if(SITECACHE[code])return SITECACHE[code];
     const d=DEPTS.find(x=>x.code===code);
     const n=Math.max(1,d.sites);
-    const w=[];for(let i=0;i<n;i++)w.push(1+((i*7+code.length)%9)*0.28);
-    const rec=split(d.rec,w), docs=split(d.docs,w), phys=split(d.phys,w),
-          due=split(d.due,w), users=split(d.users,w);
+    /* One weight vector per measure, and a seed that varies by department so
+       two departments do not draw the same shape.
+
+       This carried the same defect the library table did until 17 August: a
+       single vector split records, documents, counterparts, disposals and
+       users alike, so every ratio between them was constant down the whole
+       site list. ITD's declaration rate read 0.41% on all 104 of its sites.
+       The old weights were also periodic, ((i*7+n)%9), giving only nine
+       distinct values across 104 sites, so a sorted page of ten showed ten
+       identical rows. Both faults are guarded by check_constants.js. */
+    const s=code.length*7;
+    const rec=split(d.rec,      weights(n,s+11)),
+          docs=split(d.docs,    weights(n,s+12)),
+          phys=split(d.phys,    weights(n,s+13)),
+          due=split(d.due,      weights(n,s+14)),
+          users=split(d.users,  weights(n,s+15)),
+          vis=split(d.visitors, weights(n,s+16)),
+          views=split(d.views,  weights(n,s+17)),
+          gb=split(Math.round(d.gb*10),weights(n,s+18));
+    /* People creating and people declaring, capped at the site's own user
+       count so a site never reports more declarers than users. */
+    const creating=splitWithin(d.creating,users,s+19),
+          declaring=splitWithin(d.declaring,creating,s+20);
     const rows=[];
     for(let i=0;i<n;i++){
       const stem=STEMS[i%STEMS.length];
@@ -1713,13 +1929,26 @@ DASHBOARDS.dp=(function(){
         name:`${code} ${stem}${suffix} Site`,
         owner:OWNERS[(i+code.length)%OWNERS.length]+"@adb.org",
         rec:rec[i], docs:docs[i], phys:phys[i], due:due[i], users:users[i],
+        visitors:vis[i], views:views[i],
+        creating:creating[i], declaring:declaring[i],
         /* Days since last activity. The 90 day rule the client asks for on
            s55 is derived from this, never stored, so changing 90 to 120 is
            one edit rather than a reload. */
         idle:((i*13+code.length*5)%210)+1,
-        gb:+(docs[i]/3400).toFixed(1)
+        gb:+(gb[i]/10).toFixed(1)
       });
     }
+    /* Every site measure adds back up to its department. Asserted here rather
+       than trusted, because these are now eight separate splits instead of
+       one, and eight chances to lose a unit. */
+    console.assert(rows.reduce((a,r)=>a+r.rec,0)===d.rec&&
+                   rows.reduce((a,r)=>a+r.docs,0)===d.docs&&
+                   rows.reduce((a,r)=>a+r.phys,0)===d.phys&&
+                   rows.reduce((a,r)=>a+r.due,0)===d.due&&
+                   rows.reduce((a,r)=>a+r.users,0)===d.users&&
+                   rows.reduce((a,r)=>a+r.visitors,0)===d.visitors&&
+                   rows.reduce((a,r)=>a+r.views,0)===d.views,
+      `Every site measure must total the ${code} department figure it came from`);
     SITECACHE[code]=rows;
     return rows;
   }
@@ -1813,7 +2042,7 @@ DASHBOARDS.dp=(function(){
   const TILES=[
     {k:"sites", lab:"Total number of sites created",                   val:d=>F(d.sites)},
     {k:"users", lab:"Total number of EDRMS users",                     val:d=>F(d.users)},
-    {k:"visitors",lab:"Total number of site visitors",                 val:d=>F(Math.round(d.users*1.9))},
+    {k:"visitors",lab:"Total number of site visitors",                 val:d=>F(d.visitors)},
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
     {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
@@ -1850,7 +2079,6 @@ DASHBOARDS.dp=(function(){
      plausible number. */
   function drawDrill(){
     const d=D(), sites=sitesFor(dept);
-    const vis=s=>Math.round(s.users*1.9);
     let title,sub,cols,rows,tiles,asks=[];
 
     if(openKpi==="sites"){
@@ -1877,7 +2105,7 @@ DASHBOARDS.dp=(function(){
       title="Users";
       sub="Users with recorded activity, and how recently they were last active.";
       cols=["Activity","Number of users","Share of department"];
-      const never=Math.round(d.users*0.11), idle90=Math.round(d.users*0.19);
+      const never=d.never, idle90=d.idle90;
       rows=[["Used EDRMS in the last 90 days",F(d.users-never-idle90),
              PCT(d.users-never-idle90,d.users).toFixed(1)+"%"],
             ["No access in the last 90 days",F(idle90),PCT(idle90,d.users).toFixed(1)+"%"],
@@ -1907,10 +2135,16 @@ DASHBOARDS.dp=(function(){
          is read. */
       cols=["Name of sites","Total number of visitors","Page views","Views per visitor",
             "Share of department"];
-      rows=sites.map(s=>[s.name,F(vis(s)),F(vis(s)*7),"7.0",
-                         PCT(vis(s),sites.reduce((a,x)=>a+vis(x),0)).toFixed(1)+"%"]);
-      tiles=[["Total number of visitors",F(sites.reduce((a,s)=>a+vis(s),0))],
-             ["Page views",F(sites.reduce((a,s)=>a+vis(s)*7,0))],
+      /* Views per visitor was the literal string "7.0" on every row until 17
+         August, because page views were built as visitors times seven. Both
+         are measured separately now, so the column varies the way it would in
+         real data and a site that is read heavily can be told from one that
+         is merely opened. */
+      rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
+                         (s.visitors?s.views/s.visitors:0).toFixed(1),
+                         PCT(s.visitors,d.visitors).toFixed(1)+"%"]);
+      tiles=[["Total number of visitors",F(d.visitors)],
+             ["Page views",F(d.views)],
              ["Sites reporting",F(sites.length)]];
     }
 
@@ -1922,9 +2156,9 @@ DASHBOARDS.dp=(function(){
       sub="Documents created or uploaded, by site.";
       cols=["Name of sites","Number of documents created / uploaded",
             "Number of users creating documents","Documents size (in GB)"];
-      rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.docs/3400)]);
+      rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
       tiles=[["Total number of documents",F(d.docs)],
-             ["Total documents size",GB(d.docs/3400)],
+             ["Total documents size",GB(d.gb)],
              ["Sites reporting",F(sites.length)]];
       asks=["New documents created month on month, per department and division",
             ];
@@ -1938,11 +2172,11 @@ DASHBOARDS.dp=(function(){
       sub="Records declared and the people declaring them, by site.";
       cols=["Name of sites","Total number of records declared","People who declared a record",
             "Documents declared","Share of department"];
-      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
+      rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring),
                          PCT(s.rec,s.docs).toFixed(2)+"%",PCT(s.rec,d.rec).toFixed(1)+"%"]);
       tiles=[["Total number of records declared",F(d.rec)],
              ["Total number of users declaring records",F(d.declaring)],
-             ["Total declared record size",GB(d.rec/3400)],
+             ["Total declared record size",GB(d.recgb)],
              ["Sites with no declared record in "+IDLE+" days",
               F(sites.filter(s=>s.idle>IDLE).length)]];
       asks=["Records declared month on month, and declaration rate per site",
@@ -1958,7 +2192,7 @@ DASHBOARDS.dp=(function(){
       cols=["Name of sites","Total number of physical records declared",
             "Total number of users declaring records","Share with a counterpart",
             "Share of department"];
-      rows=sites.map(s=>[s.name,F(s.phys),F(Math.max(1,Math.round(s.users*0.34))),
+      rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
                          PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);
       tiles=[["Total number of physical records declared",F(d.phys)],
              ["Total number of users declaring records",F(d.declaring)],
@@ -2261,9 +2495,14 @@ DASHBOARDS.fp=(function(){
      the whole and the panel cannot quietly disagree with Records Management. */
   const FLAT=[];
   PLAN.forEach(c=>c.terms.forEach(t=>FLAT.push({cat:c.cat,term:t})));
-  const w=FLAT.map((f,i)=>1+((i*7+f.term.length)%9)*0.34);
-  const recS=split(DATA.DECLARED,w), docS=split(DATA.DOCUMENTS,w),
-        physS=split(DATA.WITH_PHYSICAL,w), libS=split(267,w), depS=split(96,w);
+  /* One weight vector per measure. Sharing one, as this did until 17 August,
+     makes every derived ratio constant down the table: a declaration rate per
+     file plan category would have read the bank-wide rate on every category,
+     which is the tautology the division tier had. See weights(). */
+  const nF=FLAT.length;
+  const recS=split(DATA.DECLARED,weights(nF,31)), docS=split(DATA.DOCUMENTS,weights(nF,32)),
+        physS=split(DATA.WITH_PHYSICAL,weights(nF,33)), libS=split(267,weights(nF,34)),
+        depS=split(96,weights(nF,35));
   FLAT.forEach((f,i)=>{f.rec=recS[i];f.docs=docS[i];f.phys=physS[i];f.libs=libS[i];f.depts=depS[i];});
   const CATTOT=PLAN.map(c=>{
     const rows=FLAT.filter(f=>f.cat===c.cat);
@@ -2435,7 +2674,7 @@ DASHBOARDS.rd=(function(){
 
   const PERM_REC=DATA.PERMANENT;
   const TEMP_REC=DATA.LABEL_TOTAL-DATA.PERMANENT;
-  const PERM_PHYS=Math.round(DATA.WITH_PHYSICAL*0.21);
+  const PERM_PHYS=DATA.PERM_PHYSICAL;
   const TEMP_PHYS=DATA.WITH_PHYSICAL-PERM_PHYS;
 
   /* Temporary retention terms carry a duration, which is what the client drew
@@ -2452,12 +2691,18 @@ DASHBOARDS.rd=(function(){
     {term:"Programs and Operations", note:"Completed project records"},
     {term:"Administration",          note:"Approved policies"},
   ];
-  const tw=TEMP.map((t,i)=>1+((i*5+t.term.length)%7)*0.3);
-  const tRec=split(TEMP_REC,tw), tPhys=split(TEMP_PHYS,tw),
-        tDue=split(DATA.DUE_NEXT_12,tw), tLibs=split(203,tw), tDept=split(64,tw);
+  /* One weight vector per measure, for the reason set out on weights(): a
+     shared vector makes every ratio between these columns constant down the
+     table, so "records with a counterpart" would read the same share for
+     every retention term whatever the data. */
+  const nT=TEMP.length;
+  const tRec=split(TEMP_REC,weights(nT,21)), tPhys=split(TEMP_PHYS,weights(nT,22)),
+        tDue=split(DATA.DUE_NEXT_12,weights(nT,23)), tLibs=split(203,weights(nT,24)),
+        tDept=split(64,weights(nT,25));
   TEMP.forEach((t,i)=>{t.rec=tRec[i];t.phys=tPhys[i];t.due=tDue[i];t.libs=tLibs[i];t.depts=tDept[i];});
-  const pw=PERM.map((t,i)=>1+((i*4+t.term.length)%5)*0.4);
-  const pRec=split(PERM_REC,pw), pPhys=split(PERM_PHYS,pw), pLibs=split(64,pw), pDept=split(32,pw);
+  const nP=PERM.length;
+  const pRec=split(PERM_REC,weights(nP,26)), pPhys=split(PERM_PHYS,weights(nP,27)),
+        pLibs=split(64,weights(nP,28)), pDept=split(32,weights(nP,29));
   PERM.forEach((t,i)=>{t.rec=pRec[i];t.phys=pPhys[i];t.libs=pLibs[i];t.depts=pDept[i];});
 
   console.assert(PERM_REC+TEMP_REC===DATA.LABEL_TOTAL,
@@ -2475,7 +2720,7 @@ DASHBOARDS.rd=(function(){
      not, so the two tables genuinely differ and are drawn separately rather
      than collapsed into one. Documents per term need the same term to document
      join the file plan needs. */
-  const pDocs=split(Math.round(DATA.DOCUMENTS*PERM_REC/DATA.LABEL_TOTAL),pw);
+  const pDocs=split(Math.round(DATA.DOCUMENTS*PERM_REC/DATA.LABEL_TOTAL),weights(PERM.length,30));
   PERM.forEach((t,i)=>{t.docs=pDocs[i];});
 
   /* ===== s44, the landing screen =====
