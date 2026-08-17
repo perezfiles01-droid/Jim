@@ -1689,13 +1689,21 @@ DASHBOARDS.bw=(function(){
     userrec:{a:"users",b:"rec",la:"Active users",lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
              note:"Users against declarations. A wide gap here means people are in the system but are not declaring what they produce, which is a training and advocacy question rather than a rollout one."},
     docsrec:{a:"docs",b:"rec",la:"Documents",lb:"Records declared",ca:"var(--orange)",cb:"var(--green)",
-             note:"Documents against declarations, which is the declaration rate seen unit by unit. This is the comparison the client called the useful one on PPT s6."}
+             /* Note removed 17 Aug 2026 at the client's instruction. It also
+                broke the caption rule twice over: it carried a slide reference,
+                which is provenance, and it named the declaration rate, whose
+                denominator does not exist until the weekly scan is built. */
+             note:""}
   };
   function drawCmp(){
     const c=CMP[cmpMode];
     const rows=[...DEPTS].sort((x,y)=>y[c.b]-x[c.b]);
     const mxa=Math.max(...rows.map(r=>r[c.a])), mxb=Math.max(...rows.map(r=>r[c.b]));
-    document.getElementById("bw-cmp-note").textContent=c.note;
+    /* A mode may carry no note. Hide the element rather than leaving an
+       empty paragraph holding open a gap above the chart. */
+    const noteEl=document.getElementById("bw-cmp-note");
+    noteEl.textContent=c.note;
+    noteEl.style.display=c.note?"":"none";
     document.getElementById("bw-cmp-legend").innerHTML=
       `<span><i style="background:${c.ca}"></i>${c.la}</span><span><i style="background:${c.cb}"></i>${c.lb}</span>`;
     document.getElementById("bw-cmp").innerHTML=rows.map(d=>`
@@ -2458,8 +2466,11 @@ DASHBOARDS.dp=(function(){
       <div class="bd">How one department, office or resident mission is managing its records.</div>
     </div>
     <div class="panel">
+      <!-- The "Choose a department, office or resident mission" sub-caption
+           was removed 17 Aug 2026 at the client's instruction. The picker
+           below is labelled "Department / office / RM" and is the only
+           control on the panel, so the instruction restated it. -->
       <div class="ptitle" id="dp-name"></div>
-      <div class="psub">Choose a department, office or resident mission.</div>
       <div class="toolbar">
         <span class="lbl">Department / office / RM</span>
         <select id="dp-sel"></select>

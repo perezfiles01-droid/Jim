@@ -1226,6 +1226,25 @@ if the vocabulary should be aligned everywhere.
 these renames and had to be repointed, which is exactly why the names are read
 off the page rather than typed into the builder.
 
+### 17 August: two more captions off
+
+**The comparison note for "Documents against records declared"** removed at the
+client's instruction. It **broke the caption rule twice over**: it carried a
+slide reference, which is provenance and belongs in `STATUS.md` rather than on
+the page, and it named the declaration rate, whose denominator does not exist
+until the weekly scan is built.
+
+The other two comparison modes keep their notes, which are readings of the
+shape of the chart rather than provenance. A mode carrying no note now **hides
+the element** rather than leaving an empty paragraph holding open a gap above
+the chart. Since that mode is the default selection, the note area is hidden
+on load and appears when another comparison is chosen.
+
+**"Choose a department, office or resident mission"** removed from the
+Department Insights picker panel. The control beneath it is labelled
+"Department / office / RM" and is the only control on the panel, so the
+sentence restated it. The panel now reads: unit name, then the picker.
+
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
 The most serious defect this project has had. It was in the file from 13 August
