@@ -22,6 +22,29 @@ There is also a skill at **`.claude/skills/edrms-utilization-report/`** covering
 how to build, extend and verify the dashboards. It should trigger on its own for
 any work on the Reporting Suite.
 
+## Publishing: always merge to `main`, never ask
+
+Standing instruction from the requester, 17 August 2026. **Every accepted change
+is merged to `main` and pushed in the same turn it is made.** Do not leave work
+sitting on a feature branch, and do not ask whether to publish it. `main` is
+what GitHub Pages serves at https://perezfiles01-droid.github.io/Jim/, so an
+unmerged change is an invisible one, and the requester checks the live site.
+
+```
+git checkout main && git merge --no-edit <branch> && git push origin main
+git checkout <branch>
+```
+
+**If the requester says a change is not showing, it is almost certainly the
+browser cache, not the deploy.** Pages serves HTML with a ten minute lifetime
+and a plain refresh reuses it. Check `git show origin/main:index.html` for the
+change before doubting the push, then tell them to hard reload with
+Ctrl+Shift+R, or Cmd+Shift+R on a Mac.
+
+Note that this repo's own comments quote the text of things that were removed,
+so grepping for a removed caption will still find it. Check whether the hit is
+inside a comment before concluding a removal did not land.
+
 ## Current deliverables
 
 | File | What it is |
