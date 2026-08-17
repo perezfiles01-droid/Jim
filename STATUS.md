@@ -8,9 +8,18 @@ what is assumed, what is blocked, and what was got wrong along the way.
 the no em dashes rule) but was written on 4 August and predates all of this.
 **Where the two disagree, this file wins.**
 
-Last updated **14 August 2026**. Cloud Governance closed Gap 3b, the compliance
-question that had blocked four KPIs since the start, and supplied the site to
-department mapping. See section 6.
+Last updated **17 August 2026**. The client's requirements deck arrived and is
+now in the repo. All six dashboards were rebuilt against it, and a serious
+arithmetic bug was found and fixed. See section 3 and section 8.
+
+**The deck supersedes the notes.** Until 17 August every slide number in this
+project came from `REQUIREMENTS_2026-08-13.md`, which was somebody's notes on a
+deck nobody in this repo could open. `EDRMS_Dashboard_requirements_1.pptx` is now
+here, with its text at `evidence_deck_text_2026-08-17.txt`, and
+`REQUIREMENTS_AUDIT_2026-08-17.md` walks all 69 slides.
+**Where this file, the notes or the register disagree with the deck, the deck
+wins.** Reading it directly overturned a week of second-hand references and found
+a panel removal that was an error.
 
 ---
 
@@ -20,7 +29,8 @@ department mapping. See section 6.
 | --- | --- |
 | The single most important fact | Section 1 |
 | What is built and where | Sections 2 and 3 |
-| **The client requirements of 13 Aug** | Section 3a, and the register workbook |
+| **What the client actually asked for** | `REQUIREMENTS_AUDIT_2026-08-17.md`, which reads the deck itself |
+| The 18 questions to put to the client | `REQUIREMENTS_AUDIT_2026-08-17.md` section 4, and section 11 below |
 | The database design | Section 4 |
 | What is actually proven against the tenant | Section 5 |
 | What is blocked and on whom | Section 6 |
@@ -52,8 +62,12 @@ yet. That single fact explains most of what is still open.
 | File | What it is | State |
 | --- | --- | --- |
 | `index.html` | The prototype. One self contained file, **6 dashboards** | Current |
-| `REQUIREMENTS_2026-08-13.md` | The client requirement assessment as prose | Current |
-| `EDRMS_Utilization_Report_Requirements_2026-08-13.xlsx` | **The requirement register.** 123 requirements, each with its slide reference and a verdict | Current |
+| `EDRMS_Dashboard_requirements_1.pptx` | **The client's requirements deck, 69 slides. The authority on what is wanted** | Current |
+| `evidence_deck_text_2026-08-17.txt` | The deck's text, extracted so it can be searched and quoted | Evidence |
+| `REQUIREMENTS_AUDIT_2026-08-17.md` | **The audit.** All 69 slides walked: every requirement, its source, its table and column, its verdict, and 18 questions to put to the client | Current |
+| `CLIENT_SLIDES_2026-08-16.md` | Transcription and analysis of the twelve images of 16 Aug. The images arrived as chat attachments and are not in the repo, so this file is the record | Current |
+| `REQUIREMENTS_2026-08-13.md` | The requirement assessment as prose | **SECOND HAND.** Written from notes on the deck, before the deck was readable. Superseded by the audit |
+| `EDRMS_Utilization_Report_Requirements_2026-08-13.xlsx` | The requirement register. 123 requirements with slide references and verdicts | **STALE.** Slide references are second hand, and the "In the prototype?" column predates 16 and 17 Aug |
 | `EDRMS_Utilization_Report_Database_Design_v1.xlsx` | **The database design**, in the client's own workbook format. 4 tables, 73 columns | Current |
 | `utilizationdb.md` | The same design as prose, no code | Current |
 | `evidence_SharePointSiteUsageDetail_2026-08-12.csv` | Real tenant export, 2,575 rows | Evidence |
@@ -61,7 +75,7 @@ yet. That single fact explains most of what is still open.
 | `evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv` | **The compliance answer.** 1,209 workspaces, 93 columns | Evidence |
 | `evidence_CG_GroupsExport_2026-08-14.csv` | 676 groups. Checked and rejected, see section 6 | Evidence |
 | `compliant_sites.csv` | The 1,032 EDRMS sites, shaped for `-CompliantSiteList` | Derived |
-| `EDRMS_Utilization_Report_Checker_2026-08-14.xlsx` | **The checker.** 109 figures, each with the steps to reproduce it by hand | Current |
+| `EDRMS_Utilization_Report_Checker_2026-08-14.xlsx` | The checker. 109 figures, each with the steps to reproduce it by hand | **STALE.** The 109 figures predate 16 and 17 Aug. Rerun `build_checker.py` |
 | `kpi_brief_total_documents.html` | Work order for the Total Documents KPI | Current |
 | `EDRMS_Utilization_Report_Source_Data_v4.xlsx` | Element to source mapping, 25 findings | **STALE**, predates the 10 Aug cut |
 | `BACKGROUND.md` | Durable context, stack and palette | Still correct on those |
@@ -84,12 +98,22 @@ on purpose, and their content was absorbed rather than dropped.
 
 | Dashboard | Key | What is on it |
 | --- | --- | --- |
-| Bank-wide Oversight | `bw` | 8 top tiles, 5 drill tables, Overview of EDRMS sites, 3 comparisons, Records Declaration Trend, records quality, classification. **Cut back to the client's own screen on 16 Aug**, see below |
-| Department Insights | `dp` | Department picker driving everything. 8 tiles, 5 drills, site list, library usage by file plan category, trend, conventions, programme dates |
-| Project Insights | `pj` | Sovereign and nonsovereign lists with the client's column names, project profile, 7 clickable tiles with drills, 3 charts. **Rebuilt to their slide on 16 Aug.** Still layout only, and now blocked on two sources, not one |
-| Institutional File Plan | `fp` | 5 categories, terms per category, most and least used terms, classification and business process |
-| Retention and Disposal | `rd` | Permanent and temporary screens, disposition risk, retention compliance |
-| Records and Archive Holdings | `ra` | Storage, retrieval, inventory health. Layout only |
+| Bank-wide Oversight | `bw` | **10 top tiles** per s34, all clickable: eight open a drill, two navigate to another dashboard. Overview of EDRMS sites (s16 and s35, the same table), the sovereign and nonsovereign project lists as drills (s36, s37), Comparison, Records Declaration Trend |
+| Department Insights | `dp` | Department picker driving everything. 7 tiles with the client's labels, 7 drills, site list sorted and paged, library usage by file plan category behind a picker, cumulative trend, conventions, programme dates (s53 to s66) |
+| Project Insights | `pj` | One project's profile, s38 alone. Eight profile fields, 7 clickable tiles with drills, 3 charts. Reads the project list from Bank-wide rather than holding a second copy. Blocked on two sources, not one |
+| Institutional File Plan | `fp` | Rollup with all five categories, then one screen per category: top stats, term table, and the five indicators s48 to s52 repeat (s47 to s52) |
+| Retention and Disposal | `rd` | The s44 rollup as its landing screen, then permanent and temporary as two tables because they carry different columns (s44 to s46) |
+| Records and Archive Holdings | `ra` | The two tables the client drew (s68, s69) with their own headings. **Every measure reads "Not captured"**, and a notice says the dashboard is not yet specified |
+
+**Bank-wide has TEN tiles, not eight.** s34 lists two more than the notes did:
+Retention and disposal insights, and Institutional File Plan insights. They are
+**navigation** tiles. That is why s44 and s47 carry the Bank-wide banner while
+s45, s46 and s48 to s52 do not: **the banner marks the route in, not the
+ownership.** This had puzzled the project for a week.
+
+**The deck is two documents.** s1 to s12 are the client critiquing the OLD
+prototype, s13 to s33 the outline of the new one, s34 to s69 the detailed design.
+**Where the outline and the detail disagree, the detail wins.**
 
 **Removed on 13 August**, because the client specified six key views and
 eleven would have presented four superseded screens as current: `ov`, `rm`,
@@ -345,18 +369,15 @@ drills (`s15`, `s34`, `s39` to `s43`), Overview of EDRMS sites (`s16`, `s35`,
 sortable per `s5`), Comparison (`s6`, `s17`), and Records Declaration Trend
 (`s10`, `s18`, redrawn to the 16 August image).
 
-**One caveat on all slide numbers in this file.** The deck itself,
-`EDRMS_Dashboard_requirements_1.pptx`, is **not in the repo**. Every slide
-reference traces to `REQUIREMENTS_2026-08-13.md`, which was built by walking the
-deck on 13 August. The twelve images of 16 August are a separate, unnumbered set
-and cannot be cited by slide.
+**Slide numbers in this file are now first hand.** Every reference dated 17
+August or later was checked against `evidence_deck_text_2026-08-17.txt`.
+References dated 13 or 14 August came from the notes and have not all been
+re-checked; treat those as indicative until they are. The twelve images of 16
+August are a separate, unnumbered set and cannot be cited by slide.
 
-**One defect was found by reading the slides, and it is still open.** Bank-wide's
-physical counterpart drill prints "Turned over to RAC" as 58 percent of the
-counterpart count. Nothing sources it, and by the 13 August rule an unsourceable
-cell prints "no source" rather than a plausible number. It was left alone in this
-revision because the client did not raise it and it sits inside a panel they kept,
-but it should be fixed.
+**"Turned over to RAC" is fixed.** Bank-wide's physical counterpart drill printed
+it as 58 percent of the counterpart count with nothing sourcing it. It now reads
+"Not captured", because no system records a physical custody event (s42).
 
 ### The source marker convention, agreed 13 August
 
@@ -735,6 +756,38 @@ term store does not hold it either. **This is a question for the client.**
 | **The declaration trend is cumulative, not per month** | 16 Aug | Their drawing. A cumulative series ENDS at the total, it does not sum to it. Asserted both ways |
 | **A day level range is allowed on declaration panels** | 16 Aug | The 12 Aug "no day level picker" rule was about the usage panels, where a week is the smallest unit the data holds. `Records` carries a per record declaration date, so it does not bind here |
 | **Client column names are used verbatim** | 16 Aug | Client instruction. The design accommodates the long names rather than shortening them |
+| **Undrawn is enough, on all six dashboards** | 17 Aug | Supersedes the 14 Aug rule. See below |
+| **A cell with no source prints "Not captured"** | 17 Aug | The value of the cell, not a badge on the panel. Distinct from the source marker convention |
+| **Nothing from Opus** | 17 Aug | Client instruction. s67 puts retrieval in eServe and asks what Opus offers. Neither is a source we hold |
+| **The detailed design beats the outline** | 17 Aug | The deck disagrees with itself in places. s34 to s69 win over s13 to s33 |
+
+### Undrawn is enough, all six dashboards. Settled 17 August
+
+The 14 August rule said a panel comes off only if it is undrawn **and**
+unsourceable. Bank-wide was held to a stricter standard on 17 August by client
+instruction: **on that dashboard, undrawn was enough**, and Records quality and
+Information classification came off even though both are buildable today. That
+left two standards running side by side, which was recorded as undecided.
+
+**It is now decided: undrawn is enough, everywhere.** If the client did not draw
+it on a slide, it is not on the page, whether or not we could build it.
+
+**This cost no removals.** Every panel on all six dashboards was traced to the
+deck text before the decision was recorded, and all of them land on a slide,
+including Conventions and programme dates, which is drawn on s26 and s28 despite
+being a reference list rather than a measurement. The 17 August rebuild had
+already reached this standard panel by panel; the rule now says so explicitly, so
+the next addition is tested against it rather than argued about.
+
+**What this rules out.** The proposed metrics document is a word list. Nobody drew
+a screen for its 26 requirements and nobody said what a panel should show. Those
+now need a client instruction to enter the prototype, not merely a source.
+
+**Five requirements have no home anywhere as a result:** duplicated records,
+orphaned records, records with sensitivity labels, restricted records,
+confidential records. They sit in `check_data.js` on the list **asserted absent**,
+so the loss is recorded rather than silent, and any of them is one edit to
+restore.
 
 ### The 14 August cut: undrawn and unsourceable
 
@@ -842,10 +895,40 @@ Every one was caught by checking a real file rather than trusting an expectation
 | "Active Users disproven" | Disproven for the usage CSV, not for per site analytics | The client's screenshot |
 | `5.2.3` said to need the document scan | It does not. Library list minus `ListId`s in `Records` | Rechecking before building |
 | Data Design docs deleted by a bad slice | Removing one section took two neighbours with it | A later edit failed to find its anchor |
+| **`split()` broke department totals for four days** | A department showed 103 records due against a real 75 | An assert, while rebuilding Department Insights |
+| Named projects given the client's own s38 figures | One project became 44% of the bank's entire declared holding | An assert |
+| The sovereign tile read 112, the table beneath totalled 10 | The table showed only the three named projects, not the "Etc." row | Looking at the screen while taking a screenshot |
+| The s44 retention rollup removed as undrawn | **It is drawn, on s44.** It came off because it was named in an instruction | Reading the deck once it was in the repo |
 
 **The pattern:** an expectation written into a source column is indistinguishable
 from a verified fact three weeks later. That is why the tracker keeps "my
 expectation, unverified" and "your finding" in separate columns.
+
+### The split bug. Five copies, two ways wrong, totals silently broken
+
+The most serious defect this project has had. It was in the file from 13 August
+and survived four days of passing checks.
+
+`split()` shared a whole number across weights and existed in **five
+near-identical copies**. It did `Math.max(1, round(total*w/s))` and then dumped
+the remainder on the first element. With ITD's 104 sites sharing 75 records due,
+the forced minimum of one pushed the sum to 104 and **the first row went to minus
+29**. Three of the five copies then clamped the negative to zero, which fixed the
+appearance and **silently broke the total**: the department showed 103 records due
+against a real 75.
+
+**Every assert checking that sum passed**, because it was comparing two figures
+that were both wrong.
+
+Replaced with one shared `splitTotal()` using largest-remainder allocation: floor
+each share, then hand the leftover units to the rows with the largest fractional
+parts. **Non-negative and exact by construction**, with its own asserts for the
+case that broke it. One definition, five call sites.
+
+**The lesson, which this project keeps relearning: a plausible number that
+reconciles against another plausible number is not verification.** Reconciliation
+proves two figures agree. It does not prove either is right. Where a figure can be
+checked against something outside the page, check it there.
 
 ---
 
@@ -951,26 +1034,27 @@ classification, so nothing can arrive without saying how it gets a value.
 what they designed, with every gap labelled. What is missing is answers, and
 seven of them unblock most of the register.
 
-### Send the seven questions. In this order
+### Send the questions. There are 18, not 7
 
-The full versions are in `REQUIREMENTS_2026-08-13.md` section 9 and on the
-`Questions to client` sheet of the register workbook.
+**The full versions are in `REQUIREMENTS_AUDIT_2026-08-17.md` section 4**, each
+written to be sent as it stands: what we need, why the screen cannot be built
+without it, and what it becomes in the database. The seven-question list that
+stood here until 17 August was written from the notes and is superseded.
 
-1. **Where does the Institutional File Plan actually live?** It is in neither
-   the term store nor Purview. Blocks a whole dashboard
-2. **Is there a project site register?** Site URL to project number, sovereign
-   or nonsovereign. Check AvePoint Cloud Governance first. Cheapest unblock in
-   the whole deck: one CSV would make Project Insights real
-3. **Division: who supplies it?** The client asked for the tier back on 13 Aug
-   and it is built, but nothing populates it. The department list must carry it
-4. **Disposal status, approver and disposed records** need a field in the EDRMS
-   application. A development change request for Mihal Le, not a report change
-5. **Who maintains the three reference lists?** Go-live dates, conventions,
-   programme dates
-6. **Is an inactive site 90 days or 300?** The deck says 90, the metrics
-   document says 300
-7. **Which system owns staff, contractor and consultant, and training?** The
-   client's own PPT s54 asks the same question
+**Send these four first.** They unblock the most for the least effort:
+
+1. **Question 2, the project register.** One spreadsheet unblocks three screens
+2. **Question 3, the user register.** **Their own s54 has already drawn the table
+   they would need to give us**, down to the columns (Name, Staff status,
+   Onboarded since go-live, Training completed, Date completed, Notes) and asks
+   of itself "Source: Database of end users? Owned and maintained by?"
+3. **Questions 12 and 13, the file plan and its join.** The longest lead item in
+   the deck, and question 13 survives whatever the answer to 12 is
+
+**Question 18 was added on 17 August: four file plan categories or five?** The
+deck disagrees with itself. s29 lists four top-panel stats and omits Institutional
+Management and Other; s47 lists five. The prototype follows s47 per the
+detail-beats-outline rule, but this one needs confirming rather than inferring.
 
 ### Then, in parallel
 
@@ -981,6 +1065,35 @@ The full versions are in `REQUIREMENTS_2026-08-13.md` section 9 and on the
     one query to Mihal
 11. **Rebuild the source data workbook as v5.** `elements.py` still holds the
     pre-cut 52 elements, so v4 describes a design that no longer exists
+12. **Build the weekly scan.** The single biggest self-help item in the project:
+    every document figure, every declaration rate and every storage figure waits
+    on it, and **none of it needs the client**
+13. **Rerun `build_requirements.py` and `build_checker.py`.** Both outputs are
+    stale, and both describe a prototype that no longer exists. The register's
+    "In the prototype?" column and the checker's 109 figures predate 16 and 17
+    August entirely
+14. **Two cheap unblocking checks**, neither needing anyone else:
+    `GET /users?$select=userPrincipalName,department,jobTitle` against 7rkd12 for
+    user to department, and `COUNT(DISTINCT "CreatedBy")` on `public."Records"`
+
+### The user to department gap, new on 16 August
+
+Gap 1 closed **site** to department on 14 August, from the Cloud Governance
+`Department` column. **That does nothing for people.** Every requirement counting
+users per department (s39, s54) needs a person to department mapping, and no
+source in this project has one. Entra's `department` attribute is the untested
+candidate, which is check 14 above.
+
+### The design recommendation to put to the client
+
+The deck puts the same four measures, documents, records declared, physical
+counterparts and records due, on **nine screens grouped six ways**. That is not
+nine requirements. It is **one measure set and six groupings**. Built once as a
+single document-level table with a different `GROUP BY` per screen, every screen
+reconciles to the same bank-wide total **by construction rather than by luck**.
+
+This changes nothing the client sees and a great deal about what it costs to
+maintain. Given the split bug, "by construction" is worth more than it sounds.
 
 ### The one design change the requirements imply
 
