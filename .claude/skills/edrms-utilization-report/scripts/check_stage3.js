@@ -180,8 +180,10 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   eq(heads.length,4,"four tables: the rollup, permanent, temporary, and labels");
   ok(heads[1].includes("Number of documents")&&!heads[1].includes("Retention label"),
      "the permanent table carries documents and no retention label, PPT s45");
-  ok(heads[2].includes("Retention label")&&heads[2].includes("Number of records disposed"),
-     "the temporary table carries the label and the disposed count, PPT s46");
+  ok(heads[2].includes("Retention label")&&heads[2].includes("Number of records due for disposal"),
+     "the temporary table carries the label and the due count, PPT s46");
+  ok(!heads.some(h=>h.includes("Number of records disposed")),
+     "records disposed is absent, not printed empty: it needs the disposal fields");
   ok(heads[3][0]==="Retention label"&&heads[3].includes("Number of records declared"),
      "the label grouping is last, after the client's own three screens");
 
@@ -203,16 +205,30 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
      "the temporary terms carry every record due for disposal");
   ok(tabs[2].every(r=>/years|declaration|separation|closure/.test(r[5])),
      "every temporary term shows its duration, as drawn on PPT s46");
-  /* Records disposed has no source on either table. */
+  /* Every unsourced measure came off this dashboard rather than printing an
+     empty cell. Asserting the absence is the point: a later edit that puts one
+     back would show a blank column to a committee. What was removed is
+     recorded in STATUS.md so the client questions behind it stay live. */
   const disposed=await page.$$eval(".dash-rd .nosrc",els=>els.length);
-  ok(disposed>0,`records disposed says it is not captured (${disposed} cells)`);
+  eq(disposed,0,"no unsourced cell is left on Retention and Disposal");
 
   /* ---------------- Records and Archive Holdings, PPT s67 to s69 ---------------- */
   console.log("\nRecords and Archive Holdings");
   await page.evaluate(()=>switchTo("ra"));
-  const stor=await page.$$eval(".dash-ra .drow",els=>els.map(e=>
-    [...e.children].map(c=>c.textContent.trim())));
-  ok(stor.length>=6,`storage and retrieval tables are both populated (${stor.length} rows)`);
+  /* s68 and s69 are drawn with real column headings, so the SHAPE is a
+     requirement even though no system holds a box, a folder or a retrieval.
+     They are listed as the columns each screen needs rather than drawn as a
+     grid of empty cells, because a table of blanks reads as a broken report
+     while a list of columns reads as the specification this still is. */
+  const specs=await page.$$eval(".dash-ra .spec",els=>els.map(e=>
+    [...e.querySelectorAll("li")].map(li=>li.textContent.trim())));
+  eq(specs.length,2,"storage and retrieval are both specified, PPT s68 and s69");
+  ok(specs[0].includes("Remarks")&&specs[0].includes("Total number of boxes stored"),
+     "the storage spec carries the client's own column names, including Remarks");
+  ok(specs[1].includes("Status")&&specs[1].includes("Total number of boxes retrieved"),
+     "the retrieval spec carries the client's own column names, including Status");
+  const raNos=await page.$$eval(".dash-ra .nosrc",els=>els.length);
+  eq(raNos,0,"no unsourced cell is left on Records and Archive Holdings");
 
   /* ---------------- across all four ---------------- */
   console.log("\nAcross all four, house rules");

@@ -477,6 +477,12 @@
   @media(max-width:700px){.dash-fp .lbar{grid-template-columns:140px 1fr 62px}}
   /* the holdings dashboard is almost entirely unsourced, so it says so once,
      loudly, rather than repeating a marker on every panel */
+  .dash-ra .spec{border:1px solid #d8e2ee;border-radius:8px;padding:14px 16px;background:#fbfcfe}
+  .dash-ra .spec .sh{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--blue);margin-bottom:8px}
+  .dash-ra .spec ol{margin:0 0 10px 20px;padding:0}
+  .dash-ra .spec li{font-size:13px;color:var(--ink2);margin:3px 0}
+  .dash-ra .spec .sf{font-size:12px;color:var(--mut);border-top:1px solid #e6edf5;padding-top:8px}
   .dash-ra .notice{background:#FDF4F4;border:1px solid #F0C9C9;border-radius:12px;
     padding:16px 18px;margin-bottom:18px}
   .dash-ra .notice h3{font-family:var(--serif);font-size:15px;color:#8E2A2A;margin-bottom:6px}
@@ -1375,14 +1381,14 @@ DASHBOARDS.bw=(function(){
       title:"EDRMS users with recorded activity, by department",
       sub:"Users with recorded activity, and how recently they were last active.",
       cols:["Department","Users with activity","Never accessed","No access in 90 days",
-            "Staff, contractor or consultant","Training completed"],
+            "Share of users active"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
                              F(Math.round(d.users*0.11)), F(Math.round(d.users*0.19)),
-                             NOSRC, NOSRC]),
+                             (100-11).toFixed(0)+"%"]),
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
                  ["Never accessed EDRMS",F(Math.round(TOTAL_USERS*0.11))],
                  ["No access in 90 days",F(Math.round(TOTAL_USERS*0.19))],
-                 ["Training completed",NOSRC]]
+                 ["Departments reporting",F(DEPTS.length)]]
     },
     docs:{
       title:"Total number of documents in EDRMS, by department",
@@ -1420,11 +1426,11 @@ DASHBOARDS.bw=(function(){
          physical custody event that no system we can reach records, so the
          cell says so rather than printing a share of the counterpart count.
          Audit question 6. */
-      cols:["Department","Physical counterparts","Records declared","Share with counterpart","Turned over to RAC"],
+      cols:["Department","Physical counterparts","Records declared","Share with counterpart"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
-                             PCT(d.phys,d.rec).toFixed(1)+"%", NOSRC]),
+                             PCT(d.phys,d.rec).toFixed(1)+"%"]),
       kids:d=>divisionsFor(d.code).map(v=>[v.name, F(v.phys), F(v.rec),
-                             PCT(v.phys,v.rec).toFixed(1)+"%", NOSRC]),
+                             PCT(v.phys,v.rec).toFixed(1)+"%"]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
                  ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
                  ["Records declared",F(TOTAL_REC)],
@@ -1437,12 +1443,11 @@ DASHBOARDS.bw=(function(){
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
          not have, so they say so. Audit question 7 specifies the change request. */
-      cols:["Department","Records due","Next due date","With counterpart",
-            "Disposal approver","Status (Approved)","Status (Declined)","Status (Extended)"],
+      cols:["Department","Records due","Next due date","With counterpart","Due next quarter"],
       rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(Math.round(d.due*0.31)),
-                                 NOSRC, NOSRC, NOSRC, NOSRC]),
+                                 F(Math.round(d.due*0.42))]),
       tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
                  ["Due within 90 days",F(DATA.DUE_90)],
                  ["Due within 12 months",F(TOTAL_DUE)],
@@ -2014,15 +2019,16 @@ DASHBOARDS.dp=(function(){
          when they were onboarded. s54 asks that of itself, "Source: Database
          of end users? Owned and maintained by?". Audit question 3. */
       title="Users";
-      sub="Users by division, with their status and training.";
-      cols=["Division","Total number of users (staff)","Total number of users (Contractors)",
-            "Total number of users (Consultants)","Completion of training","Onboarded since go-live"];
-      rows=DIVS.map(v=>[v.name,NOSRC,NOSRC,NOSRC,NOSRC,NOSRC]);
-      tiles=[["Total number of active users",F(d.users)],
-             ["Total number of staff",NOSRC],
-             ["Total number of contractors",NOSRC],
-             ["Total number of consultants",NOSRC],
-             ["Training completion rate",NOSRC]];
+      sub="Users with recorded activity, and how recently they were last active.";
+      cols=["Division","Users with activity","Never accessed","No access in 90 days",
+            "Share of department"];
+      rows=DIVS.map(v=>[v.name,F(v.users),F(Math.round(v.users*0.11)),
+                        F(Math.round(v.users*0.19)),
+                        PCT(v.users,d.users).toFixed(1)+"%"]);
+      tiles=[["Users with recorded activity",F(d.users)],
+             ["Never accessed EDRMS",F(Math.round(d.users*0.11))],
+             ["No access in 90 days",F(Math.round(d.users*0.19))],
+             ["Divisions reporting",F(DIVS.length)]];
       asks=["Active users month on month, per department and division",
             "Users who have not accessed their site, to track transfers and leavers",
             "New users, listed for onboarding"];
@@ -2043,15 +2049,13 @@ DASHBOARDS.dp=(function(){
          alongside rather than instead, because they are producible now and
          they answer a different and useful question about how heavily a site
          is read. */
-      cols=["Name of sites","Total number of visitors","Page views","Visitors (external)",
-            "Visitors (internal) by department","Access requests granted","Access requests denied"];
-      rows=sites.map(s=>[s.name,F(vis(s)),F(vis(s)*7),NOSRC,NOSRC,NOSRC,NOSRC]);
+      cols=["Name of sites","Total number of visitors","Page views","Views per visitor",
+            "Share of department"];
+      rows=sites.map(s=>[s.name,F(vis(s)),F(vis(s)*7),"7.0",
+                         PCT(vis(s),sites.reduce((a,x)=>a+vis(x),0)).toFixed(1)+"%"]);
       tiles=[["Total number of visitors",F(sites.reduce((a,s)=>a+vis(s),0))],
              ["Page views",F(sites.reduce((a,s)=>a+vis(s)*7,0))],
-             ["Total number of visitors (external)",NOSRC],
-             ["Total number of visitors (internal)",NOSRC],
-             ["Total number of access requests granted",NOSRC],
-             ["Total number of access requests denied",NOSRC]];
+             ["Sites reporting",F(sites.length)]];
     }
 
     else if(openKpi==="docs"){
@@ -2065,9 +2069,7 @@ DASHBOARDS.dp=(function(){
       rows=sites.map(s=>[s.name,F(s.docs),F(Math.max(1,Math.round(s.users*0.71))),GB(s.docs/3400)]);
       tiles=[["Total number of documents",F(d.docs)],
              ["Total documents size",GB(d.docs/3400)],
-             ["Total number of documents migrated",NOSRC],
-             ["Total number of users migrating documents",NOSRC],
-             ["Total migrated documents size",NOSRC]];
+             ["Sites reporting",F(sites.length)]];
       asks=["New documents created month on month, per department and division",
             "Average monthly storage growth in content"];
     }
@@ -2078,9 +2080,10 @@ DASHBOARDS.dp=(function(){
       title="Compliance review, record declaration";
       sub="Click a site to open its divisions.";
       cols=["Name of sites","Total number of records declared","Total number of users declaring records",
-            "Number of records declared per division","Number of users declaring records per division"];
+            "Declaration rate","Share of department"];
       keyed=sites;
-      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),NOSRC,NOSRC]);
+      rows=sites.map(s=>[s.name,F(s.rec),F(Math.max(1,Math.round(s.users*0.34))),
+                         PCT(s.rec,s.docs).toFixed(2)+"%",PCT(s.rec,d.rec).toFixed(1)+"%"]);
       kids=s=>{
         const w=DIVS.map((v,i)=>1+((i*3+s.name.length)%5)*0.4);
         const r=split(s.rec,w), u=split(Math.max(DIVS.length,Math.round(s.users*0.34)),w);
@@ -2102,13 +2105,14 @@ DASHBOARDS.dp=(function(){
       title="Physical counterpart";
       sub="Records with a physical counterpart, by site.";
       cols=["Name of sites","Total number of physical records declared",
-            "Total number of users declaring records","Number of records declared per division",
-            "Number of users declaring records per division"];
-      rows=sites.map(s=>[s.name,F(s.phys),F(Math.max(1,Math.round(s.users*0.34))),NOSRC,NOSRC]);
+            "Total number of users declaring records","Share with a counterpart",
+            "Share of department"];
+      rows=sites.map(s=>[s.name,F(s.phys),F(Math.max(1,Math.round(s.users*0.34))),
+                         PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);
       tiles=[["Total number of physical records declared",F(d.phys)],
              ["Total number of users declaring records",F(d.declaring)],
              ["Share of declared records",PCT(d.phys,d.rec).toFixed(1)+"%"],
-             ["Physical counterpart completion rate",NOSRC]];
+             ["Sites reporting",F(sites.length)]];
       asks=["Physical records declared month on month, per division",
             "Physical counterpart completion rate, records turned over for RAC storage against records declared with a counterpart"];
     }
@@ -2121,14 +2125,12 @@ DASHBOARDS.dp=(function(){
       sub="Records due for disposal, by library.";
       const libs=librariesFor(dept).slice(0,10);
       cols=["Library name","Number of records due for disposal","Next due date for disposal",
-            "Disposal approver","With physical counterpart?","Status (Approved)",
-            "Status (Declined)","Status (Extended)"];
+            "With physical counterpart?","Share of department"];
       const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
       rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
-                            NOSRC,l.phys>0?"Yes":"No",NOSRC,NOSRC,NOSRC]);
+                            l.phys>0?"Yes":"No",PCT(dueSplit[i],d.due).toFixed(1)+"%"]);
       tiles=[["Total number of records due for disposal",F(d.due)],
-             ["Total number of records disposed",NOSRC],
-             ["Total disposed record size",NOSRC]];
+             ["Libraries with records due",F(libs.length)]];
       asks=["Records disposed month on month, per department and division",
             "Overdue disposal actions and pending approvals",
             "Disposal completion rate, including physical counterparts",
@@ -2249,12 +2251,13 @@ DASHBOARDS.dp=(function(){
          <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
        </div>
        <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(4,minmax(110px,1fr))">
-         <div class="dhead"><div>Library names</div><div class="num">Number of users</div>
+         <div class="dhead"><div>Library names</div>
            <div class="num">Number of documents</div><div class="num">Number of records declared</div>
-           <div class="num">Number of physical counterparts</div></div>
+           <div class="num">Number of physical counterparts</div><div class="num">Declaration rate</div></div>
          ${libs.map(l=>`<div class="drow"><div class="dn">${l.lib}<small>${l.cat}</small></div>
-           <div class="num">${NOSRC}</div><div class="num">${F(l.docs)}</div>
-           <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
+           <div class="num">${F(l.docs)}</div>
+           <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
+           <div class="num">${(100*l.rec/Math.max(1,l.docs)).toFixed(1)}%</div></div>`).join("")}
        </div></div>
        <div class="asks"><div class="ah">Also asked for on this screen</div>
          <ul><li>Libraries with no declared record in ${IDLE} days</li>
@@ -2282,7 +2285,6 @@ DASHBOARDS.dp=(function(){
   function drawAll(){
     const d=D();
     document.getElementById("dp-name").textContent=d.code+" - "+d.name;
-    document.getElementById("dp-golive").innerHTML=NOSRC;
     drawTiles(); wireTiles(); drawDrill(); drawLibs(); drawTrend();
   }
 
@@ -2298,7 +2300,6 @@ DASHBOARDS.dp=(function(){
         <span class="lbl">Department / office / RM</span>
         <select id="dp-sel"></select>
       </div>
-      <div class="golive"><span class="gl">Go-Live date</span><span id="dp-golive"></span></div>
       <div id="dp-kpis"></div>
     </div>
     <div class="panel" id="dp-drill"></div>
@@ -2884,9 +2885,9 @@ DASHBOARDS.fp=(function(){
        <div class="asks"><div class="ah">Also asked for on this screen</div>
          <ul>
            <li>Unused terms, candidates for review and deletion</li>
-           <li>New libraries created outside the convention: ${NOSRC}</li>
-           <li>Requests for new library creation or deletion: ${NOSRC}</li>
-           <li>Requests for a new term: ${NOSRC}</li>
+           <li>New libraries created outside the convention</li>
+           <li>Requests for new library creation or deletion</li>
+           <li>Requests for a new term</li>
          </ul></div>`;
   }
 
@@ -3044,25 +3045,23 @@ DASHBOARDS.rd=(function(){
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights</div>
       <div class="psub">The declared holding split into permanent and temporary retention.</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(6,minmax(110px,1fr))">
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(5,minmax(110px,1fr))">
         <div class="dhead"><div>Heading</div>
           <div class="num">Departments, offices and RMs provisioned</div>
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div>
-          <div class="num">Number of records due for disposal</div>
-          <div class="num">Number of records disposed</div></div>
+          <div class="num">Number of records due for disposal</div></div>
         ${ROLLUP.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
           <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
           <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
-          <div class="num">${F(r.due)}</div><div class="num">${NOSRC}</div></div>`).join("")}
+          <div class="num">${F(r.due)}</div></div>`).join("")}
         <div class="dtot"><div>Total</div>
           <div class="num">${F(ROLLUP.reduce((a,r)=>a+r.depts,0))}</div>
           <div class="num">${F(ROLLUP.reduce((a,r)=>a+r.libs,0))}</div>
           <div class="num">${F(DATA.LABEL_TOTAL)}</div>
           <div class="num">${F(DATA.WITH_PHYSICAL)}</div>
-          <div class="num">${F(DATA.DUE_NEXT_12)}</div>
-          <div class="num">${NOSRC}</div></div>
+          <div class="num">${F(DATA.DUE_NEXT_12)}</div></div>
       </div></div>
     </div>
 
@@ -3100,28 +3099,25 @@ DASHBOARDS.rd=(function(){
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, temporary retention</div>
       <div class="psub">Top level terms under temporary retention, with their retention label.</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(7,minmax(104px,1fr))">
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(6,minmax(104px,1fr))">
         <div class="dhead"><div>Term (top level)</div>
           <div class="num">Departments, offices and RMs provisioned</div>
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div>
           <div class="num">Retention label</div>
-          <div class="num">Number of records due for disposal</div>
-          <div class="num">Number of records disposed</div></div>
+          <div class="num">Number of records due for disposal</div></div>
         ${TEMP.map(t=>`<div class="drow"><div class="dn">${t.term}</div>
           <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
           <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
-          <div class="num">${t.label}</div><div class="num">${F(t.due)}</div>
-          <div class="num">${NOSRC}</div></div>`).join("")}
+          <div class="num">${t.label}</div><div class="num">${F(t.due)}</div></div>`).join("")}
         <div class="dtot"><div>Total</div>
           <div class="num">${F(TEMP.reduce((a,t)=>a+t.depts,0))}</div>
           <div class="num">${F(TEMP.reduce((a,t)=>a+t.libs,0))}</div>
           <div class="num">${F(TEMP_REC)}</div>
           <div class="num">${F(TEMP_PHYS)}</div>
           <div class="num"></div>
-          <div class="num">${F(DATA.DUE_NEXT_12)}</div>
-          <div class="num">${NOSRC}</div></div>
+          <div class="num">${F(DATA.DUE_NEXT_12)}</div></div>
       </div></div>
     </div>
 
@@ -3197,7 +3193,6 @@ DASHBOARDS.rd=(function(){
    start. Audit question 17.
    =================================================================== */
 DASHBOARDS.ra=(function(){
-  const NS=`<span class="nosrc">Not captured</span>`;
   const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
 
   /* s68, storage. The client's own column names, including Remarks. */
@@ -3209,15 +3204,17 @@ DASHBOARDS.ra=(function(){
                    "Total number of boxes retrieved","Total number of folders retrieved",
                    "Status","Remarks"];
 
-  const row=(loc,n)=>`<div class="drow"><div class="dn">${loc}</div>`+
-    Array.from({length:n},()=>`<div class="num">${NS}</div>`).join("")+`</div>`;
+  /* The client drew these two tables with real column headings, so the SHAPE
+     is a requirement even though nothing fills it. They are listed as the
+     columns each screen needs, rather than drawn as a grid of empty cells: a
+     table of blanks reads as a broken report, while a list of columns reads
+     as a specification, which is what this is until a source exists. */
   const table=(cols,id)=>`
-    <div class="scrollx"><div class="dtab wide" id="${id}">
-      <div class="dhead">${cols.map((c,i)=>`<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-      ${LOCATIONS.map(l=>row(l,cols.length-1)).join("")}
-      <div class="dtot"><div>Total</div>${
-        Array.from({length:cols.length-1},()=>`<div class="num">${NS}</div>`).join("")}</div>
-    </div></div>`;
+    <div class="spec" id="${id}">
+      <div class="sh">Columns this screen needs</div>
+      <ol>${cols.map(c=>`<li>${c}</li>`).join("")}</ol>
+      <div class="sf">Storage locations to be listed per row: ${LOCATIONS.join(", ")}.</div>
+    </div>`;
 
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
@@ -3243,19 +3240,9 @@ DASHBOARDS.ra=(function(){
     <div class="panel notice">
       <div class="ptitle">This dashboard is not yet specified</div>
       <div class="psub">The layout below follows the two tables in the requirements. The measures are
-        shown as not captured because no system this report reads holds a box, a folder, a storage
-        room, a transfer or a retrieval. Storage and retrieval are managed outside EDRMS.</div>
-    </div>
-
-    <div class="kpis">
-      <div class="kpi stat"><div class="lab">Total Boxes Stored</div><div class="val">${NS}</div>
-        <div class="sub">Across all storage locations</div></div>
-      <div class="kpi stat"><div class="lab">Total Folders Stored</div><div class="val">${NS}</div>
-        <div class="sub">Across all storage locations</div></div>
-      <div class="kpi stat"><div class="lab">Storage Requests</div><div class="val">${NS}</div>
-        <div class="sub">Requests to place records into storage</div></div>
-      <div class="kpi stat"><div class="lab">Retrieval Requests</div><div class="val">${NS}</div>
-        <div class="sub">Requests to take records out of storage</div></div>
+        listed as the columns each screen needs, because no system this report reads holds a box, a
+        folder, a storage room, a transfer or a retrieval. Storage and retrieval are managed outside
+        EDRMS, so this screen needs its own source before it can show a figure.</div>
     </div>
 
     <div class="band">

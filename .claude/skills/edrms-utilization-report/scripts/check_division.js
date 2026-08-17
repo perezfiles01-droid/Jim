@@ -95,22 +95,24 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   await page.evaluate(()=>switchTo("dp"));
   await page.selectOption(".dash-dp #dp-sel","ITD");
   await settle(page,'.dash-dp #dp-kpis .kpi[data-k="users"]');
-  /* s54 draws this table with DIVISION rows, and five measures none of which
+  /* s54 draws this table with DIVISION rows and five measures, none of which
      has a source: nothing tells us whether a person is staff, a contractor or
-     a consultant, whether they were trained, or when they were onboarded. The
-     rows are divisions as drawn; the cells say they are not captured. Audit
-     question 3. */
+     a consultant, whether they were trained, or when they were onboarded.
+     Those five columns are gone. The rows are still divisions as drawn, and
+     the measures are the ones the activity report really supports. Audit
+     question 3 still stands, and is recorded in STATUS.md rather than shown
+     as empty cells. */
   const uHead=await page.$$eval(".dash-dp #dp-drill .dhead div",els=>els.map(e=>e.textContent.trim()));
-  const uWant=["Division","Total number of users (staff)","Total number of users (Contractors)",
-               "Total number of users (Consultants)","Completion of training","Onboarded since go-live"];
+  const uWant=["Division","Users with activity","Never accessed","No access in 90 days",
+               "Share of department"];
   ok(JSON.stringify(uHead)===JSON.stringify(uWant),
-     `the users table column names are the client's, verbatim${
+     `the users table carries the activity measures${
        uHead.join(" | ")!==uWant.join(" | ")?": got "+uHead.join(" | "):""}`);
   const uRows=await page.$$eval(".dash-dp #dp-drill .drow .dn",els=>els.map(e=>e.textContent.trim()));
   ok(uRows.length>=2&&uRows.every(t=>/Division/.test(t)),
      `every users row is a division (${uRows.length} rows)`);
-  const uNos=await page.$$eval(".dash-dp #dp-drill .drow .nosrc",els=>els.length);
-  eq(uNos,uRows.length*5,"all five user measures say they are not captured, none is invented");
+  const uNos=await page.$$eval(".dash-dp #dp-drill .nosrc",els=>els.length);
+  eq(uNos,0,"no unsourced cell is left on the users table");
 
   await settle(page,'.dash-dp #dp-kpis .kpi[data-k="rec"]');
   const rSub=await page.$eval(".dash-dp #dp-drill .psub",e=>e.textContent.toLowerCase());

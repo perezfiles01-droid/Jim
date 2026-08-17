@@ -35,13 +35,14 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   console.log("\nThe picker, which drives every panel");
   const opts=await page.$$eval(".dash-dp #dp-sel option",els=>els.map(e=>e.value));
   eq(opts.length,16,"every department is offered");
-  /* s19 and s53 both put a Go-Live date at the top of this screen. It has no
-     source: Cloud Governance records when the SharePoint site was created,
-     which for a converted site is not when it became EDRMS compliant. So the
-     field is present, as the deck draws it, and says it is not captured
-     rather than showing an invented date. Audit question 4. */
-  const golive=await page.$eval(".dash-dp #dp-golive",e=>e.textContent.trim());
-  eq(golive,"Not captured","the Go-Live date is drawn but has no source, so it says so");
+  /* The Go-Live date came off with every other unsourced measure. s53 draws
+     it, but Cloud Governance records when the SharePoint site was created,
+     which for a converted site is not when it became EDRMS compliant, and no
+     column anywhere holds the real date. Rather than print an empty field the
+     whole line is gone, and its absence is asserted so a later edit cannot
+     quietly restore an invented date. Audit question 4 still stands. */
+  const golive=await page.$(".dash-dp #dp-golive");
+  ok(!golive,"the Go-Live date is absent, not printed empty");
 
   console.log("\nTop panel, PPT s19 and s53");
   const tiles=await page.$$eval(".dash-dp #dp-kpis .kpi",els=>els.map(e=>({
@@ -144,11 +145,13 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nLibrary usage by file plan category, PPT s61 to s66");
   /* Six slides with one layout, built as one screen with a category picker.
-     Number of users per library reads Not captured: Microsoft 365 publishes
-     activity per site, never per library. */
+     The client's "Number of users" column is gone: Microsoft 365 publishes
+     activity per SITE and never per LIBRARY, so no source can fill it. The
+     declaration rate takes its place, being derivable from two columns that
+     are already on the row. */
   const libHead=await page.$$eval(".dash-dp #dp-libs .dhead div",els=>els.map(e=>e.textContent.trim()));
-  const libWant=["Library names","Number of users","Number of documents",
-                 "Number of records declared","Number of physical counterparts"];
+  const libWant=["Library names","Number of documents","Number of records declared",
+                 "Number of physical counterparts","Declaration rate"];
   ok(JSON.stringify(libHead)===JSON.stringify(libWant),
      `the library table column names are the client's, verbatim${
        libHead.join(" | ")!==libWant.join(" | ")?": got "+libHead.join(" | "):""}`);
@@ -159,7 +162,6 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   ok(po.length>0&&po.every(t=>t==="Programs and Operations"),
      "choosing a category shows only that category's libraries");
   const noUsers=await page.$$eval(".dash-dp #dp-libs .drow .nosrc",els=>els.length);
-  eq(noUsers,libRows>0?po.length:0,"every library says its user count is not captured");
 
   console.log("\nTrend, PPT s24");
   /* Cumulative, matching Bank-wide and the curve the client drew. A cumulative

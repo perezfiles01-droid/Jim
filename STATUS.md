@@ -320,7 +320,62 @@ rather than a register. The words "site health", "library health", "duplicat",
 "orphan", "sensitivit" and "classification" appear **nowhere in 69 slides**.
 Format groups are demoted by s12 in the client's own words.
 
-**A new convention: a cell with no source prints "Not captured".** This is not
+### 17 August, later: every unsourced measure comes OFF the page
+
+**The "Not captured" convention is withdrawn.** It did its job, which was to
+stop plausible figures being invented in cells nobody can fill, and the audit
+trail it created is what made the removals below safe. But a screen dense with
+empty cells reads as a broken report, and this goes to a committee.
+
+**Client instruction: remove what cannot be captured.** The scope chosen was
+**remove the columns, keep all six dashboards.** Records and Archive Holdings
+survives, because s13 names it one of the six key views.
+
+**What came off, and the question each one still leaves open:**
+
+| Removed | Screen | Still blocked on |
+| --- | --- | --- |
+| Staff, contractor, consultant, training, onboarded | s39, s54 | The user register, question 3 |
+| Turned over to RAC | s42 | A custody event, question 6 |
+| Disposal approver, Approved, Declined, Extended | s43, s60 | The change request, question 7 |
+| Number of records disposed | s44, s46 | The same change request |
+| Records and users declared per division | s41, s42, s58, s59 | Division, question 5 |
+| Go-Live date | s53 | The go-live date, question 4 |
+| Documents migrated, users migrating, migrated size | s57 | s11 versus s57, question 9 |
+| Visitors internal and external, access requests | s56 | Question 15, and a check we owe |
+| Number of users per library | s61 to s66 | Nothing. **M365 reports activity per SITE, never per library.** No source will ever fill it |
+| Physical counterpart completion rate | s42, s59 | Question 6 |
+| Boxes, folders, requests, capacity, retrievals | s68, s69 | The whole dashboard, question 17 |
+
+**Where a column was removed, a derivable one took its place** rather than
+leaving a narrower table: declaration rate, share of department, share with a
+counterpart, views per visitor. Those are arithmetic on columns already on the
+row, so they add nothing to the sourcing burden.
+
+**Records and Archive Holdings is now a specification, not a table.** s68 and
+s69 are drawn with real column headings, so the shape is a requirement. They are
+listed as **the columns each screen needs** rather than drawn as a grid of empty
+cells, because a table of blanks reads as broken while a list of columns reads
+as what this still is. The four KPI stats are gone.
+
+**The absence is asserted, in three places.** `check_data.js` walks all six
+dashboards and fails if the words "Not captured" or any `.nosrc` cell reappear.
+`check_stage3.js` asserts records disposed is absent and that Holdings carries
+two column specs. `check_department.js` asserts the Go-Live line is absent
+rather than empty. **Asserting the absence is the point:** a later edit that
+restores one of these would put a blank column in front of the committee, and
+the removal record above is the only thing keeping the questions alive.
+
+**The risk this accepts, stated plainly.** A gap the client can see is a
+question they can answer. A gap we delete is a requirement that disappears. That
+is why every removal is in the table above and in the content checker workbook,
+and why the questions in `REQUIREMENTS_AUDIT_2026-08-17.md` section 4 are now
+the **only** place several of these requirements survive. If that file is lost,
+the requirements are lost with it.
+
+### The superseded convention, kept as history
+
+**A cell with no source prints "Not captured".** This is not
 the source marker convention removed on 13 August, which badged sourceable
 figures. It is the value of the cell. Applied to "Turned over to RAC" (s42, no
 system records a physical custody event) and to the disposal approver and the

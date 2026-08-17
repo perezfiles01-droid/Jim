@@ -194,6 +194,22 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     ["Most accessed libraries",              /most accessed libraries/i],
     ["Inventory health",                     /unverified physical files/i],
   ];
+  /* 17 Aug: every measure with no source came OFF the page rather than
+     printing "Not captured". The convention served its purpose, which was to
+     stop plausible numbers being invented, but a screen dense with empty
+     cells reads as a broken report to a committee. What was removed is
+     recorded in STATUS.md and in the content checker workbook so the client
+     questions behind each one stay live. Asserting the words are gone is what
+     stops a later edit reintroducing an empty column by accident. */
+  for(const key of ["bw","dp","pj","fp","rd","ra"]){
+    await page.evaluate(k=>switchTo(k),key);
+    await page.waitForTimeout(120);
+    const n=await page.$$eval(".nosrc",els=>els.length);
+    eq(n,0,`no unsourced cell is left on ${key}`);
+    const txt=await page.$eval("#view",e=>e.textContent);
+    ok(!/Not captured/.test(txt),`the words "Not captured" are gone from ${key}`);
+  }
+
   const returned=withdrawn.filter(([,re_])=>re_.test(all));
   ok(returned.length===0,
      `the withdrawn unsourceable headings stay off the page${
