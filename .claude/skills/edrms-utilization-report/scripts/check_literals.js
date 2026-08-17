@@ -43,6 +43,13 @@ const ALLOW=[
                                     "weights() generator, the same, and deliberately not periodic"],
   [/Math\.sin\(\(i\+1\)\*\(seed\+1\)\*12\.9898\)\*43758\.5453/,
                                     "weights() hash constants, a pseudo random source and not a measure"],
+  [/Math\.max\(1,v\)\*\(0\.72\+w\[i\]\*0\.5\)/,
+    "weightsLike() jitter. Multiplies a WEIGHT, not a displayed figure, and w[i] varies per "+
+    "row, so the resulting share differs down the column rather than repeating"],
+  [/Math\.round\(ceiling\*\(0\.25\+x\*0\.45\)\)/,
+    "per-site distinct-count shaping. x is the row's own weight, so the count varies per site; "+
+    "the result is then clamped to [1, min(users, things)], which is what makes the row possible "+
+    "rather than what makes it plausible"],
   [/Math\.floor\(u\*0\.6\)/,
     "a CEILING on how many of a department's users may be 'never accessed', not a displayed figure: "+
     "the count itself comes from DATA.USERS_NEVER and the cap only decides where it lands"],

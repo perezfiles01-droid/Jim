@@ -1138,6 +1138,50 @@ calling `ws.cell()` to get the anchor **materialises that cell**, so every
 subsequent `append()` lands a row lower and each sheet began with a blank row.
 Set it by reference, `ws.freeze_panes = "A2"`.
 
+### 17 August: "Department / office / RM" everywhere, and a distinct count that was being summed
+
+**The rename.** The six Bank-wide table headers went from "Department" to
+"Department / office / RM" earlier in the day. Applied to everything else that
+named the grouping: the five drill titles ("by department, office or RM"), the
+four sub-captions, "Departments, offices and RMs in the list", "Departments,
+offices and RMs with zero declarations", the five Department Insights "Share of
+department / office / RM" columns, and the Comparison panel. Nothing on the
+page now says "department" where an office or a resident mission is also meant.
+
+**The defect the screenshot caught.** A site showed **23 declared records and
+zero people who declared them.** A record cannot exist without somebody having
+declared it, so that row was impossible, and it was on screen.
+
+**The cause is a modelling error, not a rounding gap. A DISTINCT COUNT WAS
+BEING SUMMED.** The per-site declarer figures were produced by splitting the
+department's declarer count across its sites, as though each person belonged to
+exactly one site. ITD has 128 sites and 109 people who declared, so the split
+ran out and the remaining sites got zero.
+
+**One person declaring in three sites is ONE at department level and THREE at
+site level.** The site column legitimately sums to MORE than the department
+figure, and forcing it to reconcile is precisely what produced the impossible
+rows. The department tile stays a distinct count, the site rows are counted per
+site, and the two are **no longer asserted to be equal**. What is asserted is
+what actually holds:
+
+- every site with records shows at least one declarer, and same for documents
+- no site reports more declarers than creators, or more people than users
+- no site reports more people declaring than records declared
+- the site declarers **sum to at least** the department's distinct count
+
+**A second fault surfaced underneath it.** That last assertion failed for SPD,
+OAS and ERCD, and it was right to. `splitWithin` fills to the ceiling wherever
+there is room, so a flat weight draw **saturated the small departments**: OAS
+came out with 270 people declaring out of 270 users, a department where
+literally everyone declares, while ITD sat at 109 of 1,136. Fixed with
+`weightsLike()`, which sizes the weight by the population and jitters it. The
+share now runs 27% to 41% across the sixteen and varies properly.
+
+**Both new shaping expressions were caught by `check_literals.js`** and are in
+its allowlist with their reasons, which is the point of that file: the only way
+past it is to write down why a constant is not an invented ratio.
+
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
 The most serious defect this project has had. It was in the file from 13 August

@@ -617,12 +617,12 @@ console.assert(weights(8,2).every((w,i)=>w===weights(8,2)[i]),
    room rather than to clamp it and quietly lose the difference. Clamping and
    losing the difference is exactly how the split() bug broke department
    totals for four days in August. */
-function splitWithin(total,caps,seed){
+function splitWithin(total,caps,w){
   const n=caps.length;
   const room=caps.reduce((a,c)=>a+Math.max(0,c),0);
   if(total>room)total=room;                    /* cannot place more than fits */
   const out=new Array(n).fill(0);
-  let left=total, w=weights(n,seed);
+  let left=total;
   for(let pass=0;pass<12&&left>0;pass++){
     const open=[];for(let i=0;i<n;i++)if(out[i]<caps[i])open.push(i);
     if(!open.length)break;
@@ -640,12 +640,28 @@ function splitWithin(total,caps,seed){
   }
   return out;
 }
-console.assert(splitWithin(100,[10,10,10,10,10,10,10,10,10,10],1)
+console.assert(splitWithin(100,[10,10,10,10,10,10,10,10,10,10],weights(10,1))
   .reduce((a,b)=>a+b,0)===100,"splitWithin must be exact when the caps are exactly full");
-console.assert(splitWithin(50,[3,80,4,90],2).every((v,i)=>v<=[3,80,4,90][i]),
+console.assert(splitWithin(50,[3,80,4,90],weights(4,2)).every((v,i)=>v<=[3,80,4,90][i]),
   "splitWithin must never breach a ceiling");
-console.assert(splitWithin(50,[3,80,4,90],2).reduce((a,b)=>a+b,0)===50,
+console.assert(splitWithin(50,[3,80,4,90],weights(4,2)).reduce((a,b)=>a+b,0)===50,
   "splitWithin must place every unit it was given");
+
+/* Weights PROPORTIONAL to a base measure, jittered so the resulting share
+   still varies from row to row.
+
+   Flat weights are wrong for a subset of a population. splitWithin fills to
+   the ceiling wherever there is room, so a flat draw saturated the SMALL
+   departments: OAS came out with 270 people declaring records out of 270
+   users, a department where literally everybody declares, while ITD sat at
+   109 of 1,136. Sizing the weight by the population fixes that, and the
+   jitter keeps the share from being the same number down every row, which is
+   what check_constants.js fails on. */
+function weightsLike(base,seed){
+  const w=weights(base.length,seed);
+  return base.map((v,i)=>Math.max(1,v)*(0.72+w[i]*0.5));
+}
+
 
 const DASHBOARDS={};
 
@@ -1233,11 +1249,12 @@ DASHBOARDS.bw=(function(){
   /* The four people measures nest inside the user count, so they are placed
      with ceilings: creating inside users, declaring inside creating, and
      never plus idle 90 inside users. */
-  const createSplit=splitWithin(DATA.USERS_CREATING, userSplit,2);
-  const declSplit  =splitWithin(DATA.USERS_DECLARING,createSplit,1);
-  const neverSplit =splitWithin(DATA.USERS_NEVER,    userSplit.map(u=>Math.floor(u*0.6)),3);
-  const idleSplit  =splitWithin(DATA.USERS_IDLE90,
-                                userSplit.map((u,i)=>u-neverSplit[i]),4);
+  const createSplit=splitWithin(DATA.USERS_CREATING, userSplit,  weightsLike(userSplit,2));
+  const declSplit  =splitWithin(DATA.USERS_DECLARING,createSplit, weightsLike(userSplit,1));
+  const neverSplit =splitWithin(DATA.USERS_NEVER,    userSplit.map(u=>Math.floor(u*0.6)),
+                                weightsLike(userSplit,3));
+  const idleSplit  =splitWithin(DATA.USERS_IDLE90,   userSplit.map((u,i)=>u-neverSplit[i]),
+                                weightsLike(userSplit,4));
   const gbSplit   =split(DATA.STORAGE_GB*10,   weights(N,5));
   const recGbSplit=split(DATA.RECORD_GB*10,    weights(N,9));
   const visSplit  =split(DATA.VISITORS,        weights(N,6));
@@ -1506,7 +1523,7 @@ DASHBOARDS.bw=(function(){
 
          What replaces them is what the activity report really supports:
          whether a person has used EDRMS, and how recently. */
-      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by department",
+      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by department, office or RM",
       sub:"Users who opened an EDRMS site in the window, and how recently.",
       /* "Share of users active" removed 17 Aug 2026 at the client's
          instruction. Before the constants sweep earlier the same day it
@@ -1519,32 +1536,32 @@ DASHBOARDS.bw=(function(){
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
                  ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
                  ["No access in 90 days",F(DATA.USERS_IDLE90)],
-                 ["Departments in the list",F(DEPTS.length)]]
+                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
     },
     docs:{
-      title:"Total number of documents in EDRMS, by department",
-      sub:"Documents and storage by department.",
+      title:"Total number of documents in EDRMS, by department, office or RM",
+      sub:"Documents and storage by department, office or RM.",
       cols:["Department / office / RM","Documents","Storage","Share of documents"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.docs), GB(d.gb),
                              PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]),
       tiles:()=>[["Documents held",(TOTAL_DOCS/1e6).toFixed(2)+"M"],
                  ["Storage consumed",GB(DEPTS.reduce((a,d)=>a+d.gb,0))],
-                 ["Departments in the list",F(DEPTS.length)]]
+                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
     },
     rec:{
-      title:"Total number of records declared in EDRMS, by department",
-      sub:"Records declared and the people declaring them, by department.",
+      title:"Total number of records declared in EDRMS, by department, office or RM",
+      sub:"Records declared and the people declaring them, by department, office or RM.",
       cols:["Department / office / RM","Records declared","People who declared a record","Documents declared","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
                              PCT(d.rec,d.docs).toFixed(2)+"%", PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
                  ["Share of documents declared as records",DECL_RATE.toFixed(2)+"%"],
-                 ["Departments with zero declarations",F(DEPTS.filter(d=>d.rec===0).length)],
+                 ["Departments, offices and RMs with zero declarations",F(DEPTS.filter(d=>d.rec===0).length)],
                  ["People who declared a record",F(DEPTS.reduce((a,d)=>a+d.declaring,0))]]
     },
     phys:{
-      title:"Total number of physical counterparts identified, by department",
-      sub:"Physical counterparts against declared records, by department.",
+      title:"Total number of physical counterparts identified, by department, office or RM",
+      sub:"Physical counterparts against declared records, by department, office or RM.",
       /* s42 asks for a physical counterpart completion rate, defined on the
          slide as records turned over for RAC storage against records declared
          with a counterpart. We can produce the denominator. The numerator is a
@@ -1557,11 +1574,11 @@ DASHBOARDS.bw=(function(){
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
                  ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
                  ["Records declared",F(TOTAL_REC)],
-                 ["Departments in the list",F(DEPTS.length)]]
+                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
     },
     disp:{
-      title:"Total number of records due for disposal in the next 12 months, by department",
-      sub:"Records due for disposal by department, with the next due date.",
+      title:"Total number of records due for disposal in the next 12 months, by department, office or RM",
+      sub:"Records due for disposal by department, office or RM, with the next due date.",
       /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
@@ -1659,7 +1676,7 @@ DASHBOARDS.bw=(function(){
     userrec:{a:"users",b:"rec",la:"Active users",lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
              note:"Users against declarations. A wide gap here means people are in the system but are not declaring what they produce, which is a training and advocacy question rather than a rollout one."},
     docsrec:{a:"docs",b:"rec",la:"Documents",lb:"Records declared",ca:"var(--orange)",cb:"var(--green)",
-             note:"Documents against declarations, which is the declaration rate seen department by department. This is the comparison the client called the useful one on PPT s6."}
+             note:"Documents against declarations, which is the declaration rate seen unit by unit. This is the comparison the client called the useful one on PPT s6."}
   };
   function drawCmp(){
     const c=CMP[cmpMode];
@@ -1774,10 +1791,10 @@ DASHBOARDS.bw=(function(){
 
     <div class="band">
       <h2>Comparison</h2>
-      <div class="bd">Users, documents and records declared, set against each other department by department.</div>
+      <div class="bd">Users, documents and records declared, set against each other unit by unit.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Compare departments</div>
+      <div class="ptitle">Compare departments, offices and RMs</div>
       <div class="psub" id="bw-cmp-note"></div>
       <div class="toolbar">
         <span class="lbl">Compare</span>
@@ -1943,10 +1960,34 @@ DASHBOARDS.dp=(function(){
           vis=split(d.visitors, weights(n,s+16)),
           views=split(d.views,  weights(n,s+17)),
           gb=split(Math.round(d.gb*10),weights(n,s+18));
-    /* People creating and people declaring, capped at the site's own user
-       count so a site never reports more declarers than users. */
-    const creating=splitWithin(d.creating,users,s+19),
-          declaring=splitWithin(d.declaring,creating,s+20);
+    /* People declaring and people creating are DISTINCT COUNTS, and distinct
+       counts DO NOT SUM. This was got wrong until 17 August and it put an
+       impossible row on screen.
+
+       The mistake was splitting the department's declarer count across its
+       sites, as if each person belonged to exactly one. ITD has 128 sites and
+       109 people who declared a record, so the split ran out and left sites
+       showing 23 declared records and ZERO people who declared them. A record
+       cannot exist without somebody having declared it.
+
+       One person declaring in three sites is ONE at department level and
+       THREE at site level, so the site column legitimately sums to MORE than
+       the department figure, and forcing it to reconcile is what created the
+       impossible rows. The department tile stays the distinct count, the site
+       rows are counted per site, and the two are NOT asserted to be equal.
+       What is asserted is the relationship that does hold: no site may report
+       more declarers than it has users, or more than it has records, and the
+       department figure can be no larger than the sum of its sites. */
+    const perSite=(cap,things,seed)=>{
+      const w=weights(n,seed);
+      return w.map((x,i)=>{
+        const ceiling=Math.max(0,Math.min(cap[i],things[i]));
+        if(ceiling===0)return 0;              /* nothing here, nobody did it */
+        return Math.max(1,Math.min(ceiling,Math.round(ceiling*(0.25+x*0.45))));
+      });
+    };
+    const creating=perSite(users,docs,s+19),
+          declaring=perSite(creating,rec,s+20);
     const rows=[];
     for(let i=0;i<n;i++){
       const stem=STEMS[i%STEMS.length];
@@ -1975,6 +2016,19 @@ DASHBOARDS.dp=(function(){
                    rows.reduce((a,r)=>a+r.visitors,0)===d.visitors&&
                    rows.reduce((a,r)=>a+r.views,0)===d.views,
       `Every site measure must total the ${code} department figure it came from`);
+    /* The people columns are distinct counts and are deliberately NOT in the
+       assertion above. What must hold instead: */
+    console.assert(rows.every(r=>r.rec===0||r.declaring>=1),
+      `Every ${code} site holding records must show at least one person who declared them`);
+    console.assert(rows.every(r=>r.docs===0||r.creating>=1),
+      `Every ${code} site holding documents must show at least one person who created them`);
+    console.assert(rows.every(r=>r.declaring<=r.creating&&r.creating<=r.users),
+      `No ${code} site may report more declarers than creators, or more people than users`);
+    console.assert(rows.every(r=>r.declaring<=r.rec),
+      `No ${code} site may report more people declaring than records declared`);
+    console.assert(rows.reduce((a,r)=>a+r.declaring,0)>=d.declaring,
+      `${code} site declarers must sum to at least the department's distinct count, `+
+      `since one person declaring in three sites counts once here and three times there`);
     SITECACHE[code]=rows;
     return rows;
   }
@@ -2130,7 +2184,7 @@ DASHBOARDS.dp=(function(){
          the M365 activity report actually supports. Audit question 5. */
       title="Users";
       sub="Users with recorded activity, and how recently they were last active.";
-      cols=["Activity","Number of users","Share of department"];
+      cols=["Activity","Number of users","Share of department / office / RM"];
       const never=d.never, idle90=d.idle90;
       rows=[["Used EDRMS in the last 90 days",F(d.users-never-idle90),
              PCT(d.users-never-idle90,d.users).toFixed(1)+"%"],
@@ -2160,7 +2214,7 @@ DASHBOARDS.dp=(function(){
          they answer a different and useful question about how heavily a site
          is read. */
       cols=["Name of sites","Total number of visitors","Page views","Views per visitor",
-            "Share of department"];
+            "Share of department / office / RM"];
       /* Views per visitor was the literal string "7.0" on every row until 17
          August, because page views were built as visitors times seven. Both
          are measured separately now, so the column varies the way it would in
@@ -2197,7 +2251,7 @@ DASHBOARDS.dp=(function(){
       title="Compliance review, record declaration";
       sub="Records declared and the people declaring them, by site.";
       cols=["Name of sites","Total number of records declared","People who declared a record",
-            "Documents declared","Share of department"];
+            "Documents declared","Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring),
                          PCT(s.rec,s.docs).toFixed(2)+"%",PCT(s.rec,d.rec).toFixed(1)+"%"]);
       tiles=[["Total number of records declared",F(d.rec)],
@@ -2217,7 +2271,7 @@ DASHBOARDS.dp=(function(){
       sub="Records with a physical counterpart, by site.";
       cols=["Name of sites","Total number of physical records declared",
             "Total number of users declaring records","Share with a counterpart",
-            "Share of department"];
+            "Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
                          PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);
       tiles=[["Total number of physical records declared",F(d.phys)],
@@ -2236,7 +2290,7 @@ DASHBOARDS.dp=(function(){
       sub="Records due for disposal, by library.";
       const libs=librariesFor(dept).slice(0,10);
       cols=["Library name","Number of records due for disposal","Next due date for disposal",
-            "With physical counterpart?","Share of department"];
+            "With physical counterpart?","Share of department / office / RM"];
       const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
       rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
                             l.phys>0?"Yes":"No",PCT(dueSplit[i],d.due).toFixed(1)+"%"]);

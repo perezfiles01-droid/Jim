@@ -221,7 +221,7 @@ SOURCES = {
    file=ACT, column="Last Activity Date", build="As 'Never accessed EDRMS', per unit.",
    blocked="Needs the user to department mapping. Audit question 3."),
 
- "Departments in the list": dict(counts="One organisational unit appearing in the table.",
+ "Departments, offices and RMs in the list": dict(counts="One organisational unit appearing in the table.",
    verdict=R, file=CG, column="Department",
    build="Count distinct Department over the compliant site list.", blocked=""),
 
@@ -308,7 +308,7 @@ SOURCES.update({
    build="This unit's documents divided by all documents, times 100.", blocked=""),
  "Share of records": dict(counts=_SHARE, verdict=R, file=DB, column="-",
    build="This unit's declared records divided by all declared records, times 100.", blocked=""),
- "Share of department": dict(counts=_SHARE, verdict=R, file=DB, column="-",
+ "Share of department / office / RM": dict(counts=_SHARE, verdict=R, file=DB, column="-",
    build="This row's figure divided by the department total, times 100.", blocked=""),
  "Share of declared records": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
    build="Physical counterparts divided by declared records, times 100.", blocked=""),
@@ -325,7 +325,7 @@ SOURCES.update({
  "Documents declared": dict(counts=_SHARE, verdict=SC, file=DB + " and the weekly scan",
    column="-", build="Declared records divided by documents held, per unit.",
    blocked="Waits on the scan for the denominator."),
- "Departments with zero declarations": dict(
+ "Departments, offices and RMs with zero declarations": dict(
    counts="One organisational unit that owns EDRMS sites but has declared nothing.",
    verdict=R, file=CG + " and " + DB, column="Department",
    build=("1. List every unit in the compliant site list.\n"
