@@ -79,10 +79,18 @@ SOURCES = {
    build=("1. Export SharePoint activity user detail at period D180.\n"
           "2. Keep rows with a Last Activity Date inside the window.\n"
           "3. Count distinct User Principal Name."),
-   blocked=("TWO problems. (a) The export has NO SITE DIMENSION, so it cannot be narrowed to "
-            "EDRMS: at ADB it returns every licensed user, about 9,400. (b) 180 days is the "
-            "longest period Microsoft serves, so a user last active 200 days ago is "
-            "indistinguishable from one who never used EDRMS. Audit questions 3 and 16.")),
+   blocked=("TWO problems. (a) NO SITE DIMENSION. Counted 17 Aug: the export has 12 columns "
+            "and not one of them names a site, so the row cannot be narrowed to EDRMS and at "
+            "ADB it returns every licensed user, about 9,400. The obvious fix, join user to "
+            "site then site to department, CANNOT BE BUILT from any export we hold: the site "
+            "usage report carries Site Id but the only person on it is the OWNER; the Cloud "
+            "Governance User Activity report logs console actions (Submit, Log in), not site "
+            "access; the Groups export has no membership column and only 241 of 2,575 sites "
+            "are group backed anyway. The one source that carries UserId AND SiteUrl on the "
+            "same row is the UNIFIED AUDIT LOG (Purview, FileAccessed and PageViewed). "
+            "UNVERIFIED in this tenant, and it is the next thing to test. "
+            "(b) 180 days is the longest period Microsoft serves, so a user last active 200 "
+            "days ago is indistinguishable from one who never used EDRMS. Questions 3 and 16.")),
 
  "Total number of documents in EDRMS": dict(
    counts="One document held in an EDRMS site, declared or not.",

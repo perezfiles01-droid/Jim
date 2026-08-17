@@ -1375,6 +1375,30 @@ If ADB populates `Department` in Entra, this file delivers user to department
 with no new source and no client list. That is still question 3, and the ask is
 now "please populate it", not "please send us a register".
 
+#### 17 August: the user to site to department chain, tested and ruled out
+
+The obvious fix was proposed: take the activity report row (user, last activity
+date, **site id**), join the site id to the Workspace report, and read the
+department off it. **The chain breaks at the first hop.** Every candidate was
+counted rather than assumed:
+
+| Export | Has a user? | Has a site? | Verdict |
+| --- | --- | --- | --- |
+| SharePoint activity user detail | Yes, `User Principal Name` | **No. 12 columns, not one names a site** | Cannot start the chain |
+| SharePoint site usage detail | Only `Owner Principal Name` | Yes, `Site Id` + `Site URL` | The OWNER is not the users |
+| CG User Activity Report | Yes, `User` + `Email address` | No. `Object Name` is a request or a person | Logs the CG CONSOLE (Submit 4,808, Log in 1,410), not site access |
+| CG Groups export | No membership column at all | No | And only 241 of 2,575 sites are group backed |
+
+**So no export we hold puts a user and a site on the same row.** That is a
+stronger finding than "not found yet": four candidates, all counted, all ruled
+out for a different reason.
+
+**The one source that would carry it is the unified audit log**, Purview Audit
+Search: `FileAccessed` and `PageViewed` carry `UserId` and `SiteUrl` together.
+**UNVERIFIED in this tenant.** Nobody has run a search, checked the retention
+window or confirmed the schema, so it is written here as the next test and not
+as an answer. Audit question 3.
+
 **Untested and promising:** the same export carries `Last SharePoint activity
 date` as a DATE, not a windowed count. If that date is not itself derived from
 the same 180 day Microsoft report, it answers the "how do we see users beyond
