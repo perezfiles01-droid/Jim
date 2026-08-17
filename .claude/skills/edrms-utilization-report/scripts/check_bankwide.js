@@ -72,8 +72,13 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   eq(s.bw.physical,s.d.WITH_PHYSICAL,"physical counterparts match the shared base figures");
   eq(s.bw.users,s.d.MONTHLY_ACTIVE_USERS,"users match the monthly active user figure");
   eq(s.bw.dueForDisposal,s.d.DUE_NEXT_12,"records due match the shared disposal window");
-  eq(s.bw.departmentalSites+s.bw.projectSites,s.d.SITES_CREATED,
-     "departmental plus project sites total compliant sites created");
+  /* Until 17 August 180 sites were held back from the department rows to feed
+     the sovereign and nonsovereign project rows. Those came off with the
+     project screens, so nothing is set aside and the departments now carry the
+     whole compliant estate. */
+  eq(s.bw.departmentalSites,s.d.SITES_CREATED,
+     "department sites total every compliant site, nothing held back for projects");
+  ok(s.bw.projectSites===undefined,"the project site figure is gone from the summary");
 
   console.log("\nSites table, PPT s16 and s35, now the drill behind tile 1");
   /* s16 and s35 draw the SAME table. It appears once, as the drill behind the
@@ -133,6 +138,17 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
      rather than assumed. */
   const sel=await page.$(".dash-bw #bw-trend-sel");
   ok(sel===null,"the department filter is gone from the trend");
+  /* A native date input renders in the browser's own locale, so the same
+     control reads 08/01/2025 for one reader and 01/08/2025 for another and
+     nothing on screen says which. The expected format is named in the label
+     and carried on both inputs. */
+  const fmt=await page.$eval(".dash-bw .toolbar .fmt",e=>e.textContent.trim());
+  ok(/mm\/dd\/yyyy/.test(fmt),`the date range names its format (${fmt})`);
+  const ph=await page.$$eval('.dash-bw .toolbar input[type="date"]',els=>
+    els.map(e=>[e.placeholder,e.title,e.getAttribute("aria-label")]));
+  eq(ph.length,2,"both ends of the range are date inputs");
+  ok(ph.every(([p,t,a])=>p==="mm/dd/yyyy"&&t==="mm/dd/yyyy"&&/mm\/dd\/yyyy/.test(a||"")),
+     "both inputs carry the format as placeholder, title and label");
   const marks=async()=>await page.$$eval(".dash-bw #bw-trend circle title",
     els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
   let curve=await marks();

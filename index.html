@@ -241,6 +241,8 @@
   .dash-bw .tlab{font-size:11px;color:var(--mut)}
   .dash-bw .tval{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums}
   .dash-bw .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .dash-bw .toolbar .fmt{font-style:normal;font-weight:600;color:var(--mut);
+    letter-spacing:0;text-transform:none;font-size:11px}
   .dash-bw .toolbar .lbl{font-size:12px;color:var(--mut)}
   .dash-bw select{font:inherit;font-size:12.5px;padding:6px 10px;border:1px solid var(--line);
     border-radius:8px;background:#fff;color:var(--ink)}
@@ -1045,7 +1047,11 @@ DASHBOARDS.bw=(function(){
      bank-wide figure it belongs to. */
   const BASE=DATA.DEPTS;
   const W=BASE.map(d=>d.rec);
-  const siteSplit=split(DATA.SITES_CREATED-180,W);          /* 180 project sites, below */
+  /* Departments now carry the whole compliant estate. Until 17 August 180
+     sites were held back for the sovereign and nonsovereign project rows;
+     those came off with the project screens, so nothing is set aside any more
+     and the department rows total the bank-wide site count exactly. */
+  const siteSplit=split(DATA.SITES_CREATED,W);
   const userSplit=split(DATA.MONTHLY_ACTIVE_USERS,W);
   const dueSplit=split(DATA.DUE_NEXT_12,BASE.map(d=>d.phys));
 
@@ -1061,16 +1067,6 @@ DASHBOARDS.bw=(function(){
     gb:+(d.docs/3400).toFixed(1)
   }));
 
-  /* ===== project sites =====
-     PPT s36 and s37. Nothing in the tenant classifies a site as a project site,
-     let alone as sovereign or nonsovereign, so these two rows are layout only.
-     They are kept visible because the client asked for the split three times
-     (PPT s4, s15, s34) and hiding it would misrepresent the design. */
-  const PROJECTS=[
-    {code:"Sovereign projects",    fac:"Sovereign",    sites:112, docs:186000, rec:2140, phys:305, due:44, users:640},
-    {code:"Nonsovereign projects", fac:"Nonsovereign", sites:68,  docs:74000,  rec:915,  phys:120, due:19, users:280},
-  ];
-  const PROJ_SITES=PROJECTS.reduce((a,p)=>a+p.sites,0);
 
   /* The named projects behind those two summary rows, PPT s36 and s37, using
      the client's own six examples. They live here rather than on Project
@@ -1083,68 +1079,6 @@ DASHBOARDS.bw=(function(){
      stay the authority for the totals and these are the ones drawn by name.
      That is asserted rather than assumed: a named project may never claim more
      than its facility type holds. */
-  /* The client's six example projects, from s36, s37 and s38. Their identity is
-     the client's; their figures are derived here rather than copied from the
-     slide, and the reason matters.
-
-     A project site is owned by a department AND belongs to a project, so the
-     project tables are a RE-CUT of the same records, not an addition to them.
-     Departments sum to the bank-wide total; the two facility rows sum to less,
-     because only project sites are in them; and the named projects sum to less
-     again, because only some projects are drawn by name. Copying the slide's
-     own numbers broke that: s38 shows one project holding 9,596 declared
-     records, which is 44 percent of this prototype's entire declared holding.
-     The slide's numbers are illustrative, its structure is the requirement, so
-     the structure is kept and the figures are made to reconcile. */
-  const NAMED=[
-    {no:"57318-001", name:"Grant 0923-VAN: Tropical Cyclone Lola Emergency Response Project",
-     facility:"Sovereign", modality:"Grant", modNo:"0923", country:"Vanuatu", status:"Closed",
-     effective:"13 Dec 2023", closing:"10 Sep 2024", sites:3, w:5},
-    {no:"54461-003", name:"Loan 4723-INO: Boosting Productivity Through Human Capital Development (Subprogram 3)",
-     facility:"Sovereign", modality:"Loan", modNo:"4723", country:"Indonesia", status:"Active",
-     effective:"04 Mar 2024", closing:"31 Dec 2027", sites:5, w:9},
-    {no:"58499-001", name:"Grant 0998-NEP: 2024 Floods and Landslides Emergency Response",
-     facility:"Sovereign", modality:"Grant", modNo:"0998", country:"Nepal", status:"Active",
-     effective:"22 Nov 2024", closing:"30 Jun 2026", sites:2, w:3},
-    {no:"57298-002", name:"TA 10304-PAK: Bio Tech Energy Sustainable Aviation Fuel Project",
-     facility:"Nonsovereign", modality:"TA", modNo:"10304", country:"Pakistan", status:"Active",
-     effective:"18 Jan 2025", closing:"17 Jan 2028", sites:2, w:4},
-    {no:"56189-001", name:"Tiger Digital Infrastructure for Rural Connectivity Project",
-     facility:"Nonsovereign", modality:"Loan", modNo:"4811", country:"Regional", status:"Active",
-     effective:"09 Sep 2024", closing:"08 Sep 2029", sites:3, w:6},
-    {no:"55106-001", name:"ECOM COVID-19 Smallholder Farmer Climate Resilience and Livelihood Support Project",
-     facility:"Nonsovereign", modality:"Loan", modNo:"4402", country:"Regional", status:"Closed",
-     effective:"14 Jun 2022", closing:"13 Jun 2025", sites:2, w:3},
-  ];
-  /* Roughly half of each facility's holding sits in the projects drawn by name;
-     the rest is spread across the projects the slides did not list. */
-  const NAMED_SHARE=0.52;
-  const PROJECT_ROWS=(function(){
-    const out=[];
-    PROJECTS.forEach(fac=>{
-      const mine=NAMED.filter(n=>n.facility===fac.fac);
-      const w=mine.map(n=>n.w);
-      const parts={};
-      ["docs","rec","phys","due","users"].forEach(f=>{
-        parts[f]=split(Math.round(fac[f]*NAMED_SHARE),w);
-      });
-      mine.forEach((n,i)=>out.push({...n,
-        docs:parts.docs[i], rec:parts.rec[i], phys:parts.phys[i],
-        due:parts.due[i], users:parts.users[i],
-        visitors:Math.round(parts.users[i]*1.9)}));
-    });
-    return out;
-  })();
-  PROJECTS.forEach(p=>{
-    const named=PROJECT_ROWS.filter(r=>r.facility===p.fac);
-    ["sites","docs","rec","phys","due","users"].forEach(f=>{
-      console.assert(named.reduce((a,r)=>a+r[f],0)<=p[f],
-        "Named "+p.fac+" projects cannot exceed the facility total for "+f);
-    });
-  });
-  /* A project can never declare more records than it holds documents. */
-  PROJECT_ROWS.forEach(r=>console.assert(r.rec<=r.docs,
-    "A project cannot declare more records than it holds documents, "+r.no));
 
   const DEPT_SITES=DEPTS.reduce((a,d)=>a+d.sites,0);
   const TOTAL_USERS=DATA.MONTHLY_ACTIVE_USERS;
@@ -1153,15 +1087,6 @@ DASHBOARDS.bw=(function(){
   const TOTAL_PHYS=DATA.WITH_PHYSICAL;
   const TOTAL_DUE=DATA.DUE_NEXT_12;
   const DECL_RATE=PCT(TOTAL_REC,TOTAL_DOCS);
-
-  /* Project sites are a re-cut of the estate, not an addition to it, so the two
-     facility rows can never exceed the bank-wide figure they are drawn from.
-     This sits below the totals because it needs them. */
-  ["docs","rec","phys"].forEach(f=>{
-    const all={docs:TOTAL_DOCS,rec:TOTAL_REC,phys:TOTAL_PHYS}[f];
-    console.assert(PROJECTS.reduce((a,p)=>a+p[f],0)<=all,
-      "Project sites are a subset of the estate, so they cannot exceed the bank-wide "+f);
-  });
 
   /* Site movement indicators, PPT s35. Created and inactive are sourceable:
      SiteCreatedDate is confirmed from Graph, LastActivityDate from the usage
@@ -1178,8 +1103,8 @@ DASHBOARDS.bw=(function(){
     "Bank-wide department users must total monthly active users");
   console.assert(DEPTS.reduce((a,d)=>a+d.due,0)===TOTAL_DUE,
     "Bank-wide department disposals must total the Retention due figure");
-  console.assert(DEPT_SITES+PROJ_SITES===DATA.SITES_CREATED,
-    "Departmental sites plus project sites must total compliant sites created");
+  console.assert(DEPT_SITES===DATA.SITES_CREATED,
+    "Department sites must total every compliant site, nothing is held back now");
 
   /* ===== divisions =====
      Reinstated 13 Aug 2026 at the client's instruction, reopening the decision
@@ -1648,11 +1573,22 @@ DASHBOARDS.bw=(function(){
     <div class="panel">
       <div class="ptitle">Records Declaration Trend</div>
       <div class="psub">Records declared across all EDRMS compliant sites.</div>
+      <!-- The expected format is spelled out. A native date input renders in
+           the browser's own locale, so the same control reads 08/01/2025 for
+           one reader and 01/08/2025 for another, and nothing on screen says
+           which. Naming the format in the label removes the ambiguity, and the
+           placeholder and title carry it to anyone who clears the field or
+           hovers. In Power BI this is the date range slicer with its format
+           set to match. -->
       <div class="toolbar">
-        <span class="lbl">Date range</span>
-        <input type="date" id="bw-trend-from" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}" value="${DATA.RANGE_FROM}">
+        <span class="lbl">Date range <em class="fmt">(mm/dd/yyyy)</em></span>
+        <input type="date" id="bw-trend-from" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}"
+               value="${DATA.RANGE_FROM}" placeholder="mm/dd/yyyy" title="mm/dd/yyyy"
+               aria-label="Date range from, mm/dd/yyyy">
         <span class="lbl">to</span>
-        <input type="date" id="bw-trend-to" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}" value="${DATA.RANGE_TO}">
+        <input type="date" id="bw-trend-to" min="${DATA.RANGE_FROM}" max="${DATA.RANGE_TO}"
+               value="${DATA.RANGE_TO}" placeholder="mm/dd/yyyy" title="mm/dd/yyyy"
+               aria-label="Date range to, mm/dd/yyyy">
         <button class="resetbtn" id="bw-trend-reset">Reset</button>
       </div>
       <div class="tiles" id="bw-trend-tiles"></div>
@@ -1699,7 +1635,6 @@ DASHBOARDS.bw=(function(){
     asof:"Data as of Mon 20 Jul 2026 23:59, refreshed Tue 21 Jul 06:00",
     summary:{
       departmentalSites:DEPT_SITES,
-      projectSites:PROJ_SITES,
       users:TOTAL_USERS,
       documents:TOTAL_DOCS,
       declared:TOTAL_REC,
@@ -1714,7 +1649,6 @@ DASHBOARDS.bw=(function(){
       idleDays:IDLE_DAYS,
       /* Read by Project Insights, which profiles one of these rows. Owned here
          because s36 and s37 are Bank-wide screens. */
-      projectRows:PROJECT_ROWS,
       /* The division tier, so Department Insights uses the same divisions with
          the same figures rather than inventing a second set. */
       divisionsFor
