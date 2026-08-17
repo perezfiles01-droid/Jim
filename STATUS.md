@@ -1340,6 +1340,46 @@ users per department (s39, s54) needs a person to department mapping, and no
 source in this project has one. Entra's `department` attribute is the untested
 candidate, which is check 14 above.
 
+#### 17 August: the Users export profiled properly, and a correction
+
+The Cloud Governance **Users export** was reported in conversation on 16 August
+as carrying `Department` on 228 of its 286 rows, which would have closed the
+user to department gap with no client involvement. **That was wrong and it is
+withdrawn.** Every column of that file has now been counted:
+
+| Column | Filled |
+| --- | --- |
+| `User principal name` | **286 of 286** |
+| `Display name` | 286 of 286 |
+| `City` | **229 of 286** |
+| `Last SharePoint activity date` | 32 of 286 |
+| `Job title`, `Office`, `Country or region` | 16 of 286 |
+| **`Department`** | **0 of 286** |
+| `Company name` | 1 of 286 |
+
+**`Department` is empty on every row.** The 229 was `City`. This is the same
+shape as `Division`: the field exists in the system that would hold it and
+nobody has populated it. It never reached this file, so nothing here needed
+correcting, but it had already been promoted to a priority item and would have
+been acted on.
+
+**The lesson is the project's own and it was not applied:** the claim came from
+reading a column name, not from counting the column. Every finding in the
+Cloud Governance work came from `csv.DictReader` and a fill count, and this one
+did not.
+
+**What survives, and it is still worth having.** The export is keyed on
+`User principal name`, populated on all 286, which is **the same key the M365
+activity report uses**. So the join is sound; it is the payload that is empty.
+If ADB populates `Department` in Entra, this file delivers user to department
+with no new source and no client list. That is still question 3, and the ask is
+now "please populate it", not "please send us a register".
+
+**Untested and promising:** the same export carries `Last SharePoint activity
+date` as a DATE, not a windowed count. If that date is not itself derived from
+the same 180 day Microsoft report, it answers the "how do we see users beyond
+180 days" problem outright. Nobody has checked which it is. Audit question 16.
+
 ### The design recommendation to put to the client
 
 The deck puts the same four measures, documents, records declared, physical
