@@ -875,6 +875,14 @@ const DATA=(function(){
   const LIB_IDLE=90, LIB_DORMANT=180;
   const SITES_INACTIVE=189;       /* of the 1,057, no activity for IDLE_DAYS */
   const SITES_CREATED_90=64;
+  /* "Active" is used two ways in the deck and never defined, so both are
+     shown. LIFECYCLE active means the site is not locked, archived or
+     deleted: Cloud Governance Status and Site Status. RECENTLY USED means
+     somebody touched it: Last Active Time. They are very different figures.
+     In the test tenant all 1,032 EDRMS sites are lifecycle active while only
+     681 were used in the last seven days, so a screen that shows one and
+     labels it the other overstates the estate by a third. Audit question. */
+  const SITES_USED_7=Math.round(SITES_CREATED*0.66);
   const SITE_LIBRARIES=1840;
   const LIBS_NO_RECORDS=604;
   const LIBS_WITH_RECORDS=SITE_LIBRARIES-LIBS_NO_RECORDS;
@@ -982,7 +990,7 @@ const DATA=(function(){
 
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
     MONTH_LABELS,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
-    MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,IDLE_DAYS,
+    MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,LIB_GROWTH,
     FORMATS,TOTAL_FILES,TOTAL_GB,
     YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
@@ -1241,7 +1249,16 @@ DASHBOARDS.bw=(function(){
      val:()=>F(PROJECTS[0].sites)},
     {k:"nonsov",lab:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
      val:()=>F(PROJECTS[1].sites)},
-    {k:"users",lab:"Total number of EDRMS users", val:()=>F(TOTAL_USERS)},
+    /* s34 labels this "Total number of EDRMS users". That is the population
+       who hold access, and no source we can reach knows it: the activity
+       report lists every LICENSED user in the tenant, which in production is
+       close to the whole Bank, and it carries no site dimension so it cannot
+       be narrowed to EDRMS. What IS produced is the count of people with
+       recorded EDRMS activity, so the tile names that instead. s39 asks for
+       "% of active users" as an indicator underneath, which only makes sense
+       if the headline is the population, so the two are not the same measure
+       and must not share a label. Audit question 3. */
+    {k:"users",lab:"EDRMS users with recorded activity", val:()=>F(TOTAL_USERS)},
     {k:"docs", lab:"Total number of documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M"},
     {k:"rec",  lab:"Total number of records declared in EDRMS", val:()=>F(TOTAL_REC)},
     {k:"phys", lab:"Total number of physical counterparts identified", val:()=>F(TOTAL_PHYS)},
@@ -1323,6 +1340,7 @@ DASHBOARDS.bw=(function(){
       tiles:()=>[["Sites created, last "+IDLE_DAYS+" days",F(SITES_CREATED_90)],
                  ["Sites deleted",F(12)],
                  ["Sites archived",F(31)],
+                 ["Used in the last 7 days",F(DATA.SITES_USED_7)],
                  ["Inactive over "+IDLE_DAYS+" days",F(SITES_INACTIVE)]]
     },
     /* s36 and s37. Both carry the Bank-wide banner in the deck, so the project
@@ -1345,18 +1363,26 @@ DASHBOARDS.bw=(function(){
             "Total number of physical counterparts"]
     },
     users:{
-      title:"Total number of EDRMS users, by department",
-      sub:"Active users by department, split by staff, contractor and consultant.",
-      cols:["Department","Active users","Staff","Contractors","Consultants","Never accessed"],
-      rows:()=>DEPTS.map(d=>{
-        const staff=Math.round(d.users*0.62), con=Math.round(d.users*0.24);
-        return [d.code+" - "+d.name, F(d.users), F(staff), F(con), F(d.users-staff-con),
-                F(Math.round(d.users*0.11))];
-      }),
-      tiles:()=>[["Monthly active users",F(TOTAL_USERS)],
+      /* s39 asks for staff, contractor, consultant, training completion and
+         onboarded since go-live. Microsoft 365 knows who signed in and when.
+         It does not know what kind of person somebody is, and it has no idea
+         whether they were trained, so those columns say so rather than
+         inventing a split. The client's own s54 drew the register that would
+         fill all of them, and asked of itself who maintains it. Question 3.
+
+         What replaces them is what the activity report really supports:
+         whether a person has used EDRMS, and how recently. */
+      title:"EDRMS users with recorded activity, by department",
+      sub:"Users with recorded activity, and how recently they were last active.",
+      cols:["Department","Users with activity","Never accessed","No access in 90 days",
+            "Staff, contractor or consultant","Training completed"],
+      rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
+                             F(Math.round(d.users*0.11)), F(Math.round(d.users*0.19)),
+                             NOSRC, NOSRC]),
+      tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
                  ["Never accessed EDRMS",F(Math.round(TOTAL_USERS*0.11))],
                  ["No access in 90 days",F(Math.round(TOTAL_USERS*0.19))],
-                 ["Training completion","74%"]]
+                 ["Training completed",NOSRC]]
     },
     docs:{
       title:"Total number of documents in EDRMS, by department",
@@ -2010,10 +2036,18 @@ DASHBOARDS.dp=(function(){
          question 15. */
       title="Visitors";
       sub="Site visitors, and requests for access.";
-      cols=["Name of sites","Total number of visitors","Visitors (external)",
+      /* A visitor is a person. A page view is an event, and one person
+         visiting fifty times is fifty page views and one visitor, so the two
+         are not interchangeable. Page views are in the usage export today;
+         visitors come from site analytics per site. Page views are shown
+         alongside rather than instead, because they are producible now and
+         they answer a different and useful question about how heavily a site
+         is read. */
+      cols=["Name of sites","Total number of visitors","Page views","Visitors (external)",
             "Visitors (internal) by department","Access requests granted","Access requests denied"];
-      rows=sites.map(s=>[s.name,F(vis(s)),NOSRC,NOSRC,NOSRC,NOSRC]);
+      rows=sites.map(s=>[s.name,F(vis(s)),F(vis(s)*7),NOSRC,NOSRC,NOSRC,NOSRC]);
       tiles=[["Total number of visitors",F(sites.reduce((a,s)=>a+vis(s),0))],
+             ["Page views",F(sites.reduce((a,s)=>a+vis(s)*7,0))],
              ["Total number of visitors (external)",NOSRC],
              ["Total number of visitors (internal)",NOSRC],
              ["Total number of access requests granted",NOSRC],
@@ -3088,6 +3122,32 @@ DASHBOARDS.rd=(function(){
           <div class="num"></div>
           <div class="num">${F(DATA.DUE_NEXT_12)}</div>
           <div class="num">${NOSRC}</div></div>
+      </div></div>
+    </div>
+
+    <!-- Splitting the holding into permanent and temporary needs a rule that
+         sorts the 53 retention labels into two groups, and no source holds that
+         rule today. The label itself IS carried on every declared record, so
+         the same holding grouped by label is producible now and answers most
+         of the same questions. It sits after the client's own three screens,
+         not in place of them, so their design is what is read first. -->
+    <div class="band">
+      <h2>Retention labels</h2>
+      <div class="bd">The declared holding grouped by the retention label on each record.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Declared records by retention label</div>
+      <div class="psub">Every declared record carries a retention label, so this grouping covers the whole holding.</div>
+      <div class="scrollx"><div class="dtab" style="--dc:minmax(180px,1.6fr) repeat(2,minmax(120px,1fr))">
+        <div class="dhead"><div>Retention label</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Share of declared records</div></div>
+        ${DATA.LABELS.map(l=>`<div class="drow"><div class="dn">${l.label}</div>
+          <div class="num">${F(l.count)}</div>
+          <div class="num">${(100*l.count/DATA.LABEL_TOTAL).toFixed(1)}%</div></div>`).join("")}
+        <div class="dtot"><div>Total</div>
+          <div class="num">${F(DATA.LABEL_TOTAL)}</div>
+          <div class="num">100.0%</div></div>
       </div></div>
     </div>
   </section>`;

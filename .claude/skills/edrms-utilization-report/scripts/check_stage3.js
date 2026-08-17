@@ -171,11 +171,29 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
      disposed count. They are drawn separately rather than collapsed into one. */
   const heads=await page.$$eval(".dash-rd .dhead",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
-  eq(heads.length,3,"three tables: the rollup, permanent, and temporary");
+  /* Four tables: the client's three, then the retention label grouping added
+     after them. The permanent versus temporary split needs a rule that sorts
+     the 53 labels into two groups and nothing holds that rule, whereas the
+     label itself is on every declared record. The order matters and is
+     asserted: the client's own design is read first, the buildable
+     alternative sits after it, never in place of it. */
+  eq(heads.length,4,"four tables: the rollup, permanent, temporary, and labels");
   ok(heads[1].includes("Number of documents")&&!heads[1].includes("Retention label"),
      "the permanent table carries documents and no retention label, PPT s45");
   ok(heads[2].includes("Retention label")&&heads[2].includes("Number of records disposed"),
      "the temporary table carries the label and the disposed count, PPT s46");
+  ok(heads[3][0]==="Retention label"&&heads[3].includes("Number of records declared"),
+     "the label grouping is last, after the client's own three screens");
+
+  /* It must cover the whole declared holding, or it is not an alternative to
+     the split at all. Read off the screen, not from DATA. */
+  const labTot=await page.$$eval(".dash-rd .dtab",els=>{
+    const t=els[els.length-1], rows=[...t.querySelectorAll(".drow")];
+    return rows.reduce((a,r)=>a+Number(r.children[1].textContent.replace(/,/g,"")),0);
+  });
+  const rollTot=await page.$eval(".dash-rd .dtab .dtot",
+    e=>Number(e.children[3].textContent.replace(/,/g,"")));
+  eq(labTot,rollTot,"the retention labels total every declared record, same as the rollup");
 
   const tabs=await page.$$eval(".dash-rd .dtab",els=>els.map(t=>
     [...t.querySelectorAll(".drow")].map(r=>[...r.children].map(c=>c.textContent.trim()))));
