@@ -52,6 +52,7 @@ CL = "Needs the client"
 NO = "No source anywhere"
 TC = "To confirm"
 NM = "Not a measure"      # a heading or a title, nothing to source
+ASK = "Asked for, not built"  # written on the slide as a want, not drawn
 
 CG   = "Cloud Governance Workspace report"
 USE  = "SharePoint site usage detail (M365)"
@@ -287,7 +288,161 @@ SOURCES = {
    blocked="Populated on 100% of Cloud Governance rows. The M365 export had 19 sites with no owner."),
 }
 
-VERDICT_FILL = {R:GREEN, SC:AMBER, AC:AMBER, CL:RED, NO:RED, TC:GREY, NM:"FFFFFF"}
+
+# --- derived columns and the remaining named measures -----------------------
+# A "share of" column is arithmetic on two figures already on the row. It is
+# never harder to source than the harder of its two parents, so its verdict is
+# inherited rather than left unknown.
+_SHARE = "A RATE, not a count. Arithmetic on two figures already on this row."
+
+SOURCES.update({
+ "Share of documents": dict(counts=_SHARE, verdict=R, file=CG, column="-",
+   build="This unit's documents divided by all documents, times 100.", blocked=""),
+ "Share of records": dict(counts=_SHARE, verdict=R, file=DB, column="-",
+   build="This unit's declared records divided by all declared records, times 100.", blocked=""),
+ "Share of department": dict(counts=_SHARE, verdict=R, file=DB, column="-",
+   build="This row's figure divided by the department total, times 100.", blocked=""),
+ "Share of declared records": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
+   build="Physical counterparts divided by declared records, times 100.", blocked=""),
+ "Share with counterpart": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
+   build="Records with a counterpart divided by records declared, times 100.", blocked=""),
+ "Share with a counterpart": dict(counts=_SHARE, verdict=R, file=DB, column="HasPhysical",
+   build="Records with a counterpart divided by records declared, times 100.", blocked=""),
+ "Share of documents declared as records": dict(
+   counts="A RATE: declared records over ALL documents held. Reads about 0.62%, which looks "
+          "like a fault and is not.",
+   verdict=SC, file=DB + " and the weekly scan", column="-",
+   build="Declared records divided by documents held, times 100.",
+   blocked='The denominator does not exist yet: public."Records" holds no row for an undeclared document.'),
+ "Documents declared": dict(counts=_SHARE, verdict=SC, file=DB + " and the weekly scan",
+   column="-", build="Declared records divided by documents held, per unit.",
+   blocked="Waits on the scan for the denominator."),
+ "Departments with zero declarations": dict(
+   counts="One organisational unit that owns EDRMS sites but has declared nothing.",
+   verdict=R, file=CG + " and " + DB, column="Department",
+   build=("1. List every unit in the compliant site list.\n"
+          "2. Subtract the units that appear in Records.\n"
+          "3. Count what is left."),
+   blocked="This is a compliance finding worth reporting: a site designated EDRMS that nobody uses."),
+ "Due within 30 days": dict(counts="One record whose disposal date falls in the next 30 days.",
+   verdict=R, file=DB, column="EDRMSDueDateForDisposal",
+   build="Count records due between now and now + 30 days.",
+   blocked="The three windows must nest: 30 inside 90 inside 12 months."),
+ "Due within 90 days": dict(counts="One record due in the next 90 days.", verdict=R, file=DB,
+   column="EDRMSDueDateForDisposal", build="Count records due between now and now + 90 days.", blocked=""),
+ "Due within 12 months": dict(counts="One record due in the next 12 months.", verdict=R, file=DB,
+   column="EDRMSDueDateForDisposal", build="Count records due between now and now + 12 months.", blocked=""),
+
+ "Documents": dict(counts="One document held by this unit.", verdict=SC, file="The weekly scan",
+   column="-", build="Sum the document count over the unit's sites.", blocked="Waits on the scan."),
+ "Number of documents": dict(counts="One document held by this site.", verdict=SC,
+   file="The weekly scan", column="-", build="Count documents in the site's libraries.",
+   blocked="Waits on the scan."),
+ "Number of documents created / uploaded": dict(counts="One document created or uploaded here.",
+   verdict=SC, file="The weekly scan", column="-", build="Count documents per site.",
+   blocked="Nothing marks a document as MIGRATED, so migrated counts cannot be split out. Question 9."),
+ "Number of records declared": dict(counts="One declared record in this site.", verdict=R,
+   file=DB, column="SiteUrl", build='COUNT(*) FROM public."Records" GROUP BY "SiteUrl"', blocked=""),
+ "Number of records": dict(counts="One declared record.", verdict=R, file=DB, column="ListId, ItemId",
+   build='COUNT(*) FROM public."Records"', blocked=""),
+ "Number of physical counterparts": dict(counts="One declared record with a paper original.",
+   verdict=R, file=DB, column="HasPhysical, SiteUrl", build="Count HasPhysical per site.", blocked=""),
+ "Number of records due for disposal": dict(counts="One record due in the window.", verdict=R,
+   file=DB, column="EDRMSDueDateForDisposal", build="Count records due, per site or library.", blocked=""),
+ "Total number of sites created": dict(counts="One EDRMS site owned by this unit.", verdict=R,
+   file=CG, column="EDRMS Site Type, Department", build="Count compliant sites for the unit.",
+   blocked="Same multi-department problem. Audit question 1."),
+ "Total number of EDRMS users": dict(counts="One person with access to this unit's EDRMS sites.",
+   verdict=CL, file=ACT, column="User Principal Name",
+   build="Count distinct users with activity, for this unit.",
+   blocked=("The activity report has NO SITE DIMENSION, so it cannot be narrowed to EDRMS. "
+            "1,028 of 1,032 EDRMS sites are Team sites with no M365 group, so group membership "
+            "reaches almost nothing either. Untested route: read role assignments per site. "
+            "Audit question 3.")),
+ "Total number of site visitors": dict(counts="One PERSON who opened a site in this unit.",
+   verdict=SC, file="Microsoft Graph site analytics", column="actorCount",
+   build="Sum actorCount over the unit's sites.",
+   blocked="Graph offers allTime and lastSevenDays only. No 30 day unique viewer figure exists."),
+ "Total number of users declaring records": dict(
+   counts="One person who declared at least one record here.", verdict=R, file=DB, column="CreatedBy",
+   build='SELECT COUNT(DISTINCT "CreatedBy") FROM public."Records", per unit.',
+   blocked="One line of SQL that has never been run."),
+ "Number of users creating documents": dict(counts="One person who created a document here.",
+   verdict=SC, file="The weekly scan", column="CreatedBy",
+   build="Count distinct document authors per site.", blocked="Waits on the scan."),
+ "Total number of physical records declared": dict(counts="One declared record with a paper original.",
+   verdict=R, file=DB, column="HasPhysical", build="Count HasPhysical, per site.", blocked=""),
+ "Sites reporting": dict(counts="One site that appears in this table.", verdict=R, file=CG,
+   column="EDRMS Site Type", build="Count the rows in the table.", blocked=""),
+ "Sites with no declared record in 90 days": dict(
+   counts="One EDRMS site whose most recent declaration is older than 90 days.",
+   verdict=R, file=DB, column="SiteUrl, CreatedDate",
+   build="MAX(CreatedDate) per SiteUrl, count the sites where it is older than 90 days.",
+   blocked="A compliance finding: a site designated EDRMS that has stopped being used."),
+ "Total documents size": dict(counts="Bytes held by this unit's documents.", verdict=R, file=CG,
+   column="Storage Used (GB)", build="Sum Storage Used (GB) over the unit's sites.",
+   blocked="Never inferred from a document count."),
+ "Documents size (in GB)": dict(counts="Bytes held by this site.", verdict=R, file=CG,
+   column="Storage Used (GB)", build="Read Storage Used (GB) per site.", blocked=""),
+ "Total declared record size": dict(counts="Bytes held by the declared records specifically.",
+   verdict=SC, file="The weekly scan", column="FileSize",
+   build="Sum FileSize over the documents that appear in Records.",
+   blocked=("Graph returns a CUMULATIVE size on folders, so the scan must filter to files only "
+            "or storage is double counted.")),
+ "Library name": dict(counts="One document library inside an EDRMS site.", verdict=R,
+   file="Microsoft Graph", column="drives, list.id",
+   build="GET /sites/{siteId}/drives. list.id is the ListId key that joins to Records.",
+   blocked="Always show a library with its parent site: display names repeat across sites."),
+ "Number of libraries provisioned": dict(counts="One document library.", verdict=R,
+   file="Microsoft Graph", column="drives", build="Count libraries per site, summed for the unit.", blocked=""),
+ "Libraries with records due": dict(counts="One library holding at least one record due for disposal.",
+   verdict=R, file=DB, column="ListId, EDRMSDueDateForDisposal",
+   build="Count distinct ListId among records due.", blocked=""),
+ "Next due date for disposal": dict(counts="The earliest disposal date still ahead for this library.",
+   verdict=R, file=DB, column="EDRMSDueDateForDisposal",
+   build="MIN(EDRMSDueDateForDisposal) in the future, per ListId.", blocked=""),
+ "With physical counterpart?": dict(counts="Whether the records due here include paper originals.",
+   verdict=R, file=DB, column="HasPhysical", build="Any HasPhysical among the library's records due.", blocked=""),
+ "Departments, offices and RMs provisioned": dict(counts="One organisational unit represented here.",
+   verdict=R, file=CG, column="Department", build="Count distinct Department.", blocked=""),
+ "Retention label": dict(counts="One Purview retention label applied to records.", verdict=R,
+   file="Microsoft Purview, Records management, File plan", column="Label name",
+   build="Read the label per record from the document row.",
+   blocked="53 labels in the test tenant, a FLAT list with no hierarchy."),
+ "Term (top level)": dict(counts="One top level institutional file plan term.", verdict=CL,
+   file="", column="", build="",
+   blocked="The file plan exists in neither the term store nor Purview. Audit questions 12 and 13."),
+ "Total terms": dict(counts="One file plan term.", verdict=CL, file="", column="", build="",
+   blocked="Audit question 12."),
+ "Total terms (top level)": dict(counts="One top level file plan term.", verdict=CL,
+   file="", column="", build="", blocked="Audit question 12."),
+ "Heading": dict(counts="A column of row labels, not a measure.", verdict=NM,
+   file="", column="", build="", blocked=""),
+ "Total number of libraries provisioned": dict(counts="One document library across EDRMS sites.",
+   verdict=R, file="Microsoft Graph", column="drives",
+   build="GET /sites/{siteId}/drives per compliant site, count the libraries.", blocked=""),
+ "Physical counterparts identified": dict(
+   counts="One declared record that also exists on paper.",
+   verdict=R, file=DB, column="HasPhysical",
+   build='SELECT COUNT(*) FROM public."Records" WHERE "HasPhysical" IS TRUE',
+   blocked=("The one figure on this dashboard that has a source. It is the bridge between this "
+            "report and the physical estate, which is why it is the only KPI card kept here. "
+            "Everything else on Records and Archive Holdings has no source at all, "
+            "audit question 17.")),
+ "Activity": dict(counts="An activity band, not a measure: the row label for the users table.",
+   verdict=NM, file="", column="", build="", blocked=""),
+ "Number of users": dict(counts="One person in this activity band.", verdict=CL, file=ACT,
+   column="Last Activity Date", build="Count users falling in the band.",
+   blocked="Needs the user to department mapping. Audit question 3."),
+})
+for _c in ["Institutional Management","Administration","People Management",
+           "Programs and Operations","Other"]:
+    SOURCES["Total "+_c+" terms"] = dict(
+      counts="One file plan term under the "+_c+" category.",
+      verdict=CL, file="", column="", build="",
+      blocked="The file plan exists in neither system. Audit questions 12 and 13.")
+
+VERDICT_FILL = {R:GREEN, SC:AMBER, AC:AMBER, CL:RED, NO:RED, TC:GREY, NM:"FFFFFF", ASK:"E9E2F2"}
 
 HEAD = ["#", "Where on screen", "What it is",
         "Name, exactly as the prototype shows it",
@@ -410,7 +565,14 @@ def build(rows, out):
             # has nothing to source, so calling it "To confirm" would bury the
             # measures that genuinely are unconfirmed under structural rows.
             structural = row["kind"] in ("Band", "Drill title", "Panel title")
-            verdict = s.get("verdict", NM if structural else TC)
+            # "Also asked for" rows are lines the client wrote on the slide as
+            # wants, not things the prototype draws. They are neither built nor
+            # unconfirmed, so they get their own verdict rather than muddying
+            # the tally of real measures.
+            if row["kind"] in ("Also asked for", "Column this screen needs"):
+                verdict = s.get("verdict", ASK)
+            else:
+                verdict = s.get("verdict", NM if structural else TC)
             tally[verdict] = tally.get(verdict, 0) + 1
             ws.append([n, row["where"], row["kind"], row["name"],
                        s.get("counts", ""), verdict, s.get("file", ""),
@@ -435,7 +597,7 @@ def build(rows, out):
     ws.append(["Verdict", "Rows"]); style_header(ws)
     for c in range(1, 3):
         ws.cell(row=1, column=c).fill = PatternFill("solid", fgColor=HEADBG)
-    for k in [R, SC, AC, CL, NO, TC, NM]:
+    for k in [R, SC, AC, CL, NO, TC, ASK, NM]:
         if k in tally:
             ws.append([k, tally[k]])
             ws.cell(row=ws.max_row, column=1).fill = PatternFill(
