@@ -3245,6 +3245,17 @@ DASHBOARDS.ra=(function(){
         EDRMS, so this screen needs its own source before it can show a figure.</div>
     </div>
 
+    <!-- One figure on this dashboard IS sourceable, and it is the useful one:
+         the count of declared records that EDRMS says have a paper
+         counterpart. That is what RAC should be holding, so it is the bridge
+         between this report and the physical estate, and it gives the
+         conversation about the missing sources somewhere to start. -->
+    <div class="kpis">
+      <div class="kpi stat"><div class="lab">Physical counterparts identified</div>
+        <div class="val">${F(DATA.WITH_PHYSICAL)}</div>
+        <div class="sub">Declared records recorded as having a paper counterpart</div></div>
+    </div>
+
     <div class="band">
       <h2>Storage</h2>
       <div class="bd">What is held at each storage location.</div>
