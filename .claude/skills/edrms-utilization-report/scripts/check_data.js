@@ -45,8 +45,14 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nThe six key views, and only those");
   const nav=await page.$$eval("#nav a[data-d]",els=>els.map(e=>e.dataset.d));
-  eq(nav.length,6,"the nav carries exactly six dashboards, as specified on PPT s13");
-  eq(nav.join(","),"bw,dp,pj,fp,rd,ra","in the client's own order");
+  /* Five, not the six on s13. Project Insights and the two project tiles came
+     off on 17 August: nothing in SharePoint, Cloud Governance or drm-npr says a
+     site belongs to a project, so not one figure on those screens could be
+     produced. The whole thing is kept working in
+     EDRMS_Prototype_with_project_sites_2026-08-17.html and goes straight back
+     when the client supplies the project register. Audit question 2. */
+  eq(nav.length,5,"the nav carries five dashboards, project insights withdrawn");
+  eq(nav.join(","),"bw,dp,fp,rd,ra","in the client's own order, less project insights");
   const dis=await page.$$eval("#nav a.dis",els=>els.length);
   eq(dis,0,"no disabled placeholder entries remain");
   const gone=await page.evaluate(()=>["rm","sl","fs","ov","rt"].filter(k=>DASHBOARDS[k]));
@@ -151,7 +157,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
      later edit. Each entry names the document heading it comes from. */
   console.log("\nMetrics headings: sourceable ones stay, unsourceable ones stay off");
   const pages={};
-  for(const k of ["bw","dp","pj","fp","rd","ra"]){
+  for(const k of ["bw","dp","fp","rd","ra"]){
     await page.evaluate(key=>switchTo(key),k);
     pages[k]=await page.$eval(`.dash-${k}`,e=>e.textContent.replace(/\s+/g," "));
   }
@@ -201,7 +207,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
      recorded in STATUS.md and in the content checker workbook so the client
      questions behind each one stay live. Asserting the words are gone is what
      stops a later edit reintroducing an empty column by accident. */
-  for(const key of ["bw","dp","pj","fp","rd","ra"]){
+  for(const key of ["bw","dp","fp","rd","ra"]){
     await page.evaluate(k=>switchTo(k),key);
     await page.waitForTimeout(120);
     const n=await page.$$eval(".nosrc",els=>els.length);
@@ -273,10 +279,15 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   const landed=await page.$eval("#crumb-b",e=>e.textContent);
   ok(/Department Insights/.test(landed),"clicking a department name opens Department Insights");
   await page.evaluate(()=>switchTo("bw"));
-  await page.click('.dash-bw #bw-kpis .kpi[data-k="sov"]');
-  await page.click(".dash-bw #bw-drill .drow.go[data-fac]");
-  const landedPj=await page.$eval("#crumb-b",e=>e.textContent);
-  ok(/Project Insights/.test(landedPj),"clicking a project row opens Project Insights");
+  /* The sovereign and nonsovereign tiles are withdrawn, so nothing on this
+     dashboard navigates to Project Insights any more. Asserting their absence
+     is deliberate: putting a tile back without the project register behind it
+     would give the committee a screen of blanks. */
+  const sov=await page.$('.dash-bw #bw-kpis .kpi[data-k="sov"]');
+  const nonsov=await page.$('.dash-bw #bw-kpis .kpi[data-k="nonsov"]');
+  ok(!sov&&!nonsov,"the two project tiles are withdrawn, not left empty");
+  const projRow=await page.$(".dash-bw #bw-drill .drow.go[data-fac]");
+  ok(!projRow,"no row navigates to Project Insights");
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
   ok(errors.length===0,"no console errors, which is how the DATA reconciliation asserts surface");

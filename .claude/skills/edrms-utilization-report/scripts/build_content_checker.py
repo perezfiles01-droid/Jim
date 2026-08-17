@@ -47,21 +47,31 @@ NONE  = "No, no source exists anywhere"
 VERDICT_FILL = {READY: GREEN, SCAN: AMBER, APP: RED, ASK: RED, NONE: RED}
 
 
-def proc(buildable, proven, where, link, steps):
-    """The process chain, in the format the client asked for.
+def proc(buildable, proven, where, link, steps, chain=None):
+    """The process chain.
 
-    Buildable? > Can be proven in test tenant? > Where is the column? >
-    Go to > Specific steps.
+    Buildable? > Proven in the test tenant? > Where is the number? > Go to >
+    the build chain > the specific steps.
 
-    Rendered over several lines because it is meant to be read, not parsed.
+    The build chain is the part to read first. It says, in one line per hop,
+    which file the number comes out of and which key carries it to the next
+    file, in the order you would actually do it. Everything below it is detail.
     """
     out = ["Buildable? " + buildable,
            "Proven in the test tenant? " + proven,
            "Where is the number? " + where]
     if link:
         out.append("Go to: " + link)
-    for i, s in enumerate(steps, 1):
-        out.append("Step %d. %s" % (i, s))
+    if chain:
+        out.append("")
+        out.append("HOW THE NUMBER IS BUILT, one hop at a time:")
+        for i, c in enumerate(chain, 1):
+            out.append("   %d. %s" % (i, c))
+    if steps:
+        out.append("")
+        out.append("STEP BY STEP:")
+        for i, s in enumerate(steps, 1):
+            out.append("   %d. %s" % (i, s))
     return "\n".join(out)
 
 
@@ -103,6 +113,13 @@ RECORDS_STEPS = [
 SRC = {}
 
 SRC["rec"] = dict(
+    chain=[
+        "In the drm-npr database, take the table public.\"Records\". One row per DECLARED record.",
+        "Each row carries the SiteUrl it came from.",
+        "Export the Cloud Governance Workspace report, which carries both \"URL\" and \"Department\".",
+        "Join the two on the site URL.",
+        "Group by Department and count the rows. That is records declared per department.",
+    ],
     buildable=READY,
     proven="Yes. The table was queried directly and returned about 1,990 rows in the test tenant.",
     where="the drm-npr PostgreSQL database, table public.\"Records\".",
@@ -143,6 +160,15 @@ SRC["declarer"] = dict(
 )
 
 SRC["scan_docs"] = dict(
+    chain=[
+        "This needs the WEEKLY SCAN, which pulls two usage reports and joins them.",
+        "Report one: the SharePoint site usage report. Take the column \"File Count\", which is keyed on \"Site Id\".",
+        "Report two: the Cloud Governance Workspace report. It carries BOTH \"ID\" (the same GUID as Site Id) AND \"URL\".",
+        "Join report one to report two on that GUID. Now every file count has a site URL.",
+        "In the Workspace report, the same row also carries \"Department\".",
+        "So: File Count -> Site Id -> Cloud Governance ID -> URL -> Department. Sum File Count per department.",
+        "Cloud Governance is the bridge because it is the ONLY file carrying both the GUID and the URL.",
+    ],
     buildable=SCAN,
     proven="No, and it cannot be until the scan exists. The interim figure below is real but is not the same measure.",
     where="nowhere yet. It needs the weekly SharePoint scan, which is designed and NOT BUILT.",
@@ -185,18 +211,38 @@ SRC["scan_creator"] = dict(
 )
 
 SRC["cg_sites"] = dict(
+    chain=[
+        "Export the Cloud Governance Workspace report. One row per workspace, 1,209 rows.",
+        "Keep only the rows where the column \"EDRMS Site Type\" is NOT blank. That leaves 1,032.",
+        "Of those, keep only the rows where \"Status\" = Active AND \"Site Status\" = Active.",
+        "Count the rows. That is the number of active EDRMS sites.",
+    ],
     buildable=READY,
-    proven="Yes. 1,032 of 1,209 workspaces carry the marker in the test tenant.",
-    where="the Cloud Governance Workspace report, column \"EDRMS Site Type\".",
+    proven="Yes for the EDRMS marker. The two Active filters are a NO-OP in the test tenant, which is the trap.",
+    where="the Cloud Governance Workspace report. THREE columns, not one.",
     link=LINK_CG,
     steps=CG_STEPS + [
-        "Count the rows where EDRMS Site Type is not blank. The test tenant gives 1,032.",
+        "THE FILTER IS THREE CONDITIONS, and leaving two of them out still gives the right answer here:",
+        "   EDRMS Site Type is not blank   (it is an EDRMS site)         -> 1,032 of 1,209",
+        "   AND Status = Active            (not locked, not archived)",
+        "   AND Site Status = Active       (not deleted)",
+        "In the test tenant all 1,032 EDRMS sites are Active on both, so the last two change nothing.",
+        "Across all 1,209 workspaces there are 59 Locked and 4 Archived, so in production they WILL matter.",
+        "That is why this is written out: the short version passes every test here and is wrong at ADB.",
         "The 177 blanks are template and admin sites and are correctly excluded.",
-        "Note: the prototype still shows 1,057. That is an old placeholder, not a measurement.",
+        "SEPARATE OPEN QUESTION: the deck never defines \"active\". Lifecycle active gives 1,032.",
+        "   Used in the last 7 days gives 681. Those are very different headline numbers.",
     ],
 )
 
 SRC["cg_dept"] = dict(
+    chain=[
+        "Export the Cloud Governance Workspace report.",
+        "Filter to EDRMS sites, active, as above.",
+        "Group the rows by the column \"Department\".",
+        "Count the rows in each group. That is sites per department.",
+        "WATCH OUT: 240 rows carry several departments in one cell, like CWRD;SARD.",
+    ],
     buildable=READY,
     proven="Yes, but it is not clean. See the warning in the steps.",
     where="the Cloud Governance Workspace report, column \"Department\".",
@@ -221,6 +267,12 @@ SRC["cg_owner"] = dict(
 )
 
 SRC["cg_active"] = dict(
+    chain=[
+        "Export the Cloud Governance Workspace report.",
+        "Filter to active EDRMS sites.",
+        "Read \"Last Active Time\" and compare it to today.",
+        "Count the rows older than the threshold.",
+    ],
     buildable=READY,
     proven="Yes. Filled on all 1,032 EDRMS sites.",
     where="the Cloud Governance Workspace report, column \"Last Active Time\".",
@@ -275,7 +327,13 @@ SRC["cg_created"] = dict(
     ],
 )
 
-SRC["m365_users"] = dict(
+SRC["m365_activity"] = dict(
+    chain=[
+        "Export the SharePoint activity user detail report. One row per LICENSED user.",
+        "Keep the rows where \"Viewed Or Edited File Count\" is above zero. Those are the people with activity.",
+        "Count them. That is users with recorded activity.",
+        "IT IS NOT total EDRMS users. The export has no site column, so it cannot be narrowed to EDRMS at all.",
+    ],
     buildable=READY,
     proven="Yes, and the result was a surprise worth knowing. See the steps.",
     where="the SharePoint activity user detail report, column \"Viewed Or Edited File Count\".",
@@ -302,6 +360,13 @@ SRC["m365_never"] = dict(
 )
 
 SRC["m365_visits"] = dict(
+    chain=[
+        "Export the SharePoint site usage report, period 7 days.",
+        "Take \"Page View Count\", keyed on \"Site Id\".",
+        "Join to the Cloud Governance Workspace report on ID to get the URL and the Department.",
+        "Sum per department. To cover a longer range, ADD CONSECUTIVE 7 DAY EXPORTS.",
+        "Never add the 30, 90 and 180 day figures together: those windows overlap.",
+    ],
     buildable=READY,
     proven="Yes. Page View Count is populated in the export.",
     where="the SharePoint site usage report, column \"Page View Count\".",
@@ -383,6 +448,34 @@ SRC["ask_projattr"] = dict(
     ],
 )
 
+SRC["ask_usertotal"] = dict(
+    buildable=ASK,
+    proven="No. What was proven is a DIFFERENT measure, users with activity.",
+    where="NOWHERE. No source knows who has ACCESS to EDRMS.",
+    link=LINK_ACTIVITY,
+    chain=[
+        "There is no chain, and that is the finding. Here is why each candidate fails.",
+        "Candidate 1: count the rows in the M365 activity export. That is every LICENSED user in the tenant.",
+        "   At ADB that is close to the whole Bank, roughly 9,400 people. It is not EDRMS users.",
+        "Candidate 2: count the rows with activity above zero. That is ACTIVE users, not total users.",
+        "   The client's own s39 asks for \"% of active users\" as an indicator UNDERNEATH this figure,",
+        "   so the headline must be the population and active users must be a subset of it.",
+        "   It also asks for \"users who have NEVER accessed EDRMS\", which cannot be counted",
+        "   from a list that excludes them by definition.",
+        "Candidate 3: read the members of each EDRMS site's Microsoft 365 group.",
+        "   1,028 of the 1,032 EDRMS sites are \"Team site (no Microsoft 365 group)\", so there is no group to read.",
+        "UNTESTED AND WORTH TRYING: every site has PERMISSIONS whether or not it has a group.",
+        "   Reading role assignments per site would give users per EDRMS site directly.",
+        "   That is scan-shaped work, about the size of the document scan, and nobody has tried it.",
+        "WHAT WE OFFER INSTEAD: users with recorded activity, which is measurable today and honest.",
+    ],
+    steps=[
+        "Do not publish the licensed user count as EDRMS users. At ADB it would say the whole Bank uses EDRMS.",
+        "The prototype tile is renamed to what the number really is.",
+        "Ask the client for the user register, question 3, which also solves staff versus contractor.",
+    ],
+)
+
 SRC["ask_userreg"] = dict(
     buildable=ASK,
     proven="No.",
@@ -399,6 +492,16 @@ SRC["ask_userreg"] = dict(
 )
 
 SRC["ask_userdept"] = dict(
+    chain=[
+        "GOOD NEWS, and this replaces the Graph call previously suggested here.",
+        "Export the Cloud Governance USERS export, not the Workspace one.",
+        "It carries a \"Department\" per person (column 37), filled on 228 of 286 people in the test tenant.",
+        "It also carries \"User principal name\", which is the same key the M365 activity report uses.",
+        "So: activity report -> User principal name -> Users export -> Department.",
+        "The test tenant values are Microsoft demo data (R&D, HR, Retail), so they mean nothing.",
+        "What they PROVE is that the field flows through. The only open question is whether ADB fills it in.",
+        "Pull this export from production and the answer is immediate. No client involvement needed.",
+    ],
     buildable=ASK,
     proven="No, but there is one cheap check nobody has run yet. See the steps.",
     where="NOWHERE yet. We can put SITES in departments. We cannot put PEOPLE in departments.",
@@ -579,7 +682,8 @@ def S(key, basis, buildable=None):
     """Turn a source key plus a basis sentence into the two output columns."""
     s = SRC[key]
     b = buildable or s["buildable"]
-    return b, proc(b, s["proven"], s["where"], s["link"], s["steps"]), basis
+    return b, proc(b, s["proven"], s["where"], s["link"], s["steps"],
+                   s.get("chain")), basis
 
 
 # ---------------------------------------------------------------- the rows
@@ -604,11 +708,17 @@ BW = [
   "ask_project",
   "Cannot be produced, for exactly the same reason as the sovereign tile."),
 
- ("Total number of EDRMS users",
-  "Top panel, tile 4 (opens a table)", "s34, s39",
-  "How many people are actually using EDRMS. The number that tells you whether the system is being adopted at all.",
-  "m365_users",
-  'Found in report? Yes. SharePoint activity user detail, column "Viewed Or Edited File Count". Count the rows where it is above zero. Do NOT count all the rows: the export lists every LICENSED user. Test tenant: 8 active out of 30 rows.'),
+ ("Total number of EDRMS users (WHAT THE CLIENT ASKED FOR)",
+  "Top panel, tile 4. Renamed on the page", "s34, s39",
+  "The client wants the population of people who hold EDRMS access. No source knows that. See the next row for what the page shows instead.",
+  "ask_usertotal",
+  'CANNOT BE PRODUCED. Every candidate source counts something else. The row below is the alternative that is on the page.'),
+
+ ("EDRMS users with recorded activity (WHAT WE GIVE INSTEAD)",
+  "Top panel, tile 4", "s39 indicators",
+  "How many people have actually used EDRMS. It answers the adoption question the client is really asking, and unlike the population it is measurable today.",
+  "m365_activity",
+  'Found in report? Yes. SharePoint activity user detail, column "Viewed Or Edited File Count". Count the rows above zero. Test tenant: 8 of 30 rows.'),
 
  ("Total number of documents in EDRMS",
   "Top panel, tile 5 (opens a table)", "s34, s40",
@@ -751,7 +861,7 @@ BW = [
  ("Percentage of active users (indicator)",
   "Users table, small stat", "s39",
   "Adoption. How many of the people who could use EDRMS actually do.",
-  "m365_users",
+  "m365_activity",
   'Two figures. Active users (Viewed Or Edited File Count above zero) divided by all rows in the activity export, as a percentage. Test tenant: 8 / 30 = 27%.'),
 
  ("Never accessed EDRMS (indicator)",
@@ -1018,7 +1128,7 @@ DP = [
  ("Active users, users who have not accessed, new users (indicators)",
   "Users table, small stats", "s54",
   "The client's note asks for these month on month, to spot people who left the Bank and people who need onboarding.",
-  "m365_users",
+  "m365_activity",
   "The activity half is producible. The month on month half needs the history decision, question 8. The department half needs user to department."),
 
  ("Total number of visitors (column)",
@@ -1225,7 +1335,7 @@ RD = [
  ("Permanent and temporary rollup: departments, libraries, records, counterparts, records due, records disposed",
   "Landing screen", "s44",
   "The whole holding split into records kept forever and records with an end date. This is the landing screen reached from the Bank-wide tile, which is why slide 44 carries the Bank-wide banner.",
-  "purview",
+  "purview_split",
   "FIVE OF THE SIX COLUMNS work today. Records disposed does not, it needs the change request. But see the row below: the split itself is unproven."),
 
  ("The permanent versus temporary split itself",
@@ -1255,13 +1365,13 @@ RD = [
  ("Permanent retention table: top level terms with document counts",
   "Permanent retention panel", "s45",
   "Which categories of record are kept forever, and how much of each.",
-  "purview",
+  "purview_split",
   "Drawn as its OWN table rather than sharing one with temporary, because the client's two slides carry different columns: permanent has a document count and NO retention label."),
 
  ("Temporary retention table: terms, retention label, due date, disposed count",
   "Temporary retention panel", "s46",
   "Records with an end date, when they fall due, and what has been done.",
-  "purview",
+  "purview_split",
   "The label and the due date work today. The disposed count does not, it needs the change request. Note this table carries the retention label where the permanent one does not."),
 ]
 
@@ -1308,7 +1418,7 @@ RA = [
 SHEETS = [
     ("Bank-wide Oversight", "s15, s34 to s44 and s47", BW),
     ("Department Insights", "s19 to s28, s53 to s66", DP),
-    ("Project Insights",    "s38",                     PJ),
+    ("Project Insights WITHDRAWN", "s36 to s38",        PJ),
     ("Institutional File Plan", "s29 to s31, s47 to s52", FP),
     ("Retention and Disposal",  "s32, s44 to s46",     RD),
     ("Records and Archive Holdings", "s33, s67 to s69", RA),
@@ -1345,9 +1455,15 @@ def build_sheet(wb, name, slides, rows):
         ws.column_dimensions[get_column_letter(i)].width = w
 
     style_header(ws, 1, name, BLUE, size=14, height=26)
-    style_header(ws, 2, "The client's slides for this dashboard: " + slides
-                 + ".   Every row below is something actually on the screen today.",
-                 BLUEPALE, size=10, height=20)
+    withdrawn = "WITHDRAWN" in name
+    style_header(ws, 2, ("The client's slides for this dashboard: " + slides + ".   " +
+                 ("THIS DASHBOARD IS NOT ON THE PAGE. It was withdrawn on 17 August because not one figure "
+                  "on it could be produced. It is kept whole and working in "
+                  "EDRMS_Prototype_with_project_sites_2026-08-17.html and goes straight back when the client "
+                  "supplies the project register. The rows below say what each screen would need."
+                  if withdrawn else
+                  "Every row below is something actually on the screen today.")),
+                 AMBER if withdrawn else BLUEPALE, size=10, height=32 if withdrawn else 20)
 
     # count the verdicts so the reader gets the shape before the detail
     tally = {}
@@ -1437,6 +1553,40 @@ def build_readme(wb, tallies):
          "Do not trust an expected column name or a plausible figure. Export the real file and read it. "
          "Every significant error in this project was caught that way, and several had survived for weeks "
          "looking perfectly correct.")
+    gap()
+
+    head("Department / office / RM: what that heading means", BLUEPALE, 12, 22)
+    gap()
+    pair("It is ONE column, not three",
+         "Department / office / RM is three kinds of organisational unit, and a site might be owned by any "
+         "of them. A department (CSD, Corporate Services Department), an office (BIOC, Office of Business "
+         "Intelligence and Operations Coordination), or a resident mission. The client needed one heading "
+         "that covers all three, because the answer has to go in one cell. Read it as: whoever owns this site.")
+    pair("The test tenant behaves this way, confirmed",
+         "All offices and resident missions sit in the SAME column, the one called Department. Its NAME is "
+         "just narrower than its CONTENTS. Proof from the test tenant: of the five codes in that column, BOD "
+         "is the Board of Directors and ADBI is the ADB Institute, and neither is a department. The client's "
+         "own slide 39 does the same thing, listing BIOC (an office) and CCSD (a department) as rows of one column.")
+    pair("THE GAP: we cannot tell which TYPE a code is",
+         "Nothing in any export says BIOC is an office and CCSD is a department. So \"show me the site count per "
+         "unit\" works today, and \"show me only the resident missions\", or any subtotal by unit type, does not. "
+         "No slide asks for a subtotal by type, so this blocks nothing that is drawn, but it is worth asking the "
+         "client for their unit codes with a type against each. It would also give us the full list of valid codes.")
+    pair("ALSO UNRESOLVED: what does RM stand for?",
+         "Probably Resident Mission, which fits ADB's structure of departments, offices, resident missions and "
+         "projects. But the Cloud Governance export has a Records Manager column, and in a records management deck "
+         "RM is at least as commonly Records Manager. The test tenant cannot settle it: Records Manager is filled "
+         "on 2 of 1,032 rows with the values Alex Wilber and Admin, which is test noise. It matters: a resident "
+         "mission is another organisational unit and lands in the same column, while a records manager is a PERSON "
+         "and would be a different requirement needing a different source. One line to ask, and it changes what gets built.")
+    gap()
+    pair("The filter behind every site count",
+         "Three conditions, and two of them look unnecessary here:   "
+         "EDRMS Site Type is not blank (it is an EDRMS site)   AND   Status = Active (not locked, not archived)   "
+         "AND   Site Status = Active (not deleted).   In the test tenant all 1,032 EDRMS sites are Active on both, "
+         "so the last two change nothing and the short version passes every test. Across all 1,209 workspaces there "
+         "are 59 Locked and 4 Archived, so at ADB they will matter. This is exactly the kind of filter that is "
+         "silently wrong in production and correct in test.", AMBER)
     gap()
 
     head("How to read the columns", BLUEPALE, 12, 22)

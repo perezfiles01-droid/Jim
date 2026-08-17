@@ -41,12 +41,16 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
      navigate to Retention and Disposal and to the Institutional File Plan,
      which is why s44 and s47 carry the Bank-wide banner while the slides behind
      them do not. All ten do something, so all ten carry the chevron. */
-  eq(tiles.length,10,"ten top panel tiles, one per PPT s34 stat");
-  eq(tiles.filter(t=>t.tap).length,10,"every tile promises a click, because every tile does something");
+  /* Eight, not the ten on s34. The sovereign and nonsovereign project tiles
+     came off on 17 August because nothing records that a site belongs to a
+     project. Kept working in EDRMS_Prototype_with_project_sites_2026-08-17.html
+     and restored the moment the client supplies the register. Question 2. */
+  eq(tiles.length,8,"eight top panel tiles, the two project tiles withdrawn");
+  eq(tiles.filter(t=>t.tap).length,8,"every tile promises a click, because every tile does something");
   eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
-  ok(tiles.some(t=>/Sovereign/.test(t.lab))&&tiles.some(t=>/Nonsovereign/.test(t.lab)),
-     "the sovereign and nonsovereign split the client asked for three times is present");
+  ok(!tiles.some(t=>/[Ss]overeign/.test(t.lab)),
+     "the project tiles are withdrawn, not shown empty");
   ok(tiles.some(t=>/Retention and disposal insights/.test(t.lab)),
      "the Retention and disposal insights navigation tile is present, PPT s34");
   ok(tiles.some(t=>/Institutional File Plan insights/.test(t.lab)),
@@ -80,12 +84,14 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   const rows=await page.$$eval(".dash-bw #bw-drill .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   eq(rows.length,16,"the sixteen departments, offices and RMs");
-  const tot=await page.$$eval(".dash-bw #bw-drill .dtot > div",els=>els.map(e=>e.textContent.trim()));
-  for(const [i,label] of [[1,"sites"],[2,"documents"],[3,"records"],[4,"counterparts"]]){
-    eq(rows.reduce((a,r)=>a+num(r[i]),0),num(tot[i]),`${label} column sums to its total row`);
-  }
-  eq(num(tot[3]),s.d.DECLARED,"the departments total the declared record count");
-  eq(num(tot[4]),s.d.WITH_PHYSICAL,"the departments total the physical counterpart count");
+  /* The total rows came off on 17 August by instruction: s16 and s35 draw no
+     Total row, so ours was an addition. The reconciliation still has to hold,
+     so it is now checked by summing the column off the screen rather than by
+     reading a total row that no longer exists. That is the stronger check of
+     the two, because it cannot pass on a total that was computed separately. */
+  const colSum=i=>rows.reduce((a,r)=>a+num(r[i]),0);
+  eq(colSum(3),s.d.DECLARED,"the department rows sum to the declared record count");
+  eq(colSum(4),s.d.WITH_PHYSICAL,"the department rows sum to the physical counterpart count");
 
   console.log("\nSorting, which answers the question on PPT s5");
   await page.click('.dash-bw #bw-drill .hd[data-s="code"]');
@@ -96,20 +102,16 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
     els.map(e=>+e.children[2].textContent.replace(/[^0-9]/g,"")));
   ok(afterDocs.every((v,i)=>i===0||afterDocs[i-1]>=v),"sorting by documents orders highest first");
 
-  console.log("\nProject tables, PPT s36 and s37, on Bank-wide where the deck puts them");
-  for(const [k,fac] of [["sov","Sovereign"],["nonsov","Nonsovereign"]]){
-    await page.evaluate(()=>switchTo("bw"));
-    await page.click(`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
-    const pr=await page.$$eval(".dash-bw #bw-drill .drow",els=>els.map(e=>
-      [...e.children].map(c=>c.textContent.trim())));
-    ok(pr.length>=3,`the ${fac} table lists its projects (${pr.length})`);
-    const ptot=await page.$$eval(".dash-bw #bw-drill .dtot > div",els=>els.map(e=>e.textContent.trim()));
-    ok(/${fac}/.test(ptot[0])||ptot[0].includes(fac),`the total row names the facility type (${ptot[0]})`);
-    for(const i of [1,2,3,4]){
-      eq(pr.reduce((a,r)=>a+num(r[i]),0),num(ptot[i]),`${fac} column ${i} sums to its total row`);
-    }
-  }
+  console.log("\nProject tables, PPT s36 and s37, withdrawn 17 Aug");
+  /* Both tables are gone with their tiles. Nothing in SharePoint, Cloud
+     Governance or drm-npr records that a site belongs to a project, so every
+     figure on them was demo data with no path to a real number. They are kept
+     whole in EDRMS_Prototype_with_project_sites_2026-08-17.html. Question 2. */
   await page.evaluate(()=>switchTo("bw"));
+  for(const k of ["sov","nonsov"]){
+    const tile=await page.$(`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
+    ok(!tile,`the ${k} tile is withdrawn`);
+  }
 
   console.log("\nThe five drill tables, PPT s39 to s43");
   const expect={users:"users",docs:"documents",rec:"records declared",

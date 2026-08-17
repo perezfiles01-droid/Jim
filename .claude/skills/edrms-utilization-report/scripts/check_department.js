@@ -71,15 +71,24 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     for(const d of BW.departments){
       sel.value=d.code; sel.dispatchEvent(new Event("change"));
       document.querySelector('#dp-kpis .kpi[data-k="sites"]').click();
-      const rows=[...document.querySelectorAll("#dp-sites .drow")];
-      /* the visible page is 10 rows, so read the department total row instead
-         and compare it against Bank-wide, then check the split separately */
-      const tot=[...document.querySelector("#dp-sites .dtot").children].map(c=>c.textContent.trim());
-      const n=v=>+v.replace(/[^0-9]/g,"");
-      if(n(tot[2])!==d.docs)out.push(d.code+" documents "+tot[2]+" vs "+d.docs);
-      if(n(tot[3])!==d.rec) out.push(d.code+" records "+tot[3]+" vs "+d.rec);
-      if(n(tot[4])!==d.phys)out.push(d.code+" counterparts "+tot[4]+" vs "+d.phys);
-      if(n(tot[5])!==d.due) out.push(d.code+" due "+tot[5]+" vs "+d.due);
+      /* The total row came off with every other Total on 17 August, and the
+         site list is paged at 10, so the department figure is read from the
+         top panel tiles instead. Same reconciliation, different anchor: each
+         tile must equal what Bank-wide says about that department. */
+      const n=v=>+String(v).replace(/[^0-9]/g,"");
+      const tile=lab=>{
+        const el=[...document.querySelectorAll("#dp-kpis .kpi")]
+          .find(k=>k.querySelector(".lab").textContent.trim()===lab);
+        return el?n(el.querySelector(".val").textContent):null;
+      };
+      const checks=[["Total number of documents in EDRMS",d.docs,"documents"],
+                    ["Total number of records declared in EDRMS",d.rec,"records"],
+                    ["Total number of physical counterparts identified",d.phys,"counterparts"],
+                    ["Total number of records due for disposal",d.due,"due"]];
+      for(const [lab,want,what] of checks){
+        const got=tile(lab);
+        if(got!==want)out.push(d.code+" "+what+" "+got+" vs "+want);
+      }
     }
     return out;
   });

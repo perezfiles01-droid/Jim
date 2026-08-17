@@ -35,94 +35,25 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   page.on("pageerror",e=>errors.push(String(e)));
   await page.goto(url,{waitUntil:"load"});
 
-  /* ---------------- Project Insights, PPT s36 to s38 ---------------- */
-  console.log("\nProject Insights");
-  await page.evaluate(()=>switchTo("pj"));
-  const sov=await page.$$eval(".dash-pj #pj-list .drow",els=>els.length);
-  ok(sov>=3,`the sovereign list is populated (${sov} projects)`);
-  const listTot=await page.$eval(".dash-pj #pj-list .dtot",e=>
-    [...e.children].map(c=>c.textContent.trim()));
-  const listRows=await page.$$eval(".dash-pj #pj-list .drow",els=>els.map(e=>
-    [...e.children].map(c=>c.textContent.trim())));
-  for(const [i,label] of [[1,"sites"],[2,"documents"],[3,"records"]]){
-    eq(listRows.reduce((a,r)=>a+n(r[i]),0),n(listTot[i]),`sovereign ${label} sum to the total row`);
-  }
-  await page.selectOption(".dash-pj #pj-fac","Nonsovereign");
-  const nonsov=await page.$$eval(".dash-pj #pj-list .drow",els=>els.length);
-  ok(nonsov>=3,`switching to nonsovereign changes the list (${nonsov} projects)`);
-  const nsTot=await page.$eval(".dash-pj #pj-list .dtot div",e=>e.textContent);
-  ok(/Nonsovereign/.test(nsTot),"the total row names the facility type in scope");
-  const profile=await page.$$eval(".dash-pj #pj-profile .pf .k",els=>els.map(e=>e.textContent.trim()));
-  eq(profile.length,8,"the eight project attributes from PPT s38 are laid out");
-  ok(profile.some(k=>/Modality/.test(k))&&profile.some(k=>/Effectivity/.test(k)),
-     "the profile carries modality and effectivity date, as the client listed");
-  await page.selectOption(".dash-pj #pj-sel","54461-003");
-  const nameNow=await page.$eval(".dash-pj #pj-pname",e=>e.textContent);
-  ok(/Human Capital/.test(nameNow),"choosing a project changes the profile");
+  /* ---------------- Project Insights, WITHDRAWN 17 Aug ---------------- */
+  /* s36, s37 and s38 are gone with the two Bank-wide project tiles that
+     reached them. Nothing in SharePoint, Cloud Governance or drm-npr records
+     that a site belongs to a project, so not one figure on those three screens
+     could be produced: they were demo data with no path to a real number. The
+     whole dashboard is kept working in
+     EDRMS_Prototype_with_project_sites_2026-08-17.html and goes back the day
+     the client supplies the register. Audit question 2.
 
-  /* Rebuilt 16 Aug 2026 to the client's Project Insights slide 1. Their table
-     column names are used verbatim, all seven top panel tiles are clickable
-     because all seven are underlined on their drawing, and the three charts
-     they drew are on the page. */
-  console.log("\nProject Insights, the client's slide of 16 Aug");
-  const pHeads=await page.$$eval(".dash-pj #pj-list .dhead div",els=>els.map(e=>e.textContent.trim()));
-  const pWant=["Project number and name","Number of EDRMS SharePoint sites",
-               "Total number of documents","Total number of records declared",
-               "Total number of physical counterparts"];
-  ok(JSON.stringify(pHeads)===JSON.stringify(pWant),
-     `the project table column names are the client's, verbatim${
-       pHeads.join(" | ")!==pWant.join(" | ")?": got "+pHeads.join(" | "):""}`);
-
-  const tiles=await page.$$eval(".dash-pj #pj-kpis .kpi",els=>els.map(e=>
-    e.querySelector(".lab").textContent.trim()));
-  eq(tiles.length,7,"seven top panel tiles, as their slide draws");
-  eq(tiles[0],"Total number of sites created","the tiles carry the client's own labels");
-  eq(tiles[6],"Total number of records due for disposal","and the last one too");
-  const tapped=await page.$$eval(".dash-pj #pj-kpis .kpi .tap",els=>els.length);
-  eq(tapped,7,"all seven are clickable, because all seven are underlined on their drawing");
-
-  /* Every tile must actually open a distinct table, not merely look clickable. */
-  const seen=new Set();
-  for(const k of ["sites","users","visitors","docs","rec","phys","due"]){
-    await page.click(`.dash-pj #pj-kpis .kpi[data-k="${k}"]`);
-    const t=await page.$eval(".dash-pj #pj-drill .ptitle",e=>e.textContent.trim());
-    ok(t.length>0&&!seen.has(t),`tile ${k} opens its own table (${t})`);
-    seen.add(t);
-    const open=await page.$$eval(".dash-pj #pj-kpis .kpi.on",els=>els.length);
-    eq(open,1,`exactly one tile reads as open on ${k}`);
-  }
-
-  /* The site rows behind a project must sum to the project, or the drill
-     disagrees with the tile immediately above it. */
-  await page.click('.dash-pj #pj-kpis .kpi[data-k="rec"]');
-  const drillRows=await page.$$eval(".dash-pj #pj-drill .drow",els=>els.map(e=>
-    [...e.children].map(c=>c.textContent.trim())));
-  const projRec=n(await page.$eval('.dash-pj #pj-kpis .kpi[data-k="rec"] .val',e=>e.textContent));
-  eq(drillRows.reduce((a,r)=>a+n(r[1]),0),projRec,
-     "the site rows sum to the project's declared record count");
-
-  /* The three charts on their slide. */
-  const mix=await page.$$eval(".dash-pj #pj-mix .lg span",els=>els.map(e=>e.textContent.trim()));
-  ok(mix.includes("Staff")&&mix.includes("Consultants")&&mix.includes("Contractors"),
-     "the users chart splits staff, consultants and contractors, as they drew it");
-  const curve=await page.$$eval(".dash-pj #pj-trend circle title",
-    els=>els.map(e=>+e.textContent.split(":")[1].replace(/[^0-9]/g,"")));
-  eq(curve.length,12,"the project declaration trend runs over twelve closed months");
-  ok(curve.every((v,i)=>i===0||curve[i-1]<=v),"the project trend is cumulative, so it never falls");
-  eq(curve[11],projRec,"the project curve ENDS at that project's declared count");
-  const cmp=await page.$$eval(".dash-pj #pj-cmp .cmp",els=>els.length);
-  ok(cmp>=2,`the documents against records comparison is drawn site by site (${cmp} sites)`);
-  const rates=await page.$$eval(".dash-pj #pj-cmp .cmp .cl small",els=>els.map(e=>
-    parseFloat(e.textContent)));
-  ok(rates.every(r=>r>=0&&r<=100),"no site declares more records than it holds documents");
-
-  /* Reset, the house pattern, and the two pickers agreeing with each other. */
-  await page.selectOption(".dash-pj #pj-sel","57298-002");
-  const facAfter=await page.$eval(".dash-pj #pj-fac",e=>e.value);
-  eq(facAfter,"Nonsovereign","picking a nonsovereign project moves the facility filter with it");
-  await page.click(".dash-pj #pj-reset");
-  const facReset=await page.$eval(".dash-pj #pj-fac",e=>e.value);
-  eq(facReset,"Sovereign","Reset returns the facility filter to sovereign");
+     One lead worth testing before asking: 1,024 of the 1,032 EDRMS site URLs
+     in the test tenant begin "prj_", so the site naming convention may already
+     mark project sites and may even carry the project number. If the client
+     confirms their convention document, question 2 shrinks from "give us a
+     register" to "confirm the prefix". */
+  console.log("\nProject Insights, withdrawn");
+  const pjNav=await page.$('.nav a[data-d="pj"]');
+  ok(!pjNav,"Project Insights is out of the nav, not left empty");
+  const pjSection=await page.$(".dash-pj");
+  ok(!pjSection,"the Project Insights section is gone");
 
   /* ---------------- Institutional File Plan, PPT s29 to s52 ---------------- */
   console.log("\nInstitutional File Plan");
@@ -130,14 +61,15 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const catRows=await page.$$eval(".dash-fp #fp-cats .drow",els=>els.map(e=>
     [...e.children].map(c=>c.textContent.trim())));
   eq(catRows.length,5,"the five categories from PPT s47 are listed");
-  const catTot=await page.$eval(".dash-fp #fp-cats .dtot",e=>
-    [...e.children].map(c=>c.textContent.trim()));
-  /* the categories must total the bank-wide figures, or the file plan quietly
-     disagrees with Records Management about how many records exist */
+  /* The categories must total the bank-wide figures, or the file plan quietly
+     disagrees with Records Management about how many records exist. The Total
+     rows came off on 17 August by instruction, so this now sums the column off
+     the screen, which is the stronger check: it cannot pass on a total that was
+     computed separately from the rows above it. */
   const rm=await page.evaluate(()=>({declared:DATA.DECLARED,documents:DATA.DOCUMENTS}));
   eq(catRows.reduce((a,r)=>a+n(r[5]),0),rm.declared,"the categories total the declared record count");
   eq(catRows.reduce((a,r)=>a+n(r[4]),0),rm.documents,"the categories total the document count");
-  eq(n(catTot[5]),rm.declared,"the total row agrees with Records Management");
+
   const terms=await page.$$eval(".dash-fp #fp-terms .drow",els=>els.length);
   ok(terms>=3,`the first category lists its terms (${terms})`);
   await page.selectOption(".dash-fp #fp-cat","Programs and Operations");
@@ -193,8 +125,10 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
     const t=els[els.length-1], rows=[...t.querySelectorAll(".drow")];
     return rows.reduce((a,r)=>a+Number(r.children[1].textContent.replace(/,/g,"")),0);
   });
-  const rollTot=await page.$eval(".dash-rd .dtab .dtot",
-    e=>Number(e.children[3].textContent.replace(/,/g,"")));
+  const rollTot=await page.$$eval(".dash-rd .dtab",els=>{
+    const rows=[...els[0].querySelectorAll(".drow")];
+    return rows.reduce((a,r)=>a+Number(r.children[3].textContent.replace(/,/g,"")),0);
+  });
   eq(labTot,rollTot,"the retention labels total every declared record, same as the rollup");
 
   const tabs=await page.$$eval(".dash-rd .dtab",els=>els.map(t=>
@@ -230,9 +164,9 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   const raNos=await page.$$eval(".dash-ra .nosrc",els=>els.length);
   eq(raNos,0,"no unsourced cell is left on Records and Archive Holdings");
 
-  /* ---------------- across all four ---------------- */
-  console.log("\nAcross all four, house rules");
-  for(const k of ["pj","fp","rd","ra"]){
+  /* ---------------- across all three ---------------- */
+  console.log("\nAcross all three, house rules");
+  for(const k of ["fp","rd","ra"]){
     await page.evaluate(key=>switchTo(key),k);
     const txt=await page.$eval(`.dash-${k}`,e=>e.textContent);
     ok(!txt.includes("—"),`no em dash in visible text on ${k}`);

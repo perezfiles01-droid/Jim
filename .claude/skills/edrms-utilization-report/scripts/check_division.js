@@ -1,15 +1,33 @@
-/* The division tier, reinstated 13 Aug 2026 at the client's instruction,
- * reopening the decision of 10 August.
+/* The division tier, WITHDRAWN 17 Aug 2026.
  *
- * Division appears on four panels across two dashboards: PPT s41 and s42 on
- * Bank-wide, PPT s54 and s58 on Department Insights. The risk is the same on
- * all four: a tier that expands and looks convincing while its children do not
- * add up to their parent. That is invisible on screen and obvious here.
+ * History, because this decision has been reversed twice and will be asked
+ * about again. The tier came off on 10 August, went back on 13 August at the
+ * client's instruction, and came off again on 17 August when the exports were
+ * actually read.
  *
- * It also checks the thing that matters more than the arithmetic: every panel
- * carrying division is marked as having no source, because nothing in the
- * tenant populates it and the tier is built on the client's instruction rather
- * than on a data source appearing.
+ * What the exports say. Cloud Governance HAS a Division column, and it is
+ * empty on every row of every export we hold:
+ *
+ *     Workspace report   Division empty on all 1,032 EDRMS sites
+ *     Users export       Division "-" on all 286 users
+ *     Groups export      Division "-" on all 676 groups
+ *     Guest, Request     Division empty
+ *     M365 usage, M365 activity   no Division column at all
+ *
+ * That is a stronger finding than "not found yet". The field exists in the
+ * system that would hold it and nobody has ever populated it, which is why
+ * audit question 5 asks the client to populate it, supply it, or drop the
+ * tier rather than asking the open question "what is a division".
+ *
+ * The tier also produced a defect worth remembering. Because a division had
+ * no document count, the code split the department's documents in proportion
+ * to records and then divided records by that. The v.rec cancels, so EVERY
+ * division showed its parent's declaration rate to the decimal place, whatever
+ * the data. It read as a finding ("both divisions declare at the same rate")
+ * and it was arithmetic. That is what the tautology check below guards.
+ *
+ * So this file no longer tests the tier. It asserts the tier is gone, and it
+ * guards the general class of error that made it dangerous.
  *
  *   node check_division.js /home/user/Jim/index.html
  */
@@ -19,136 +37,68 @@ const url=path.startsWith("http")?path:"file://"+path;
 
 let pass=0,fail=0;
 const ok =(c,m)=>{c?(pass++,console.log("  pass  "+m)):(fail++,console.log("  FAIL  "+m));};
-const settle=async(page,sel)=>{
-  await page.waitForTimeout(120);
-  await page.$eval(sel,e=>e.scrollIntoView({block:"center"}));
-  await page.waitForTimeout(120);
-  await page.$eval(sel,e=>e.click());
-};
-
 const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
 (async()=>{
   const browser=await chromium.launch({executablePath:"/opt/pw-browsers/chromium-1194/chrome-linux/chrome"});
-  const page=await browser.newPage({viewport:{width:1440,height:1000}});
+  const page=await browser.newPage({viewport:{width:1500,height:1000}});
   const errors=[];
-  page.on("console",m=>{if(m.type()==="error"||m.type()==="assert")errors.push(m.text());});
-  page.on("pageerror",e=>errors.push(String(e)));
-  await page.goto(url,{waitUntil:"load"});
+  page.on("console",m=>{if(m.type()==="error")errors.push(m.text());});
+  page.on("pageerror",e=>errors.push(e.message));
+  await page.goto(url);
+  await page.waitForTimeout(500);
 
-  console.log("\nThe tier exists and is shared, not invented twice");
-  const shared=await page.evaluate(()=>{
-    const f=DASHBOARDS.bw.summary.divisionsFor;
-    return typeof f==="function" && f("ITD").length>0;
-  });
-  ok(shared,"Bank-wide exposes the division tier for Department Insights to reuse");
-  const counts=await page.evaluate(()=>DASHBOARDS.bw.summary.departments
-    .map(d=>DASHBOARDS.bw.summary.divisionsFor(d.code).length));
-  ok(counts.every(n=>n>=2&&n<=4),`every department has 2 to 4 divisions (${counts.join(",")})`);
+  console.log("The division tier is gone from every dashboard");
+  for(const key of ["bw","dp","fp","rd","ra"]){
+    await page.evaluate(k=>switchTo(k),key);
+    await page.waitForTimeout(150);
 
-  console.log("\nDivisions add up to their department, all 16 walked");
-  const bad=await page.evaluate(()=>{
-    const S=DASHBOARDS.bw.summary,out=[];
-    for(const d of S.departments){
-      const v=S.divisionsFor(d.code);
-      const sum=k=>v.reduce((a,x)=>a+x[k],0);
-      if(sum("rec")!==d.rec)   out.push(d.code+" records "+sum("rec")+" vs "+d.rec);
-      if(sum("phys")!==d.phys) out.push(d.code+" counterparts "+sum("phys")+" vs "+d.phys);
-      if(sum("users")!==d.users)out.push(d.code+" users "+sum("users")+" vs "+d.users);
-    }
-    return out;
-  });
-  ok(bad.length===0,"every department's divisions total the department"+
-     (bad.length?": "+bad.slice(0,4).join(" | "):""));
+    /* No disclosure control anywhere. The tier was the only thing that used
+       one, so any .exp row means a tier has come back. */
+    const exp=await page.$$eval(".drow.exp",els=>els.length);
+    eq(exp,0,`no expandable row on ${key}`);
+    const kid=await page.$$eval(".drow.kid",els=>els.length);
+    eq(kid,0,`no child row on ${key}`);
 
-  console.log("\nBank-wide, PPT s41 and s42");
-  await page.evaluate(()=>switchTo("bw"));
-  for(const [k,label] of [["rec","records declared"],["phys","physical counterparts"]]){
-    await settle(page,`.dash-bw #bw-kpis .kpi[data-k="${k}"]`);
-    const title=await page.$eval(".dash-bw #bw-drill .ptitle",e=>e.textContent.toLowerCase());
-    ok(/division/.test(title),`the ${label} table names the division tier in its title`);
-    const closed=await page.$$eval(".dash-bw #bw-drill .drow.kid",els=>els.length);
-    eq(closed,0,`${label} divisions start closed`);
-    const twisty=await page.$$eval(".dash-bw #bw-drill .drow.exp .tw",els=>els.map(e=>e.textContent.trim()));
-    ok(twisty.length===16&&twisty.every(t=>t==="▸"),
-       `${label} shows a closed disclosure control on all 16 departments`);
-    await page.click('.dash-bw #bw-drill .drow.exp[data-dep="ITD"]');
-    const kids=await page.$$eval(".dash-bw #bw-drill .drow.kid .dn",els=>els.map(e=>e.textContent.trim()));
-    ok(kids.length>=2,`${label} opens ITD divisions (${kids.length} rows)`);
-    ok(kids.every(t=>/Division/.test(t)),`${label} child rows are named as divisions`);
-    /* the children on screen must sum to the parent on screen, not merely in
-       the model: this is what catches a rendering column being off by one */
-    const sums=await page.evaluate(()=>{
-      const parent=document.querySelector('#bw-drill .drow.exp[data-dep="ITD"]');
-      const p=+parent.children[1].textContent.replace(/[^0-9]/g,"");
-      let c=0,el=parent.nextElementSibling;
-      while(el&&el.classList.contains("kid")){c+=+el.children[1].textContent.replace(/[^0-9]/g,"");el=el.nextElementSibling;}
-      return {p,c};
-    });
-    eq(sums.c,sums.p,`${label} child rows on screen sum to the department row`);
-    await page.click('.dash-bw #bw-drill .drow.exp[data-dep="ITD"]');
-    const reclosed=await page.$$eval(".dash-bw #bw-drill .drow.kid",els=>els.length);
-    eq(reclosed,0,`${label} divisions close again on a second click`);
+    /* No column or row is headed Division. */
+    const heads=await page.$$eval(".dhead div",els=>els.map(e=>e.textContent.trim()));
+    ok(!heads.some(h=>/^division/i.test(h)),`no Division column on ${key}`);
+    const body=await page.$eval("#view",e=>e.textContent);
+    ok(!/\bDivisions? reporting\b/i.test(body),`no division tally on ${key}`);
   }
 
-  console.log("\nDepartment Insights, PPT s54 and s58");
-  await page.evaluate(()=>switchTo("dp"));
-  await page.selectOption(".dash-dp #dp-sel","ITD");
-  await settle(page,'.dash-dp #dp-kpis .kpi[data-k="users"]');
-  /* s54 draws this table with DIVISION rows and five measures, none of which
-     has a source: nothing tells us whether a person is staff, a contractor or
-     a consultant, whether they were trained, or when they were onboarded.
-     Those five columns are gone. The rows are still divisions as drawn, and
-     the measures are the ones the activity report really supports. Audit
-     question 3 still stands, and is recorded in STATUS.md rather than shown
-     as empty cells. */
-  const uHead=await page.$$eval(".dash-dp #dp-drill .dhead div",els=>els.map(e=>e.textContent.trim()));
-  const uWant=["Division","Users with activity","Never accessed","No access in 90 days",
-               "Share of department"];
-  ok(JSON.stringify(uHead)===JSON.stringify(uWant),
-     `the users table carries the activity measures${
-       uHead.join(" | ")!==uWant.join(" | ")?": got "+uHead.join(" | "):""}`);
-  const uRows=await page.$$eval(".dash-dp #dp-drill .drow .dn",els=>els.map(e=>e.textContent.trim()));
-  ok(uRows.length>=2&&uRows.every(t=>/Division/.test(t)),
-     `every users row is a division (${uRows.length} rows)`);
-  const uNos=await page.$$eval(".dash-dp #dp-drill .nosrc",els=>els.length);
-  eq(uNos,0,"no unsourced cell is left on the users table");
-
-  await settle(page,'.dash-dp #dp-kpis .kpi[data-k="rec"]');
-  const rSub=await page.$eval(".dash-dp #dp-drill .psub",e=>e.textContent.toLowerCase());
-  ok(/division/.test(rSub),"the declaration table offers the division tier, as drawn on PPT s58");
-  const startClosed=await page.$$eval(".dash-dp #dp-drill .drow.kid",els=>els.length);
-  eq(startClosed,0,"site divisions start closed");
-  await page.click(".dash-dp #dp-drill .drow.exp");
-  const openKids=await page.evaluate(()=>{
-    const parent=document.querySelector("#dp-drill .drow.exp");
-    const p=+parent.children[1].textContent.replace(/[^0-9]/g,"");
-    let c=0,n=0,el=parent.nextElementSibling;
-    while(el&&el.classList.contains("kid")){c+=+el.children[1].textContent.replace(/[^0-9]/g,"");n++;el=el.nextElementSibling;}
-    return {p,c,n};
-  });
-  ok(openKids.n>=2,`a site opens its divisions (${openKids.n} rows)`);
-  eq(openKids.c,openKids.p,"a site's division rows sum to the site row");
-
-  console.log("\nChanging department resets the tier");
-  await page.selectOption(".dash-dp #dp-sel","FIN");
-  const afterSwitch=await page.$$eval(".dash-dp #dp-drill .drow.kid",els=>els.length);
-  eq(afterSwitch,0,"switching department closes any open division rows");
-  const finDiv=await page.evaluate(()=>{
-    document.querySelector('#dp-kpis .kpi[data-k="users"]').click();
-    return [...document.querySelectorAll("#dp-drill .drow .dn")].map(e=>e.textContent.trim());
-  });
-  ok(finDiv.every(t=>/^FIN/.test(t)),"the divisions shown belong to the newly chosen department");
-
-  console.log("\nHouse rules");
-  for(const k of ["bw","dp"]){
-    await page.evaluate(key=>switchTo(key),k);
-    const txt=await page.$eval(`.dash-${k}`,e=>e.textContent);
-    ok(!txt.includes("—"),`no em dash in visible text on ${k}`);
+  /* The tautology guard. Any derived percentage column whose value repeats
+     identically down every row of a table is suspect: either the column is
+     genuinely constant, which is worth knowing, or its denominator is not
+     independent of its numerator, which is the bug the division tier had.
+     Tables of three rows or fewer are skipped, since a real constant is
+     unremarkable there. */
+  console.log("\nNo percentage column repeats identically down a table");
+  for(const key of ["bw","dp","fp","rd"]){
+    await page.evaluate(k=>switchTo(k),key);
+    await page.waitForTimeout(150);
+    const flat=await page.$$eval(".dtab",tabs=>tabs.map(t=>{
+      const rows=[...t.querySelectorAll(".drow")].map(r=>
+        [...r.children].map(c=>c.textContent.trim()));
+      const head=[...(t.querySelector(".dhead")?.children||[])].map(c=>c.textContent.trim());
+      return {head,rows};
+    }));
+    flat.forEach((t,ti)=>{
+      if(t.rows.length<4)return;
+      const ncol=t.rows[0].length;
+      for(let c=1;c<ncol;c++){
+        const vals=t.rows.map(r=>r[c]).filter(v=>/^-?[\d.]+%$/.test(v||""));
+        if(vals.length<4)continue;
+        const uniq=new Set(vals);
+        ok(uniq.size>1,
+           `${key} table ${ti+1}, column "${t.head[c]||c}" varies across ${vals.length} rows`+
+           (uniq.size>1?"":`: every row reads ${vals[0]}`));
+      }
+    });
   }
 
   console.log("\nconsole errors: "+(errors.length?errors.join(" | "):"none"));
-  ok(errors.length===0,"no console errors, which is how the division reconciliation asserts surface");
+  ok(errors.length===0,"no console errors");
 
   console.log("\n==============================================");
   console.log(`pass ${pass}   fail ${fail}`);
