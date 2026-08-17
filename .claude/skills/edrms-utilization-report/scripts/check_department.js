@@ -34,7 +34,8 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
 
   console.log("\nThe picker, which drives every panel");
   const opts=await page.$$eval(".dash-dp #dp-sel option",els=>els.map(e=>e.value));
-  eq(opts.length,16,"every department is offered");
+  eq(opts.length,17,"every department is offered, plus the All units aggregate");
+  eq(opts[0],"ALL","the aggregate is the first option on the filter");
   /* The Go-Live date came off with every other unsourced measure. s53 draws
      it, but Cloud Governance records when the SharePoint site was created,
      which for a converted site is not when it became EDRMS compliant, and no
@@ -56,7 +57,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
   eq(tiles[0].lab,"Total number of sites created","the tiles carry the client's own labels");
-  eq(tiles[6].lab,"Total number of records due for disposal, next 12 months","and the last one too");
+  eq(tiles[6].lab,"Total number of records due for disposal within 12 months","and the last one too");
 
   /* The reconciliation that matters. Walk every department, not just the one
      that happens to be selected: a weighted split can be exact for a large
@@ -84,7 +85,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
       const checks=[["Total number of documents in EDRMS",d.docs,"documents"],
                     ["Total number of records declared in EDRMS",d.rec,"records"],
                     ["Total number of physical counterparts identified",d.phys,"counterparts"],
-                    ["Total number of records due for disposal, next 12 months",d.due,"due"]];
+                    ["Total number of records due for disposal within 12 months",d.due,"due"]];
       for(const [lab,want,what] of checks){
         const got=tile(lab);
         if(got!==want)out.push(d.code+" "+what+" "+got+" vs "+want);
@@ -135,6 +136,59 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
     const open=await page.$$eval(".dash-dp #dp-kpis .kpi.on",els=>els.length);
     eq(open,1,`exactly one tile reads as open on ${k}`);
   }
+
+  /* ===== the drill summary is a chart, not a strip of headline numbers =====
+     Client instruction, 17 Aug 2026, applied to all seven drills. Asserted
+     rather than eyeballed, because a later edit that reinstated the tiles
+     would look perfectly reasonable in a diff. */
+  console.log("\nEvery drill summarises with a column chart, and no drill carries a tile strip");
+  for(const k of ["sites","users","visitors","docs","rec","phys","disp"]){
+    await settle(page,`.dash-dp #dp-kpis .kpi[data-k="${k}"]`);
+    const chart=await page.$$eval(".dash-dp #dp-drill .dchart .cols .ccol",e=>e.length);
+    ok(chart>=2,`${k} draws a column chart with ${chart} bars`);
+    const strip=await page.$$eval(".dash-dp #dp-drill .tiles",e=>e.length);
+    ok(strip===0,`${k} carries no headline tile strip`);
+    /* Every bar must print its value, since these measures span five orders
+       of magnitude and the small bars are otherwise unreadable. */
+    const labelled=await page.$$eval(".dash-dp #dp-drill .dchart .ccol .cv",
+      e=>e.filter(x=>x.textContent.trim().length>0).length);
+    ok(labelled===chart,`${k} labels all ${chart} bars with their value`);
+  }
+
+  /* "Also asked for on this screen" is gone from the whole dashboard. */
+  console.log("\nNo 'Also asked for' block anywhere on Department Insights");
+  for(const k of ["sites","users","visitors","docs","rec","phys","disp"]){
+    await settle(page,`.dash-dp #dp-kpis .kpi[data-k="${k}"]`);
+    const a=await page.$$eval(".dash-dp .asks",e=>e.length);
+    ok(a===0,`${k} carries no 'Also asked for' block`);
+  }
+  const anyAsk=await page.$eval(".dash-dp",e=>/Also asked for/i.test(e.textContent));
+  ok(!anyAsk,"the phrase 'Also asked for' appears nowhere on the dashboard");
+
+  /* ===== the All units aggregate ===== */
+  console.log("\nThe All units option aggregates rather than redrawing");
+  const agg=await page.evaluate(()=>{
+    const sel=document.getElementById("dp-sel");
+    const n=v=>+String(v).replace(/[^0-9]/g,"");
+    const tile=lab=>{
+      const el=[...document.querySelectorAll("#dp-kpis .kpi")]
+        .find(k=>k.querySelector(".lab").textContent.trim()===lab);
+      return el?n(el.querySelector(".val").textContent):null;
+    };
+    sel.value="ALL"; sel.dispatchEvent(new Event("change"));
+    const all={sites:tile("Total number of sites created"),
+               rec:tile("Total number of records declared in EDRMS")};
+    let sites=0,rec=0;
+    for(const d of DASHBOARDS.bw.summary.departments){
+      sel.value=d.code; sel.dispatchEvent(new Event("change"));
+      sites+=tile("Total number of sites created");
+      rec+=tile("Total number of records declared in EDRMS");
+    }
+    sel.value="ITD"; sel.dispatchEvent(new Event("change"));
+    return {all,sites,rec};
+  });
+  eq(agg.all.sites,agg.sites,"All units sites equal the sum of the sixteen units");
+  eq(agg.all.rec,agg.rec,"All units records equal the sum of the sixteen units");
 
   console.log("\nSorting and paging the site list, PPT s20 and s55");
   await page.click('.dash-dp #dp-kpis .kpi[data-k="sites"]');

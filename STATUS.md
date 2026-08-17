@@ -1245,6 +1245,77 @@ Department Insights picker panel. The control beneath it is labelled
 "Department / office / RM" and is the only control on the panel, so the
 sentence restated it. The panel now reads: unit name, then the picker.
 
+### 17 August: Department Insights drills summarise with a chart, not headline numbers
+
+Client instruction, with a sample image: the strip of headline KPI numbers at
+the top of each drill becomes a **column chart**, one bar per measure, value
+printed above each bar. Applied to **all seven** Department Insights drills.
+Bank-wide is untouched, as instructed.
+
+**Why a column chart is allowed here.** It maps to a Power BI **Clustered
+column chart with data labels on**. That is the only reason it is in the
+prototype: a visual with no native Power BI equivalent does not belong here
+however well it reads. `CHART.columns()` already existed and was unused; it now
+has its first caller.
+
+**Two rules the chart had to respect, and both were live problems.**
+
+**ONE AXIS, ONE UNIT.** Three of the seven drills mixed units: documents with a
+storage size in gigabytes, records with a share in per cent. A gigabyte figure
+on a count axis invites a comparison that means nothing. Only counts go on the
+bars; anything in other units prints beneath as a small stat line. So the docs
+drill charts documents and sites and prints "Total documents size 1.16 TB"
+underneath.
+
+**DATA LABELS ARE NOT DECORATION HERE.** These measures span five orders of
+magnitude, 640,000 documents against 75 records due, so on a linear axis the
+small bars are a sliver. The label above each bar is what keeps them readable,
+and `CHART.columns` floors a bar at 2% so it never vanishes. A log axis would
+even the bars up and Power BI supports one, but **bar length read from zero is
+the whole point of a column chart**, and a log axis quietly breaks that.
+Labels, not log.
+
+**A truncation fault fixed at source.** `.cols .cl` used
+`white-space:nowrap` with an ellipsis, which turned "Total number of documents
+in EDRMS" into "Total number of documents in EDR...", unreadable and
+indistinguishable from the measure beside it. Labels now wrap, in a
+fixed-height box so every bar still sits on one baseline.
+
+### "All departments, offices and RMs" on the filter
+
+All sixteen units were already listed, so what was missing was the **aggregate**:
+a way to read this dashboard's seven measures for the whole bank. It is a
+synthetic unit summing the real ones, and its site and library lists are the
+units' own lists concatenated rather than a fresh draw, so the same site cannot
+hold different figures depending on which filter you arrived through.
+
+**The people measures are the exception and are NOT summed.** Users declaring
+and users creating are distinct counts, so adding them across departments would
+double count anybody working in two. The bank-wide distinct figures are read
+from `DATA` instead. This is the third time that trap has been hit in one day.
+
+Asserted: the aggregate totals every site and every declared record, its people
+measures stay inside its user count, and `check_department.js` walks all
+sixteen units and proves the aggregate equals their sum.
+
+**Possible other reading, flagged not guessed:** "add all departments" might
+have meant the demo's sixteen units are not ADB's real list. They are not:
+the test tenant alone carries BOD and ADBI, which are absent here. Supplying
+the real list is a client item, and inventing an org chart is not something to
+do quietly.
+
+### Other changes in the same pass
+
+**"Also asked for on this screen" removed from every Department Insights
+panel**, including the sites and libraries panels, and its CSS with it. Those
+lists named measures a slide asks for that the screen does not draw. **They are
+not lost**: they carry the verdict "Asked for, not built" in the content
+workbook, which is where a reader can act on them.
+
+**"Total number of records due for disposal" now reads "within 12 months"**
+everywhere, on both dashboards rather than only Department Insights, so the two
+screens do not name one measure two ways.
+
 ### The split bug. Five copies, two ways wrong, totals silently broken
 
 The most serious defect this project has had. It was in the file from 13 August

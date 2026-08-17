@@ -107,8 +107,16 @@
   .cols .cb{width:100%;border-radius:4px 4px 0 0;min-height:3px}
   .cols .cv{font-size:10.5px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums;
     white-space:nowrap}
-  .cols .cl{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    max-width:100%;line-height:1.35;min-height:16px;flex:0 0 auto}
+  /* Category labels WRAP rather than truncate. These carry the client's own
+     measure names, which run to five or six words, and an ellipsis turned
+     "Total number of documents in EDRMS" into "Total number of documents in
+     EDR...", which is unreadable and, worse, indistinguishable from the next
+     measure along. The box is a fixed height so every bar still sits on one
+     baseline whatever its label costs in lines. */
+  .cols .cl{font-size:10.5px;color:var(--mut);line-height:1.3;max-width:100%;
+    text-align:center;overflow-wrap:break-word;hyphens:auto;
+    height:46px;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;
+    flex:0 0 auto}
   .cols .cv{flex:0 0 auto}
   .stackwrap{min-width:0}
   .stackwrap .scap{font-size:12px;color:var(--mut);margin-bottom:7px;overflow-wrap:anywhere}
@@ -306,6 +314,18 @@
   .dash-dp .tile.hi{background:#EAF3FB;border-color:#CFE0F3}
   .dash-dp .tile .tl{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);line-height:1.3}
   .dash-dp .tile .tv{font-size:19px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums}
+  /* Drill summary as a chart rather than a strip of headline numbers, 17 Aug
+     2026 at the client's instruction. The chart carries the measures that are
+     COUNTS and therefore share an axis. Anything in different units, a storage
+     size or a percentage, cannot sit on that axis without lying about the
+     comparison, so it sits beneath as a small stat line instead. */
+  .dash-dp .dchart{border:1px solid var(--line);border-radius:9px;background:#FCFDFE;
+    padding:16px 16px 10px;margin-bottom:12px}
+  .dash-dp .dchart .ct{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--mut);margin-bottom:12px}
+  .dash-dp .mstats{display:flex;flex-wrap:wrap;gap:8px 22px;margin:0 0 14px;padding:0 2px}
+  .dash-dp .mstats span{font-size:11.5px;color:var(--mut)}
+  .dash-dp .mstats b{color:var(--ink2);font-weight:700;margin-left:7px;font-variant-numeric:tabular-nums}
   /* reference list panels: conventions and programme dates */
   .dash-dp .reflist{display:grid;gap:9px}
   .dash-dp .refrow{display:grid;grid-template-columns:1fr 150px 130px;gap:12px;align-items:center;
@@ -332,11 +352,8 @@
   .dash-dp .dtab.wide{min-width:900px}
   .dash-dp .dtab.wide .dhead{align-items:end}
   .dash-dp .dtab.wide .dhead div{white-space:normal;line-height:1.35}
-  .dash-dp .asks{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-  .dash-dp .asks .ah{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
-    color:var(--mut);margin-bottom:8px}
-  .dash-dp .asks ul{margin:0;padding-left:20px}
-  .dash-dp .asks li{font-size:12.5px;color:var(--ink2);margin-bottom:5px}
+  /* .asks was removed from this dashboard on 17 Aug 2026, so its rules go
+     with it. fp and ra still use the pattern and keep their own. */
 
 /* ================= stage3.css ================= */
 /* Project Insights, Institutional File Plan, Retention and Disposal, and
@@ -1418,7 +1435,7 @@ DASHBOARDS.bw=(function(){
     {k:"docs", lab:"Total number of documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M"},
     {k:"rec",  lab:"Total number of records declared in EDRMS", val:()=>F(TOTAL_REC)},
     {k:"phys", lab:"Total number of physical counterparts identified", val:()=>F(TOTAL_PHYS)},
-    {k:"disp", lab:"Total number of records due for disposal, next 12 months",
+    {k:"disp", lab:"Total number of records due for disposal within 12 months",
      val:()=>F(TOTAL_DUE)},
   ];
   /* The two navigation tiles, s34. They carry no drill of their own because
@@ -1430,7 +1447,7 @@ DASHBOARDS.bw=(function(){
      defined after this module, so the value is a function called at draw time,
      by which point every module exists. */
   const NAVTILES=[
-    {to:"rd", lab:"Records due for disposal, next 12 months",
+    {to:"rd", lab:"Records due for disposal within 12 months",
      val:()=>F(TOTAL_DUE), sub:"Retention and disposal insights: due windows, retention terms and status"},
     /* Both navigation tiles were labelled "... insights", which named the
        destination but not the figure printed on them. A tile showing a number
@@ -1590,7 +1607,7 @@ DASHBOARDS.bw=(function(){
                  ["Departments, offices and RMs in the list",F(DEPTS.length)]]
     },
     disp:{
-      title:"Total number of records due for disposal in the next 12 months, by department, office or RM",
+      title:"Total number of records due for disposal within 12 months, by department, office or RM",
       sub:"Records due for disposal by department, office or RM, with the next due date.",
       /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
          and HasPhysical. The disposal approver and the three status columns,
@@ -1960,6 +1977,19 @@ DASHBOARDS.dp=(function(){
   const SITECACHE={};
   function sitesFor(code){
     if(SITECACHE[code])return SITECACHE[code];
+    /* The aggregate is the real units' sites concatenated, never a fresh
+       draw. Drawing 1,057 sites from the bank-wide totals would produce a
+       list that does not match any department's own, so the same site would
+       hold different figures depending on which filter you came through. */
+    if(code===ALLCODE){
+      const all=DEPTS.reduce((a,d)=>a.concat(sitesFor(d.code)),[]);
+      console.assert(all.length===ALL.sites,
+        "The All units site list must hold every site the units report");
+      console.assert(all.reduce((a,r)=>a+r.rec,0)===ALL.rec,
+        "The All units site list must total every declared record");
+      SITECACHE[code]=all;
+      return all;
+    }
     const d=DEPTS.find(x=>x.code===code);
     const n=Math.max(1,d.sites);
     /* One weight vector per measure, and a seed that varies by department so
@@ -2071,6 +2101,19 @@ DASHBOARDS.dp=(function(){
   const LIBCACHE={};
   function librariesFor(code){
     if(LIBCACHE[code])return LIBCACHE[code];
+    /* For the aggregate, one row per file plan library with every unit's
+       figures folded into it, so the category totals still reconcile. */
+    if(code===ALLCODE){
+      const merged=[];
+      DEPTS.forEach(d=>librariesFor(d.code).forEach((f,i)=>{
+        if(!merged[i])merged[i]={cat:f.cat,lib:f.lib,rec:0,docs:0,phys:0,idle:f.idle};
+        merged[i].rec+=f.rec; merged[i].docs+=f.docs; merged[i].phys+=f.phys;
+      }));
+      console.assert(merged.reduce((a,f)=>a+f.rec,0)===ALL.rec,
+        "The All units library list must total every declared record");
+      LIBCACHE[code]=merged;
+      return merged;
+    }
     const d=DEPTS.find(x=>x.code===code);
     const flat=[];
     CATS.forEach(c=>LIBPOOL[c].forEach(l=>flat.push({cat:c,lib:l})));
@@ -2118,7 +2161,39 @@ DASHBOARDS.dp=(function(){
   let sitePage=1, sortSite="rec", dirSite="desc";
   let libCat=CATS[0];
 
-  const D=()=>DEPTS.find(x=>x.code===dept);
+  /* An "All departments, offices and RMs" option on the filter, added 17 Aug
+     2026 at the client's instruction. Every one of the sixteen units was
+     already listed, so what was missing was the aggregate: a way to read this
+     dashboard's seven measures for the whole bank rather than one unit at a
+     time.
+
+     It is a SYNTHETIC unit, summing the real ones, and it is built once. The
+     people measures are the exception: users declaring and users creating are
+     DISTINCT COUNTS, so summing them would double count anybody who works in
+     two departments. The bank-wide distinct figures are read from DATA
+     instead, which is the same trap the per-site declarer columns fell into
+     on 17 August. */
+  const ALLCODE="ALL";
+  const ALL=(function(){
+    const sum=f=>DEPTS.reduce((a,d)=>a+d[f],0);
+    return {
+      code:ALLCODE, name:"All departments, offices and RMs",
+      sites:sum("sites"), users:sum("users"), docs:sum("docs"), rec:sum("rec"),
+      phys:sum("phys"), due:sum("due"), never:sum("never"), idle90:sum("idle90"),
+      visitors:sum("visitors"), views:sum("views"), duephys:sum("duephys"),
+      gb:+sum("gb").toFixed(1), recgb:+sum("recgb").toFixed(1),
+      /* distinct counts, never summed */
+      declaring:DATA.USERS_DECLARING, creating:DATA.USERS_CREATING
+    };
+  })();
+  console.assert(ALL.rec===DATA.DECLARED,
+    "The All units option must total every declared record");
+  console.assert(ALL.sites===DATA.SITES_CREATED,
+    "The All units option must total every EDRMS site");
+  console.assert(ALL.declaring<=ALL.users&&ALL.creating<=ALL.users,
+    "The All units option must keep its people measures inside its user count");
+
+  const D=()=>dept===ALLCODE?ALL:DEPTS.find(x=>x.code===dept);
   const NOSRC=`<span class="nosrc">Not captured</span>`;
 
   function pager(total,page,pages,noun){
@@ -2147,7 +2222,7 @@ DASHBOARDS.dp=(function(){
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
     {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
-    {k:"disp",  lab:"Total number of records due for disposal, next 12 months", val:d=>F(d.due)},
+    {k:"disp",  lab:"Total number of records due for disposal within 12 months", val:d=>F(d.due)},
   ];
 
   function drawTiles(){
@@ -2180,7 +2255,13 @@ DASHBOARDS.dp=(function(){
      plausible number. */
   function drawDrill(){
     const d=D(), sites=sitesFor(dept);
-    let title,sub,cols,rows,tiles,asks=[];
+    /* "Also asked for on this screen" removed from every Department Insights
+       panel, 17 Aug 2026 at the client's instruction. Those lists named
+       measures a slide asks for that this screen does not draw. They still
+       exist as requirements: they are recorded in REQUIREMENTS_AUDIT and
+       carried in the content workbook under the verdict "Asked for, not
+       built", which is where a reader can act on them. */
+    let title,sub,cols,rows,tiles;
 
     if(openKpi==="sites"){
       /* s55. Site owners are real: Cloud Governance carries a Primary Business
@@ -2211,12 +2292,9 @@ DASHBOARDS.dp=(function(){
              PCT(d.users-never-idle90,d.users).toFixed(1)+"%"],
             ["No access in the last 90 days",F(idle90),PCT(idle90,d.users).toFixed(1)+"%"],
             ["Never accessed EDRMS",F(never),PCT(never,d.users).toFixed(1)+"%"]];
-      tiles=[["Users with recorded activity",F(d.users)],
-             ["Never accessed EDRMS",F(never)],
-             ["No access in 90 days",F(idle90)]];
-      asks=["Active users month on month, per department",
-            "Users who have not accessed their site, to track transfers and leavers",
-            "New users, listed for onboarding"];
+      tiles=[{lab:"Users with recorded activity",v:d.users},
+             {lab:"Never accessed EDRMS",v:never},
+             {lab:"No access in 90 days",v:idle90}];
     }
 
     else if(openKpi==="visitors"){
@@ -2244,9 +2322,9 @@ DASHBOARDS.dp=(function(){
       rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
                          (s.visitors?s.views/s.visitors:0).toFixed(1),
                          PCT(s.visitors,d.visitors).toFixed(1)+"%"]);
-      tiles=[["Total number of visitors",F(d.visitors)],
-             ["Page views",F(d.views)],
-             ["Sites reporting",F(sites.length)]];
+      tiles=[{lab:"Total number of visitors",v:d.visitors},
+             {lab:"Page views",v:d.views},
+             {lab:"Sites reporting",v:sites.length}];
     }
 
     else if(openKpi==="docs"){
@@ -2258,11 +2336,9 @@ DASHBOARDS.dp=(function(){
       cols=["Name of sites","Number of documents created / uploaded",
             "Number of users creating documents","Documents size (in GB)"];
       rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
-      tiles=[["Total number of documents",F(d.docs)],
-             ["Total documents size",GB(d.gb)],
-             ["Sites reporting",F(sites.length)]];
-      asks=["New documents created month on month, per department and division",
-            ];
+      tiles=[{lab:"Total number of documents",v:d.docs},
+             {lab:"Sites reporting",v:sites.length},
+             {lab:"Total documents size",txt:GB(d.gb)}];
     }
 
     else if(openKpi==="rec"){
@@ -2279,13 +2355,11 @@ DASHBOARDS.dp=(function(){
             "Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring),
                          PCT(s.rec,d.rec).toFixed(1)+"%"]);
-      tiles=[["Total number of records declared",F(d.rec)],
-             ["Total number of users declaring records",F(d.declaring)],
-             ["Total declared record size",GB(d.recgb)],
-             ["Sites with no declared record in "+IDLE+" days",
-              F(sites.filter(s=>s.idle>IDLE).length)]];
-      asks=["Records declared month on month, and declaration rate per site",
-            "Sites with no declared record in "+IDLE+" days"];
+      tiles=[{lab:"Total number of records declared",v:d.rec},
+             {lab:"Total number of users declaring records",v:d.declaring},
+             {lab:"Sites with no declared record in "+IDLE+" days",
+              v:sites.filter(s=>s.idle>IDLE).length},
+             {lab:"Total declared record size",txt:GB(d.recgb)}];
     }
 
     else if(openKpi==="phys"){
@@ -2299,12 +2373,10 @@ DASHBOARDS.dp=(function(){
             "Share of department / office / RM"];
       rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
                          PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);
-      tiles=[["Total number of physical records declared",F(d.phys)],
-             ["Total number of users declaring records",F(d.declaring)],
-             ["Share of declared records",PCT(d.phys,d.rec).toFixed(1)+"%"],
-             ["Sites reporting",F(sites.length)]];
-      asks=["Physical records declared month on month, per department",
-            "Physical counterpart completion rate, records turned over for RAC storage against records declared with a counterpart"];
+      tiles=[{lab:"Records with a counterpart",v:d.phys},
+             {lab:"Total number of users declaring records",v:d.declaring},
+             {lab:"Sites reporting",v:sites.length},
+             {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}];
     }
 
     else {
@@ -2319,12 +2391,8 @@ DASHBOARDS.dp=(function(){
       const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
       rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
                             l.phys>0?"Yes":"No",PCT(dueSplit[i],d.due).toFixed(1)+"%"]);
-      tiles=[["Total number of records due for disposal, next 12 months",F(d.due)],
-             ["Libraries with records due",F(libs.length)]];
-      asks=["Records disposed month on month, per department and division",
-            "Overdue disposal actions and pending approvals",
-            "Disposal completion rate, including physical counterparts",
-            "Records due next quarter, for planning and advance notice"];
+      tiles=[{lab:"Records due for disposal within 12 months",v:d.due},
+             {lab:"Libraries with records due",v:libs.length}];
     }
 
     const body=rows.map(r=>
@@ -2334,16 +2402,48 @@ DASHBOARDS.dp=(function(){
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">${title}</div>
        <div class="psub">${sub}</div>
-       <div class="tiles">${tiles.map(([l,v])=>
-         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       ${summaryChart(tiles)}
        <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(${cols.length-1},minmax(110px,1fr))">
          <div class="dhead">${cols.map((c,i)=>
            `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
          ${body}
-       </div></div>
-       ${asks.length?`<div class="asks"><div class="ah">Also asked for on this screen</div>
-         <ul>${asks.map(a=>`<li>${a}</li>`).join("")}</ul></div>`:""}`;
+       </div></div>`;
 
+  }
+
+  /* The drill summary, as a chart rather than a strip of headline numbers.
+     Client instruction, 17 Aug 2026, applied to all seven Department Insights
+     drills.
+
+     It maps to a Power BI CLUSTERED COLUMN CHART with data labels on, which is
+     the only reason it is allowed here: a visual with no native Power BI
+     equivalent does not belong in this prototype however well it reads.
+
+     Two rules the chart has to respect.
+
+     ONE AXIS, ONE UNIT. Only measures that are COUNTS go on the bars. A
+     storage size in gigabytes and a share in per cent cannot share a count
+     axis without inviting a comparison that means nothing, so they print
+     underneath as a small stat line instead. Three of the seven drills mix
+     units this way.
+
+     DATA LABELS ARE NOT OPTIONAL HERE. These measures span five orders of
+     magnitude, 640,000 documents against 75 records due, so on a linear axis
+     the small bars are a sliver. The label above each bar is what keeps the
+     small ones readable, and CHART.columns floors the bar at 2% so it is still
+     visible. A log axis would even the bars up, and Power BI supports one, but
+     bar length read from zero is the whole point of a column chart and a log
+     axis quietly breaks that. Labels, not log. */
+  function summaryChart(tiles){
+    const bars=tiles.filter(t=>typeof t.v==="number");
+    const rest=tiles.filter(t=>typeof t.v!=="number"&&t.txt);
+    const chart=bars.length?
+      `<div class="dchart"><div class="ct">Summary</div>
+        ${CHART.columns(bars.map(b=>({label:b.lab,value:b.v})),{height:210})}</div>`:"";
+    const line=rest.length?
+      `<div class="mstats">${rest.map(r=>
+        `<span>${r.lab}<b>${r.txt}</b></span>`).join("")}</div>`:"";
+    return chart+line;
   }
 
   const SITECOLS=[{k:"name",lab:"Name of sites"},{k:"owner",lab:"Site owners"},
@@ -2364,14 +2464,13 @@ DASHBOARDS.dp=(function(){
 
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Overview of EDRMS sites</div>
-       <div class="psub">Every site owned by this department, and what it holds.</div>
-       <div class="tiles">
-         <div class="tile"><div class="tl">Total number of sites created</div><div class="tv">${F(d.sites)}</div></div>
-         <div class="tile"><div class="tl">Total number of documents in EDRMS</div><div class="tv">${F(d.docs)}</div></div>
-         <div class="tile"><div class="tl">Total number of records declared in EDRMS</div><div class="tv">${F(d.rec)}</div></div>
-         <div class="tile"><div class="tl">Total number of physical counterparts identified</div><div class="tv">${F(d.phys)}</div></div>
-         <div class="tile"><div class="tl">Total number of records due for disposal, next 12 months</div><div class="tv">${F(d.due)}</div></div>
-       </div>
+       <div class="psub">Every site owned by ${d.code===ALLCODE?"any unit":"this unit"}, and what it holds.</div>
+       ${summaryChart([
+         {lab:"Total number of sites created",v:d.sites},
+         {lab:"Total number of documents in EDRMS",v:d.docs},
+         {lab:"Total number of records declared in EDRMS",v:d.rec},
+         {lab:"Total number of physical counterparts identified",v:d.phys},
+         {lab:"Total number of records due for disposal within 12 months",v:d.due}])}
        <div class="scrollx"><div class="dtab wide" id="dp-sites"
             style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) repeat(4,minmax(110px,1fr))">
          <div class="dhead">${SITECOLS.map(c=>
@@ -2382,10 +2481,7 @@ DASHBOARDS.dp=(function(){
            <div class="num">${F(s.docs)}</div><div class="num">${F(s.rec)}</div>
            <div class="num">${F(s.phys)}</div><div class="num">${F(s.due)}</div></div>`).join("")}
        </div></div>
-       <div id="dp-sites-pager">${pager(rows.length,sitePage,pages,"sites")}</div>
-       <div class="asks"><div class="ah">Also asked for on this screen</div>
-         <ul><li>Sites with no activity in ${IDLE} days: ${F(sites.filter(s=>s.idle>IDLE).length)}</li>
-             <li>Records declared month on month, per department and division</li></ul></div>`;
+       <div id="dp-sites-pager">${pager(rows.length,sitePage,pages,"sites")}</div>`;
 
     document.querySelectorAll("#dp-sites .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
@@ -2430,10 +2526,7 @@ DASHBOARDS.dp=(function(){
            <div class="num">${F(l.docs)}</div>
            <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
            <div class="num">${(100*l.rec/Math.max(1,l.docs)).toFixed(1)}%</div></div>`).join("")}
-       </div></div>
-       <div class="asks"><div class="ah">Also asked for on this screen</div>
-         <ul><li>Libraries with no declared record in ${IDLE} days</li>
-             <li>Records declared month on month, and declaration rate per site</li></ul></div>`;
+       </div></div>`;
   }
 
   /* ===== record declaration trend, s24 =====
@@ -2456,7 +2549,10 @@ DASHBOARDS.dp=(function(){
 
   function drawAll(){
     const d=D();
-    document.getElementById("dp-name").textContent=d.code+" - "+d.name;
+    /* The aggregate already names itself, so it does not get the "CODE - "
+       prefix a real unit gets. */
+    document.getElementById("dp-name").textContent=
+      d.code===ALLCODE?d.name:d.code+" - "+d.name;
     drawTiles(); wireTiles(); drawDrill(); drawLibs(); drawTrend();
   }
 
@@ -2529,7 +2625,9 @@ DASHBOARDS.dp=(function(){
 
   function init(){
     const sel=document.getElementById("dp-sel");
-    sel.innerHTML=DEPTS.map(d=>
+    sel.innerHTML=
+      `<option value="${ALLCODE}" ${dept===ALLCODE?"selected":""}>${ALL.name}</option>`+
+      DEPTS.map(d=>
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
     sel.onchange=e=>{dept=e.target.value;sitePage=1;drawAll();};
     const cat=document.getElementById("dp-cat");

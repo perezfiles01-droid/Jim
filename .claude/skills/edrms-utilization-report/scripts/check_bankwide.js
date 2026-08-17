@@ -51,7 +51,7 @@ const num=s=>+String(s).replace(/[^0-9.-]/g,"");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
   ok(!tiles.some(t=>/[Ss]overeign/.test(t.lab)),
      "the project tiles are withdrawn, not shown empty");
-  ok(tiles.some(t=>/Records due for disposal, next 12 months/i.test(t.lab)),
+  ok(tiles.some(t=>/Records due for disposal within 12 months/i.test(t.lab)),
      "the records due for disposal navigation tile is present, PPT s34");
   ok(tiles.some(t=>/File plan terms in use/i.test(t.lab)),
      "the file plan terms navigation tile is present, PPT s34");

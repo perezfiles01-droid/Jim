@@ -114,14 +114,14 @@ SOURCES = {
    blocked=("Turned over to RAC is a DIFFERENT measure and has no source: no system records a "
             "physical custody event. Audit question 6.")),
 
- "Total number of records due for disposal, next 12 months": dict(
+ "Total number of records due for disposal within 12 months": dict(
    counts="One declared record whose disposal date falls inside the next 12 months.",
    verdict=R, file=DB, column="EDRMSDueDateForDisposal",
    build=('SELECT COUNT(*) FROM public."Records"\n'
           "WHERE \"EDRMSDueDateForDisposal\" BETWEEN now() AND now() + interval '12 months'"),
    blocked="Records DISPOSED needs a disposal status the application does not have. Audit question 7."),
 
- "Records due for disposal, next 12 months": dict(
+ "Records due for disposal within 12 months": dict(
    counts="The same measure as the tile above. This card navigates rather than drilling.",
    verdict=R, file=DB, column="EDRMSDueDateForDisposal",
    build="As above. The card opens the Retention and Disposal dashboard.", blocked=""),
