@@ -2484,9 +2484,21 @@ DASHBOARDS.dp=(function(){
   function summaryChart(tiles){
     const bars=tiles.filter(t=>typeof t.v==="number");
     const rest=tiles.filter(t=>typeof t.v!=="number"&&t.txt);
-    const chart=bars.length?
-      `<div class="dchart"><div class="ct">Summary</div>
-        ${CHART.columns(bars.map(b=>({label:b.lab,value:b.v})),{height:210})}</div>`:"";
+    /* Build chart with bars, including special handling for storage metrics marked as notToScale */
+    let chart="";
+    if(bars.length){
+      const chartData=bars.map(b=>({label:b.lab,value:b.v,title:b.notToScale?b.txt:""}));
+      chart=`<div class="dchart"><div class="ct">Summary</div>
+        ${CHART.columns(chartData,{height:210})}`;
+      /* Add note for bars that are not to scale */
+      const notToScaleBars=bars.filter(b=>b.notToScale);
+      if(notToScaleBars.length){
+        chart+=`<div style="font-size:11px;color:var(--mut);margin-top:6px;font-style:italic">
+          ${notToScaleBars.map(b=>`<span>${b.lab}: ${b.txt} (bar height not to scale)</span>`).join(" • ")}
+        </div>`;
+      }
+      chart+="</div>";
+    }
     const line=rest.length?
       `<div class="mstats">${rest.map(r=>
         `<span>${r.lab}<b>${r.txt}</b></span>`).join("")}</div>`:"";
@@ -2587,7 +2599,7 @@ DASHBOARDS.dp=(function(){
        ${summaryChart([
          {lab:"Total number of documents",v:d.docs},
          {lab:"EDRMS active sites",v:sites.length},
-         {lab:"Total documents size",txt:GB(d.gb)}])}
+         {lab:"Total documents size",v:d.gb,txt:GB(d.gb),notToScale:true}])}
        <div class="scrollx"><div class="dtab wide" id="dp-documents"
             style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
@@ -2620,7 +2632,7 @@ DASHBOARDS.dp=(function(){
          {lab:"Total number of records declared",v:d.rec},
          {lab:"Total number of users declaring records",v:d.declaring},
          {lab:"Sites with no declared record in ${IDLE} days",v:sites.filter(s=>s.idle>IDLE).length},
-         {lab:"Total declared record size",txt:GB(d.recgb)}])}
+         {lab:"Total declared record size",v:d.recgb,txt:GB(d.recgb),notToScale:true}])}
        <div class="scrollx"><div class="dtab wide" id="dp-records"
             style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
