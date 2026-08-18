@@ -3524,18 +3524,15 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, temporary retention</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(6,minmax(104px,1fr))">
-        <div class="dhead"><div>Term (top level)</div>
-          <div class="num">Departments, offices and RMs provisioned</div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
+        <div class="dhead"><div>Department / office / RM</div>
+          <div class="num">Number of sites provisioned</div>
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div>
-          <div class="num">Retention label</div>
-          <div class="num">Number of records due for disposal</div></div>
-        ${TEMP.map(t=>`<div class="drow"><div class="dn">${t.term}</div>
-          <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
-          <div class="num">${F(t.rec)}</div><div class="num">${F(t.phys)}</div>
-          <div class="num">${t.label}</div><div class="num">${F(t.due)}</div></div>`).join("")}
+          <div class="num">Number of physical counterparts</div></div>
+        ${TEMP_BY_DEPT.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
+          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
     </div>
 
