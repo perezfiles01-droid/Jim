@@ -2762,31 +2762,13 @@ DASHBOARDS.dp=(function(){
        </div></div>`;
   }
 
-  /* ===== record declaration trend, s24 =====
-     Cumulative, matching the Bank-wide trend and the curve the client drew.
-     Scaled to this department, so the curve ends at its declared count. */
-  function drawTrend(){
-    const d=D();
-    const share=d.rec/DATA.MONTH_VALUES.reduce((a,v)=>a+v,0);
-    const monthly=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
-    monthly[monthly.length-1]+=d.rec-monthly.reduce((a,v)=>a+v,0);
-    let run=0;
-    const pts=DATA.MONTH_VALUES.map((v,i)=>{
-      run+=monthly[i];
-      return {label:DATA.MONTH_FULL[i],short:DATA.MONTH_LABELS[i],value:run};
-    });
-    console.assert(pts[pts.length-1].value===d.rec,
-      "The department declaration curve must end at its declared record count");
-    document.getElementById("dp-trend").innerHTML=CHART.area(pts,{height:220});
-  }
-
   function drawAll(){
     const d=D();
     /* The aggregate already names itself, so it does not get the "CODE - "
        prefix a real unit gets. */
     document.getElementById("dp-name").textContent=
       d.code===ALLCODE?d.name:d.code+" - "+d.name;
-    drawTiles(); wireTiles(); drawDrill(); drawLibs(); drawTrend();
+    drawTiles(); wireTiles(); drawDrill(); drawLibs();
   }
 
   const html=`<section class="dash-dp">
@@ -2820,16 +2802,6 @@ DASHBOARDS.dp=(function(){
         <select id="dp-cat">${CATS.map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
       </div>
       <div id="dp-libs"></div>
-    </div>
-
-    <div class="band">
-      <h2>Record declaration trend</h2>
-      <div class="bd">Records declared over time for this department, as a running total.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Record declaration trend</div>
-      <div class="psub">Records declared across this department's EDRMS sites.</div>
-      <div id="dp-trend"></div>
     </div>
 
     <div class="band">
