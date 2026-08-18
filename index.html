@@ -1836,9 +1836,8 @@ DASHBOARDS.bw=(function(){
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="hd${i?" num":""}${sortDept===KEYS[i]?" on":""}" data-s="${KEYS[i]}">${c}${
              sortDept===KEYS[i]?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
-         ${page.map(x=>`<div class="drow go" data-dept="${x.code}" role="link" tabindex="0"
-             title="Open Department Insights for ${x.code}">
-           <div class="dn"><span class="lk">${x.code}</span><small>${x.name}</small></div>
+         ${page.map(x=>`<div class="drow">
+           <div class="dn"><span>${x.code}</span><small>${x.name}</small></div>
            <div class="num">${F(x.sites)}</div><div class="num">${F(x.docs)}</div>
            <div class="num">${F(x.rec)}</div><div class="num">${F(x.phys)}</div></div>`).join("")}
        </div></div>
