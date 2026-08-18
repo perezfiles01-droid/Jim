@@ -56,7 +56,7 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
   eq(tiles.filter(t=>t.tap).length,7,"every tile promises a click, as their note asks");
   eq(tiles.filter(t=>t.stat).length,0,"no tile is static");
   ok(tiles.every(t=>t.val.length>0),"every tile carries a value");
-  eq(tiles[0].lab,"Total number of sites created","the tiles carry the client's own labels");
+  eq(tiles[0].lab,"Total number of EDRMS compliant sites created","the tiles carry the client's own labels");
   eq(tiles[6].lab,"Total number of records due for disposal within 12 months","and the last one too");
 
   /* The reconciliation that matters. Walk every department, not just the one
@@ -176,12 +176,12 @@ const eq =(a,b,m)=>ok(a===b,`${m} (${a}${a===b?"":" , expected "+b})`);
       return el?n(el.querySelector(".val").textContent):null;
     };
     sel.value="ALL"; sel.dispatchEvent(new Event("change"));
-    const all={sites:tile("Total number of sites created"),
+    const all={sites:tile("Total number of EDRMS compliant sites created"),
                rec:tile("Total number of records declared in EDRMS")};
     let sites=0,rec=0;
     for(const d of DASHBOARDS.bw.summary.departments){
       sel.value=d.code; sel.dispatchEvent(new Event("change"));
-      sites+=tile("Total number of sites created");
+      sites+=tile("Total number of EDRMS compliant sites created");
       rec+=tile("Total number of records declared in EDRMS");
     }
     sel.value="ITD"; sel.dispatchEvent(new Event("change"));

@@ -2216,8 +2216,8 @@ DASHBOARDS.dp=(function(){
      was created, and for a converted site those are different dates. Audit
      question 4. */
   const TILES=[
-    {k:"sites", lab:"Total number of sites created",                   val:d=>F(d.sites)},
-    {k:"users", lab:"Total number of EDRMS users",                     val:d=>F(d.users)},
+    {k:"sites", lab:"Total number of EDRMS compliant sites created",    val:d=>F(d.sites)},
+    {k:"users", lab:"Total number of EDRMS users with recorded activity, last 180 days", val:d=>F(d.users)},
     {k:"visitors",lab:"Total number of site visitors",                 val:d=>F(d.visitors)},
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
@@ -2286,15 +2286,15 @@ DASHBOARDS.dp=(function(){
          the M365 activity report actually supports. Audit question 5. */
       title="Users";
       sub="Users with recorded activity, and how recently they were last active.";
-      cols=["Activity","Number of users","Share of department / office / RM"];
+      cols=["Activity","Number of users"];
       const never=d.never, idle90=d.idle90;
-      rows=[["Used EDRMS in the last 90 days",F(d.users-never-idle90),
+      rows=[["Used EDRMS in the last 180 days",F(d.users-never-idle90),
              PCT(d.users-never-idle90,d.users).toFixed(1)+"%"],
-            ["No access in the last 90 days",F(idle90),PCT(idle90,d.users).toFixed(1)+"%"],
+            ["No access in the last 180 days",F(idle90),PCT(idle90,d.users).toFixed(1)+"%"],
             ["Never accessed EDRMS",F(never),PCT(never,d.users).toFixed(1)+"%"]];
       tiles=[{lab:"Users with recorded activity",v:d.users},
              {lab:"Never accessed EDRMS",v:never},
-             {lab:"No access in 90 days",v:idle90}];
+             {lab:"No access in 180 days",v:idle90}];
     }
 
     else if(openKpi==="visitors"){
@@ -2312,19 +2312,17 @@ DASHBOARDS.dp=(function(){
          alongside rather than instead, because they are producible now and
          they answer a different and useful question about how heavily a site
          is read. */
-      cols=["Name of sites","Total number of visitors","Page views","Views per visitor",
-            "Share of department / office / RM"];
+      cols=["Name of sites","Total number of visitors","Page views","Views per visitor"];
       /* Views per visitor was the literal string "7.0" on every row until 17
          August, because page views were built as visitors times seven. Both
          are measured separately now, so the column varies the way it would in
          real data and a site that is read heavily can be told from one that
          is merely opened. */
       rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
-                         (s.visitors?s.views/s.visitors:0).toFixed(1),
-                         PCT(s.visitors,d.visitors).toFixed(1)+"%"]);
+                         (s.visitors?s.views/s.visitors:0).toFixed(1)]);
       tiles=[{lab:"Total number of visitors",v:d.visitors},
              {lab:"Page views",v:d.views},
-             {lab:"Sites reporting",v:sites.length}];
+             {lab:"EDRMS active sites",v:sites.length}];
     }
 
     else if(openKpi==="docs"){
@@ -2337,7 +2335,7 @@ DASHBOARDS.dp=(function(){
             "Number of users creating documents","Documents size (in GB)"];
       rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
       tiles=[{lab:"Total number of documents",v:d.docs},
-             {lab:"Sites reporting",v:sites.length},
+             {lab:"EDRMS active sites",v:sites.length},
              {lab:"Total documents size",txt:GB(d.gb)}];
     }
 
@@ -2351,10 +2349,8 @@ DASHBOARDS.dp=(function(){
          records drill. It was the declaration rate, and its denominator does
          not exist in any system yet: the Records table holds no row for an
          undeclared document, so the column was waiting on the weekly scan. */
-      cols=["Name of sites","Total number of records declared","People who declared a record",
-            "Share of department / office / RM"];
-      rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring),
-                         PCT(s.rec,d.rec).toFixed(1)+"%"]);
+      cols=["Name of sites","Total number of records declared","People who declared a record"];
+      rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring)]);
       tiles=[{lab:"Total number of records declared",v:d.rec},
              {lab:"Total number of users declaring records",v:d.declaring},
              {lab:"Sites with no declared record in "+IDLE+" days",
@@ -2369,13 +2365,12 @@ DASHBOARDS.dp=(function(){
       title="Physical counterpart";
       sub="Records with a physical counterpart, by site.";
       cols=["Name of sites","Records with a counterpart",
-            "Total number of users declaring records","Share of records with a counterpart",
-            "Share of department / office / RM"];
+            "Total number of users declaring records","Share of records with a counterpart"];
       rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
-                         PCT(s.phys,s.rec).toFixed(1)+"%",PCT(s.phys,d.phys).toFixed(1)+"%"]);
+                         PCT(s.phys,s.rec).toFixed(1)+"%"]);
       tiles=[{lab:"Records with a counterpart",v:d.phys},
              {lab:"Total number of users declaring records",v:d.declaring},
-             {lab:"Sites reporting",v:sites.length},
+             {lab:"EDRMS active sites",v:sites.length},
              {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}];
     }
 
@@ -2387,10 +2382,10 @@ DASHBOARDS.dp=(function(){
       sub="Records due for disposal, by library.";
       const libs=librariesFor(dept).slice(0,10);
       cols=["Library name","Number of records due for disposal","Next due date for disposal",
-            "With physical counterpart?","Share of department / office / RM"];
+            "With physical counterpart?"];
       const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
       rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
-                            l.phys>0?"Yes":"No",PCT(dueSplit[i],d.due).toFixed(1)+"%"]);
+                            l.phys>0?"Yes":"No"]);
       tiles=[{lab:"Records due for disposal within 12 months",v:d.due},
              {lab:"Libraries with records due",v:libs.length}];
     }

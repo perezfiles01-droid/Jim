@@ -1047,13 +1047,13 @@ DP = [
   "ask_golive",
   "Cannot be produced. Reads Not captured on the screen. Check the Cloud Governance Job monitor before asking the client."),
 
- ("Total number of sites created",
+ ("Total number of EDRMS compliant sites created",
   "Top panel, tile 1", "s53",
   "How many EDRMS sites this department runs.",
   "cg_sites",
   'Found in report? Yes. Workspace report, count rows where "EDRMS Site Type" is filled and "Department" matches.'),
 
- ("Total number of EDRMS users",
+ ("Total number of EDRMS users with recorded activity, last 180 days",
   "Top panel, tile 2", "s53",
   "How many people in the department are using EDRMS.",
   "ask_userdept",

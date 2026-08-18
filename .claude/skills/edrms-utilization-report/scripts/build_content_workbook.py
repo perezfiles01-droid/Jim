@@ -363,10 +363,10 @@ SOURCES.update({
    verdict=R, file=DB, column="HasPhysical, SiteUrl", build="Count HasPhysical per site.", blocked=""),
  "Number of records due for disposal": dict(counts="One record due in the window.", verdict=R,
    file=DB, column="EDRMSDueDateForDisposal", build="Count records due, per site or library.", blocked=""),
- "Total number of sites created": dict(counts="One EDRMS site owned by this unit.", verdict=R,
+ "Total number of EDRMS compliant sites created": dict(counts="One EDRMS site owned by this unit.", verdict=R,
    file=CG, column="EDRMS Site Type, Department", build="Count compliant sites for the unit.",
    blocked="Same multi-department problem. Audit question 1."),
- "Total number of EDRMS users": dict(counts="One person with access to this unit's EDRMS sites.",
+ "Total number of EDRMS users with recorded activity, last 180 days": dict(counts="One person with access to this unit's EDRMS sites.",
    verdict=CL, file=ACT, column="User Principal Name",
    build="Count distinct users with activity, for this unit.",
    blocked=("The activity report has NO SITE DIMENSION, so it cannot be narrowed to EDRMS. "
