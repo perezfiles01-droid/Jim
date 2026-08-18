@@ -2316,15 +2316,6 @@ DASHBOARDS.dp=(function(){
      database design can generate them. They are laid out here exactly as the
      client drew them so the question "who maintains this" has something
      concrete attached to it. */
-  const CONVENTION={link:"Approved SharePoint site, library and folder convention",
-                    approved:"14 Feb 2026", updated:"02 Jun 2026", version:"v2.1"};
-  const PROGRAMME=[
-    {lab:"CSIS-IR audit of EDRMS", date:"08 Aug 2026", status:"Done"},
-    {lab:"Convention review",      date:"30 Sep 2026", status:"Due"},
-    {lab:"Physical records review",date:"15 Oct 2026", status:"Due"},
-    {lab:"Refresher training",     date:"20 Nov 2026", status:"Due"},
-    {lab:"Focals CoP schedule",    date:"04 Dec 2026", status:"Due"},
-  ];
   const GOLIVE={ITD:"12 Jan 2026",SARD:"02 Feb 2026",OSFG:"16 Feb 2026",FIN:"12 Jan 2026",
     PARD:"02 Mar 2026",HRD:"16 Mar 2026",SERD:"30 Mar 2026",EARD:"13 Apr 2026",
     OGC:"26 Jan 2026",CWRD:"27 Apr 2026",PSOD:"11 May 2026",BRM:"25 May 2026",
@@ -3126,28 +3117,6 @@ DASHBOARDS.dp=(function(){
       <div id="dp-libs"></div>
     </div>
 
-    <div class="band">
-      <h2>Conventions and programme dates</h2>
-      <div class="bd">The approved convention, and the records management programme.</div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Approved SharePoint site, library, and folder convention</div>
-      <div class="psub">The convention in force for this department.</div>
-      <div class="reflist">
-        <div class="refrow"><b>Link</b><div class="rv">${CONVENTION.link}</div><div class="rs"></div></div>
-        <div class="refrow"><b>Date of approval</b><div class="rv">${CONVENTION.approved}</div><div class="rs"></div></div>
-        <div class="refrow"><b>Last updated</b><div class="rv">${CONVENTION.updated}</div><div class="rs"></div></div>
-        <div class="refrow"><b>Version no.</b><div class="rv">${CONVENTION.version}</div><div class="rs"></div></div>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="ptitle">Records management programme</div>
-      <div class="psub">Key records management dates for this department.</div>
-      <div class="reflist">
-        ${PROGRAMME.map(p=>`<div class="refrow"><b>${p.lab}</b><div class="rv">${p.date}</div>
-          <div class="rs ${p.status==="Done"?"done":"due"}">${p.status}</div></div>`).join("")}
-      </div>
-    </div>
   </section>`;
 
   function init(){
@@ -3175,8 +3144,7 @@ DASHBOARDS.dp=(function(){
   return {
     summary:{
       departmentCount:DEPTS.length,
-      categories:CATS.length,
-      programmeDates:PROGRAMME.length
+      categories:CATS.length
     },
     /* Called by openDashboard() when a reader clicks a department name on
        Bank-wide, so they land on that department rather than the default. */
