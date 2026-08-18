@@ -8,6 +8,8 @@ description: |
   Finds and fixes all bug types: syntax errors, logic errors, rendering/UI issues, API/data flow problems, scope and reference errors, CSS layout bugs, event handling issues, async/Promise issues, type errors, regex failures, pagination/state bugs, initialization order bugs, and more.
   
   **Use whenever code is broken or behaving unexpectedly.** No manual debugging required — describe the symptom, confirm the fix, done.
+  
+  **Also works hand-in-hand with opus-planning-mode skill:** When opus-planning-mode executes changes, this skill is automatically called after each change to verify no bugs were introduced. Works seamlessly with incremental change workflows.
 compatibility: Read, Edit, Bash, Grep
 ---
 
@@ -63,6 +65,31 @@ When you report a bug, the skill **automatically handles everything**:
 - ❌ Commit and push yourself
 
 Just describe the symptom, confirm the fix, and it's deployed.
+
+---
+
+## Integration with Opus-Planning-Mode Skill
+
+When you're using opus-planning-mode to implement multiple changes:
+
+1. **After each change is implemented**, this fix skill is **automatically invoked** to verify no bugs were introduced
+2. **Bug verification is silent and autonomous** — I analyze your code without you needing to test manually
+3. **If bugs are found:**
+   - I diagnose and fix them immediately
+   - Then re-verify the fix
+   - Only then do we proceed to the next change
+4. **If no bugs are found:**
+   - We move directly to the next change
+   - Verification confirms the change is safe to build on
+
+**This creates a seamless workflow:**
+```
+Change 1 → Auto-verify (fix skill) → No bugs? → Commit & proceed to Change 2
+                                    ↓ Bugs found
+                                   Fix bugs → Re-verify → No bugs? → Commit & proceed
+```
+
+You never interrupt the workflow for manual testing — the fix skill handles verification as part of the orchestrated process.
 
 ---
 
@@ -248,6 +275,7 @@ HIGH - Button handler exists, data updates work, just missing the rebuild step
 3. **Check console first:** Any error messages help (share them if you see red)
 4. **Describe the impact:** "Only happens on the Visitors drill" vs "happens everywhere" guides the search
 5. **Trust the analysis:** The skill looks at code paths you might not think of
+6. **Apply changes one at a time:** Never combine multiple feature changes in one commit — test each change individually
 
 ---
 
@@ -258,3 +286,8 @@ Once the fix is deployed:
 - **Test the specific scenario** that was broken
 - **Check for side effects** ("Did I break something else?")
 - If the fix didn't work or introduced a new issue, report back with the details and the skill will re-diagnose
+
+---
+
+**Version:** 1.2 (Integrated with opus-planning-mode for coordinated multi-change workflows)  
+**Last Updated:** 2026-08-18
