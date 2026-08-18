@@ -3465,16 +3465,7 @@ DASHBOARDS.rd=(function(){
         <span class="lbl">Retention category</span>
         <select id="rd-filter"></select>
       </div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(3,minmax(110px,1fr))">
-        <div class="dhead"><div>Heading</div>
-          <div class="num">Number of sites provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div></div>
-        ${ROLLUP.filter(r=>(rdFilter==="all"||r.lab.includes(rdFilter))).map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
-          <div class="num">${F(r.sites)}</div>
-          <div class="num">${F(r.libs)}</div>
-          <div class="num">${F(r.rec)}</div></div>`).join("")}
-      </div></div>
+      <div id="rd-chart"></div>
     </div>
 
     <div class="band">
@@ -3544,12 +3535,35 @@ DASHBOARDS.rd=(function(){
     </div>
   </section>`;
 
+  function drawChart(){
+    const chart=document.getElementById("rd-chart");
+    const filtered=ROLLUP.filter(r=>(rdFilter==="all"||r.lab.includes(rdFilter)));
+
+    /* Build grouped column data: for each retention category, show 3 bars (sites, libs, records) */
+    const items=[];
+    const colors=[CHART.C.blue, CHART.C.teal, CHART.C.green];
+    const labels=["Sites","Libraries","Records"];
+
+    filtered.forEach((r,ri)=>{
+      const title=r.lab.replace(/<[^>]*>/g,"");  /* strip HTML tags */
+      items.push({label:`${title}\nSites`,value:r.sites,color:colors[0]});
+      items.push({label:`${title}\nLibraries`,value:r.libs,color:colors[1]});
+      items.push({label:`${title}\nRecords`,value:r.rec,color:colors[2]});
+    });
+
+    const legend=`<div class="dlegend row">${labels.map((l,i)=>
+      `<div class="lg"><i style="background:${colors[i]}"></i><span>${l}</span></div>`).join("")}</div>`;
+
+    chart.innerHTML=`${CHART.columns(items,{height:280})}<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">Three bars per retention category: Sites, Libraries, and Records declared</div>${legend}`;
+  }
+
   function init(){
     const filter=document.getElementById("rd-filter");
     filter.innerHTML=`<option value="all">All</option>
       <option value="Permanent">Permanent retention</option>
       <option value="Temporary">Temporary retention</option>`;
-    filter.onchange=e=>{rdFilter=e.target.value;location.hash=location.hash;};
+    filter.onchange=e=>{rdFilter=e.target.value;drawChart();};
+    drawChart();
   }
 
   return {
