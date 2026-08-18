@@ -3434,7 +3434,7 @@ DASHBOARDS.rd=(function(){
   const ROLLUP=[
     {lab:"Permanent retention", depts:PERM.reduce((a,t)=>a+t.depts,0),
      libs:PERM.reduce((a,t)=>a+t.libs,0), rec:PERM_REC, phys:PERM_PHYS, due:0},
-    {lab:"Temporary retention", depts:TEMP.reduce((a,t)=>a+t.depts,0),
+    {lab:"Temporary retention <small>(records with disposal due dates)</small>", depts:TEMP.reduce((a,t)=>a+t.depts,0),
      libs:TEMP.reduce((a,t)=>a+t.libs,0), rec:TEMP_REC, phys:TEMP_PHYS, due:DATA.DUE_NEXT_12},
   ];
   console.assert(ROLLUP.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
