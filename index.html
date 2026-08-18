@@ -2707,25 +2707,14 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawUsers(d){
-    const rows=[["Used EDRMS in the last 180 days",F(d.users-d.never-d.idle90)],
-                ["No access in the last 180 days",F(d.idle90)],
-                ["Never accessed EDRMS",F(d.never)]];
-
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Users</div>
        <div class="psub">Users with recorded activity, and how recently they were last active.</div>
        ${summaryChart([
-         {lab:"Users with recorded activity",v:d.users},
-         {lab:"Never accessed EDRMS",v:d.never},
-         {lab:"No access in 180 days",v:d.idle90}])}
-       <div class="scrollx"><div class="dtab" id="dp-users" style="--dc:1fr 120px">
-         <div class="dhead">
-           <div>Activity</div>
-           <div class="num">Number of users</div>
-         </div>
-         ${rows.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div></div>`).join("")}
-       </div></div>`;
+         {lab:"Users with recorded activity in EDRMS compliant sites",v:d.users},
+         {lab:"Used EDRMS in the last 180 days",v:d.users-d.never-d.idle90},
+         {lab:"No access in EDRMS compliant sites, last 180 days",v:d.idle90},
+         {lab:"Never accessed EDRMS compliant sites",v:d.never}])}`;
   }
 
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
