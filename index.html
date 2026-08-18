@@ -2814,13 +2814,9 @@ DASHBOARDS.dp=(function(){
 
   function drawDisposal(d){
     const sites=sitesFor(dept);
-    /* Disposal windows: 3/6/12 months. Split total due across sites using record counts as weight */
-    const due3=Math.round(d.due*0.32);
-    const due6=Math.round(d.due*0.49);
-    const siteWeights=sites.map(s=>s.rec);
-    const due3Split=split(due3,siteWeights);
-    const due6Split=split(due6,siteWeights);
-    const due12Split=split(d.due,siteWeights);
+    const due12Split=split(d.due,sites.map(s=>s.rec));
+    const due6=Math.round(d.due*0.5);
+    const due3=Math.round(d.due*0.33);
     const rows=sites.map((s,i)=>[s.name,F(due12Split[i]),DUE_DATES[i%DUE_DATES.length]]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(disposalPage>pages)disposalPage=pages;
@@ -2993,41 +2989,45 @@ DASHBOARDS.dp=(function(){
       };
     });
 
-    /* Wire up month picker */
+    /* Wire up month picker - only if element exists (rendered by drawVisitors) */
     const monthSel=document.getElementById("dp-visitor-month");
-    monthSel.onchange=e=>{
-      visitorMonth=e.target.value;
-      visitorFilterType="month";
-      /* Show month picker, hide year picker */
-      monthSel.style.display="inline-block";
-      document.getElementById("dp-visitor-year").style.display="none";
-      /* Hide quick window button highlights */
-      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-      /* Apply the visitor filter and rebuild data */
-      applyVisitorFilter();
-      rebuildALL();
-      /* Redraw the KPIs and drill with new visitor values */
-      drawAll();
-      if(openKpi==="visitors") drawDrill();
-    };
+    if(monthSel){
+      monthSel.onchange=e=>{
+        visitorMonth=e.target.value;
+        visitorFilterType="month";
+        /* Show month picker, hide year picker */
+        monthSel.style.display="inline-block";
+        document.getElementById("dp-visitor-year").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
 
-    /* Wire up year picker */
+    /* Wire up year picker - only if element exists (rendered by drawVisitors) */
     const yearSel=document.getElementById("dp-visitor-year");
-    yearSel.onchange=e=>{
-      visitorYear=e.target.value;
-      visitorFilterType="year";
-      /* Show year picker, hide month picker */
-      yearSel.style.display="inline-block";
-      document.getElementById("dp-visitor-month").style.display="none";
-      /* Hide quick window button highlights */
-      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-      /* Apply the visitor filter and rebuild data */
-      applyVisitorFilter();
-      rebuildALL();
-      /* Redraw the KPIs and drill with new visitor values */
-      drawAll();
-      if(openKpi==="visitors") drawDrill();
-    };
+    if(yearSel){
+      yearSel.onchange=e=>{
+        visitorYear=e.target.value;
+        visitorFilterType="year";
+        /* Show year picker, hide month picker */
+        yearSel.style.display="inline-block";
+        document.getElementById("dp-visitor-month").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
 
     const cat=document.getElementById("dp-cat");
     cat.value=libCat;
