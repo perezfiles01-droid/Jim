@@ -2394,7 +2394,7 @@ DASHBOARDS.dp=(function(){
         j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
 
     const gridLayout=cols.length===2?
-      "minmax(140px,2fr) minmax(100px,1fr)":
+      "1fr 120px":
       `minmax(170px,1.4fr) repeat(${Math.max(1,cols.length-1)},minmax(110px,1fr))`;
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">${title}</div>
