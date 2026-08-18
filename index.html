@@ -2712,6 +2712,69 @@ DASHBOARDS.dp=(function(){
       visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
       drawDrill();
     });
+
+    /* Wire up visitor date range filter buttons NOW that they're rendered */
+    document.querySelectorAll("#dp-visitor-filter button[data-filter]").forEach(btn=>{
+      btn.onclick=e=>{
+        const newFilter=e.target.dataset.filter;
+        if(newFilter!==visitorFilter || visitorFilterType!=="window"){
+          visitorFilter=newFilter;
+          visitorFilterType="window";
+          /* Hide month/year pickers when using quick windows */
+          document.getElementById("dp-visitor-month").style.display="none";
+          document.getElementById("dp-visitor-year").style.display="none";
+          /* Update filter button states */
+          document.querySelectorAll("#dp-visitor-filter button").forEach(b=>
+            b.classList.toggle("on",b.dataset.filter===visitorFilter));
+          /* Apply the visitor filter and rebuild data */
+          applyVisitorFilter();
+          rebuildALL();
+          /* Redraw the KPIs and drill with new visitor values */
+          drawAll();
+          if(openKpi==="visitors") drawDrill();
+        }
+      };
+    });
+
+    /* Wire up month picker */
+    const monthSel=document.getElementById("dp-visitor-month");
+    if(monthSel){
+      monthSel.onchange=e=>{
+        visitorMonth=e.target.value;
+        visitorFilterType="month";
+        /* Show month picker, hide year picker */
+        monthSel.style.display="inline-block";
+        document.getElementById("dp-visitor-year").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
+
+    /* Wire up year picker */
+    const yearSel=document.getElementById("dp-visitor-year");
+    if(yearSel){
+      yearSel.onchange=e=>{
+        visitorYear=e.target.value;
+        visitorFilterType="year";
+        /* Show year picker, hide month picker */
+        yearSel.style.display="inline-block";
+        document.getElementById("dp-visitor-month").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
   }
 
   function drawDocuments(d,sites){
@@ -2966,68 +3029,8 @@ DASHBOARDS.dp=(function(){
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
     sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=1;drawAll();};
 
-    /* Wire up visitor date range filter: quick window buttons */
-    document.querySelectorAll("#dp-visitor-filter button[data-filter]").forEach(btn=>{
-      btn.onclick=e=>{
-        const newFilter=e.target.dataset.filter;
-        if(newFilter!==visitorFilter || visitorFilterType!=="window"){
-          visitorFilter=newFilter;
-          visitorFilterType="window";
-          /* Hide month/year pickers when using quick windows */
-          document.getElementById("dp-visitor-month").style.display="none";
-          document.getElementById("dp-visitor-year").style.display="none";
-          /* Update filter button states */
-          document.querySelectorAll("#dp-visitor-filter button").forEach(b=>
-            b.classList.toggle("on",b.dataset.filter===visitorFilter));
-          /* Apply the visitor filter and rebuild data */
-          applyVisitorFilter();
-          rebuildALL();
-          /* Redraw the KPIs and drill with new visitor values */
-          drawAll();
-          if(openKpi==="visitors") drawDrill();
-        }
-      };
-    });
-
-    /* Wire up month picker - only if element exists (rendered by drawVisitors) */
-    const monthSel=document.getElementById("dp-visitor-month");
-    if(monthSel){
-      monthSel.onchange=e=>{
-        visitorMonth=e.target.value;
-        visitorFilterType="month";
-        /* Show month picker, hide year picker */
-        monthSel.style.display="inline-block";
-        document.getElementById("dp-visitor-year").style.display="none";
-        /* Hide quick window button highlights */
-        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-        /* Apply the visitor filter and rebuild data */
-        applyVisitorFilter();
-        rebuildALL();
-        /* Redraw the KPIs and drill with new visitor values */
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    }
-
-    /* Wire up year picker - only if element exists (rendered by drawVisitors) */
-    const yearSel=document.getElementById("dp-visitor-year");
-    if(yearSel){
-      yearSel.onchange=e=>{
-        visitorYear=e.target.value;
-        visitorFilterType="year";
-        /* Show year picker, hide month picker */
-        yearSel.style.display="inline-block";
-        document.getElementById("dp-visitor-month").style.display="none";
-        /* Hide quick window button highlights */
-        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-        /* Apply the visitor filter and rebuild data */
-        applyVisitorFilter();
-        rebuildALL();
-        /* Redraw the KPIs and drill with new visitor values */
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    }
+    /* Visitor filter event handlers are wired in drawDrill() after buttons are rendered */
+    /* (Removed from init() because the buttons don't exist until drawDrill() renders them) */
 
     const cat=document.getElementById("dp-cat");
     cat.value=libCat;
