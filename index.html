@@ -2393,11 +2393,14 @@ DASHBOARDS.dp=(function(){
       `<div class="drow">${r.map((c,j)=>
         j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
 
+    const gridLayout=cols.length===2?
+      "minmax(150px,1fr) minmax(110px,1fr)":
+      `minmax(170px,1.4fr) repeat(${Math.max(1,cols.length-1)},minmax(110px,1fr))`;
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">${title}</div>
        <div class="psub">${sub}</div>
        ${summaryChart(tiles)}
-       <div class="scrollx"><div class="dtab wide" style="--dc:${cols.length===2?"minmax(150px,1fr) minmax(110px,1fr)":"minmax(170px,1.4fr) repeat("+Math.max(1,cols.length-1)+",minmax(110px,1fr))"}">
+       <div class="scrollx"><div class="dtab wide" style="--dc:${gridLayout}">
          <div class="dhead">${cols.map((c,i)=>
            `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
          ${body}
