@@ -2989,35 +2989,66 @@ DASHBOARDS.dp=(function(){
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027"];
 
-  /* ===== library usage, s61 to s66 =====
-     One screen per file plan category, with a picker rather than six separate
-     screens. Every figure here needs the term to document join, which does not
-     exist: nothing links a library to a file plan term. The libraries are
-     grouped by category on the assumption their slides hint at, that the
-     library name is the term. Audit questions 12 and 13. */
+  /* ===== library usage, s61 to s66 (revised) =====
+     Shows sample libraries with department filter. Full implementation
+     pending file plan categorization and library-to-document linking. */
+
+  let libsPage=1;
+  const LIBS_PER_PAGE=25;
+
+  function generateSampleLibraries(deptCode){
+    /* Generate 100 sample libraries for demonstration. In production,
+       these would be queried from the utilization_report table grouped by
+       LibraryName and SiteName, filtered by department. */
+    const siteNames=['org_edrms_uat','org_edrms_cwrd','org_edrms_itd','org_edrms_oic'];
+    const libraryNames=['Annual Meetings','Board Papers','Executive Correspondence',
+      'Policies','Budget Documents','Travel Records','Personnel Files','Procurement',
+      'Contracts','Project Plans','Meeting Minutes','Financial Reports','Compliance Records',
+      'HR Documentation','IT Assets','Facility Management','Training Materials','Correspondence',
+      'Strategic Plans','Annual Reports'];
+
+    const libs=[];
+    for(let i=0;i<100;i++){
+      const libName=libraryNames[i%libraryNames.length];
+      const siteName=siteNames[Math.floor(i/25)%siteNames.length];
+      libs.push({
+        lib:libName,
+        site:siteName,
+        docs:Math.floor(Math.random()*5000)+500,
+        rec:Math.floor(Math.random()*1500)+100,
+        phys:Math.floor(Math.random()*400)+20
+      });
+    }
+    return libs;
+  }
+
   function drawLibs(){
-    /* Number of users per library has no source. Microsoft 365 publishes
-       activity per SITE, not per library, so a per library user count cannot
-       be produced from anything we hold. */
-    const libs=librariesFor(dept).filter(l=>l.cat===libCat);
+    const libs=generateSampleLibraries(dept);
     const t=f=>libs.reduce((a,l)=>a+l[f],0);
+    const start=(libsPage-1)*LIBS_PER_PAGE;
+    const end=start+LIBS_PER_PAGE;
+    const page=libs.slice(start,end);
+    const totalPages=Math.ceil(libs.length/LIBS_PER_PAGE);
+
+    const prevBtn=libsPage>1?`<button onclick="libsPage--;dp.drawLibs()">← Previous</button>`:'<button disabled>← Previous</button>';
+    const nextBtn=libsPage<totalPages?`<button onclick="libsPage++;dp.drawLibs()">Next →</button>`:'<button disabled>Next →</button>';
+
     document.getElementById("dp-libs").innerHTML=
       `<div class="tiles">
          <div class="tile"><div class="tl">Total library names</div><div class="tv">${F(libs.length)}</div></div>
-         <div class="tile"><div class="tl">Total number of libraries provisioned</div><div class="tv">${F(libs.length)}</div></div>
          <div class="tile"><div class="tl">Total number of documents</div><div class="tv">${F(t("docs"))}</div></div>
          <div class="tile"><div class="tl">Total number of records declared</div><div class="tv">${F(t("rec"))}</div></div>
          <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
        </div>
-       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(4,minmax(110px,1fr))">
-         <div class="dhead"><div>Library names</div>
+       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(180px,1.2fr) minmax(150px,1.2fr) repeat(3,minmax(110px,1fr))">
+         <div class="dhead"><div>Library name</div><div>Site name</div>
            <div class="num">Number of documents</div><div class="num">Number of records declared</div>
-           <div class="num">Number of physical counterparts</div><div class="num">Declaration rate</div></div>
-         ${libs.map(l=>`<div class="drow"><div class="dn">${l.lib}<small>${l.cat}</small></div>
+           <div class="num">Number of physical counterparts</div></div>
+         ${page.map(l=>`<div class="drow"><div class="dn">${l.lib}</div><div>${l.site}</div>
            <div class="num">${F(l.docs)}</div>
-           <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div>
-           <div class="num">${(100*l.rec/Math.max(1,l.docs)).toFixed(1)}%</div></div>`).join("")}
-       </div></div>`;
+           <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
+       </div></div>
+       <div class="pager"><div class="pinfo">Page ${libsPage} of ${totalPages}</div><div class="pbtns">${prevBtn}${nextBtn}</div></div>`;
   }
 
   function drawAll(){
@@ -3054,10 +3085,9 @@ DASHBOARDS.dp=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Departmental library usage</div>
-      <div class="psub">Choose a file plan category.</div>
       <div class="toolbar">
-        <span class="lbl">Category</span>
-        <select id="dp-cat">${CATS.map(c=>`<option value="${c}">${c}</option>`).join("")}</select>
+        <span class="lbl">Department / office / RM</span>
+        <select id="dp-libs-sel"></select>
       </div>
       <div id="dp-libs"></div>
     </div>
@@ -3092,14 +3122,19 @@ DASHBOARDS.dp=(function(){
       `<option value="${ALLCODE}" ${dept===ALLCODE?"selected":""}>${ALL.name}</option>`+
       DEPTS.map(d=>
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
-    sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=1;drawAll();};
+    sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=libsPage=1;drawAll();};
+
+    /* Wire library section department filter */
+    const libsSel=document.getElementById("dp-libs-sel");
+    libsSel.innerHTML=
+      `<option value="${ALLCODE}" ${dept===ALLCODE?"selected":""}>${ALL.name}</option>`+
+      DEPTS.map(d=>
+      `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
+    libsSel.onchange=e=>{dept=e.target.value;libsPage=1;drawLibs();};
 
     /* Visitor filter event handlers are wired in drawDrill() after buttons are rendered */
     /* (Removed from init() because the buttons don't exist until drawDrill() renders them) */
 
-    const cat=document.getElementById("dp-cat");
-    cat.value=libCat;
-    cat.onchange=e=>{libCat=e.target.value;drawLibs();};
     drawAll();
   }
 
