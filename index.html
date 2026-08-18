@@ -2159,6 +2159,7 @@ DASHBOARDS.dp=(function(){
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
   let openKpi="sites";         /* tile 1 on s53 */
   let sitePage=1, sortSite="rec", dirSite="desc";
+  let visitorPage=1;
   let libCat=CATS[0];
 
   /* An "All departments, offices and RMs" option on the filter, added 17 Aug
@@ -2302,26 +2303,7 @@ DASHBOARDS.dp=(function(){
          external split and the access request counts have not been confirmed
          against the Cloud Governance guest and request reports. Audit
          question 15. */
-      title="Visitors";
-      sub="Site visitors, and requests for access.";
-      /* A visitor is a person. A page view is an event, and one person
-         visiting fifty times is fifty page views and one visitor, so the two
-         are not interchangeable. Page views are in the usage export today;
-         visitors come from site analytics per site. Page views are shown
-         alongside rather than instead, because they are producible now and
-         they answer a different and useful question about how heavily a site
-         is read. */
-      cols=["Name of sites","Total number of visitors","Page views","Views per visitor"];
-      /* Views per visitor was the literal string "7.0" on every row until 17
-         August, because page views were built as visitors times seven. Both
-         are measured separately now, so the column varies the way it would in
-         real data and a site that is read heavily can be told from one that
-         is merely opened. */
-      rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
-                         (s.visitors?s.views/s.visitors:0).toFixed(1)]);
-      tiles=[{lab:"Total number of visitors",v:d.visitors},
-             {lab:"Page views",v:d.views},
-             {lab:"EDRMS active sites",v:sites.length}];
+      return drawVisitors(d,sites);
     }
 
     else if(openKpi==="docs"){
@@ -2488,6 +2470,39 @@ DASHBOARDS.dp=(function(){
     });
     wirePager("#dp-sites-pager",go=>{
       sitePage=go==="prev"?Math.max(1,sitePage-1):go==="next"?Math.min(pages,sitePage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawVisitors(d,sites){
+    const rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
+                             (s.visitors?s.views/s.visitors:0).toFixed(1)]);
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(visitorPage>pages)visitorPage=pages;
+    const page=rows.slice((visitorPage-1)*10,visitorPage*10);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Visitors</div>
+       <div class="psub">Site visitors, and requests for access.</div>
+       ${summaryChart([
+         {lab:"Total number of visitors",v:d.visitors},
+         {lab:"Page views",v:d.views},
+         {lab:"EDRMS active sites",v:sites.length}])}
+       <div class="scrollx"><div class="dtab wide" id="dp-visitors"
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+         <div class="dhead">
+           <div>Name of sites</div>
+           <div class="num">Total number of visitors</div>
+           <div class="num">Page views</div>
+           <div class="num">Views per visitor</div>
+         </div>
+         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+       </div></div>
+       <div id="dp-visitors-pager">${pager(rows.length,visitorPage,pages,"sites")}</div>`;
+
+    wirePager("#dp-visitors-pager",go=>{
+      visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
       drawDrill();
     });
   }
