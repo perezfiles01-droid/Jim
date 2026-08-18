@@ -2667,6 +2667,8 @@ DASHBOARDS.dp=(function(){
            <button class="vf-btn" data-filter="30days">Last 30 days</button>
            <button class="vf-btn" data-filter="90days">Last 90 days</button>
            <button class="vf-btn" data-filter="180days">Last 180 days</button>
+           <!-- Custom date toggle button -->
+           <button id="dp-visitor-custom-toggle" class="vf-btn" style="background:#f5f7fa;border-color:#e0e6ec;color:#718096;">Custom date</button>
            <!-- Month picker -->
            <select id="dp-visitor-month" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;display:none;">
              <option value="2025-08">Aug 2025</option>
@@ -2712,6 +2714,46 @@ DASHBOARDS.dp=(function(){
       visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
       drawDrill();
     });
+
+    /* Wire up custom date toggle button to show/hide month & year pickers */
+    const customToggle=document.getElementById("dp-visitor-custom-toggle");
+    if(customToggle){
+      customToggle.onclick=e=>{
+        const monthSel=document.getElementById("dp-visitor-month");
+        const yearSel=document.getElementById("dp-visitor-year");
+        const quickBtns=document.querySelectorAll("#dp-visitor-filter button[data-filter]");
+
+        /* Check if pickers are currently hidden */
+        const pickersHidden=monthSel.style.display==="none";
+
+        if(pickersHidden){
+          /* Show pickers, hide quick buttons and toggle button styling */
+          monthSel.style.display="inline-block";
+          yearSel.style.display="inline-block";
+          quickBtns.forEach(b=>b.style.display="none");
+          customToggle.style.background="var(--teal)";
+          customToggle.style.borderColor="var(--teal)";
+          customToggle.style.color="#fff";
+        } else {
+          /* Hide pickers, show quick buttons, reset to Last 7 days */
+          monthSel.style.display="none";
+          yearSel.style.display="none";
+          quickBtns.forEach(b=>b.style.display="inline-block");
+          customToggle.style.background="#f5f7fa";
+          customToggle.style.borderColor="#e0e6ec";
+          customToggle.style.color="#718096";
+          /* Reset to Last 7 days when toggling back */
+          if(visitorFilterType!=="window"){
+            visitorFilter="7days";
+            visitorFilterType="window";
+            quickBtns.forEach(b=>b.classList.toggle("on",b.dataset.filter==="7days"));
+            applyVisitorFilter();
+            rebuildALL();
+            drawAll();
+          }
+        }
+      };
+    }
 
     /* Wire up visitor date range filter buttons NOW that they're rendered */
     document.querySelectorAll("#dp-visitor-filter button[data-filter]").forEach(btn=>{
