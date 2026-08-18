@@ -3417,6 +3417,7 @@ DASHBOARDS.rd=(function(){
     "Permanent terms must total the permanent record count");
 
   let mode="temporary";
+  let rdFilter="all";
 
   const NOSRC=`<span class="nosrc">Not captured</span>`;
 
@@ -3452,16 +3453,18 @@ DASHBOARDS.rd=(function(){
 
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights</div>
-      <div class="psub">The declared holding split into permanent and temporary retention.</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(5,minmax(110px,1fr))">
+      <div class="toolbar">
+        <span class="lbl">Retention category</span>
+        <select id="rd-filter"></select>
+      </div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(4,minmax(110px,1fr))">
         <div class="dhead"><div>Heading</div>
-          <div class="num">Departments, offices and RMs provisioned</div>
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div>
           <div class="num">Number of records due for disposal</div></div>
-        ${ROLLUP.map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
-          <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
+        ${ROLLUP.filter(r=>(rdFilter==="all"||r.lab.includes(rdFilter))).map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
+          <div class="num">${F(r.libs)}</div>
           <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
           <div class="num">${F(r.due)}</div></div>`).join("")}
       </div></div>
@@ -3534,7 +3537,13 @@ DASHBOARDS.rd=(function(){
     </div>
   </section>`;
 
-  function init(){}
+  function init(){
+    const filter=document.getElementById("rd-filter");
+    filter.innerHTML=`<option value="all">All</option>
+      <option value="Permanent">Permanent retention</option>
+      <option value="Temporary">Temporary retention</option>`;
+    filter.onchange=e=>{rdFilter=e.target.value;location.hash=location.hash;};
+  }
 
   return {
     summary:{permanent:PERM_REC,temporary:TEMP_REC,due:DATA.DUE_NEXT_12},
