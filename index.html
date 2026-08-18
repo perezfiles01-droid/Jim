@@ -2846,7 +2846,7 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawDocuments(d,sites){
-    const rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
+    const rows=sites.map(s=>[s.name,F(s.docs),GB(s.gb)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(docsPage>pages)docsPage=pages;
     const page=rows.slice((docsPage-1)*10,docsPage*10);
@@ -2859,15 +2859,14 @@ DASHBOARDS.dp=(function(){
          {lab:"EDRMS active sites",v:sites.length},
          {lab:"Total documents size",txt:GB(d.gb)}])}
        <div class="scrollx"><div class="dtab wide" id="dp-documents"
-            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
            <div>Name of sites</div>
            <div class="num">Number of documents created / uploaded</div>
-           <div class="num">Number of users creating documents</div>
            <div class="num">Documents size (in GB)</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
        </div></div>
        <div id="dp-documents-pager">${pager(rows.length,docsPage,pages,"sites")}</div>`;
 
@@ -2910,7 +2909,7 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawPhysical(d,sites){
-    const rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
+    const rows=sites.map(s=>[s.name,F(s.phys),F(s.rec),
                              PCT(s.phys,s.rec).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(physPage>pages)physPage=pages;
@@ -2921,15 +2920,14 @@ DASHBOARDS.dp=(function(){
        <div class="psub">Records with a physical counterpart, by site.</div>
        ${summaryChart([
          {lab:"Records with a counterpart",v:d.phys},
-         {lab:"Total number of users declaring records",v:d.declaring},
-         {lab:"EDRMS active sites",v:sites.length},
+         {lab:"Total number of records declared",v:d.rec},
          {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}])}
        <div class="scrollx"><div class="dtab wide" id="dp-physical"
-            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(130px,1fr)">
          <div class="dhead">
            <div>Name of sites</div>
            <div class="num">Records with a counterpart</div>
-           <div class="num">Total number of users declaring records</div>
+           <div class="num">Total number of records declared</div>
            <div class="num">Share of records with a counterpart</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
