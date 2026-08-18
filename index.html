@@ -2993,7 +2993,7 @@ DASHBOARDS.dp=(function(){
      pending file plan categorization and library-to-document linking. */
 
   let libsPage=1;
-  const LIBS_PER_PAGE=25;
+  const LIBS_PER_PAGE=10;
 
   function generateSampleLibraries(deptCode){
     /* Generate 100 sample libraries for demonstration. In production,
@@ -3031,6 +3031,7 @@ DASHBOARDS.dp=(function(){
 
     const prevBtn=libsPage>1?`<button onclick="libsPage--;dp.drawLibs()">← Previous</button>`:'<button disabled>← Previous</button>';
     const nextBtn=libsPage<totalPages?`<button onclick="libsPage++;dp.drawLibs()">Next →</button>`:'<button disabled>Next →</button>';
+    const pagerInfo=`Showing ${start+1} to ${Math.min(end,libs.length)} of ${libs.length} libraries`;
 
     document.getElementById("dp-libs").innerHTML=
       `<div class="tiles">
@@ -3047,7 +3048,7 @@ DASHBOARDS.dp=(function(){
            <div class="num">${F(l.docs)}</div>
            <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
        </div></div>
-       <div class="pager"><div class="pinfo">Page ${libsPage} of ${totalPages}</div><div class="pbtns">${prevBtn}${nextBtn}</div></div>`;
+       <div class="pager"><div class="pinfo">${pagerInfo}</div><div class="pbtns">${prevBtn}${nextBtn}</div></div>`;
   }
 
   function drawAll(){
