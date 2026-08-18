@@ -1,0 +1,48 @@
+name: Verify Dashboard
+
+# Run on every push and pull request to catch runtime errors early
+on:
+  push:
+    branches: ['claude/**', 'main']
+    paths:
+      - 'index.html'
+      - '.github/workflows/verify-dashboard.yml'
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'index.html'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    name: Browser Test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run dashboard verification
+        run: node check-dashboard.js $(pwd)/index.html
+
+      - name: Report results
+        if: failure()
+        run: |
+          echo "❌ Dashboard verification failed"
+          echo "Check the logs above for errors"
+          echo ""
+          echo "Common causes:"
+          echo "  - Temporal dead zone: const/let used before declaration"
+          echo "  - Missing function definition: split(), CHART.hbars(), switchTo()"
+          echo "  - IIFE not closed: check opening/closing braces"
+          echo "  - DOM selector mismatch: element IDs or classes changed"
+          echo ""
+          echo "Fix the errors and re-run: node check-dashboard.js index.html"
+          exit 1

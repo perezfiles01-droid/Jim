@@ -1342,6 +1342,45 @@ reconciles against another plausible number is not verification.** Reconciliatio
 proves two figures agree. It does not prove either is right. Where a figure can be
 checked against something outside the page, check it there.
 
+### 18 August: the temporal dead zone bug — all five dashboards blank
+
+**What happened:** Added code on lines 3447–3452 in `DASHBOARDS.rd` IIFE that 
+read `pSites[0]` and `tSites[0]`, but the declarations `const pSites = split(...)`
+and `const tSites = split(...)` stayed on lines 3470–3471. No syntax error. To
+static analysis (grep, diff, code review), the code looked correct. At runtime,
+when the IIFE executed, it hit JavaScript's temporal dead zone rule: **a const/let
+variable is inaccessible from the start of its scope until the line declaring it
+runs.** The engine threw `ReferenceError: Cannot access 'pSites' before initialization`,
+the IIFE aborted, and `DASHBOARDS` remained empty. All five dashboards rendered blank.
+
+**Why static code review missed it:** A variable is syntactically valid anywhere
+in its scope. `grep` cannot tell if a variable is in its temporal dead zone; only
+runtime execution in a JavaScript engine can. This class of bug is **invisible to
+human review**. It shows no syntax error, no obvious typo, and the code path looks
+plausible when read by line.
+
+**The fix:** Moved declarations from lines 3470–3471 to lines 3437–3439, BEFORE
+the code that reads them. The IIFE then executed without throwing, `DASHBOARDS`
+populated, and all five dashboards mounted.
+
+**The lesson:** Static code review of JavaScript is insufficient. **Temporal dead
+zone errors, async timing bugs, missing DOM selectors, and event binding failures
+only appear at runtime.** Before any commit that changes `index.html`, run
+`node check-dashboard.js $(pwd)/index.html` in a real browser. No test file passing
+means no commit.
+
+**The safeguard:** `check-dashboard.js` is now the mandatory pre-commit test. A
+GitHub Actions workflow (`.github/workflows/verify-dashboard.yml`) runs it
+automatically on every push to a `claude/**` branch and every PR against `main`.
+Do not merge if the test fails. See `DEVELOPMENT.md` for the complete workflow.
+
+**Why this happened:** Reshaping the retention labels table added new by-department
+splits that needed `pSites` and `tSites`, so the code moved into the IIFE. The
+declarations did not move with it, and they were still several lines below where
+they were now needed. A code review two weeks into this project — before the browser
+test existed — would have caught it, but the test was needed *after* the fact to
+prevent it happening again.
+
 ---
 
 ## 9. KEY IDENTIFIERS AND LINKS
