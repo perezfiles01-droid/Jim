@@ -1,13 +1,13 @@
 ---
 name: fix
 description: |
-  Diagnose and fix bugs in any code you create — HTML/JS dashboards, web apps, Vue/React components, Node.js backends, or any codebase. 
+  Fully autonomous bug diagnosis and fixing for any code — HTML/JS dashboards, web apps, Vue/React components, Node.js backends, or any codebase.
   
-  When you report a bug or something's broken, use this skill to: (1) Confirm which file to fix; (2) Describe the symptoms; (3) Get deep Opus-level root-cause analysis; (4) See a diagnostic plan with proposed fix; (5) Implement and verify the fix; (6) Deploy changes (merge to main, push, hard refresh as needed).
+  Just describe what's broken, and the skill automatically: (1) Analyzes your code to find the root cause (no console debugging needed); (2) Presents a diagnostic plan with the exact problem and fix; (3) Implements, tests, commits, and pushes the fix; (4) Handles everything — you only confirm.
   
-  Bugs this skill finds and fixes: syntax errors, logic errors, rendering/UI issues, API/data flow problems, scope and reference errors, CSS layout bugs, event handling issues, async/Promise issues, type errors, regex failures, pagination/state bugs, and more.
+  Finds and fixes all bug types: syntax errors, logic errors, rendering/UI issues, API/data flow problems, scope and reference errors, CSS layout bugs, event handling issues, async/Promise issues, type errors, regex failures, pagination/state bugs, initialization order bugs, and more.
   
-  **Use this skill whenever you encounter a bug, issue, or unexpected behavior in any code.** Always confirm the file being fixed and get a diagnostic plan before implementing changes.
+  **Use whenever code is broken or behaving unexpectedly.** No manual debugging required — describe the symptom, confirm the fix, done.
 compatibility: Read, Edit, Bash, Grep
 ---
 
@@ -17,45 +17,52 @@ Diagnose and fix bugs in any prototype — HTML/JS dashboards, web apps, backend
 
 ## How It Works
 
-### Phase 1: Confirm & Describe
-When you report a bug, the skill asks:
-- **Which file?** (e.g., `index.html`, `app.js`, `Dashboard.vue`)
-- **What's broken?** (Describe the symptoms: what should happen, what actually happens)
-- **When does it happen?** (Always, after specific action, in certain conditions?)
-- **Any error messages?** (Browser console, server logs, etc.)
+### Fully Autonomous Workflow (No Manual Debugging Required)
 
-### Phase 2: Root-Cause Analysis  
-The skill performs **Opus-level diagnostic reasoning**:
+When you report a bug, the skill **automatically handles everything**:
 
-1. **Reproduce** — Trace the code path that runs when the bug occurs
-2. **Search** — Look for syntax errors, logic flaws, missing functions, scope issues
-3. **Diagnose** — Identify the REAL cause:
-   - Is it a typo or syntax error?
-   - Logic mistake (wrong comparison, missing check)?
-   - Scope issue (undefined variable, function not in scope)?
-   - Async/Promise bug (race condition, missing await)?
-   - CSS/DOM issue (element hidden, wrong selector)?
-   - Data flow break (API not called, state not updated)?
-   - Other pattern match from this prototype's history?
+1. **Analyzes your description** — Understands what's broken (e.g., "tiles are blank", "button doesn't work")
 
-4. **Impact Assessment** — What else might be affected?
+2. **Searches the codebase automatically** — No need to dig into console or logs
+   - Finds syntax errors (unclosed braces, typos, missing functions)
+   - Detects logic flaws (wrong conditions, bad comparisons)
+   - Checks scope issues (undefined variables, scope closures)
+   - Traces data flow (API calls, state updates, initialization order)
+   - Inspects CSS/DOM (hidden elements, missing selectors)
+   - Analyzes async/Promise patterns (missing awaits, race conditions)
+   - Reviews event handling (handlers wired correctly, click works)
 
-### Phase 3: Diagnostic Plan & Fix
-The skill presents:
-- **What's wrong** — Clear explanation of the bug
-- **Why it happens** — Root cause with code references
-- **How to fix it** — Specific change with explanation
-- **Confidence level** — HIGH/MEDIUM/LOW based on evidence
+3. **Runs deep diagnostics** using Opus-level reasoning:
+   - Traces the code path from trigger to symptom
+   - Identifies initialization order issues
+   - Checks for syntax errors and logic breaks
+   - Verifies data availability when needed
+   - Looks for similar patterns from your project's history
 
-You review and confirm: **"Yes, fix it"** or suggest changes.
+4. **Presents diagnostic plan** with:
+   - **What's wrong** — Clear, jargon-free explanation
+   - **Why it happens** — Root cause with specific code line references
+   - **How to fix it** — Exact change needed with reasoning
+   - **Confidence level** — HIGH/MEDIUM/LOW based on evidence strength
 
-### Phase 4: Implement & Verify
-Once confirmed:
-1. Apply the fix to the code
-2. Check for new/related bugs (similar patterns elsewhere?)
-3. Verify the fix works (syntax check, logic trace, manual test)
-4. Commit and push (per your repo's convention: usually merge to main immediately)
-5. Tell you to hard-refresh if browser cache is involved
+5. **Gets your confirmation** — Simple "Yes" or feedback to adjust
+
+6. **Implements automatically**:
+   - ✅ Applies the fix to your code
+   - ✅ Checks for syntax errors (no broken code gets pushed)
+   - ✅ Searches for related bugs (prevents regressions)
+   - ✅ Commits with clear message
+   - ✅ Pushes to your repository
+   - ✅ Advises on next steps (cache refresh, testing, etc.)
+
+**You don't need to:**
+- ❌ Open browser DevTools or console
+- ❌ Search through code yourself
+- ❌ Guess what the error might be
+- ❌ Manually verify the fix
+- ❌ Commit and push yourself
+
+Just describe the symptom, confirm the fix, and it's deployed.
 
 ---
 
