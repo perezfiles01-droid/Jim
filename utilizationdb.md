@@ -189,17 +189,18 @@ hold no documents, and hold visit and viewer counts measured per site.
 | 8 | SiteVisits7 | Whole number | Site visits, last 7 days | | 412 | Microsoft 365 usage reports | **NEW** |
 | 9 | SiteVisits30 | Whole number | Site visits, last 30 days | | 4812 | Microsoft 365 usage reports | **NEW** |
 | 10 | SiteVisits90 | Whole number | Site visits, last 90 days | | 13240 | Microsoft 365 usage reports | **NEW** |
-| 11 | UniqueViewers7 | Whole number | Distinct people who opened something in the site in the last 7 days | | 38 | Microsoft Graph site analytics | **NEW. Not in the usage export**, which carries no unique viewer column at all. `GET /sites/{id}/analytics/lastSevenDays`, the `actorCount` field |
-| 12 | UniqueViewersAllTime | Whole number | Distinct people who have ever opened something in the site | | 122 | Microsoft Graph site analytics | **NEW.** Replaces a UniqueViewers30 column that could not be filled. Site analytics offers `allTime` and `lastSevenDays` only, so there is no 30 or 90 day window |
-| 13 | LibraryCount | Whole number | Number of document libraries in the site | | 12 | Microsoft Graph | **NEW.** `GET /sites/{id}/drives`, counted. Answers "libraries per site" directly |
-| 14 | LastActivityDate | Date | Most recent activity on the site | | 24 Jul 2026 | Microsoft 365 usage reports | **NEW.** Printed beside each bar on Active Sites |
-| 15 | StorageUsed | Whole number | Storage used by the site, in bytes | | 13636370432 | SharePoint admin centre | **NEW.** Includes version history, so it reads higher than the sum of FileSize. Expected, not an error |
-| 16 | SiteOwner | Text | Primary site administrator | | jperez@adb.org | SharePoint admin centre | **NEW.** Who to contact about a site that has gone quiet |
-| 17 | ProjectEndDate | Date | Project end date for the site | | 31 Dec 2027 | `ADBSites.ProjectEndDate` | Already exists. Not on a dashboard yet, and the obvious basis for a site closure view |
-| 18 | IsDeleted | Yes / No | Soft delete flag | true, false | false | `ADBSites.IsDeleted` | Closed sites stay in the table so historical figures do not change |
-| 19 | RowLoadedDate | Date and time | When this row was last written | | 27 Jul 2026 06:00 | Refresh job | **NEW** |
+| 11 | SiteVisits180 | Whole number | Site visits, last 180 days | | 28500 | Microsoft 365 usage reports | **NEW.** M365 Admin Center supports 180-day export. Enables the 180-day trending filter in the prototype |
+| 12 | UniqueViewers7 | Whole number | Distinct people who opened something in the site in the last 7 days | | 38 | Microsoft Graph site analytics | **NEW. Not in the usage export**, which carries no unique viewer column at all. `GET /sites/{id}/analytics/lastSevenDays`, the `actorCount` field |
+| 13 | UniqueViewersAllTime | Whole number | Distinct people who have ever opened something in the site | | 122 | Microsoft Graph site analytics | **NEW.** Replaces a UniqueViewers30 column that could not be filled. Site analytics offers `allTime` and `lastSevenDays` only, so there is no 30 or 90 day window |
+| 14 | LibraryCount | Whole number | Number of document libraries in the site | | 12 | Microsoft Graph | **NEW.** `GET /sites/{id}/drives`, counted. Answers "libraries per site" directly |
+| 15 | LastActivityDate | Date | Most recent activity on the site | | 24 Jul 2026 | Microsoft 365 usage reports | **NEW.** Printed beside each bar on Active Sites |
+| 16 | StorageUsed | Whole number | Storage used by the site, in bytes | | 13636370432 | SharePoint admin centre | **NEW.** Includes version history, so it reads higher than the sum of FileSize. Expected, not an error |
+| 17 | SiteOwner | Text | Primary site administrator | | jperez@adb.org | SharePoint admin centre | **NEW.** Who to contact about a site that has gone quiet |
+| 18 | ProjectEndDate | Date | Project end date for the site | | 31 Dec 2027 | `ADBSites.ProjectEndDate` | Already exists. Not on a dashboard yet, and the obvious basis for a site closure view |
+| 19 | IsDeleted | Yes / No | Soft delete flag | true, false | false | `ADBSites.IsDeleted` | Closed sites stay in the table so historical figures do not change |
+| 20 | RowLoadedDate | Date and time | When this row was last written | | 27 Jul 2026 06:00 | Refresh job | **NEW** |
 
-**19 columns.**
+**20 columns.** (Added SiteVisits180 after confirmation that M365 Admin Center supports 180-day export)
 
 `ADBDivisionOwner` is gone with the rest of the division design.
 `UniqueViewers90` is gone because Microsoft does not return it: the column

@@ -229,31 +229,37 @@ GROUP BY SiteUrl
 ORDER BY yoy_change DESC;
 ```
 
-### Query 6: 7/30/90/180-Day Windows (Existing Filter Types)
-**User selects:** "Last 30 days"  
-**Returns:** Sites active in last 30 days using ReportRefreshDate
+### Query 6: 7/30/90/180-Day Windows (All Supported by M365)
+**User selects:** "Last 30 days" (or 7/90/180)  
+**Returns:** Sites active in selected window using ReportRefreshDate
 
 ```sql
 -- Performance: O(n) index on ReportRefreshDate
 -- ReportRefreshDate = Microsoft's measurement date, not job run date
 -- This differs from SnapshotDate (when job ran, can be 2 days later)
+-- 
+-- M365 Admin Center supports all four windows: 7, 30, 90, and 180 days
+-- Each populates T2.SiteVisits7, SiteVisits30, SiteVisits90, SiteVisits180
+
 SELECT 
   SiteUrl,
   UniqueViewersAllTime,
-  SiteVisits30,
+  SiteVisits30,              -- or SiteVisits7, SiteVisits90, SiteVisits180
   LastActivityDate,
   ReportRefreshDate,
   SnapshotDate
 FROM rpt.utilization_site_activity
 WHERE IsEdrmsCompliant = true
-  AND ReportRefreshDate >= (CURRENT_DATE - INTERVAL '30 days')
+  AND ReportRefreshDate >= (CURRENT_DATE - INTERVAL '30 days')  -- Parameterize interval
   AND ReportRefreshDate <= CURRENT_DATE
 ORDER BY UniqueViewersAllTime DESC;
 
 -- Bank-wide total for last 30 days
 -- NOTE: This uses the LATEST snapshot's SiteVisits30 column
 -- NOT a sum of SiteVisits7 across 4 weeks (those would overlap)
-SELECT SUM(SiteVisits30) AS page_views_30_days
+-- For 180 days: use SiteVisits180 column directly from M365 export
+SELECT SUM(SiteVisits30) AS page_views_30_days,
+       SUM(SiteVisits180) AS page_views_180_days
 FROM rpt.utilization_site_activity
 WHERE IsEdrmsCompliant = true
   AND SnapshotDate = (
@@ -510,12 +516,17 @@ document.getElementById('visitor-month-picker').onchange = (e) => {
 **Ask client:** Does the department breakdown matter for filtering, or just bank-wide?
 
 ### Decision 4: The 180-Day Window
-**Problem:** M365 reports only offer 7/30/90-day windows, no 180-day  
-**Options:**
-- A) Remove 180-day filter (not available from source)
-- B) Compute 180-day as manual sum of SiteVisits7 across 26 weeks (slow, complex)
-- C) Store a T2.SiteVisits180 column (requires new ETL step)
-- **Recommendation:** Option A (remove it) — honest about source limitations
+**Status:** ✅ **RESOLVED** — M365 Admin Center supports 180-day reporting  
+**Solution:** Store `T2.SiteVisits180` column populated directly from M365 usage report  
+**Implementation:** Same as SiteVisits7/30/90 — no special computation needed
+
+The M365 SharePoint usage report export supports:
+- 7-day window (SiteVisits7)
+- 30-day window (SiteVisits30)
+- 90-day window (SiteVisits90)
+- **180-day window (SiteVisits180)** ✓ Available
+
+So the 180-day filter in the prototype and backend API is viable and requires no special handling.
 
 ---
 
