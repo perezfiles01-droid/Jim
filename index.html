@@ -77,6 +77,8 @@
   .vf-btn{font:inherit;font-size:12px;font-weight:600;border:1px solid #cfd8e3;background:#fff;color:var(--ink2);border-radius:6px;padding:6px 12px;cursor:pointer;transition:all .15s}
   .vf-btn:hover{border-color:var(--teal);color:var(--teal)}
   .vf-btn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+  #dp-visitor-month, #dp-visitor-year{font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:var(--ink2);cursor:pointer;transition:border-color .15s}
+  #dp-visitor-month:hover, #dp-visitor-year:hover{border-color:var(--teal);color:var(--ink2)}
 
   /* ===== shared chart components, added 13 Aug 2026 =====
      Global rather than scoped, because unlike the class names in the collision
@@ -2321,23 +2323,37 @@ DASHBOARDS.dp=(function(){
     SPD:"08 Jun 2026",SDCC:"22 Jun 2026",OAS:"06 Jul 2026",ERCD:"20 Jul 2026"};
 
   /* ===== visitor date range filter =====
-     Demo data for different date windows. Based on M365 SharePoint usage report
-     windows and Microsoft Graph Analytics. Window-specific visitor counts are
-     realistic proportions of the all-time total (17,240).
+     Demo data for different date windows and monthly/yearly snapshots.
+     Based on M365 SharePoint usage report windows and Microsoft Graph Analytics.
 
      DATABASE MAPPING:
      - 7 days:   SUM(T2.SiteVisits7) - current week unique visitors
      - 30 days:  SUM(T2.SiteVisits30) - last month active visitors
      - 90 days:  SUM(T2.SiteVisits90) - quarterly active visitors
      - 180 days: SUM(T2.SiteVisits180) - half-year active visitors (M365 max window)
-     - all-time: SUM(T2.UniqueViewersAllTime) - ever touched the site
+     - monthly:  SUM(T2.SiteVisits30) for snapshot date matching that month
+     - yearly:   SUM(T2.UniqueViewersAllTime) for all activity through end of year
   */
   const VISITORS_WINDOWS={
-    "7days":2100,       /* ~12% of all-time: very active users this week */
-    "30days":7540,      /* ~44% of all-time: active last month */
-    "90days":13100,     /* ~76% of all-time: active last quarter */
-    "180days":15800,    /* ~92% of all-time: active in past 6 months */
-    "alltime":17240     /* 100% all-time unique viewers */
+    "7days":2100,       /* ~12% of current: very active users this week */
+    "30days":7540,      /* ~44% of current: active last month */
+    "90days":13100,     /* ~76% of current: active last quarter */
+    "180days":15800     /* ~92% of current: active in past 6 months */
+  };
+
+  /* Monthly visitor snapshots (one snapshot per month, rolling 12 months) */
+  const VISITORS_BY_MONTH={
+    "2025-08":1850,  "2025-09":2100,  "2025-10":1920,  "2025-11":2340,  "2025-12":2560,
+    "2026-01":2780,  "2026-02":3120,  "2026-03":3450,  "2026-04":3890,  "2026-05":4560,
+    "2026-06":5120,  "2026-07":7540   /* Jul 2026 is current month */
+  };
+
+  /* Yearly visitor snapshots (YTD through end of each year) */
+  const VISITORS_BY_YEAR={
+    "2023":3200,   /* Full year 2023 */
+    "2024":7840,   /* Full year 2024 */
+    "2025":14200,  /* Full year 2025 */
+    "2026":7540    /* 2026 YTD (Jan-Jul) */
   };
 
   /* ===== state ===== */
@@ -2346,17 +2362,38 @@ DASHBOARDS.dp=(function(){
   let sitePage=1, sortSite="rec", dirSite="desc";
   let visitorPage=1, docsPage=1, recPage=1, physPage=1, disposalPage=1;
   let libCat=CATS[0];
-  let visitorFilter="alltime"; /* Date range filter for visitor KPI */
+  let visitorFilter="7days";   /* Default to last 7 days */
+  let visitorFilterType="window"; /* window, month, or year */
+  let visitorMonth="2026-07";  /* Default to Jul 2026 */
+  let visitorYear="2026";      /* Default to 2026 */
+
+  /* Get the current visitor total based on active filter */
+  function getVisitorTotal(){
+    if(visitorFilterType==="window") return VISITORS_WINDOWS[visitorFilter];
+    if(visitorFilterType==="month") return VISITORS_BY_MONTH[visitorMonth];
+    if(visitorFilterType==="year") return VISITORS_BY_YEAR[visitorYear];
+    return VISITORS_WINDOWS["7days"];
+  }
 
   /* Apply visitor date range filter to DEPTS by re-splitting the filtered total
      across departments using the same weights as the original split. This keeps
      the proportional distribution while changing the absolute numbers. Called
      after visitorFilter changes to update all downstream visitor values. */
   function applyVisitorFilter(){
-    const filteredTotal=VISITORS_WINDOWS[visitorFilter];
+    const filteredTotal=getVisitorTotal();
     const W=DEPTS.map(d=>d.rec);  /* same weight vector as original split */
     const newVisSplit=split(filteredTotal,W);
     DEPTS.forEach((d,i)=>{d.visitors=newVisSplit[i];});
+    /* Also update site-level cached data */
+    Object.keys(SITECACHE).forEach(code=>{
+      const sites=SITECACHE[code];
+      const deptData=DEPTS.find(d=>d.code===code);
+      if(deptData){
+        const siteWeights=sites.map(s=>s.rec);
+        const newSiteVis=split(deptData.visitors,siteWeights);
+        sites.forEach((s,i)=>{s.visitors=newSiteVis[i];});
+      }
+    });
   }
 
   /* An "All departments, offices and RMs" option on the filter, added 17 Aug
@@ -2846,13 +2883,35 @@ DASHBOARDS.dp=(function(){
         <select id="dp-sel"></select>
       </div>
       <div class="toolbar" style="margin-top:12px;">
-        <span class="lbl">Site visitors date range</span>
-        <div id="dp-visitor-filter" style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="vf-btn vf-btn-7days" data-filter="7days">Last 7 days</button>
-          <button class="vf-btn vf-btn-30days" data-filter="30days">Last 30 days</button>
-          <button class="vf-btn vf-btn-90days" data-filter="90days">Last 90 days</button>
-          <button class="vf-btn vf-btn-180days" data-filter="180days">Last 180 days</button>
-          <button class="vf-btn vf-btn-alltime on" data-filter="alltime">All-time</button>
+        <span class="lbl">Site visitors</span>
+        <div id="dp-visitor-filter" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <!-- Quick window buttons -->
+          <button class="vf-btn on" data-filter="7days">Last 7 days</button>
+          <button class="vf-btn" data-filter="30days">Last 30 days</button>
+          <button class="vf-btn" data-filter="90days">Last 90 days</button>
+          <button class="vf-btn" data-filter="180days">Last 180 days</button>
+          <!-- Month picker -->
+          <select id="dp-visitor-month" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;display:none;">
+            <option value="2025-08">Aug 2025</option>
+            <option value="2025-09">Sep 2025</option>
+            <option value="2025-10">Oct 2025</option>
+            <option value="2025-11">Nov 2025</option>
+            <option value="2025-12">Dec 2025</option>
+            <option value="2026-01">Jan 2026</option>
+            <option value="2026-02">Feb 2026</option>
+            <option value="2026-03">Mar 2026</option>
+            <option value="2026-04">Apr 2026</option>
+            <option value="2026-05">May 2026</option>
+            <option value="2026-06">Jun 2026</option>
+            <option value="2026-07" selected>Jul 2026</option>
+          </select>
+          <!-- Year picker -->
+          <select id="dp-visitor-year" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;display:none;">
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+          </select>
         </div>
       </div>
       <div id="dp-kpis"></div>
@@ -2905,23 +2964,64 @@ DASHBOARDS.dp=(function(){
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
     sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=1;drawAll();};
 
-    /* Wire up visitor date range filter */
+    /* Wire up visitor date range filter: quick window buttons */
     document.querySelectorAll("#dp-visitor-filter button[data-filter]").forEach(btn=>{
       btn.onclick=e=>{
         const newFilter=e.target.dataset.filter;
-        if(newFilter!==visitorFilter){
+        if(newFilter!==visitorFilter || visitorFilterType!=="window"){
           visitorFilter=newFilter;
+          visitorFilterType="window";
+          /* Hide month/year pickers when using quick windows */
+          document.getElementById("dp-visitor-month").style.display="none";
+          document.getElementById("dp-visitor-year").style.display="none";
           /* Update filter button states */
           document.querySelectorAll("#dp-visitor-filter button").forEach(b=>
             b.classList.toggle("on",b.dataset.filter===visitorFilter));
           /* Apply the visitor filter and rebuild data */
           applyVisitorFilter();
           rebuildALL();
-          /* Redraw the KPIs with new visitor values */
+          /* Redraw the KPIs and drill with new visitor values */
           drawAll();
+          if(openKpi==="visitors") drawDrill();
         }
       };
     });
+
+    /* Wire up month picker */
+    const monthSel=document.getElementById("dp-visitor-month");
+    monthSel.onchange=e=>{
+      visitorMonth=e.target.value;
+      visitorFilterType="month";
+      /* Show month picker, hide year picker */
+      monthSel.style.display="inline-block";
+      document.getElementById("dp-visitor-year").style.display="none";
+      /* Hide quick window button highlights */
+      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+      /* Apply the visitor filter and rebuild data */
+      applyVisitorFilter();
+      rebuildALL();
+      /* Redraw the KPIs and drill with new visitor values */
+      drawAll();
+      if(openKpi==="visitors") drawDrill();
+    };
+
+    /* Wire up year picker */
+    const yearSel=document.getElementById("dp-visitor-year");
+    yearSel.onchange=e=>{
+      visitorYear=e.target.value;
+      visitorFilterType="year";
+      /* Show year picker, hide month picker */
+      yearSel.style.display="inline-block";
+      document.getElementById("dp-visitor-month").style.display="none";
+      /* Hide quick window button highlights */
+      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+      /* Apply the visitor filter and rebuild data */
+      applyVisitorFilter();
+      rebuildALL();
+      /* Redraw the KPIs and drill with new visitor values */
+      drawAll();
+      if(openKpi==="visitors") drawDrill();
+    };
 
     const cat=document.getElementById("dp-cat");
     cat.value=libCat;
