@@ -562,7 +562,17 @@
    =================================================================== */
 const F=n=>Number(Math.round(n)).toLocaleString();
 function wirePager(scope,onGo){document.querySelectorAll(scope+" .pager button[data-pg]").forEach(b=>b.onclick=()=>onGo(b.dataset.pg));}
-
+function pager(total,page,pages,noun){
+  if(pages<=1)return `<div class="pager"><div class="pinfo">Showing ${F(total)} ${noun}</div></div>`;
+  const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
+  let nums="",last=0;
+  win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;
+    nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
+  const from=(page-1)*10+1,to=Math.min(total,page*10);
+  return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
+    <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>&lsaquo; Prev</button>${nums}
+    <button data-pg="next" ${page===pages?'disabled':''}>Next &rsaquo;</button></div></div>`;
+}
 
 /* Split a whole number across weights so the parts sum to it EXACTLY and none
    is negative. Added 17 Aug 2026 to replace five near-identical copies, two of
@@ -2327,18 +2337,6 @@ DASHBOARDS.dp=(function(){
 
   const D=()=>dept===ALLCODE?ALL:DEPTS.find(x=>x.code===dept);
   const NOSRC=`<span class="nosrc">Not captured</span>`;
-
-  function pager(total,page,pages,noun){
-    if(pages<=1)return `<div class="pager"><div class="pinfo">Showing ${F(total)} ${noun}</div></div>`;
-    const win=[];for(let p=1;p<=pages;p++){if(p===1||p===pages||Math.abs(p-page)<=1)win.push(p);}
-    let nums="",last=0;
-    win.forEach(p=>{if(last&&p-last>1)nums+=`<span style="color:var(--mut)">…</span>`;
-      nums+=`<button class="${p===page?'on':''}" data-pg="${p}">${p}</button>`;last=p;});
-    const from=(page-1)*10+1,to=Math.min(total,page*10);
-    return `<div class="pager"><div class="pinfo">Showing ${from} to ${to} of ${F(total)} ${noun}</div>
-      <div class="pbtns"><button data-pg="prev" ${page===1?'disabled':''}>&lsaquo; Prev</button>${nums}
-      <button data-pg="next" ${page===pages?'disabled':''}>Next &rsaquo;</button></div></div>`;
-  }
 
   /* ===== top panel, s53 =====
      Seven tiles, the client's own labels, all clickable per their note
