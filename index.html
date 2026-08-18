@@ -1068,7 +1068,24 @@ const DATA=(function(){
      export. One person visiting fifty times is fifty page views and one
      visitor, so they are two measures and not one measure scaled. They were
      users*1.9 and visitors*7 until 17 August, which made "views per visitor"
-     print 7.0 on every row of every department. */
+     print 7.0 on every row of every department.
+
+     DATABASE MAPPING (from utilizationdb.md, Table 2: Site Activity Table):
+     - VISITORS = SUM(T2.UniqueViewersAllTime) across all EDRMS compliant sites
+       Source: Microsoft Graph Analytics /sites/{id}/analytics/allTime, actorCount field
+       Replaces: hardcoded demo constant 17240
+       Date filter: Read the latest snapshot by SnapshotDate from T2
+
+     - PAGE_VIEWS = SUM(T2.SiteVisits7) across 12 consecutive weeks, never 30/90/180 windows
+       Consecutive 7-day windows tile exactly; longer ones overlap and count days repeatedly.
+       Source: Microsoft 365 SharePoint usage reports, Page View Count column
+       Replaces: hardcoded demo constant 142880
+       Date filter: Match on T2.ReportRefreshDate for comparison across periods
+
+     Until the Site Activity Table (T2) is populated with real tenant data from
+     Graph Analytics and M365 usage reports, these values are demo data. The
+     prototype splits them across departments by declared records, then across
+     sites. The splits preserve totals exactly by construction (splitTotal + weights). */
   const VISITORS=17240;
   const PAGE_VIEWS=142880;
 
@@ -1284,8 +1301,8 @@ DASHBOARDS.bw=(function(){
                                 weightsLike(userSplit,4));
   const gbSplit   =split(DATA.STORAGE_GB*10,   weights(N,5));
   const recGbSplit=split(DATA.RECORD_GB*10,    weights(N,9));
-  const visSplit  =split(DATA.VISITORS,        weights(N,6));
-  const viewSplit =split(DATA.PAGE_VIEWS,      weights(N,7));
+  const visSplit  =split(DATA.VISITORS,        weights(N,6));        /* from T2.UniqueViewersAllTime, Graph Analytics */
+  const viewSplit =split(DATA.PAGE_VIEWS,      weights(N,7));        /* from T2.SiteVisits7, M365 usage reports */
   const duePhySplit=split(DATA.DUE_WITH_PHYS,  weights(N,8));
 
   const DEPTS=BASE.map((d,i)=>({
@@ -2149,8 +2166,8 @@ DASHBOARDS.dp=(function(){
           phys=split(d.phys,    weights(n,s+13)),
           due=split(d.due,      weights(n,s+14)),
           users=split(d.users,  weights(n,s+15)),
-          vis=split(d.visitors, weights(n,s+16)),
-          views=split(d.views,  weights(n,s+17)),
+          vis=split(d.visitors, weights(n,s+16)),    /* from T2.UniqueViewersAllTime sum per dept */
+          views=split(d.views,  weights(n,s+17)),    /* from T2.SiteVisits7 sum per dept */
           gb=split(Math.round(d.gb*10),weights(n,s+18));
     /* People declaring and people creating are DISTINCT COUNTS, and distinct
        counts DO NOT SUM. This was got wrong until 17 August and it put an
@@ -2543,6 +2560,14 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawVisitors(d,sites){
+    /* Site-level visitor and page view data comes from the Site Activity Table (T2):
+       - s.visitors = T2.UniqueViewersAllTime (distinct people who ever accessed the site)
+         Source: Microsoft Graph Analytics /sites/{id}/analytics/allTime, actorCount field
+       - s.views = T2.SiteVisits7 (site visits in the most recent 7-day period)
+         Source: Microsoft 365 SharePoint usage reports, Page View Count column
+
+       Until T2 is populated with real tenant data, these values are split from department
+       totals using weights. Site totals reconcile exactly to department totals by construction. */
     const rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
                              (s.visitors?s.views/s.visitors:0).toFixed(1)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
