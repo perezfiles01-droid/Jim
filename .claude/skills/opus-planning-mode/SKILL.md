@@ -53,13 +53,13 @@ and I'll revise and ask for confirmation again.
 
 This loop continues until you're satisfied with the plan.
 
-### Execution Phase with Integrated Bug Verification & Autonomous Deployment
+### Execution Phase with Integrated Verification & Autonomous Deployment
 
 Once you confirm "Yes", the skill **executes fully autonomously** — you don't need to do anything else:
 
 **For SINGLE changes:**
 - Implement the change
-- Fix skill verifies (no bugs found? proceed)
+- Comprehensive verification (see standards below)
 - Commit and push
 - Merge to main
 - Deploy to live site
@@ -69,23 +69,23 @@ Once you confirm "Yes", the skill **executes fully autonomously** — you don't 
 ```
 CHANGE 1
   → Implement
-  → FIX SKILL AUTO-VERIFIES
-     ├─ Bugs found? → Auto-fix → Re-verify → Continue
-     └─ No bugs? → Continue
+  → COMPREHENSIVE VERIFICATION
+     ├─ Issues found? → Fix → Re-verify → Continue
+     └─ Fully compliant? → Continue
   → Commit → Push → Merge to main → Deploy
   ↓
 CHANGE 2 (START AUTOMATICALLY)
   → Implement
-  → FIX SKILL AUTO-VERIFIES
-     ├─ Bugs found? → Auto-fix → Re-verify → Continue
-     └─ No bugs? → Continue
+  → COMPREHENSIVE VERIFICATION
+     ├─ Issues found? → Fix → Re-verify → Continue
+     └─ Fully compliant? → Continue
   → Commit → Push → Merge to main → Deploy
   ↓
 CHANGE 3 (START AUTOMATICALLY)
   → Implement
-  → FIX SKILL AUTO-VERIFIES
-     ├─ Bugs found? → Auto-fix → Re-verify → Continue
-     └─ No bugs? → Continue
+  → COMPREHENSIVE VERIFICATION
+     ├─ Issues found? → Fix → Re-verify → Continue
+     └─ Fully compliant? → Continue
   → Commit → Push → Merge to main → Deploy
   ↓
 ✅ All changes deployed to live site — no interruptions
@@ -93,12 +93,50 @@ CHANGE 3 (START AUTOMATICALLY)
 
 **You only confirm once at the start** ("Yes"). After that, I automatically:
 - Execute each change
-- Run bug verification (silent if no bugs found)
-- Commit and push changes
+- Run comprehensive verification (functional + requirement alignment + UX check)
+- Fix any issues found and re-verify
+- Commit and push changes only when fully compliant
 - Merge to main immediately when ready
 - Progress to the next change without asking
 
 **Status updates:** Brief progress notifications after each change is deployed (e.g., "✅ Change 2 deployed. Starting Change 3...")
+
+## Comprehensive Verification Standards
+
+After each change is implemented, verification checks **four critical dimensions**:
+
+### 1. **Syntax & Logic Correctness**
+- ✅ No unclosed braces, quotes, or brackets
+- ✅ Functions exist and are callable
+- ✅ Variables are defined and in scope
+- ✅ No obvious logic errors (wrong operators, inverted conditions, etc.)
+
+### 2. **Requirement Alignment** (NEW — Critical)
+- ✅ Does the implementation actually do what was requested?
+- ✅ Are all requested features present and working?
+- ✅ Was anything from the requirement missed or partially implemented?
+- ✅ Example: If requirement says "button highlight updates on click", verify it actually does — not just that the code has no syntax errors
+
+### 3. **User Experience & Usability** (NEW — Critical)
+- ✅ Is the feature intuitive and easy to use?
+- ✅ Are UI states clear and communicative?
+- ✅ Is it obvious to users what they should do next?
+- ✅ Would a real user find this production-ready or would they notice issues?
+- ✅ Example: Button highlight must visually show which filter is active — if it doesn't, it's not user-friendly even if code is correct
+
+### 4. **Production Readiness**
+- ✅ Can a user actually use this feature end-to-end?
+- ✅ Are there any edge cases or gotchas?
+- ✅ Does the feature work as users would expect?
+- ✅ Is it better than the previous version or does it introduce problems?
+
+### If Verification Fails on ANY Dimension:
+- The change is NOT deployed
+- The issue is diagnosed and fixed automatically
+- Verification runs again
+- Only when **all four dimensions pass** does the change merge to main
+
+**This means:** "No syntax errors" ≠ "Ready to deploy". Ready to deploy means it actually works as intended and users will be satisfied.
 
 ## Summary of the Plan Includes
 
@@ -238,20 +276,29 @@ If a bug is found during implementation of Change 3:
 
 **Never skip a bug to get to the next change.** The fix skill handles this automatically so you don't have to decide.
 
-## Integration with Fix Skill
+## Integration with Comprehensive Verification
 
 **Important:** When using this skill for multi-change implementations:
 
-- After EACH change is implemented, I automatically invoke the **fix skill** to verify for bugs
-- The fix skill uses deep code analysis (no console needed) to find any issues
-- If bugs are found, the fix skill:
-  - Diagnoses the root cause
-  - Fixes it automatically
-  - Re-tests to confirm the fix works
-  - Reports back before we proceed
-- If no bugs are found, we proceed immediately to the next change
+- After EACH change is implemented, I automatically perform **comprehensive verification** (not just syntax checking)
+- Verification includes:
+  1. **Code correctness** — syntax, logic, scope, references
+  2. **Requirement alignment** — does it actually do what was requested?
+  3. **User experience** — is it intuitive, usable, production-ready?
+  4. **Functional testing** — does it work end-to-end as intended?
 
-**This means you get all the safety of incremental development without any of the manual testing overhead.**
+- If issues are found on ANY dimension:
+  - I diagnose the root cause
+  - Fix it automatically
+  - Re-verify comprehensively
+  - Only then proceed to next change
+
+- If all four dimensions pass:
+  - Change is ready to deploy
+  - Commit, push, merge to main immediately
+  - Proceed to next change
+
+**This means:** You get safety, functionality, AND user satisfaction. "No bugs" doesn't just mean syntax is correct — it means the feature is actually usable and meets your requirements.
 
 ## Bug Diagnosis and Fixing Workflow
 
@@ -406,11 +453,16 @@ The skill is designed to catch issues early and fix them thoroughly, preventing 
 
 ---
 
-**Version:** 2.0 (Fully Autonomous Execution with Auto-Merge)  
+**Version:** 2.1 (Comprehensive Verification with Requirement & UX Alignment)  
 **Last Updated:** 2026-08-18  
-**Changes in v2.0:**
-- Fully autonomous execution after user confirms "Yes"
-- No asking for confirmation between changes
-- Auto-merge to main when changes are ready (no user prompt)
-- Silent bug verification (only report if bugs found)
-- Brief status updates as workflow progresses
+**Changes in v2.1:**
+- Comprehensive verification now checks four dimensions: syntax, requirement alignment, UX/usability, production readiness
+- "No bugs" now means fully functional and user-ready, not just syntax-correct
+- Verifies that implemented features actually match what was requested
+- Checks user experience — is it intuitive and would users be satisfied?
+- Won't deploy unless all four verification dimensions pass
+- Auto-fixes any issues found and re-verifies before deploying
+
+**Previous versions:**
+- v2.0: Fully autonomous execution with auto-merge, silent bug verification
+- v1.2: Integrated with fix skill for automatic bug verification on multi-change workflows
