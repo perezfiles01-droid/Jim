@@ -3418,6 +3418,9 @@ DASHBOARDS.rd=(function(){
 
   let mode="temporary";
   let rdFilter="all";
+  let permPage=0;  // Permanent retention table page
+  let tempPage=0;  // Temporary retention table page
+  const ROWS_PER_PAGE=10;
 
   const NOSRC=`<span class="nosrc">Not captured</span>`;
 
@@ -3515,10 +3518,15 @@ DASHBOARDS.rd=(function(){
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div></div>
-        ${PERM_BY_DEPT.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+        ${PERM_BY_DEPT.slice(permPage*ROWS_PER_PAGE, (permPage+1)*ROWS_PER_PAGE).map(d=>`<div class="drow"><div class="dn">${d.name}</div>
           <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
           <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
+      <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--mut)">
+        <button id="perm-prev" style="padding:2px 8px;margin-right:12px;cursor:pointer">← Previous</button>
+        <span id="perm-page">Page ${permPage+1} of ${Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE)}</span>
+        <button id="perm-next" style="padding:2px 8px;margin-left:12px;cursor:pointer">Next →</button>
+      </div>
     </div>
 
     <div class="band">
@@ -3533,10 +3541,15 @@ DASHBOARDS.rd=(function(){
           <div class="num">Number of libraries provisioned</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div></div>
-        ${TEMP_BY_DEPT.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+        ${TEMP_BY_DEPT.slice(tempPage*ROWS_PER_PAGE, (tempPage+1)*ROWS_PER_PAGE).map(d=>`<div class="drow"><div class="dn">${d.name}</div>
           <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
           <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
+      <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--mut)">
+        <button id="temp-prev" style="padding:2px 8px;margin-right:12px;cursor:pointer">← Previous</button>
+        <span id="temp-page">Page ${tempPage+1} of ${Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE)}</span>
+        <button id="temp-next" style="padding:2px 8px;margin-left:12px;cursor:pointer">Next →</button>
+      </div>
     </div>
 
     <!-- Splitting the holding into permanent and temporary needs a rule that
@@ -3591,12 +3604,44 @@ DASHBOARDS.rd=(function(){
     chart.innerHTML=`${CHART.columns(items,{height:280})}<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">Three bars per retention category: Sites, Libraries, and Records declared</div>${legend}`;
   }
 
+  function updatePaginationDisplay(){
+    // Update permanent retention pagination
+    const permPrevBtn=document.getElementById("perm-prev");
+    const permNextBtn=document.getElementById("perm-next");
+    const permPageSpan=document.getElementById("perm-page");
+    const permTotalPages=Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE);
+    if(permPrevBtn && permNextBtn && permPageSpan){
+      permPrevBtn.disabled=permPage<=0;
+      permPrevBtn.style.opacity=permPage<=0?'0.5':'1';
+      permNextBtn.disabled=permPage>=permTotalPages-1;
+      permNextBtn.style.opacity=permPage>=permTotalPages-1?'0.5':'1';
+      permPageSpan.textContent=`Page ${permPage+1} of ${permTotalPages}`;
+      permPrevBtn.onclick=()=>{if(permPage>0){permPage--;updatePaginationDisplay();}};
+      permNextBtn.onclick=()=>{if(permPage<permTotalPages-1){permPage++;updatePaginationDisplay();}};
+    }
+    // Update temporary retention pagination
+    const tempPrevBtn=document.getElementById("temp-prev");
+    const tempNextBtn=document.getElementById("temp-next");
+    const tempPageSpan=document.getElementById("temp-page");
+    const tempTotalPages=Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE);
+    if(tempPrevBtn && tempNextBtn && tempPageSpan){
+      tempPrevBtn.disabled=tempPage<=0;
+      tempPrevBtn.style.opacity=tempPage<=0?'0.5':'1';
+      tempNextBtn.disabled=tempPage>=tempTotalPages-1;
+      tempNextBtn.style.opacity=tempPage>=tempTotalPages-1?'0.5':'1';
+      tempPageSpan.textContent=`Page ${tempPage+1} of ${tempTotalPages}`;
+      tempPrevBtn.onclick=()=>{if(tempPage>0){tempPage--;updatePaginationDisplay();}};
+      tempNextBtn.onclick=()=>{if(tempPage<tempTotalPages-1){tempPage++;updatePaginationDisplay();}};
+    }
+  }
+
   function init(){
     const filter=document.getElementById("rd-filter");
     filter.innerHTML=`<option value="all">All</option>
       <option value="Permanent">Permanent retention</option>
       <option value="Temporary">Temporary retention</option>`;
     filter.onchange=e=>{rdFilter=e.target.value;drawChart();};
+    updatePaginationDisplay();
     drawChart();
   }
 
