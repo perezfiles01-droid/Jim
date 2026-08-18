@@ -2989,41 +2989,45 @@ DASHBOARDS.dp=(function(){
       };
     });
 
-    /* Wire up month picker */
+    /* Wire up month picker - only if element exists (rendered by drawVisitors) */
     const monthSel=document.getElementById("dp-visitor-month");
-    monthSel.onchange=e=>{
-      visitorMonth=e.target.value;
-      visitorFilterType="month";
-      /* Show month picker, hide year picker */
-      monthSel.style.display="inline-block";
-      document.getElementById("dp-visitor-year").style.display="none";
-      /* Hide quick window button highlights */
-      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-      /* Apply the visitor filter and rebuild data */
-      applyVisitorFilter();
-      rebuildALL();
-      /* Redraw the KPIs and drill with new visitor values */
-      drawAll();
-      if(openKpi==="visitors") drawDrill();
-    };
+    if(monthSel){
+      monthSel.onchange=e=>{
+        visitorMonth=e.target.value;
+        visitorFilterType="month";
+        /* Show month picker, hide year picker */
+        monthSel.style.display="inline-block";
+        document.getElementById("dp-visitor-year").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
 
-    /* Wire up year picker */
+    /* Wire up year picker - only if element exists (rendered by drawVisitors) */
     const yearSel=document.getElementById("dp-visitor-year");
-    yearSel.onchange=e=>{
-      visitorYear=e.target.value;
-      visitorFilterType="year";
-      /* Show year picker, hide month picker */
-      yearSel.style.display="inline-block";
-      document.getElementById("dp-visitor-month").style.display="none";
-      /* Hide quick window button highlights */
-      document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-      /* Apply the visitor filter and rebuild data */
-      applyVisitorFilter();
-      rebuildALL();
-      /* Redraw the KPIs and drill with new visitor values */
-      drawAll();
-      if(openKpi==="visitors") drawDrill();
-    };
+    if(yearSel){
+      yearSel.onchange=e=>{
+        visitorYear=e.target.value;
+        visitorFilterType="year";
+        /* Show year picker, hide month picker */
+        yearSel.style.display="inline-block";
+        document.getElementById("dp-visitor-month").style.display="none";
+        /* Hide quick window button highlights */
+        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
+        /* Apply the visitor filter and rebuild data */
+        applyVisitorFilter();
+        rebuildALL();
+        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
 
     const cat=document.getElementById("dp-cat");
     cat.value=libCat;
