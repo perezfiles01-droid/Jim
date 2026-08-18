@@ -3428,6 +3428,38 @@ DASHBOARDS.rd=(function(){
   const pDocs=split(Math.round(DATA.DOCUMENTS*PERM_REC/DATA.LABEL_TOTAL),weights(PERM.length,30));
   PERM.forEach((t,i)=>{t.docs=pDocs[i];});
 
+  /* ===== Permanent retention by department =====
+     Split permanent retention data across the 16 departments proportionally to their records */
+  const DEPTS=BW.departments;
+  const nD=DEPTS.length;
+  const pRecByDept=split(PERM_REC, weights(nD,31)),
+        pPhysByDept=split(PERM_PHYS, weights(nD,32)),
+        pSitesByDept=split(pSites[0], weights(nD,33)),
+        pLibsByDept=split(PERM.reduce((a,t)=>a+t.libs,0), weights(nD,34));
+  const PERM_BY_DEPT=DEPTS.map((d,i)=>({
+    code:d.code, name:d.name,
+    sites:pSitesByDept[i], libs:pLibsByDept[i], rec:pRecByDept[i], phys:pPhysByDept[i]
+  }));
+  console.assert(PERM_BY_DEPT.reduce((a,d)=>a+d.rec,0)===PERM_REC,
+    "Permanent records by department must total permanent records");
+  console.assert(PERM_BY_DEPT.reduce((a,d)=>a+d.phys,0)===PERM_PHYS,
+    "Permanent physical by department must total permanent physical");
+
+  /* ===== Temporary retention by department =====
+     Split temporary retention data across the 16 departments proportionally to their records */
+  const tRecByDept=split(TEMP_REC, weights(nD,35)),
+        tPhysByDept=split(TEMP_PHYS, weights(nD,36)),
+        tSitesByDept=split(tSites[0], weights(nD,37)),
+        tLibsByDept=split(TEMP.reduce((a,t)=>a+t.libs,0), weights(nD,38));
+  const TEMP_BY_DEPT=DEPTS.map((d,i)=>({
+    code:d.code, name:d.name,
+    sites:tSitesByDept[i], libs:tLibsByDept[i], rec:tRecByDept[i], phys:tPhysByDept[i]
+  }));
+  console.assert(TEMP_BY_DEPT.reduce((a,d)=>a+d.rec,0)===TEMP_REC,
+    "Temporary records by department must total temporary records");
+  console.assert(TEMP_BY_DEPT.reduce((a,d)=>a+d.phys,0)===TEMP_PHYS,
+    "Temporary physical by department must total temporary physical");
+
   /* ===== s44, the landing screen =====
      Reached from the Retention and disposal insights tile on Bank-wide, s34.
      Records disposed is the one column with no source: the EDRMS application
@@ -3474,17 +3506,15 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, permanent retention</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(5,minmax(110px,1fr))">
-        <div class="dhead"><div>Term (top level)</div>
-          <div class="num">Departments, offices and RMs provisioned</div>
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
+        <div class="dhead"><div>Department / office / RM</div>
+          <div class="num">Number of sites provisioned</div>
           <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of documents</div>
           <div class="num">Number of records declared</div>
           <div class="num">Number of physical counterparts</div></div>
-        ${PERM.map(t=>`<div class="drow"><div class="dn">${t.term}<small>${t.note}</small></div>
-          <div class="num">${F(t.depts)}</div><div class="num">${F(t.libs)}</div>
-          <div class="num">${F(t.docs)}</div><div class="num">${F(t.rec)}</div>
-          <div class="num">${F(t.phys)}</div></div>`).join("")}
+        ${PERM_BY_DEPT.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
+          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
     </div>
 
