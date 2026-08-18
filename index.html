@@ -3576,9 +3576,8 @@ DASHBOARDS.rd=(function(){
            bar and the share sits in the pct column, so nothing that was
            readable before is now only inferable from a bar length. -->
       ${CHART.hbars(DATA.LABELS.map(l=>({
-        label:l.label, sub:l.note, value:l.count,
-        pct:(100*l.count/DATA.LABEL_TOTAL).toFixed(1)+"%"
-      })),{pct:true})}
+        label:l.label, sub:l.note, value:l.count
+      })),{pct:false})}
     </div>
   </section>`;
 
