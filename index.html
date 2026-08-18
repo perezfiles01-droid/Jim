@@ -2288,10 +2288,9 @@ DASHBOARDS.dp=(function(){
       sub="Users with recorded activity, and how recently they were last active.";
       cols=["Activity","Number of users"];
       const never=d.never, idle90=d.idle90;
-      rows=[["Used EDRMS in the last 180 days",F(d.users-never-idle90),
-             PCT(d.users-never-idle90,d.users).toFixed(1)+"%"],
-            ["No access in the last 180 days",F(idle90),PCT(idle90,d.users).toFixed(1)+"%"],
-            ["Never accessed EDRMS",F(never),PCT(never,d.users).toFixed(1)+"%"]];
+      rows=[["Used EDRMS in the last 180 days",F(d.users-never-idle90)],
+            ["No access in the last 180 days",F(idle90)],
+            ["Never accessed EDRMS",F(never)]];
       tiles=[{lab:"Users with recorded activity",v:d.users},
              {lab:"Never accessed EDRMS",v:never},
              {lab:"No access in 180 days",v:idle90}];
