@@ -3549,20 +3549,16 @@ DASHBOARDS.rd=(function(){
     <div class="panel">
       <div class="ptitle">Declared records by retention label</div>
       <div class="psub">Every declared record carries a retention label, so this grouping covers the whole holding.</div>
-      <div id="rl-chart" style="padding:12px 0"></div>
+      <div class="scrollx"><div class="dtab" style="--dc:minmax(180px,1.6fr) repeat(2,minmax(120px,1fr))">
+        <div class="dhead"><div>Retention label</div>
+          <div class="num">Number of records declared</div>
+          <div class="num">Share of declared records</div></div>
+        ${DATA.LABELS.map(l=>`<div class="drow"><div class="dn">${l.label}</div>
+          <div class="num">${F(l.count)}</div>
+          <div class="num">${(100*l.count/DATA.LABEL_TOTAL).toFixed(1)}%</div></div>`).join("")}
+      </div></div>
     </div>
   </section>`;
-
-  function drawLabelChart(){
-    const chart=document.getElementById("rl-chart");
-    if(!chart)return;
-    const items=[];
-    const colors=[CHART.C.blue,CHART.C.teal,CHART.C.green,CHART.C.orange,CHART.C.deep,CHART.C.grey,CHART.C.mut];
-    DATA.LABELS.forEach((l,i)=>{
-      items.push({label:l.label,value:l.count,color:colors[i%colors.length]});
-    });
-    chart.innerHTML=CHART.hbars(items,{});
-  }
 
   function drawChart(){
     const chart=document.getElementById("rd-chart");
@@ -3593,7 +3589,6 @@ DASHBOARDS.rd=(function(){
       <option value="Temporary">Temporary retention</option>`;
     filter.onchange=e=>{rdFilter=e.target.value;drawChart();};
     drawChart();
-    drawLabelChart();
   }
 
   return {
