@@ -2159,7 +2159,7 @@ DASHBOARDS.dp=(function(){
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
   let openKpi="sites";         /* tile 1 on s53 */
   let sitePage=1, sortSite="rec", dirSite="desc";
-  let visitorPage=1;
+  let visitorPage=1, docsPage=1, recPage=1, physPage=1, disposalPage=1;
   let libCat=CATS[0];
 
   /* An "All departments, offices and RMs" option on the filter, added 17 Aug
@@ -2310,83 +2310,29 @@ DASHBOARDS.dp=(function(){
       /* s57. The migration figures are drawn here, but s11 says of the
          migration dashboard "I do not believe this is required at all", and
          nothing marks a document as migrated in any case. Audit question 9. */
-      title="Total number of documents in EDRMS";
-      sub="Documents created or uploaded, by site.";
-      cols=["Name of sites","Number of documents created / uploaded",
-            "Number of users creating documents","Documents size (in GB)"];
-      rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
-      tiles=[{lab:"Total number of documents",v:d.docs},
-             {lab:"EDRMS active sites",v:sites.length},
-             {lab:"Total documents size",txt:GB(d.gb)}];
+      return drawDocuments(d,sites);
     }
 
     else if(openKpi==="rec"){
       /* s58 asks for collapsible division rows. Division has no source
          anywhere, so the tier came off on 17 August and this is a flat list of
          sites. Audit question 5. */
-      title="Compliance review, record declaration";
-      sub="Records declared and the people declaring them, by site.";
-      /* "Documents declared" removed 17 Aug 2026, matching the Bank-wide
-         records drill. It was the declaration rate, and its denominator does
-         not exist in any system yet: the Records table holds no row for an
-         undeclared document, so the column was waiting on the weekly scan. */
-      cols=["Name of sites","Total number of records declared","People who declared a record"];
-      rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring)]);
-      tiles=[{lab:"Total number of records declared",v:d.rec},
-             {lab:"Total number of users declaring records",v:d.declaring},
-             {lab:"Sites with no declared record in "+IDLE+" days",
-              v:sites.filter(s=>s.idle>IDLE).length},
-             {lab:"Total declared record size",txt:GB(d.recgb)}];
+      return drawRecords(d,sites);
     }
 
     else if(openKpi==="phys"){
       /* s59. Note the client's slide repeats s58's last three columns
          unchanged and only edits the measure to physical. Built as drawn,
          with the copy queried in the audit, question 10. */
-      title="Physical counterpart";
-      sub="Records with a physical counterpart, by site.";
-      cols=["Name of sites","Records with a counterpart",
-            "Total number of users declaring records","Share of records with a counterpart"];
-      rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
-                         PCT(s.phys,s.rec).toFixed(1)+"%"]);
-      tiles=[{lab:"Records with a counterpart",v:d.phys},
-             {lab:"Total number of users declaring records",v:d.declaring},
-             {lab:"EDRMS active sites",v:sites.length},
-             {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}];
+      return drawPhysical(d,sites);
     }
 
     else {
       /* s60. Three of the eight columns are producible. The approver and the
          three status columns need fields the EDRMS application does not have.
          Audit question 7 specifies the change request. */
-      title="Disposal";
-      sub="Records due for disposal, by library.";
-      const libs=librariesFor(dept).slice(0,10);
-      cols=["Library name","Number of records due for disposal","Next due date for disposal",
-            "With physical counterpart?"];
-      const dueSplit=split(d.due,libs.map((l,i)=>1+(i%4)));
-      rows=libs.map((l,i)=>[l.lib,F(dueSplit[i]),DUE_DATES[i%DUE_DATES.length],
-                            l.phys>0?"Yes":"No"]);
-      tiles=[{lab:"Records due for disposal within 12 months",v:d.due},
-             {lab:"Libraries with records due",v:libs.length}];
+      return drawDisposal(d);
     }
-
-    const body=rows.map(r=>
-      `<div class="drow">${r.map((c,j)=>
-        j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
-
-    const gridLayout=cols.length===2?
-      "1fr 120px":
-      `minmax(170px,1.4fr) repeat(${Math.max(1,cols.length-1)},minmax(110px,1fr))`;
-    document.getElementById("dp-drill").innerHTML=
-      `<div class="ptitle">${title}</div>
-       <div class="psub">${sub}</div>
-       ${summaryChart(tiles)}
-       <div class="scrollx"><div class="dtab wide" style="--dc:${gridLayout}">
-         <div class="dhead">${cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${body}
-       </div></div>`;
 
   }
 
@@ -2503,6 +2449,137 @@ DASHBOARDS.dp=(function(){
 
     wirePager("#dp-visitors-pager",go=>{
       visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawDocuments(d,sites){
+    const rows=sites.map(s=>[s.name,F(s.docs),F(s.creating),GB(s.gb)]);
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(docsPage>pages)docsPage=pages;
+    const page=rows.slice((docsPage-1)*10,docsPage*10);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Total number of documents in EDRMS</div>
+       <div class="psub">Documents created or uploaded, by site.</div>
+       ${summaryChart([
+         {lab:"Total number of documents",v:d.docs},
+         {lab:"EDRMS active sites",v:sites.length},
+         {lab:"Total documents size",txt:GB(d.gb)}])}
+       <div class="scrollx"><div class="dtab wide" id="dp-documents"
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+         <div class="dhead">
+           <div>Name of sites</div>
+           <div class="num">Number of documents created / uploaded</div>
+           <div class="num">Number of users creating documents</div>
+           <div class="num">Documents size (in GB)</div>
+         </div>
+         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+       </div></div>
+       <div id="dp-documents-pager">${pager(rows.length,docsPage,pages,"sites")}</div>`;
+
+    wirePager("#dp-documents-pager",go=>{
+      docsPage=go==="prev"?Math.max(1,docsPage-1):go==="next"?Math.min(pages,docsPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawRecords(d,sites){
+    const rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring)]);
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(recPage>pages)recPage=pages;
+    const page=rows.slice((recPage-1)*10,recPage*10);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Compliance review, record declaration</div>
+       <div class="psub">Records declared and the people declaring them, by site.</div>
+       ${summaryChart([
+         {lab:"Total number of records declared",v:d.rec},
+         {lab:"Total number of users declaring records",v:d.declaring},
+         {lab:"Sites with no declared record in ${IDLE} days",v:sites.filter(s=>s.idle>IDLE).length},
+         {lab:"Total declared record size",txt:GB(d.recgb)}])}
+       <div class="scrollx"><div class="dtab wide" id="dp-records"
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
+         <div class="dhead">
+           <div>Name of sites</div>
+           <div class="num">Total number of records declared</div>
+           <div class="num">People who declared a record</div>
+         </div>
+         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
+       </div></div>
+       <div id="dp-records-pager">${pager(rows.length,recPage,pages,"sites")}</div>`;
+
+    wirePager("#dp-records-pager",go=>{
+      recPage=go==="prev"?Math.max(1,recPage-1):go==="next"?Math.min(pages,recPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawPhysical(d,sites){
+    const rows=sites.map(s=>[s.name,F(s.phys),F(s.declaring),
+                             PCT(s.phys,s.rec).toFixed(1)+"%"]);
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(physPage>pages)physPage=pages;
+    const page=rows.slice((physPage-1)*10,physPage*10);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Physical counterpart</div>
+       <div class="psub">Records with a physical counterpart, by site.</div>
+       ${summaryChart([
+         {lab:"Records with a counterpart",v:d.phys},
+         {lab:"Total number of users declaring records",v:d.declaring},
+         {lab:"EDRMS active sites",v:sites.length},
+         {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}])}
+       <div class="scrollx"><div class="dtab wide" id="dp-physical"
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+         <div class="dhead">
+           <div>Name of sites</div>
+           <div class="num">Records with a counterpart</div>
+           <div class="num">Total number of users declaring records</div>
+           <div class="num">Share of records with a counterpart</div>
+         </div>
+         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+       </div></div>
+       <div id="dp-physical-pager">${pager(rows.length,physPage,pages,"sites")}</div>`;
+
+    wirePager("#dp-physical-pager",go=>{
+      physPage=go==="prev"?Math.max(1,physPage-1):go==="next"?Math.min(pages,physPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawDisposal(d){
+    const libs=librariesFor(dept);
+    const rows=libs.map((l,i)=>[l.lib,F(split(d.due,libs.map((l,j)=>1+(j%4)))[i]),
+                                DUE_DATES[i%DUE_DATES.length],l.phys>0?"Yes":"No"]);
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(disposalPage>pages)disposalPage=pages;
+    const page=rows.slice((disposalPage-1)*10,disposalPage*10);
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Disposal</div>
+       <div class="psub">Records due for disposal, by library.</div>
+       ${summaryChart([
+         {lab:"Records due for disposal within 12 months",v:d.due},
+         {lab:"Libraries with records due",v:libs.length}])}
+       <div class="scrollx"><div class="dtab wide" id="dp-disposal"
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+         <div class="dhead">
+           <div>Library name</div>
+           <div class="num">Number of records due for disposal</div>
+           <div class="num">Next due date for disposal</div>
+           <div class="num">With physical counterpart?</div>
+         </div>
+         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+       </div></div>
+       <div id="dp-disposal-pager">${pager(rows.length,disposalPage,pages,"sites")}</div>`;
+
+    wirePager("#dp-disposal-pager",go=>{
+      disposalPage=go==="prev"?Math.max(1,disposalPage-1):go==="next"?Math.min(pages,disposalPage+1):+go;
       drawDrill();
     });
   }
