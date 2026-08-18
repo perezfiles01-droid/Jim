@@ -3040,10 +3040,6 @@ DASHBOARDS.dp=(function(){
     const page=libs.slice(start,end);
     const totalPages=Math.ceil(libs.length/LIBS_PER_PAGE);
 
-    const prevBtn=libsPage>1?`<button onclick="libsPage--;dp.drawLibs()">← Previous</button>`:'<button disabled>← Previous</button>';
-    const nextBtn=libsPage<totalPages?`<button onclick="libsPage++;dp.drawLibs()">Next →</button>`:'<button disabled>Next →</button>';
-    const pagerInfo=`Showing ${start+1} to ${Math.min(end,libs.length)} of ${libs.length} libraries`;
-
     document.getElementById("dp-libs").innerHTML=
       `<div class="tiles">
          <div class="tile"><div class="tl">Total library names</div><div class="tv">${F(libs.length)}</div></div>
@@ -3059,7 +3055,12 @@ DASHBOARDS.dp=(function(){
            <div class="num">${F(l.docs)}</div>
            <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
        </div></div>
-       <div class="pager"><div class="pinfo">${pagerInfo}</div><div class="pbtns">${prevBtn}${nextBtn}</div></div>`;
+       <div id="dp-libs-pager">${pager(libs.length,libsPage,totalPages,"libraries")}</div>`;
+
+    wirePager("#dp-libs-pager",go=>{
+      libsPage=go==="prev"?Math.max(1,libsPage-1):go==="next"?Math.min(totalPages,libsPage+1):+go;
+      drawLibs();
+    });
   }
 
   function drawAll(){
