@@ -2397,7 +2397,7 @@ DASHBOARDS.dp=(function(){
       `<div class="ptitle">${title}</div>
        <div class="psub">${sub}</div>
        ${summaryChart(tiles)}
-       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.4fr) repeat(${cols.length-1},minmax(110px,1fr))">
+       <div class="scrollx"><div class="dtab wide" style="--dc:${cols.length===2?"minmax(150px,1fr) minmax(110px,1fr)":"minmax(170px,1.4fr) repeat("+Math.max(1,cols.length-1)+",minmax(110px,1fr))"}">
          <div class="dhead">${cols.map((c,i)=>
            `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
          ${body}
