@@ -2457,7 +2457,7 @@ DASHBOARDS.dp=(function(){
   const TILES=[
     {k:"sites", lab:"Total number of EDRMS compliant sites created",    val:d=>F(d.sites)},
     {k:"users", lab:"Total number of EDRMS users with recorded activity, last 180 days", val:d=>F(d.users)},
-    {k:"visitors",lab:"Total number of site visitors",                 val:d=>F(d.visitors)},
+    {k:"visitors",lab:"Total number of site visits",                   val:d=>F(d.visitors)},
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
     {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
@@ -2746,8 +2746,7 @@ DASHBOARDS.dp=(function(){
        </div>
        ${(()=>{const m=getFilteredMetrics(d);return summaryChart([
          {lab:"Page View Count",v:m.pageViews},
-         {lab:"Visited Page Count",v:m.visitedPages},
-         {lab:"EDRMS active sites",v:sites.length}]);})()}
+         {lab:"Visited Page Count",v:m.visitedPages}]);})()}
        <div class="scrollx"><div class="dtab wide" id="dp-visitors"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(150px,1fr) minmax(160px,1fr)">
          <div class="dhead">
