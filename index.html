@@ -3553,14 +3553,20 @@ DASHBOARDS.rd=(function(){
     <div class="panel">
       <div class="ptitle">Declared records by retention label</div>
       <div class="psub">Every declared record carries a retention label, so this grouping covers the whole holding.</div>
-      <div class="scrollx"><div class="dtab" style="--dc:minmax(180px,1.6fr) repeat(2,minmax(120px,1fr))">
-        <div class="dhead"><div>Retention label</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Share of declared records</div></div>
-        ${DATA.LABELS.map(l=>`<div class="drow"><div class="dn">${l.label}</div>
-          <div class="num">${F(l.count)}</div>
-          <div class="num">${(100*l.count/DATA.LABEL_TOTAL).toFixed(1)}%</div></div>`).join("")}
-      </div></div>
+      <!-- Ranked horizontal bars rather than a table, 18 Aug 2026. The Power BI
+           equivalent is a bar chart with the label on the axis, which is the
+           right visual for one measure across seven named categories: the
+           counts span 8,100 down to 232, and a bar makes that spread readable
+           at a glance where a column of figures does not. Bars are horizontal
+           because the labels are sentences, not months.
+
+           Both columns the table carried are kept. The count is printed on the
+           bar and the share sits in the pct column, so nothing that was
+           readable before is now only inferable from a bar length. -->
+      ${CHART.hbars(DATA.LABELS.map(l=>({
+        label:l.label, sub:l.note, value:l.count,
+        pct:(100*l.count/DATA.LABEL_TOTAL).toFixed(1)+"%"
+      })),{pct:true})}
     </div>
   </section>`;
 
