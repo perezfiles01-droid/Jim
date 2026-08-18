@@ -2758,7 +2758,7 @@ DASHBOARDS.dp=(function(){
        ${summaryChart([
          {lab:"Total number of records declared",v:d.rec},
          {lab:"Total number of users declaring records",v:d.declaring},
-         {lab:"Sites with no declared record in ${IDLE} days",v:sites.filter(s=>s.idle>IDLE).length},
+         {lab:"Sites with no declared record in 180 days",v:sites.filter(s=>s.idle>180).length},
          {lab:"Total declared record size",txt:GB(d.recgb)}])}
        <div class="scrollx"><div class="dtab wide" id="dp-records"
             style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
@@ -2813,29 +2813,31 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawDisposal(d){
-    const libs=librariesFor(dept);
-    const rows=libs.map((l,i)=>[l.lib,F(split(d.due,libs.map((l,j)=>1+(j%4)))[i]),
-                                DUE_DATES[i%DUE_DATES.length],l.phys>0?"Yes":"No"]);
+    const sites=sitesFor(dept);
+    const due12Split=split(d.due,sites.map(s=>s.rec));
+    const due6=Math.round(d.due*0.5);
+    const due3=Math.round(d.due*0.33);
+    const rows=sites.map((s,i)=>[s.name,F(due12Split[i]),DUE_DATES[i%DUE_DATES.length]]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(disposalPage>pages)disposalPage=pages;
     const page=rows.slice((disposalPage-1)*10,disposalPage*10);
 
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Disposal</div>
-       <div class="psub">Records due for disposal, by library.</div>
+       <div class="psub">Records due for disposal, by site.</div>
        ${summaryChart([
-         {lab:"Records due for disposal within 12 months",v:d.due},
-         {lab:"Libraries with records due",v:libs.length}])}
+         {lab:"Records due for disposal within 3 months",v:due3},
+         {lab:"Records due for disposal within 6 months",v:due6},
+         {lab:"Records due for disposal within 12 months",v:d.due}])}
        <div class="scrollx"><div class="dtab wide" id="dp-disposal"
-            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
-           <div>Library name</div>
+           <div>Name of sites</div>
            <div class="num">Number of records due for disposal</div>
            <div class="num">Next due date for disposal</div>
-           <div class="num">With physical counterpart?</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
        </div></div>
        <div id="dp-disposal-pager">${pager(rows.length,disposalPage,pages,"sites")}</div>`;
 
