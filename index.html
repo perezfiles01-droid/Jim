@@ -3432,12 +3432,20 @@ DASHBOARDS.rd=(function(){
      Reached from the Retention and disposal insights tile on Bank-wide, s34.
      Records disposed is the one column with no source: the EDRMS application
      has no disposal status, approver or disposal date. Audit question 7. */
+  /* Sites provisioned are split proportionally to records. Total EDRMS sites
+     in the test tenant is approximately 1,032, per the compliance export. */
+  const TOTAL_SITES=1032;
+  const pSites=split(Math.round(TOTAL_SITES*PERM_REC/DATA.LABEL_TOTAL),weights(1,100)),
+        tSites=split(Math.round(TOTAL_SITES*TEMP_REC/DATA.LABEL_TOTAL),weights(1,101));
+
   const ROLLUP=[
-    {lab:"Permanent retention", depts:PERM.reduce((a,t)=>a+t.depts,0),
+    {lab:"Permanent retention", sites:pSites[0],
      libs:PERM.reduce((a,t)=>a+t.libs,0), rec:PERM_REC, phys:PERM_PHYS, due:0},
-    {lab:"Temporary retention <small>(records with disposal due dates)</small>", depts:TEMP.reduce((a,t)=>a+t.depts,0),
+    {lab:"Temporary retention <small>(records with disposal due dates)</small>", sites:tSites[0],
      libs:TEMP.reduce((a,t)=>a+t.libs,0), rec:TEMP_REC, phys:TEMP_PHYS, due:DATA.DUE_NEXT_12},
   ];
+  console.assert(ROLLUP.reduce((a,r)=>a+r.sites,0)===TOTAL_SITES,
+    "The rollup sites must total approximately the 1,032 compliant sites");
   console.assert(ROLLUP.reduce((a,r)=>a+r.rec,0)===DATA.LABEL_TOTAL,
     "The rollup must total every labelled record");
   console.assert(ROLLUP.reduce((a,r)=>a+r.phys,0)===DATA.WITH_PHYSICAL,
@@ -3457,16 +3465,15 @@ DASHBOARDS.rd=(function(){
         <span class="lbl">Retention category</span>
         <select id="rd-filter"></select>
       </div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(4,minmax(110px,1fr))">
+      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(170px,1.3fr) repeat(3,minmax(110px,1fr))">
         <div class="dhead"><div>Heading</div>
+          <div class="num">Number of sites provisioned</div>
           <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div>
-          <div class="num">Number of records due for disposal</div></div>
+          <div class="num">Number of records declared</div></div>
         ${ROLLUP.filter(r=>(rdFilter==="all"||r.lab.includes(rdFilter))).map(r=>`<div class="drow"><div class="dn">${r.lab}</div>
+          <div class="num">${F(r.sites)}</div>
           <div class="num">${F(r.libs)}</div>
-          <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div>
-          <div class="num">${F(r.due)}</div></div>`).join("")}
+          <div class="num">${F(r.rec)}</div></div>`).join("")}
       </div></div>
     </div>
 
