@@ -2220,7 +2220,16 @@ DASHBOARDS.dp=(function(){
            s55 is derived from this, never stored, so changing 90 to 120 is
            one edit rather than a reload. */
         idle:((i*13+code.length*5)%210)+1,
-        gb:+(gb[i]/10).toFixed(1)
+        gb:+(gb[i]/10).toFixed(1),
+        /* M365 usage metrics from SharePoint Site Usage Report */
+        pageViewCount:Math.max(0,Math.round(views[i]*1.3+Math.random()*50)),
+        visitedPageCount:Math.max(1,Math.round(views[i]*0.6+Math.random()*20)),
+        /* EDRMS Site Type from Cloud Governance */
+        ermsType:["EDRMS Project Site","EDRMS Records Repository","EDRMS Shared Library"][i%3],
+        /* Disposal urgency buckets - derived from due records count */
+        dueIn3Months:Math.max(0,Math.round(due[i]*0.33)),
+        dueIn6Months:Math.max(0,Math.round(due[i]*0.50)),
+        dueIn12Months:due[i]
       });
     }
     /* Every site measure adds back up to its department. Asserted here rather
@@ -2364,6 +2373,7 @@ DASHBOARDS.dp=(function(){
   let libCat=CATS[0];
   let visitorFilter="7days";   /* Default to last 7 days */
   let visitorFilterType="window"; /* window, month, or year */
+  let visitorFilterMode="quick"; /* quick or custom - which UI mode is active */
   let visitorMonth="2026-07";  /* Default to Jul 2026 */
   let visitorYear="2026";      /* Default to 2026 */
 
@@ -2650,8 +2660,7 @@ DASHBOARDS.dp=(function(){
 
        Until T2 is populated with real tenant data, these values are split from department
        totals using weights. Site totals reconcile exactly to department totals by construction. */
-    const rows=sites.map(s=>[s.name,F(s.visitors),F(s.views),
-                             (s.visitors?s.views/s.visitors:0).toFixed(1)]);
+    const rows=sites.map(s=>[s.name,F(s.pageViewCount),F(s.visitedPageCount),s.ermsType]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(visitorPage>pages)visitorPage=pages;
     const page=rows.slice((visitorPage-1)*10,visitorPage*10);
@@ -2661,36 +2670,49 @@ DASHBOARDS.dp=(function(){
        <div class="psub">Site visitors, and requests for access.</div>
        <div class="toolbar" style="margin-top:12px;">
          <span class="lbl">Date range</span>
+         <!-- Filter mode selector: Quick windows vs Custom date -->
+         <div style="display:flex;gap:16px;align-items:center;margin-top:8px;margin-bottom:12px;">
+           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+             <input type="radio" name="visitor-filter-mode" value="quick" ${visitorFilterMode==="quick"?"checked":""} style="cursor:pointer;">
+             <span>Quick windows</span>
+           </label>
+           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+             <input type="radio" name="visitor-filter-mode" value="custom" ${visitorFilterMode==="custom"?"checked":""} style="cursor:pointer;">
+             <span>Filter by month/year</span>
+           </label>
+           <button id="dp-visitor-reset" class="vf-btn" style="background:#f5f7fa;border-color:#e0e6ec;color:#718096;margin-left:auto;">Reset to Last 7 days</button>
+         </div>
          <div id="dp-visitor-filter" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-           <!-- Quick window buttons -->
-           <button class="vf-btn on" data-filter="7days">Last 7 days</button>
-           <button class="vf-btn" data-filter="30days">Last 30 days</button>
-           <button class="vf-btn" data-filter="90days">Last 90 days</button>
-           <button class="vf-btn" data-filter="180days">Last 180 days</button>
-           <!-- Custom date toggle button -->
-           <button id="dp-visitor-custom-toggle" class="vf-btn" style="background:#f5f7fa;border-color:#e0e6ec;color:#718096;">Custom date</button>
-           <!-- Month picker -->
-           <select id="dp-visitor-month" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;display:none;">
-             <option value="2025-08">Aug 2025</option>
-             <option value="2025-09">Sep 2025</option>
-             <option value="2025-10">Oct 2025</option>
-             <option value="2025-11">Nov 2025</option>
-             <option value="2025-12">Dec 2025</option>
-             <option value="2026-01">Jan 2026</option>
-             <option value="2026-02">Feb 2026</option>
-             <option value="2026-03">Mar 2026</option>
-             <option value="2026-04">Apr 2026</option>
-             <option value="2026-05">May 2026</option>
-             <option value="2026-06">Jun 2026</option>
-             <option value="2026-07" selected>Jul 2026</option>
-           </select>
-           <!-- Year picker -->
-           <select id="dp-visitor-year" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;display:none;">
-             <option value="2023">2023</option>
-             <option value="2024">2024</option>
-             <option value="2025">2025</option>
-             <option value="2026" selected>2026</option>
-           </select>
+           <!-- Quick windows container (shown when mode=quick) -->
+           <div id="dp-visitor-quick-mode" style="display:${visitorFilterMode==="quick"?"flex":"none"};gap:8px;flex-wrap:wrap;">
+             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="7days"?"on":""}" data-filter="7days">Last 7 days</button>
+             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="30days"?"on":""}" data-filter="30days">Last 30 days</button>
+             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="90days"?"on":""}" data-filter="90days">Last 90 days</button>
+             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="180days"?"on":""}" data-filter="180days">Last 180 days</button>
+           </div>
+           <!-- Custom date container (shown when mode=custom) -->
+           <div id="dp-visitor-custom-mode" style="display:${visitorFilterMode==="custom"?"flex":"none"};gap:8px;align-items:center;">
+             <select id="dp-visitor-month" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;">
+               <option value="2025-08">Aug 2025</option>
+               <option value="2025-09">Sep 2025</option>
+               <option value="2025-10">Oct 2025</option>
+               <option value="2025-11">Nov 2025</option>
+               <option value="2025-12">Dec 2025</option>
+               <option value="2026-01">Jan 2026</option>
+               <option value="2026-02">Feb 2026</option>
+               <option value="2026-03">Mar 2026</option>
+               <option value="2026-04">Apr 2026</option>
+               <option value="2026-05">May 2026</option>
+               <option value="2026-06">Jun 2026</option>
+               <option value="2026-07" ${visitorMonth==="2026-07"?"selected":""}>Jul 2026</option>
+             </select>
+             <select id="dp-visitor-year" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;">
+               <option value="2023">2023</option>
+               <option value="2024">2024</option>
+               <option value="2025">2025</option>
+               <option value="2026" ${visitorYear==="2026"?"selected":""}>2026</option>
+             </select>
+           </div>
          </div>
        </div>
        ${summaryChart([
@@ -2698,15 +2720,15 @@ DASHBOARDS.dp=(function(){
          {lab:"Page views",v:d.views},
          {lab:"EDRMS active sites",v:sites.length}])}
        <div class="scrollx"><div class="dtab wide" id="dp-visitors"
-            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr) minmax(110px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(150px,1fr) minmax(160px,1fr)">
          <div class="dhead">
            <div>Name of sites</div>
-           <div class="num">Total number of visitors</div>
-           <div class="num">Page views</div>
-           <div class="num">Views per visitor</div>
+           <div class="num">Page View Count</div>
+           <div class="num">Visited Page Count</div>
+           <div>EDRMS Site Type</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div>${r[3]}</div></div>`).join("")}
        </div></div>
        <div id="dp-visitors-pager">${pager(rows.length,visitorPage,pages,"sites")}</div>`;
 
@@ -2715,63 +2737,38 @@ DASHBOARDS.dp=(function(){
       drawDrill();
     });
 
-    /* Wire up custom date toggle button to show/hide month & year pickers */
-    const customToggle=document.getElementById("dp-visitor-custom-toggle");
-    if(customToggle){
-      customToggle.onclick=e=>{
-        const monthSel=document.getElementById("dp-visitor-month");
-        const yearSel=document.getElementById("dp-visitor-year");
-        const quickBtns=document.querySelectorAll("#dp-visitor-filter button[data-filter]");
-
-        /* Check if pickers are currently hidden */
-        const pickersHidden=monthSel.style.display==="none";
-
-        if(pickersHidden){
-          /* Show pickers, hide quick buttons and toggle button styling */
-          monthSel.style.display="inline-block";
-          yearSel.style.display="inline-block";
-          quickBtns.forEach(b=>b.style.display="none");
-          customToggle.style.background="var(--teal)";
-          customToggle.style.borderColor="var(--teal)";
-          customToggle.style.color="#fff";
+    /* Wire up filter mode radio buttons (Quick windows vs Custom date) */
+    document.querySelectorAll("input[name='visitor-filter-mode']").forEach(radio=>{
+      radio.onchange=e=>{
+        visitorFilterMode=e.target.value;
+        if(visitorFilterMode==="quick"){
+          /* Switch to quick window mode - reset to Last 7 days */
+          visitorFilter="7days";
+          visitorFilterType="window";
         } else {
-          /* Hide pickers, show quick buttons, reset to Last 7 days */
-          monthSel.style.display="none";
-          yearSel.style.display="none";
-          quickBtns.forEach(b=>b.style.display="inline-block");
-          customToggle.style.background="#f5f7fa";
-          customToggle.style.borderColor="#e0e6ec";
-          customToggle.style.color="#718096";
-          /* Reset to Last 7 days when toggling back */
-          if(visitorFilterType!=="window"){
-            visitorFilter="7days";
-            visitorFilterType="window";
-            quickBtns.forEach(b=>b.classList.toggle("on",b.dataset.filter==="7days"));
-            applyVisitorFilter();
-            rebuildALL();
-            drawAll();
-          }
+          /* Switch to custom mode - set to month filter */
+          visitorFilterType="month";
         }
+        applyVisitorFilter();
+        rebuildALL();
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
       };
-    }
+    });
 
-    /* Wire up visitor date range filter buttons NOW that they're rendered */
-    document.querySelectorAll("#dp-visitor-filter button[data-filter]").forEach(btn=>{
+    /* Wire up quick window buttons */
+    document.querySelectorAll("#dp-visitor-quick-mode button[data-filter]").forEach(btn=>{
       btn.onclick=e=>{
         const newFilter=e.target.dataset.filter;
-        if(newFilter!==visitorFilter || visitorFilterType!=="window"){
+        if(newFilter!==visitorFilter){
           visitorFilter=newFilter;
           visitorFilterType="window";
-          /* Hide month/year pickers when using quick windows */
-          document.getElementById("dp-visitor-month").style.display="none";
-          document.getElementById("dp-visitor-year").style.display="none";
-          /* Update filter button states */
-          document.querySelectorAll("#dp-visitor-filter button").forEach(b=>
+          /* Update all quick window button states */
+          document.querySelectorAll("#dp-visitor-quick-mode button[data-filter]").forEach(b=>
             b.classList.toggle("on",b.dataset.filter===visitorFilter));
           /* Apply the visitor filter and rebuild data */
           applyVisitorFilter();
           rebuildALL();
-          /* Redraw the KPIs and drill with new visitor values */
           drawAll();
           if(openKpi==="visitors") drawDrill();
         }
@@ -2784,15 +2781,8 @@ DASHBOARDS.dp=(function(){
       monthSel.onchange=e=>{
         visitorMonth=e.target.value;
         visitorFilterType="month";
-        /* Show month picker, hide year picker */
-        monthSel.style.display="inline-block";
-        document.getElementById("dp-visitor-year").style.display="none";
-        /* Hide quick window button highlights */
-        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-        /* Apply the visitor filter and rebuild data */
         applyVisitorFilter();
         rebuildALL();
-        /* Redraw the KPIs and drill with new visitor values */
         drawAll();
         if(openKpi==="visitors") drawDrill();
       };
@@ -2804,15 +2794,22 @@ DASHBOARDS.dp=(function(){
       yearSel.onchange=e=>{
         visitorYear=e.target.value;
         visitorFilterType="year";
-        /* Show year picker, hide month picker */
-        yearSel.style.display="inline-block";
-        document.getElementById("dp-visitor-month").style.display="none";
-        /* Hide quick window button highlights */
-        document.querySelectorAll("#dp-visitor-filter button").forEach(b=>b.classList.remove("on"));
-        /* Apply the visitor filter and rebuild data */
         applyVisitorFilter();
         rebuildALL();
-        /* Redraw the KPIs and drill with new visitor values */
+        drawAll();
+        if(openKpi==="visitors") drawDrill();
+      };
+    }
+
+    /* Wire up reset button */
+    const resetBtn=document.getElementById("dp-visitor-reset");
+    if(resetBtn){
+      resetBtn.onclick=e=>{
+        visitorFilter="7days";
+        visitorFilterType="window";
+        visitorFilterMode="quick";
+        applyVisitorFilter();
+        rebuildALL();
         drawAll();
         if(openKpi==="visitors") drawDrill();
       };
@@ -2919,10 +2916,9 @@ DASHBOARDS.dp=(function(){
 
   function drawDisposal(d){
     const sites=sitesFor(dept);
-    const due12Split=split(d.due,sites.map(s=>s.rec));
     const due6=Math.round(d.due*0.5);
     const due3=Math.round(d.due*0.33);
-    const rows=sites.map((s,i)=>[s.name,F(due12Split[i]),DUE_DATES[i%DUE_DATES.length]]);
+    const rows=sites.map(s=>[s.name,F(s.dueIn3Months),F(s.dueIn6Months),F(s.dueIn12Months)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(disposalPage>pages)disposalPage=pages;
     const page=rows.slice((disposalPage-1)*10,disposalPage*10);
@@ -2935,14 +2931,15 @@ DASHBOARDS.dp=(function(){
          {lab:"Records due for disposal within 6 months",v:due6},
          {lab:"Records due for disposal within 12 months",v:d.due}])}
        <div class="scrollx"><div class="dtab wide" id="dp-disposal"
-            style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(140px,1fr)">
          <div class="dhead">
            <div>Name of sites</div>
-           <div class="num">Number of records due for disposal</div>
-           <div class="num">Next due date for disposal</div>
+           <div class="num">Due within 3 months</div>
+           <div class="num">Due within 6 months</div>
+           <div class="num">Due within 12 months</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
+           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
        </div></div>
        <div id="dp-disposal-pager">${pager(rows.length,disposalPage,pages,"sites")}</div>`;
 
