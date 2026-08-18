@@ -3,7 +3,7 @@ name: opus-planning-mode
 description: |
   High-level analysis and confirmation layer for every prompt. This skill intercepts your request, provides a comprehensive summary of what will be done (like Opus 5 would reason), then asks for confirmation before proceeding.
   
-  Get detailed plans, automatic bug verification after each change, and seamless orchestration with the fix skill. One-at-a-time implementation with automatic verification — no manual testing needed.
+  Get detailed plans, automatic bug verification after each change, seamless orchestration with the fix skill, and autonomous execution. One-at-a-time implementation with automatic verification — no manual testing needed. Once you confirm "Yes", the skill executes fully autonomously: implements each change, auto-verifies for bugs, commits, pushes, merges to main, and moves to the next change without interruption.
 ---
 
 # Opus Planning Mode - Integrated with Fix Skill for Coordinated Workflows
@@ -53,35 +53,52 @@ and I'll revise and ask for confirmation again.
 
 This loop continues until you're satisfied with the plan.
 
-### Execution Phase with Integrated Bug Verification
+### Execution Phase with Integrated Bug Verification & Autonomous Deployment
 
-Once you confirm "Yes", the skill steps back and we execute the request **with automatic bug verification**:
+Once you confirm "Yes", the skill **executes fully autonomously** — you don't need to do anything else:
 
 **For SINGLE changes:**
 - Implement the change
+- Fix skill verifies (no bugs found? proceed)
 - Commit and push
-- Done
+- Merge to main
+- Deploy to live site
+- Done ✅
 
 **For MULTIPLE changes:**
 ```
 CHANGE 1
   → Implement
-  → FIX SKILL AUTO-VERIFIES (bug check)
-     ├─ Bugs found? → Auto-fix → Re-verify
+  → FIX SKILL AUTO-VERIFIES
+     ├─ Bugs found? → Auto-fix → Re-verify → Continue
      └─ No bugs? → Continue
-  → Commit and proceed to Change 2
-
-CHANGE 2
-  → Implement  
-  → FIX SKILL AUTO-VERIFIES (bug check)
-     ├─ Bugs found? → Auto-fix → Re-verify
+  → Commit → Push → Merge to main → Deploy
+  ↓
+CHANGE 2 (START AUTOMATICALLY)
+  → Implement
+  → FIX SKILL AUTO-VERIFIES
+     ├─ Bugs found? → Auto-fix → Re-verify → Continue
      └─ No bugs? → Continue
-  → Commit and proceed to Change 3
-
-... (repeat for each change)
+  → Commit → Push → Merge to main → Deploy
+  ↓
+CHANGE 3 (START AUTOMATICALLY)
+  → Implement
+  → FIX SKILL AUTO-VERIFIES
+     ├─ Bugs found? → Auto-fix → Re-verify → Continue
+     └─ No bugs? → Continue
+  → Commit → Push → Merge to main → Deploy
+  ↓
+✅ All changes deployed to live site — no interruptions
 ```
 
-**You only confirm once at the start.** Between changes, I automatically verify with the fix skill and keep you updated on progress. No interruptions, no manual testing needed.
+**You only confirm once at the start** ("Yes"). After that, I automatically:
+- Execute each change
+- Run bug verification (silent if no bugs found)
+- Commit and push changes
+- Merge to main immediately when ready
+- Progress to the next change without asking
+
+**Status updates:** Brief progress notifications after each change is deployed (e.g., "✅ Change 2 deployed. Starting Change 3...")
 
 ## Summary of the Plan Includes
 
@@ -99,9 +116,15 @@ When the skill presents a plan, it covers:
 
 1. **Always plan first** — Every request gets this treatment, no exceptions
 2. **Detailed but readable** — We aim for comprehensive without being overwhelming
-3. **Conversational** — If you ask for changes, we revise and re-present (not just execute)
+3. **Conversational during planning** — If you ask for changes, we revise and re-present (not just execute)
 4. **Token-efficient** — Despite detailed analysis, stays at Haiku 4.5 token levels
-5. **No wasted motion** — Once confirmed, we execute efficiently without re-planning
+5. **No wasted motion** — Once confirmed, we execute fully autonomously without asking for approval between changes
+6. **Fully autonomous execution** — After you confirm "Yes":
+   - Each change is implemented, verified, committed, pushed, and merged automatically
+   - No asking permission to continue to the next change
+   - No asking permission to merge (ready = merged immediately)
+   - Only report progress, don't wait for confirmation
+7. **Silent verification** — Fix skill runs automatically after each change; only report if bugs found
 
 ## CRITICAL: Incremental Implementation for Multiple Changes
 
@@ -346,22 +369,28 @@ Expected time: Medium (2 hours)
 Does this plan look right?
 ```
 
-**Your response:** `"Yes, proceed with Change 1"`
+**Your response:** `"Yes"`
 
-**Then:**
+**Then (fully autonomous, no more confirmation needed):**
 - I implement Change 1 only
-- **Fix skill automatically verifies** for bugs
-- If no bugs found, I commit and ask before moving to Change 2
-- **No manual testing needed** — fix skill handles it automatically
+- **Fix skill automatically verifies** for bugs (silent if none found)
+- If bugs found: auto-fixed and re-verified
+- Commit, push, and merge to main immediately
+- Start Change 2 automatically (no asking for permission)
+- Repeat for Changes 3, 4, etc.
+- **Status updates only** — e.g., "✅ Change 1 deployed. Starting Change 2..."
+- **You get notified when all changes are complete**
 
 ## Key Principles
 
 1. **Plan everything upfront** — Know the full scope before starting
-2. **Implement one change at a time** — No bundling multiple features
-3. **Auto-verify each change** — Fix skill checks for bugs automatically
-4. **Fix bugs immediately** — Don't accumulate technical debt
-5. **Commit frequently** — Each change is a separate commit
-6. **Confirm between changes** — Get approval before moving forward (when needed)
+2. **One confirmation only** — You confirm the plan once ("Yes"), then everything runs autonomously
+3. **Implement one change at a time** — No bundling multiple features
+4. **Auto-verify each change** — Fix skill checks for bugs automatically
+5. **Fix bugs immediately** — Don't accumulate technical debt
+6. **Commit frequently** — Each change is a separate commit
+7. **Auto-merge when ready** — No asking permission; ready = merged to main immediately
+8. **No interruptions** — Once you say "Yes", the workflow runs uninterrupted until complete
 
 ---
 
@@ -377,5 +406,11 @@ The skill is designed to catch issues early and fix them thoroughly, preventing 
 
 ---
 
-**Version:** 1.2 (Integrated with fix skill for automatic bug verification on multi-change workflows)  
-**Last Updated:** 2026-08-18
+**Version:** 2.0 (Fully Autonomous Execution with Auto-Merge)  
+**Last Updated:** 2026-08-18  
+**Changes in v2.0:**
+- Fully autonomous execution after user confirms "Yes"
+- No asking for confirmation between changes
+- Auto-merge to main when changes are ready (no user prompt)
+- Silent bug verification (only report if bugs found)
+- Brief status updates as workflow progresses
