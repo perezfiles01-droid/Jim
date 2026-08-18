@@ -1843,9 +1843,9 @@ DASHBOARDS.bw=(function(){
   /* ===== comparison, PPT s6 and s17 ===== */
   const CMP={
     userdoc:{a:"users",b:"docs",la:"Active users",lb:"Documents",ca:"var(--teal)",cb:"var(--blue)",
-             note:"A department with many users and few documents is not yet working in EDRMS. One with few users and many documents is carrying its content on a small number of people."},
+             note:""},
     userrec:{a:"users",b:"rec",la:"Active users",lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
-             note:"Users against declarations. A wide gap here means people are in the system but are not declaring what they produce, which is a training and advocacy question rather than a rollout one."},
+             note:""},
     docsrec:{a:"docs",b:"rec",la:"Documents",lb:"Records declared",ca:"var(--orange)",cb:"var(--green)",
              /* Note removed 17 Aug 2026 at the client's instruction. It also
                 broke the caption rule twice over: it carried a slide reference,
@@ -2416,16 +2416,7 @@ DASHBOARDS.dp=(function(){
          286 users and all 676 groups in Cloud Governance, so the tier came off
          on 17 August. The rows are the activity bands instead, which is what
          the M365 activity report actually supports. Audit question 5. */
-      title="Users";
-      sub="Users with recorded activity, and how recently they were last active.";
-      cols=["Activity","Number of users"];
-      const never=d.never, idle90=d.idle90;
-      rows=[["Used EDRMS in the last 180 days",F(d.users-never-idle90)],
-            ["No access in the last 180 days",F(idle90)],
-            ["Never accessed EDRMS",F(never)]];
-      tiles=[{lab:"Users with recorded activity",v:d.users},
-             {lab:"Never accessed EDRMS",v:never},
-             {lab:"No access in 180 days",v:idle90}];
+      return drawUsers(d);
     }
 
     else if(openKpi==="visitors"){
@@ -2713,6 +2704,28 @@ DASHBOARDS.dp=(function(){
       disposalPage=go==="prev"?Math.max(1,disposalPage-1):go==="next"?Math.min(pages,disposalPage+1):+go;
       drawDrill();
     });
+  }
+
+  function drawUsers(d){
+    const rows=[["Used EDRMS in the last 180 days",F(d.users-d.never-d.idle90)],
+                ["No access in the last 180 days",F(d.idle90)],
+                ["Never accessed EDRMS",F(d.never)]];
+
+    document.getElementById("dp-drill").innerHTML=
+      `<div class="ptitle">Users</div>
+       <div class="psub">Users with recorded activity, and how recently they were last active.</div>
+       ${summaryChart([
+         {lab:"Users with recorded activity",v:d.users},
+         {lab:"Never accessed EDRMS",v:d.never},
+         {lab:"No access in 180 days",v:d.idle90}])}
+       <div class="scrollx"><div class="dtab" id="dp-users" style="--dc:1fr 120px">
+         <div class="dhead">
+           <div>Activity</div>
+           <div class="num">Number of users</div>
+         </div>
+         ${rows.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
+           <div class="num">${r[1]}</div></div>`).join("")}
+       </div></div>`;
   }
 
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
