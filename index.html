@@ -3556,20 +3556,24 @@ DASHBOARDS.rd=(function(){
   function drawLabelChart(){
     const chart=document.getElementById("rl-chart");
     const items=[];
+    const colors=[CHART.C.blue,CHART.C.teal,CHART.C.green,CHART.C.orange,CHART.C.deep,CHART.C.grey,CHART.C.mut];
 
-    /* Create horizontal bar items from retention labels data */
-    DATA.LABELS.forEach(l=>{
+    /* Create horizontal bar items from retention labels data, with color variation */
+    DATA.LABELS.forEach((l,i)=>{
       const pct=(100*l.count/DATA.LABEL_TOTAL).toFixed(1);
       items.push({
         label:l.label,
         value:l.count,
-        color:CHART.C.blue
+        display:`${F(l.count)} (${pct}%)`,
+        color:colors[i%colors.length]
       });
     });
 
-    /* Render horizontal bar chart */
+    /* Render horizontal bar chart with values and percentages */
     chart.innerHTML=`
-      ${CHART.columns(items,{height:280})}
+      <div style="margin-bottom:12px">
+        ${CHART.hbars(items,{hideValue:false})}
+      </div>
       <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">
         Record distribution across retention labels
       </div>
