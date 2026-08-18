@@ -1408,6 +1408,7 @@ DASHBOARDS.bw=(function(){
   /* ===== state ===== */
   let openKpi="sites";          /* which drill table is showing, tile 1 on s34 */
   let sortDept="rec", dirDept="desc";
+  let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1, bwDispPage=1;
   let cmpMode="docsrec";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
 
@@ -1627,6 +1628,141 @@ DASHBOARDS.bw=(function(){
                    "08 Mar 2027","22 Mar 2027","05 Apr 2027","19 Apr 2027"];
 
 
+  function drawUsersDrill(){
+    const d=DRILL.users;
+    const rows=d.rows();
+    const tiles=d.tiles();
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwUsersPage>pages)bwUsersPage=pages;
+    const page=rows.slice((bwUsersPage-1)*10,bwUsersPage*10);
+
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" id="bw-users" style="--dc:230px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       <div id="bw-users-pager">${pager(rows.length,bwUsersPage,pages,"departments")}</div>`;
+
+    wirePager("#bw-users-pager",go=>{
+      bwUsersPage=go==="prev"?Math.max(1,bwUsersPage-1):go==="next"?Math.min(pages,bwUsersPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawDocsDrill(){
+    const d=DRILL.docs;
+    const rows=d.rows();
+    const tiles=d.tiles();
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwDocsPage>pages)bwDocsPage=pages;
+    const page=rows.slice((bwDocsPage-1)*10,bwDocsPage*10);
+
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" id="bw-docs" style="--dc:230px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       <div id="bw-docs-pager">${pager(rows.length,bwDocsPage,pages,"departments")}</div>`;
+
+    wirePager("#bw-docs-pager",go=>{
+      bwDocsPage=go==="prev"?Math.max(1,bwDocsPage-1):go==="next"?Math.min(pages,bwDocsPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawRecsDrill(){
+    const d=DRILL.rec;
+    const rows=d.rows();
+    const tiles=d.tiles();
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwRecPage>pages)bwRecPage=pages;
+    const page=rows.slice((bwRecPage-1)*10,bwRecPage*10);
+
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" id="bw-recs" style="--dc:230px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       <div id="bw-recs-pager">${pager(rows.length,bwRecPage,pages,"departments")}</div>`;
+
+    wirePager("#bw-recs-pager",go=>{
+      bwRecPage=go==="prev"?Math.max(1,bwRecPage-1):go==="next"?Math.min(pages,bwRecPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawPhysDrill(){
+    const d=DRILL.phys;
+    const rows=d.rows();
+    const tiles=d.tiles();
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwPhysPage>pages)bwPhysPage=pages;
+    const page=rows.slice((bwPhysPage-1)*10,bwPhysPage*10);
+
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" id="bw-phys" style="--dc:230px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       <div id="bw-phys-pager">${pager(rows.length,bwPhysPage,pages,"departments")}</div>`;
+
+    wirePager("#bw-phys-pager",go=>{
+      bwPhysPage=go==="prev"?Math.max(1,bwPhysPage-1):go==="next"?Math.min(pages,bwPhysPage+1):+go;
+      drawDrill();
+    });
+  }
+
+  function drawDispDrill(){
+    const d=DRILL.disp;
+    const rows=d.rows();
+    const tiles=d.tiles();
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwDispPage>pages)bwDispPage=pages;
+    const page=rows.slice((bwDispPage-1)*10,bwDispPage*10);
+
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">${tiles.map(([l,v])=>
+         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="scrollx"><div class="dtab" id="bw-disp" style="--dc:230px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>
+       <div id="bw-disp-pager">${pager(rows.length,bwDispPage,pages,"departments")}</div>`;
+
+    wirePager("#bw-disp-pager",go=>{
+      bwDispPage=go==="prev"?Math.max(1,bwDispPage-1):go==="next"?Math.min(pages,bwDispPage+1):+go;
+      drawDrill();
+    });
+  }
+
   function drawDrill(){
     const d=DRILL[openKpi];
 
@@ -1635,26 +1771,12 @@ DASHBOARDS.bw=(function(){
        shares the panel chrome. */
     if(d.sortable)  return drawSitesDrill(d);
 
-    const rows=d.rows(), tiles=d.tiles();
-    /* Every drill table is now a flat list. The division tier came off on
-       17 August: Cloud Governance HAS a Division column and it is empty on all
-       1,032 EDRMS sites, and on all 286 users and all 676 groups, so nothing
-       anywhere can populate a division row. Audit question 5 asks the client
-       to populate it, supply it, or drop the tier. */
-    const bodyRows=rows.map(r=>
-      `<div class="drow">${r.map((c,j)=>
-        j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("");
-
-    document.getElementById("bw-drill").innerHTML=
-      `<div class="ptitle">${d.title}</div>
-       <div class="psub">${d.sub}</div>
-       <div class="tiles">${tiles.map(([l,v])=>
-         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
-       <div class="scrollx"><div class="dtab" style="--dc:230px repeat(${d.cols.length-1},1fr)">
-         <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
-         ${bodyRows}
-       </div></div>`;
+    /* Route to specific drill functions for pagination support */
+    if(openKpi==="users") return drawUsersDrill();
+    if(openKpi==="docs") return drawDocsDrill();
+    if(openKpi==="rec") return drawRecsDrill();
+    if(openKpi==="phys") return drawPhysDrill();
+    if(openKpi==="disp") return drawDispDrill();
 
   }
 
@@ -1665,27 +1787,36 @@ DASHBOARDS.bw=(function(){
       const cmp=sortDept==="code"?a.code.localeCompare(b.code):a[sortDept]-b[sortDept];
       return dirDept==="asc"?cmp:-cmp;
     });
+    const pages=Math.max(1,Math.ceil(rows.length/10));
+    if(bwSitesPage>pages)bwSitesPage=pages;
+    const page=rows.slice((bwSitesPage-1)*10,bwSitesPage*10);
     const t=f=>DEPTS.reduce((a,x)=>a+x[f],0);
     document.getElementById("bw-drill").innerHTML=
       `<div class="ptitle">${d.title}</div>
        <div class="psub">${d.sub}</div>
        <div class="tiles">${d.tiles().map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
-       <div class="scrollx"><div class="dtab wide">
+       <div class="scrollx"><div class="dtab wide" id="bw-sites">
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="hd${i?" num":""}${sortDept===KEYS[i]?" on":""}" data-s="${KEYS[i]}">${c}${
              sortDept===KEYS[i]?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
-         ${rows.map(x=>`<div class="drow go" data-dept="${x.code}" role="link" tabindex="0"
+         ${page.map(x=>`<div class="drow go" data-dept="${x.code}" role="link" tabindex="0"
              title="Open Department Insights for ${x.code}">
            <div class="dn"><span class="lk">${x.code}</span><small>${x.name}</small></div>
            <div class="num">${F(x.sites)}</div><div class="num">${F(x.docs)}</div>
            <div class="num">${F(x.rec)}</div><div class="num">${F(x.phys)}</div></div>`).join("")}
-       </div></div>`;
+       </div></div>
+       <div id="bw-sites-pager">${pager(rows.length,bwSitesPage,pages,"departments")}</div>`;
 
     document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortDept===k)dirDept=dirDept==="asc"?"desc":"asc";
       else{sortDept=k;dirDept=k==="code"?"asc":"desc";}
+      bwSitesPage=1;
+      drawDrill();
+    });
+    wirePager("#bw-sites-pager",go=>{
+      bwSitesPage=go==="prev"?Math.max(1,bwSitesPage-1):go==="next"?Math.min(pages,bwSitesPage+1):+go;
       drawDrill();
     });
     wireGo();
