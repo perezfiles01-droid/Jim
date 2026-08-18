@@ -3422,6 +3422,36 @@ DASHBOARDS.rd=(function(){
   let tempPage=0;  // Temporary retention table page
   const ROWS_PER_PAGE=10;
 
+  // Render numbered pagination controls
+  function renderPagination(data, currentPage, totalPages, prefix) {
+    const start = currentPage * ROWS_PER_PAGE + 1;
+    const end = Math.min((currentPage + 1) * ROWS_PER_PAGE, data.length);
+    let html = `<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">
+      <div style="margin-bottom:8px">Showing ${start} to ${end} of ${data.length} departments</div>
+      <div style="display:flex;justify-content:center;gap:4px;align-items:center">
+        <button id="${prefix}-prev" style="padding:2px 8px;cursor:pointer">‹ Prev</button>`;
+
+    // Show first 5 pages + ellipsis + last page if needed
+    const pagesToShow = [];
+    for (let i = 0; i < Math.min(5, totalPages); i++) pagesToShow.push(i);
+    if (totalPages > 6) {
+      if (!pagesToShow.includes(totalPages - 1)) pagesToShow.push(totalPages - 1);
+    }
+
+    let lastPage = -1;
+    for (const p of pagesToShow) {
+      if (p > lastPage + 1) html += `<span style="padding:0 2px">...</span>`;
+      const isActive = p === currentPage;
+      html += `<button id="${prefix}-page-${p}" style="padding:2px 6px;cursor:pointer;${isActive ? 'background:var(--accent);color:white;font-weight:bold' : ''}">${p+1}</button>`;
+      lastPage = p;
+    }
+
+    html += `<button id="${prefix}-next" style="padding:2px 8px;cursor:pointer">Next ›</button>
+      </div>
+    </div>`;
+    return html;
+  }
+
   const NOSRC=`<span class="nosrc">Not captured</span>`;
 
   /* Permanent retention carries a document count on s45 that temporary does
@@ -3522,11 +3552,7 @@ DASHBOARDS.rd=(function(){
           <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
           <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
-      <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--mut)">
-        <button id="perm-prev" style="padding:2px 8px;margin-right:12px;cursor:pointer">← Previous</button>
-        <span id="perm-page">Page ${permPage+1} of ${Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE)}</span>
-        <button id="perm-next" style="padding:2px 8px;margin-left:12px;cursor:pointer">Next →</button>
-      </div>
+      ${renderPagination(PERM_BY_DEPT, permPage, Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE), "perm")}
     </div>
 
     <div class="band">
@@ -3545,11 +3571,7 @@ DASHBOARDS.rd=(function(){
           <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
           <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
       </div></div>
-      <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--mut)">
-        <button id="temp-prev" style="padding:2px 8px;margin-right:12px;cursor:pointer">← Previous</button>
-        <span id="temp-page">Page ${tempPage+1} of ${Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE)}</span>
-        <button id="temp-next" style="padding:2px 8px;margin-left:12px;cursor:pointer">Next →</button>
-      </div>
+      ${renderPagination(TEMP_BY_DEPT, tempPage, Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE), "temp")}
     </div>
 
     <!-- Splitting the holding into permanent and temporary needs a rule that
@@ -3604,33 +3626,48 @@ DASHBOARDS.rd=(function(){
   }
 
   function updatePaginationDisplay(){
-    // Update permanent retention pagination
+    // Wire up permanent retention pagination
+    const permTotalPages=Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE);
     const permPrevBtn=document.getElementById("perm-prev");
     const permNextBtn=document.getElementById("perm-next");
-    const permPageSpan=document.getElementById("perm-page");
-    const permTotalPages=Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE);
-    if(permPrevBtn && permNextBtn && permPageSpan){
+    if(permPrevBtn){
       permPrevBtn.disabled=permPage<=0;
       permPrevBtn.style.opacity=permPage<=0?'0.5':'1';
+      permPrevBtn.onclick=()=>{if(permPage>0){permPage--;updatePaginationDisplay();}};
+    }
+    if(permNextBtn){
       permNextBtn.disabled=permPage>=permTotalPages-1;
       permNextBtn.style.opacity=permPage>=permTotalPages-1?'0.5':'1';
-      permPageSpan.textContent=`Page ${permPage+1} of ${permTotalPages}`;
-      permPrevBtn.onclick=()=>{if(permPage>0){permPage--;updatePaginationDisplay();}};
       permNextBtn.onclick=()=>{if(permPage<permTotalPages-1){permPage++;updatePaginationDisplay();}};
     }
-    // Update temporary retention pagination
+    // Wire up page number buttons for permanent
+    for(let p=0;p<permTotalPages;p++){
+      const btn=document.getElementById(`perm-page-${p}`);
+      if(btn){
+        btn.onclick=()=>{permPage=p;updatePaginationDisplay();};
+      }
+    }
+
+    // Wire up temporary retention pagination
+    const tempTotalPages=Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE);
     const tempPrevBtn=document.getElementById("temp-prev");
     const tempNextBtn=document.getElementById("temp-next");
-    const tempPageSpan=document.getElementById("temp-page");
-    const tempTotalPages=Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE);
-    if(tempPrevBtn && tempNextBtn && tempPageSpan){
+    if(tempPrevBtn){
       tempPrevBtn.disabled=tempPage<=0;
       tempPrevBtn.style.opacity=tempPage<=0?'0.5':'1';
+      tempPrevBtn.onclick=()=>{if(tempPage>0){tempPage--;updatePaginationDisplay();}};
+    }
+    if(tempNextBtn){
       tempNextBtn.disabled=tempPage>=tempTotalPages-1;
       tempNextBtn.style.opacity=tempPage>=tempTotalPages-1?'0.5':'1';
-      tempPageSpan.textContent=`Page ${tempPage+1} of ${tempTotalPages}`;
-      tempPrevBtn.onclick=()=>{if(tempPage>0){tempPage--;updatePaginationDisplay();}};
       tempNextBtn.onclick=()=>{if(tempPage<tempTotalPages-1){tempPage++;updatePaginationDisplay();}};
+    }
+    // Wire up page number buttons for temporary
+    for(let p=0;p<tempTotalPages;p++){
+      const btn=document.getElementById(`temp-page-${p}`);
+      if(btn){
+        btn.onclick=()=>{tempPage=p;updatePaginationDisplay();};
+      }
     }
   }
 
