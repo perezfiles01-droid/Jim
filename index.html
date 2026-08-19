@@ -1865,12 +1865,13 @@ DASHBOARDS.bw=(function(){
     const tiles=d.tiles();
 
     /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","phys","rec"];
+    const SORT_KEYS=["code","phys","rec","pctShare"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortPhys==="code") cmp=a.code.localeCompare(b.code);
       else if(sortPhys==="phys") cmp=a.phys-b.phys;
       else if(sortPhys==="rec") cmp=a.rec-b.rec;
+      else if(sortPhys==="pctShare") cmp=(a.phys/a.rec)-(b.phys/b.rec);
       return dirPhys==="asc"?cmp:-cmp;
     });
 
@@ -1897,7 +1898,7 @@ DASHBOARDS.bw=(function(){
     document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortPhys===k)dirPhys=dirPhys==="asc"?"desc":"asc";
-      else{sortPhys=k;dirPhys=k==="code"?"asc":"desc";}
+      else{sortPhys=k;dirPhys=(k==="code"?"asc":"desc");}
       bwPhysPage=1;
       drawDrill();
     });
@@ -1912,12 +1913,21 @@ DASHBOARDS.bw=(function(){
     const d=DRILL.disp;
     const tiles=d.tiles();
 
+    /* Map departments to their original indices for due date cycling */
+    const origIndex={};
+    DEPTS.forEach((dept,i)=>{origIndex[dept.code]=i;});
+
     /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","due","duephys"];
+    const SORT_KEYS=["code","due","duedate","duephys"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortDisp==="code") cmp=a.code.localeCompare(b.code);
       else if(sortDisp==="due") cmp=a.due-b.due;
+      else if(sortDisp==="duedate") {
+        const ai=origIndex[a.code]%DUE_DATES.length;
+        const bi=origIndex[b.code]%DUE_DATES.length;
+        cmp=ai-bi;
+      }
       else if(sortDisp==="duephys") cmp=a.duephys-b.duephys;
       return dirDisp==="asc"?cmp:-cmp;
     });
@@ -3588,6 +3598,10 @@ DASHBOARDS.rd=(function(){
   let rdFilter="all";
   let permPage=1;  // Permanent retention table page (1-based for pager function)
   let tempPage=1;  // Temporary retention table page (1-based for pager function)
+  let sortPermRd="name";  // Sort column for permanent retention table
+  let dirPermRd="asc";    // Sort direction for permanent retention table
+  let sortTempRd="name";  // Sort column for temporary retention table
+  let dirTempRd="asc";    // Sort direction for temporary retention table
   const ROWS_PER_PAGE=10;
 
   const NOSRC=`<span class="nosrc">Not captured</span>`;
@@ -3683,17 +3697,10 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, permanent retention</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
-        <div class="dhead"><div>Department / office / RM</div>
-          <div class="num">Number of sites provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div></div>
-        ${PERM_BY_DEPT.slice((permPage-1)*ROWS_PER_PAGE, permPage*ROWS_PER_PAGE).map(d=>`<div class="drow"><div class="dn">${d.name}</div>
-          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
-          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
+      <div class="scrollx"><div class="dtab wide" id="rd-perm-table" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
+        <div class="dhead" id="rd-perm-head"></div>
       </div></div>
-      <div id="rd-perm-pager">${pager(PERM_BY_DEPT.length, permPage, Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE), "departments")}</div>
+      <div id="rd-perm-pager"></div>
     </div>
 
     <div class="band">
@@ -3702,17 +3709,10 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, temporary retention</div>
-      <div class="scrollx"><div class="dtab wide" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
-        <div class="dhead"><div>Department / office / RM</div>
-          <div class="num">Number of sites provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div></div>
-        ${TEMP_BY_DEPT.slice((tempPage-1)*ROWS_PER_PAGE, tempPage*ROWS_PER_PAGE).map(d=>`<div class="drow"><div class="dn">${d.name}</div>
-          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
-          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}
+      <div class="scrollx"><div class="dtab wide" id="rd-temp-table" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
+        <div class="dhead" id="rd-temp-head"></div>
       </div></div>
-      <div id="rd-temp-pager">${pager(TEMP_BY_DEPT.length, tempPage, Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE), "departments")}</div>
+      <div id="rd-temp-pager"></div>
     </div>
 
     <!-- Splitting the holding into permanent and temporary needs a rule that
@@ -3766,6 +3766,92 @@ DASHBOARDS.rd=(function(){
     chart.innerHTML=`${CHART.columns(items,{height:280})}<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">Three bars per retention category: Sites, Libraries, and Records declared</div>${legend}`;
   }
 
+  function renderPermTable(){
+    const SORT_KEYS=["name","sites","libs","rec","phys"];
+    const sorted=PERM_BY_DEPT.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortPermRd==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortPermRd==="sites") cmp=a.sites-b.sites;
+      else if(sortPermRd==="libs") cmp=a.libs-b.libs;
+      else if(sortPermRd==="rec") cmp=a.rec-b.rec;
+      else if(sortPermRd==="phys") cmp=a.phys-b.phys;
+      return dirPermRd==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.slice((permPage-1)*ROWS_PER_PAGE, permPage*ROWS_PER_PAGE);
+    const pages=Math.max(1,Math.ceil(sorted.length/ROWS_PER_PAGE));
+
+    document.getElementById("rd-perm-head").innerHTML=
+      `<div class="hd${sortPermRd===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Department / office / RM${
+        sortPermRd===SORT_KEYS[0]?(dirPermRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortPermRd===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Number of sites provisioned${
+        sortPermRd===SORT_KEYS[1]?(dirPermRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortPermRd===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Number of libraries provisioned${
+        sortPermRd===SORT_KEYS[2]?(dirPermRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortPermRd===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Number of records declared${
+        sortPermRd===SORT_KEYS[3]?(dirPermRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortPermRd===SORT_KEYS[4]?" on":""}" data-s="${SORT_KEYS[4]}">Number of physical counterparts${
+        sortPermRd===SORT_KEYS[4]?(dirPermRd==="asc"?" ↑":" ↓"):""}</div>`;
+
+    const dtab=document.getElementById("rd-perm-table");
+    dtab.innerHTML=document.getElementById("rd-perm-head").outerHTML+
+      `${rows.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+        <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
+        <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
+
+    document.getElementById("rd-perm-pager").innerHTML=pager(sorted.length, permPage, pages, "departments");
+
+    document.querySelectorAll("#rd-perm-table .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortPermRd===k) dirPermRd=dirPermRd==="asc"?"desc":"asc";
+      else{sortPermRd=k;dirPermRd=(k==="name"?"asc":"desc");}
+      permPage=1;
+      renderPermTable();
+    });
+  }
+
+  function renderTempTable(){
+    const SORT_KEYS=["name","sites","libs","rec","phys"];
+    const sorted=TEMP_BY_DEPT.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortTempRd==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortTempRd==="sites") cmp=a.sites-b.sites;
+      else if(sortTempRd==="libs") cmp=a.libs-b.libs;
+      else if(sortTempRd==="rec") cmp=a.rec-b.rec;
+      else if(sortTempRd==="phys") cmp=a.phys-b.phys;
+      return dirTempRd==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.slice((tempPage-1)*ROWS_PER_PAGE, tempPage*ROWS_PER_PAGE);
+    const pages=Math.max(1,Math.ceil(sorted.length/ROWS_PER_PAGE));
+
+    document.getElementById("rd-temp-head").innerHTML=
+      `<div class="hd${sortTempRd===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Department / office / RM${
+        sortTempRd===SORT_KEYS[0]?(dirTempRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortTempRd===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Number of sites provisioned${
+        sortTempRd===SORT_KEYS[1]?(dirTempRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortTempRd===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Number of libraries provisioned${
+        sortTempRd===SORT_KEYS[2]?(dirTempRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortTempRd===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Number of records declared${
+        sortTempRd===SORT_KEYS[3]?(dirTempRd==="asc"?" ↑":" ↓"):""}</div>
+       <div class="hd num${sortTempRd===SORT_KEYS[4]?" on":""}" data-s="${SORT_KEYS[4]}">Number of physical counterparts${
+        sortTempRd===SORT_KEYS[4]?(dirTempRd==="asc"?" ↑":" ↓"):""}</div>`;
+
+    const dtab=document.getElementById("rd-temp-table");
+    dtab.innerHTML=document.getElementById("rd-temp-head").outerHTML+
+      `${rows.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
+        <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
+        <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
+
+    document.getElementById("rd-temp-pager").innerHTML=pager(sorted.length, tempPage, pages, "departments");
+
+    document.querySelectorAll("#rd-temp-table .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortTempRd===k) dirTempRd=dirTempRd==="asc"?"desc":"asc";
+      else{sortTempRd=k;dirTempRd=(k==="name"?"asc":"desc");}
+      tempPage=1;
+      renderTempTable();
+    });
+  }
+
   function init(){
     const filter=document.getElementById("rd-filter");
     filter.innerHTML=`<option value="all">All</option>
@@ -3773,24 +3859,16 @@ DASHBOARDS.rd=(function(){
       <option value="Temporary">Temporary retention</option>`;
     filter.onchange=e=>{rdFilter=e.target.value;drawChart();};
 
+    // Render the retention tables
+    renderPermTable();
+    renderTempTable();
+
     // Wire up permanent retention pagination
     wirePager("#rd-perm-pager",pg=>{
       if(pg==="prev"){if(permPage>1)permPage--;}
       else if(pg==="next"){const pages=Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE);if(permPage<pages)permPage++;}
       else permPage=parseInt(pg);
-      // Re-render the permanent table with new page data
-      const perm_rows=PERM_BY_DEPT.slice((permPage-1)*ROWS_PER_PAGE, permPage*ROWS_PER_PAGE);
-      document.querySelector("#rd-perm-pager").previousElementSibling.querySelector(".dtab").innerHTML=
-        `<div class="dhead"><div>Department / office / RM</div>
-          <div class="num">Number of sites provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div></div>
-        ${perm_rows.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
-          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
-          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
-      document.querySelector("#rd-perm-pager").innerHTML=pager(PERM_BY_DEPT.length, permPage, Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE), "departments");
-      init();
+      renderPermTable();
     });
 
     // Wire up temporary retention pagination
@@ -3798,19 +3876,7 @@ DASHBOARDS.rd=(function(){
       if(pg==="prev"){if(tempPage>1)tempPage--;}
       else if(pg==="next"){const pages=Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE);if(tempPage<pages)tempPage++;}
       else tempPage=parseInt(pg);
-      // Re-render the temporary table with new page data
-      const temp_rows=TEMP_BY_DEPT.slice((tempPage-1)*ROWS_PER_PAGE, tempPage*ROWS_PER_PAGE);
-      document.querySelector("#rd-temp-pager").previousElementSibling.querySelector(".dtab").innerHTML=
-        `<div class="dhead"><div>Department / office / RM</div>
-          <div class="num">Number of sites provisioned</div>
-          <div class="num">Number of libraries provisioned</div>
-          <div class="num">Number of records declared</div>
-          <div class="num">Number of physical counterparts</div></div>
-        ${temp_rows.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
-          <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
-          <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
-      document.querySelector("#rd-temp-pager").innerHTML=pager(TEMP_BY_DEPT.length, tempPage, Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE), "departments");
-      init();
+      renderTempTable();
     });
 
     drawChart();
