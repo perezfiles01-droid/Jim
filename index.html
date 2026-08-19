@@ -1491,6 +1491,11 @@ DASHBOARDS.bw=(function(){
   /* ===== state ===== */
   let openKpi="sites";          /* which drill table is showing, tile 1 on s34 */
   let sortDept="rec", dirDept="desc";
+  let sortUsers="users", dirUsers="desc";
+  let sortDocs="docs", dirDocs="desc";
+  let sortRec="rec", dirRec="desc";
+  let sortPhys="phys", dirPhys="desc";
+  let sortDisp="due", dirDisp="desc";
   let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1, bwDispPage=1;
   let cmpMode="docsrec";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
@@ -1713,8 +1718,20 @@ DASHBOARDS.bw=(function(){
 
   function drawUsersDrill(){
     const d=DRILL.users;
-    const rows=d.rows();
     const tiles=d.tiles();
+
+    /* Sort DEPTS based on current sort state, then format rows */
+    const SORT_KEYS=["code","users","never","idle90"];
+    const sortedDepts=DEPTS.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortUsers==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortUsers==="users") cmp=a.users-b.users;
+      else if(sortUsers==="never") cmp=a.never-b.never;
+      else if(sortUsers==="idle90") cmp=a.idle90-b.idle90;
+      return dirUsers==="asc"?cmp:-cmp;
+    });
+
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.users), F(d.never), F(d.idle90)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwUsersPage>pages)bwUsersPage=pages;
     const page=rows.slice((bwUsersPage-1)*10,bwUsersPage*10);
@@ -1726,11 +1743,20 @@ DASHBOARDS.bw=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" id="bw-users" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+           `<div class="hd${i?" num":""}${sortUsers===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
+             sortUsers===SORT_KEYS[i]?(dirUsers==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(r=>`<div class="drow">${r.map((c,j)=>
            j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
        </div></div>
        <div id="bw-users-pager">${pager(rows.length,bwUsersPage,pages,"departments")}</div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortUsers===k)dirUsers=dirUsers==="asc"?"desc":"asc";
+      else{sortUsers=k;dirUsers=k==="code"?"asc":"desc";}
+      bwUsersPage=1;
+      drawDrill();
+    });
 
     wirePager("#bw-users-pager",go=>{
       bwUsersPage=go==="prev"?Math.max(1,bwUsersPage-1):go==="next"?Math.min(pages,bwUsersPage+1):+go;
@@ -1740,8 +1766,20 @@ DASHBOARDS.bw=(function(){
 
   function drawDocsDrill(){
     const d=DRILL.docs;
-    const rows=d.rows();
     const tiles=d.tiles();
+
+    /* Sort DEPTS based on current sort state, then format rows */
+    const SORT_KEYS=["code","docs","gb"];
+    const sortedDepts=DEPTS.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortDocs==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortDocs==="docs") cmp=a.docs-b.docs;
+      else if(sortDocs==="gb") cmp=a.gb-b.gb;
+      return dirDocs==="asc"?cmp:-cmp;
+    });
+
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.docs), GB(d.gb),
+                                   PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwDocsPage>pages)bwDocsPage=pages;
     const page=rows.slice((bwDocsPage-1)*10,bwDocsPage*10);
@@ -1753,11 +1791,20 @@ DASHBOARDS.bw=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" id="bw-docs" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+           `<div class="hd${i?" num":""}${sortDocs===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
+             sortDocs===SORT_KEYS[i]?(dirDocs==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(r=>`<div class="drow">${r.map((c,j)=>
            j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
        </div></div>
        <div id="bw-docs-pager">${pager(rows.length,bwDocsPage,pages,"departments")}</div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortDocs===k)dirDocs=dirDocs==="asc"?"desc":"asc";
+      else{sortDocs=k;dirDocs=k==="code"?"asc":"desc";}
+      bwDocsPage=1;
+      drawDrill();
+    });
 
     wirePager("#bw-docs-pager",go=>{
       bwDocsPage=go==="prev"?Math.max(1,bwDocsPage-1):go==="next"?Math.min(pages,bwDocsPage+1):+go;
@@ -1767,8 +1814,20 @@ DASHBOARDS.bw=(function(){
 
   function drawRecsDrill(){
     const d=DRILL.rec;
-    const rows=d.rows();
     const tiles=d.tiles();
+
+    /* Sort DEPTS based on current sort state, then format rows */
+    const SORT_KEYS=["code","rec","declaring"];
+    const sortedDepts=DEPTS.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortRec==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortRec==="rec") cmp=a.rec-b.rec;
+      else if(sortRec==="declaring") cmp=a.declaring-b.declaring;
+      return dirRec==="asc"?cmp:-cmp;
+    });
+
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
+                                   PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwRecPage>pages)bwRecPage=pages;
     const page=rows.slice((bwRecPage-1)*10,bwRecPage*10);
@@ -1780,11 +1839,20 @@ DASHBOARDS.bw=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" id="bw-recs" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+           `<div class="hd${i?" num":""}${sortRec===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
+             sortRec===SORT_KEYS[i]?(dirRec==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(r=>`<div class="drow">${r.map((c,j)=>
            j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
        </div></div>
        <div id="bw-recs-pager">${pager(rows.length,bwRecPage,pages,"departments")}</div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortRec===k)dirRec=dirRec==="asc"?"desc":"asc";
+      else{sortRec=k;dirRec=k==="code"?"asc":"desc";}
+      bwRecPage=1;
+      drawDrill();
+    });
 
     wirePager("#bw-recs-pager",go=>{
       bwRecPage=go==="prev"?Math.max(1,bwRecPage-1):go==="next"?Math.min(pages,bwRecPage+1):+go;
@@ -1794,8 +1862,20 @@ DASHBOARDS.bw=(function(){
 
   function drawPhysDrill(){
     const d=DRILL.phys;
-    const rows=d.rows();
     const tiles=d.tiles();
+
+    /* Sort DEPTS based on current sort state, then format rows */
+    const SORT_KEYS=["code","phys","rec"];
+    const sortedDepts=DEPTS.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortPhys==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortPhys==="phys") cmp=a.phys-b.phys;
+      else if(sortPhys==="rec") cmp=a.rec-b.rec;
+      return dirPhys==="asc"?cmp:-cmp;
+    });
+
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
+                                   PCT(d.phys,d.rec).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwPhysPage>pages)bwPhysPage=pages;
     const page=rows.slice((bwPhysPage-1)*10,bwPhysPage*10);
@@ -1807,11 +1887,20 @@ DASHBOARDS.bw=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" id="bw-phys" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+           `<div class="hd${i?" num":""}${sortPhys===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
+             sortPhys===SORT_KEYS[i]?(dirPhys==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(r=>`<div class="drow">${r.map((c,j)=>
            j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
        </div></div>
        <div id="bw-phys-pager">${pager(rows.length,bwPhysPage,pages,"departments")}</div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortPhys===k)dirPhys=dirPhys==="asc"?"desc":"asc";
+      else{sortPhys=k;dirPhys=k==="code"?"asc":"desc";}
+      bwPhysPage=1;
+      drawDrill();
+    });
 
     wirePager("#bw-phys-pager",go=>{
       bwPhysPage=go==="prev"?Math.max(1,bwPhysPage-1):go==="next"?Math.min(pages,bwPhysPage+1):+go;
@@ -1821,8 +1910,21 @@ DASHBOARDS.bw=(function(){
 
   function drawDispDrill(){
     const d=DRILL.disp;
-    const rows=d.rows();
     const tiles=d.tiles();
+
+    /* Sort DEPTS based on current sort state, then format rows */
+    const SORT_KEYS=["code","due","duephys"];
+    const sortedDepts=DEPTS.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortDisp==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortDisp==="due") cmp=a.due-b.due;
+      else if(sortDisp==="duephys") cmp=a.duephys-b.duephys;
+      return dirDisp==="asc"?cmp:-cmp;
+    });
+
+    const rows=sortedDepts.map((d,i)=>[d.code+" - "+d.name, F(d.due),
+                                       DUE_DATES[i%DUE_DATES.length],
+                                       F(d.duephys)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwDispPage>pages)bwDispPage=pages;
     const page=rows.slice((bwDispPage-1)*10,bwDispPage*10);
@@ -1834,11 +1936,20 @@ DASHBOARDS.bw=(function(){
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab" id="bw-disp" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+           `<div class="hd${i?" num":""}${sortDisp===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
+             sortDisp===SORT_KEYS[i]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(r=>`<div class="drow">${r.map((c,j)=>
            j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
        </div></div>
        <div id="bw-disp-pager">${pager(rows.length,bwDispPage,pages,"departments")}</div>`;
+
+    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortDisp===k)dirDisp=dirDisp==="asc"?"desc":"asc";
+      else{sortDisp=k;dirDisp=k==="code"?"asc":"desc";}
+      bwDispPage=1;
+      drawDrill();
+    });
 
     wirePager("#bw-disp-pager",go=>{
       bwDispPage=go==="prev"?Math.max(1,bwDispPage-1):go==="next"?Math.min(pages,bwDispPage+1):+go;
