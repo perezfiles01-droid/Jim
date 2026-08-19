@@ -699,6 +699,53 @@ function weightsLike(base,seed){
 }
 
 
+/* =================================================================
+   Shared Sort Component (added 19 Aug 2026)
+   ================================================================= */
+/* Unified sort logic used across all dashboard tables. Provides consistent
+   ascending/descending sorting with predictable behavior. */
+
+/* sortTable: Returns a new sorted array without mutating the original.
+   array: the data to sort
+   column: the key/property to sort by
+   dir: "asc" for ascending, "desc" for descending
+   Returns: new sorted array */
+function sortTable(array, column, dir) {
+  return [...array].sort((a, b) => {
+    let cmp = 0;
+    const aVal = a[column];
+    const bVal = b[column];
+
+    /* Handle both string and numeric comparisons */
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      cmp = aVal.localeCompare(bVal);
+    } else if (aVal === bVal) {
+      cmp = 0;
+    } else {
+      cmp = (aVal < bVal) ? -1 : 1;
+    }
+
+    /* Flip for descending */
+    return dir === "asc" ? cmp : -cmp;
+  });
+}
+
+/* toggleSort: Determines the new sort state when a column header is clicked.
+   currentSort: currently sorted column key (or empty string)
+   currentDir: current direction ("asc" or "desc")
+   newColumn: the column key that was clicked
+   Returns: {sort: columnKey, dir: "asc"|"desc"} */
+function toggleSort(currentSort, currentDir, newColumn) {
+  if (currentSort === newColumn) {
+    /* Same column clicked: toggle direction */
+    return { sort: newColumn, dir: currentDir === "asc" ? "desc" : "asc" };
+  } else {
+    /* Different column: start with ascending */
+    return { sort: newColumn, dir: "asc" };
+  }
+}
+
+
 const DASHBOARDS={};
 
 /* Cross dashboard navigation, added 16 Aug 2026.
