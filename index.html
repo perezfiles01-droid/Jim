@@ -2531,7 +2531,11 @@ DASHBOARDS.dp=(function(){
   let openKpi="sites";         /* tile 1 on s53 */
   let sitePage=1, sortSite="rec", dirSite="desc";
   let visitorPage=1, sortVisitor="name", dirVisitor="asc";
-  let docsPage=1, recPage=1, physPage=1, disposalPage=1;
+  let docsPage=1, sortDocs="name", dirDocs="asc";
+  let recPage=1, sortRec="name", dirRec="asc";
+  let physPage=1, sortPhys="name", dirPhys="asc";
+  let disposalPage=1, sortDisp="name", dirDisp="asc";
+  let libsPage=1, sortLibs="name", dirLibs="asc";
   let libCat=CATS[0];
   let visitorFilter="7days";   /* Default to last 7 days */
   let visitorFilterType="window"; /* window, month, or year */
@@ -3016,7 +3020,15 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawDocuments(d,sites){
-    const rows=sites.map(s=>[s.name,F(s.docs),GB(s.gb)]);
+    const SORT_KEYS=["name","docs","gb"];
+    const sorted=sites.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortDocs==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortDocs==="docs") cmp=a.docs-b.docs;
+      else if(sortDocs==="gb") cmp=a.gb-b.gb;
+      return dirDocs==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.map(s=>[s.name,F(s.docs),GB(s.gb)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(docsPage>pages)docsPage=pages;
     const page=rows.slice((docsPage-1)*10,docsPage*10);
@@ -3031,14 +3043,25 @@ DASHBOARDS.dp=(function(){
        <div class="scrollx"><div class="dtab wide" id="dp-documents"
             style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
-           <div>Name of sites</div>
-           <div class="num">Number of documents created / uploaded</div>
-           <div class="num">Documents size (in GB)</div>
+           <div class="hd${sortDocs===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Name of sites${
+             sortDocs===SORT_KEYS[0]?(dirDocs==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortDocs===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Number of documents created / uploaded${
+             sortDocs===SORT_KEYS[1]?(dirDocs==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortDocs===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Documents size (in GB)${
+             sortDocs===SORT_KEYS[2]?(dirDocs==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
            <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
        </div></div>
        <div id="dp-documents-pager">${pager(rows.length,docsPage,pages,"sites")}</div>`;
+
+    document.querySelectorAll("#dp-documents .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortDocs===k) dirDocs=dirDocs==="asc"?"desc":"asc";
+      else{sortDocs=k;dirDocs=(k==="name"?"asc":"desc");}
+      docsPage=1;
+      drawDrill();
+    });
 
     wirePager("#dp-documents-pager",go=>{
       docsPage=go==="prev"?Math.max(1,docsPage-1):go==="next"?Math.min(pages,docsPage+1):+go;
@@ -3047,7 +3070,15 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawRecords(d,sites){
-    const rows=sites.map(s=>[s.name,F(s.rec),F(s.declaring)]);
+    const SORT_KEYS=["name","rec","declaring"];
+    const sorted=sites.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortRec==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortRec==="rec") cmp=a.rec-b.rec;
+      else if(sortRec==="declaring") cmp=a.declaring-b.declaring;
+      return dirRec==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.map(s=>[s.name,F(s.rec),F(s.declaring)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(recPage>pages)recPage=pages;
     const page=rows.slice((recPage-1)*10,recPage*10);
@@ -3063,14 +3094,25 @@ DASHBOARDS.dp=(function(){
        <div class="scrollx"><div class="dtab wide" id="dp-records"
             style="--dc:minmax(170px,1.4fr) minmax(110px,1fr) minmax(110px,1fr)">
          <div class="dhead">
-           <div>Name of sites</div>
-           <div class="num">Total number of records declared</div>
-           <div class="num">People who declared a record</div>
+           <div class="hd${sortRec===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Name of sites${
+             sortRec===SORT_KEYS[0]?(dirRec==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortRec===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Total number of records declared${
+             sortRec===SORT_KEYS[1]?(dirRec==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortRec===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">People who declared a record${
+             sortRec===SORT_KEYS[2]?(dirRec==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
            <div class="num">${r[1]}</div><div class="num">${r[2]}</div></div>`).join("")}
        </div></div>
        <div id="dp-records-pager">${pager(rows.length,recPage,pages,"sites")}</div>`;
+
+    document.querySelectorAll("#dp-records .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortRec===k) dirRec=dirRec==="asc"?"desc":"asc";
+      else{sortRec=k;dirRec=(k==="name"?"asc":"desc");}
+      recPage=1;
+      drawDrill();
+    });
 
     wirePager("#dp-records-pager",go=>{
       recPage=go==="prev"?Math.max(1,recPage-1):go==="next"?Math.min(pages,recPage+1):+go;
@@ -3079,7 +3121,16 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawPhysical(d,sites){
-    const rows=sites.map(s=>[s.name,F(s.phys),F(s.rec),
+    const SORT_KEYS=["name","phys","rec","pctShare"];
+    const sorted=sites.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortPhys==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortPhys==="phys") cmp=a.phys-b.phys;
+      else if(sortPhys==="rec") cmp=a.rec-b.rec;
+      else if(sortPhys==="pctShare") cmp=(a.phys/a.rec)-(b.phys/b.rec);
+      return dirPhys==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.map(s=>[s.name,F(s.phys),F(s.rec),
                              PCT(s.phys,s.rec).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(physPage>pages)physPage=pages;
@@ -3095,15 +3146,27 @@ DASHBOARDS.dp=(function(){
        <div class="scrollx"><div class="dtab wide" id="dp-physical"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(130px,1fr)">
          <div class="dhead">
-           <div>Name of sites</div>
-           <div class="num">Records with a counterpart</div>
-           <div class="num">Total number of records declared</div>
-           <div class="num">Share of records with a counterpart</div>
+           <div class="hd${sortPhys===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Name of sites${
+             sortPhys===SORT_KEYS[0]?(dirPhys==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortPhys===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Records with a counterpart${
+             sortPhys===SORT_KEYS[1]?(dirPhys==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortPhys===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Total number of records declared${
+             sortPhys===SORT_KEYS[2]?(dirPhys==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortPhys===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Share of records with a counterpart${
+             sortPhys===SORT_KEYS[3]?(dirPhys==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
            <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
        </div></div>
        <div id="dp-physical-pager">${pager(rows.length,physPage,pages,"sites")}</div>`;
+
+    document.querySelectorAll("#dp-physical .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortPhys===k) dirPhys=dirPhys==="asc"?"desc":"asc";
+      else{sortPhys=k;dirPhys=(k==="name"?"asc":"desc");}
+      physPage=1;
+      drawDrill();
+    });
 
     wirePager("#dp-physical-pager",go=>{
       physPage=go==="prev"?Math.max(1,physPage-1):go==="next"?Math.min(pages,physPage+1):+go;
@@ -3115,7 +3178,16 @@ DASHBOARDS.dp=(function(){
     const sites=sitesFor(dept);
     const due6=Math.round(d.due*0.5);
     const due3=Math.round(d.due*0.33);
-    const rows=sites.map(s=>[s.name,F(s.dueIn3Months),F(s.dueIn6Months),F(s.dueIn12Months)]);
+    const SORT_KEYS=["name","due3","due6","due12"];
+    const sorted=sites.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortDisp==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortDisp==="due3") cmp=a.dueIn3Months-b.dueIn3Months;
+      else if(sortDisp==="due6") cmp=a.dueIn6Months-b.dueIn6Months;
+      else if(sortDisp==="due12") cmp=a.dueIn12Months-b.dueIn12Months;
+      return dirDisp==="asc"?cmp:-cmp;
+    });
+    const rows=sorted.map(s=>[s.name,F(s.dueIn3Months),F(s.dueIn6Months),F(s.dueIn12Months)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(disposalPage>pages)disposalPage=pages;
     const page=rows.slice((disposalPage-1)*10,disposalPage*10);
@@ -3130,15 +3202,27 @@ DASHBOARDS.dp=(function(){
        <div class="scrollx"><div class="dtab wide" id="dp-disposal"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(140px,1fr)">
          <div class="dhead">
-           <div>Name of sites</div>
-           <div class="num">Due within 3 months</div>
-           <div class="num">Due within 6 months</div>
-           <div class="num">Due within 12 months</div>
+           <div class="hd${sortDisp===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Name of sites${
+             sortDisp===SORT_KEYS[0]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortDisp===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Due within 3 months${
+             sortDisp===SORT_KEYS[1]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortDisp===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Due within 6 months${
+             sortDisp===SORT_KEYS[2]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortDisp===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Due within 12 months${
+             sortDisp===SORT_KEYS[3]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
            <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
        </div></div>
        <div id="dp-disposal-pager">${pager(rows.length,disposalPage,pages,"sites")}</div>`;
+
+    document.querySelectorAll("#dp-disposal .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortDisp===k) dirDisp=dirDisp==="asc"?"desc":"asc";
+      else{sortDisp=k;dirDisp=(k==="name"?"asc":"desc");}
+      disposalPage=1;
+      drawDrill();
+    });
 
     wirePager("#dp-disposal-pager",go=>{
       disposalPage=go==="prev"?Math.max(1,disposalPage-1):go==="next"?Math.min(pages,disposalPage+1):+go;
@@ -3164,7 +3248,6 @@ DASHBOARDS.dp=(function(){
      Shows sample libraries with department filter. Full implementation
      pending file plan categorization and library-to-document linking. */
 
-  let libsPage=1;
   const LIBS_PER_PAGE=10;
 
   function generateSampleLibraries(deptCode){
@@ -3231,10 +3314,20 @@ DASHBOARDS.dp=(function(){
   function drawLibs(){
     const libs=generateSampleLibraries(dept);
     const t=f=>libs.reduce((a,l)=>a+l[f],0);
+    const SORT_KEYS=["lib","site","docs","rec","phys"];
+    const sorted=libs.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortLibs==="lib") cmp=a.lib.localeCompare(b.lib);
+      else if(sortLibs==="site") cmp=a.site.localeCompare(b.site);
+      else if(sortLibs==="docs") cmp=a.docs-b.docs;
+      else if(sortLibs==="rec") cmp=a.rec-b.rec;
+      else if(sortLibs==="phys") cmp=a.phys-b.phys;
+      return dirLibs==="asc"?cmp:-cmp;
+    });
     const start=(libsPage-1)*LIBS_PER_PAGE;
     const end=start+LIBS_PER_PAGE;
-    const page=libs.slice(start,end);
-    const totalPages=Math.ceil(libs.length/LIBS_PER_PAGE);
+    const page=sorted.slice(start,end);
+    const totalPages=Math.ceil(sorted.length/LIBS_PER_PAGE);
 
     document.getElementById("dp-libs").innerHTML=
       `<div class="tiles">
@@ -3243,15 +3336,28 @@ DASHBOARDS.dp=(function(){
          <div class="tile"><div class="tl">Total number of records declared</div><div class="tv">${F(t("rec"))}</div></div>
          <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
        </div>
-       <div class="scrollx"><div class="dtab wide" style="--dc:minmax(180px,1.2fr) minmax(150px,1.2fr) repeat(3,minmax(110px,1fr))">
-         <div class="dhead"><div>Library name</div><div>Site name</div>
-           <div class="num">Number of documents</div><div class="num">Number of records declared</div>
-           <div class="num">Number of physical counterparts</div></div>
+       <div class="scrollx"><div class="dtab wide" id="dp-libs-table" style="--dc:minmax(180px,1.2fr) minmax(150px,1.2fr) repeat(3,minmax(110px,1fr))">
+         <div class="dhead"><div class="hd${sortLibs===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Library name${
+           sortLibs===SORT_KEYS[0]?(dirLibs==="asc"?" ↑":" ↓"):""}</div><div class="hd${sortLibs===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Site name${
+           sortLibs===SORT_KEYS[1]?(dirLibs==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortLibs===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Number of documents${
+           sortLibs===SORT_KEYS[2]?(dirLibs==="asc"?" ↑":" ↓"):""}</div><div class="hd num${sortLibs===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Number of records declared${
+           sortLibs===SORT_KEYS[3]?(dirLibs==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortLibs===SORT_KEYS[4]?" on":""}" data-s="${SORT_KEYS[4]}">Number of physical counterparts${
+           sortLibs===SORT_KEYS[4]?(dirLibs==="asc"?" ↑":" ↓"):""}</div></div>
          ${page.map(l=>`<div class="drow"><div class="dn">${l.lib}</div><div>${l.site}</div>
            <div class="num">${F(l.docs)}</div>
            <div class="num">${F(l.rec)}</div><div class="num">${F(l.phys)}</div></div>`).join("")}
        </div></div>
-       <div id="dp-libs-pager">${pager(libs.length,libsPage,totalPages,"libraries")}</div>`;
+       <div id="dp-libs-pager">${pager(sorted.length,libsPage,totalPages,"libraries")}</div>`;
+
+    document.querySelectorAll("#dp-libs-table .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortLibs===k) dirLibs=dirLibs==="asc"?"desc":"asc";
+      else{sortLibs=k;dirLibs=(k==="lib"||k==="site"?"asc":"desc");}
+      libsPage=1;
+      drawLibs();
+    });
 
     wirePager("#dp-libs-pager",go=>{
       libsPage=go==="prev"?Math.max(1,libsPage-1):go==="next"?Math.min(totalPages,libsPage+1):+go;
