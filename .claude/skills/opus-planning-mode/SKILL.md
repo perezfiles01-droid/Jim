@@ -4,6 +4,7 @@ description: |
   High-level analysis and confirmation layer for every prompt. This skill intercepts your request, provides a comprehensive summary of what will be done (like Opus 5 would reason), then asks for confirmation before proceeding.
   
   Get detailed plans, automatic bug verification after each change, seamless orchestration with the fix skill, and autonomous execution. One-at-a-time implementation with automatic verification — no manual testing needed. Once you confirm "Yes", the skill executes fully autonomously: implements each change, auto-verifies for bugs, commits, pushes, merges to main, and moves to the next change without interruption.
+compatibility: Read, Edit, Bash, Grep, Agent
 ---
 
 # Opus Planning Mode - Integrated with Fix Skill for Coordinated Workflows
