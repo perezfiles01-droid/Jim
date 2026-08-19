@@ -2517,7 +2517,8 @@ DASHBOARDS.dp=(function(){
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
   let openKpi="sites";         /* tile 1 on s53 */
   let sitePage=1, sortSite="rec", dirSite="desc";
-  let visitorPage=1, docsPage=1, recPage=1, physPage=1, disposalPage=1;
+  let visitorPage=1, sortVisitor="name", dirVisitor="asc";
+  let docsPage=1, recPage=1, physPage=1, disposalPage=1;
   let libCat=CATS[0];
   let visitorFilter="7days";   /* Default to last 7 days */
   let visitorFilterType="window"; /* window, month, or year */
@@ -2834,7 +2835,11 @@ DASHBOARDS.dp=(function(){
 
        Until T2 is populated with real tenant data, these values are split from department
        totals using weights. Site totals reconcile exactly to department totals by construction. */
-    const rows=sites.map(s=>[s.name,F(s.pageViewCount),F(s.visitedPageCount),s.ermsType]);
+
+    /* Sort sites based on current sort state, then format rows */
+    const SORT_KEYS=["name","pageViewCount","visitedPageCount","ermsType"];
+    const sortedSites=sortTable(sites,sortVisitor,dirVisitor);
+    const rows=sortedSites.map(s=>[s.name,F(s.pageViewCount),F(s.visitedPageCount),s.ermsType]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(visitorPage>pages)visitorPage=pages;
     const page=rows.slice((visitorPage-1)*10,visitorPage*10);
@@ -2895,15 +2900,23 @@ DASHBOARDS.dp=(function(){
        <div class="scrollx"><div class="dtab wide" id="dp-visitors"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(150px,1fr) minmax(160px,1fr)">
          <div class="dhead">
-           <div>Name of sites</div>
-           <div class="num">Page View Count</div>
-           <div class="num">Visited Page Count</div>
-           <div>EDRMS Site Type</div>
+           <div class="hd${sortVisitor==="name"?" on":""}" data-s="name">Name of sites${sortVisitor==="name"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortVisitor==="pageViewCount"?" on":""}" data-s="pageViewCount">Page View Count${sortVisitor==="pageViewCount"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortVisitor==="visitedPageCount"?" on":""}" data-s="visitedPageCount">Visited Page Count${sortVisitor==="visitedPageCount"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd${sortVisitor==="ermsType"?" on":""}" data-s="ermsType">EDRMS Site Type${sortVisitor==="ermsType"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
            <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div>${r[3]}</div></div>`).join("")}
        </div></div>
        <div id="dp-visitors-pager">${pager(rows.length,visitorPage,pages,"sites")}</div>`;
+
+    document.querySelectorAll("#dp-drill .hd").forEach(el=>el.onclick=()=>{
+      const k=el.dataset.s;
+      if(sortVisitor===k)dirVisitor=dirVisitor==="asc"?"desc":"asc";
+      else{sortVisitor=k;dirVisitor=k==="name"||k==="ermsType"?"asc":"desc";}
+      visitorPage=1;
+      drawDrill();
+    });
 
     wirePager("#dp-visitors-pager",go=>{
       visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
