@@ -3445,13 +3445,13 @@ DASHBOARDS.rd=(function(){
      Split permanent retention data across the 16 departments proportionally to their records */
   const DEPTS=BW.departments;
   const nD=DEPTS.length;
-  /* Libraries multiplier: each site contains multiple libraries. Scale by 3x so that
-     the total libraries provisioned is meaningfully greater than total sites provisioned. */
-  const LIBS_MULTIPLIER=3;
+  /* Libraries multiplier: each site contains multiple libraries. Apply 2.5x to each
+     department's site count so that every department has libs > sites consistently. */
+  const LIBS_MULTIPLIER=2.5;
   const pRecByDept=split(PERM_REC, weights(nD,31)),
         pPhysByDept=split(PERM_PHYS, weights(nD,32)),
         pSitesByDept=split(pSites[0], weights(nD,33)),
-        pLibsByDept=split(Math.round(PERM.reduce((a,t)=>a+t.libs,0)*LIBS_MULTIPLIER), weights(nD,34));
+        pLibsByDept=pSitesByDept.map(s=>Math.round(s*LIBS_MULTIPLIER));
   const PERM_BY_DEPT=DEPTS.map((d,i)=>({
     code:d.code, name:d.name,
     sites:pSitesByDept[i], libs:pLibsByDept[i], rec:pRecByDept[i], phys:pPhysByDept[i]
@@ -3466,7 +3466,7 @@ DASHBOARDS.rd=(function(){
   const tRecByDept=split(TEMP_REC, weights(nD,35)),
         tPhysByDept=split(TEMP_PHYS, weights(nD,36)),
         tSitesByDept=split(tSites[0], weights(nD,37)),
-        tLibsByDept=split(Math.round(TEMP.reduce((a,t)=>a+t.libs,0)*LIBS_MULTIPLIER), weights(nD,38));
+        tLibsByDept=tSitesByDept.map(s=>Math.round(s*LIBS_MULTIPLIER));
   const TEMP_BY_DEPT=DEPTS.map((d,i)=>({
     code:d.code, name:d.name,
     sites:tSitesByDept[i], libs:tLibsByDept[i], rec:tRecByDept[i], phys:tPhysByDept[i]
@@ -3482,9 +3482,9 @@ DASHBOARDS.rd=(function(){
      has no disposal status, approver or disposal date. Audit question 7. */
   const ROLLUP=[
     {lab:"Permanent retention", sites:pSites[0],
-     libs:Math.round(PERM.reduce((a,t)=>a+t.libs,0)*LIBS_MULTIPLIER), rec:PERM_REC, phys:PERM_PHYS, due:0},
+     libs:Math.round(pSites[0]*LIBS_MULTIPLIER), rec:PERM_REC, phys:PERM_PHYS, due:0},
     {lab:"Temporary retention <small>(records with disposal due dates)</small>", sites:tSites[0],
-     libs:Math.round(TEMP.reduce((a,t)=>a+t.libs,0)*LIBS_MULTIPLIER), rec:TEMP_REC, phys:TEMP_PHYS, due:DATA.DUE_NEXT_12},
+     libs:Math.round(tSites[0]*LIBS_MULTIPLIER), rec:TEMP_REC, phys:TEMP_PHYS, due:DATA.DUE_NEXT_12},
   ];
   console.assert(ROLLUP.reduce((a,r)=>a+r.sites,0)===TOTAL_SITES,
     "The rollup sites must total approximately the 1,032 compliant sites");
