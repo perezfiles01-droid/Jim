@@ -59,6 +59,63 @@ monitor, and collect the file from Download center. This is the same pattern as
 Cloud Governance's Workspace report, which this project already uses. Do not sit
 waiting on a browser download.
 
+### What the Explorer screen already settled, 19 August
+
+Read off the Physical records Explorer page. These are **CONFIRMED** and they
+change two assessments made earlier in this document.
+
+**1. The approval outcome vocabulary is Approved, Rejected, Awaiting approval.**
+
+The client drew **Approved, Declined, Extended** on slides 43 and 60.
+
+| Client's word | Opus | Verdict |
+| --- | --- | --- |
+| Approved | **Approved** | Maps directly |
+| Declined | **Rejected** | Word mismatch, mappable. RAC's call |
+| Extended | **absent** | **A real gap, not a naming difference** |
+
+So Export 4 can fill two of the three columns, not all three. Whether Extended
+exists anywhere else in Opus, on a different screen or as a separate action, is
+still open and is the first thing to check when Route A or B opens a list.
+
+**2. The 65 terms are not 65 retention terms, and that is why 65 is not 53.**
+
+**CONFIRMED** the term groups are **Department** and **ADB**, and the top five
+terms mix retention terms with department names: Long Term 57, Short Term 30,
+Permanent 7, **CSD 3, Finance 2**.
+
+Purview's 53 retention labels and Opus's 65 terms are **different populations**,
+not the same list counted twice, so neither figure is stale. Export 6 now has a
+narrower job: separate the retention terms from the department terms.
+
+**3. A split mismatch that Retention and Disposal is built on.**
+
+Opus splits **Long Term, Short Term and Permanent**. Three.
+The client's dashboard splits **Permanent and Temporary**. Two.
+
+Whether Long Term and Short Term both roll into Temporary is a **decision for
+RAC**, and it governs every figure on slides 44, 45 and 46. Do not assume it.
+
+**4. Outstanding and pending measures exist.**
+
+**CONFIRMED** Overdue loan requests **5/7**, Pending loan **2**, Pending
+destruction **1**. Slides 68 and 69 both ask for "No. and list of
+outstanding/pending requests". Those measures are real, and the `5/7` form
+suggests Opus already holds a due date per loan.
+
+**5. Three totals that must not be reconciled by assumption.**
+
+| Screen | Figure | Split |
+| --- | --- | --- |
+| Dashboard, Physical records requests | **26** | Creation 1, Loan 25 |
+| Dashboard, Manual approval status | **27** | Awaiting approval 23, Waiting for disposal 4 |
+| Explorer, Requests | **27** | Awaiting approval 2, Approved 17, Rejected 8 |
+
+Two of these total 27 with **different splits**, and a third totals 26. They may
+be three populations, or one population counted three ways. **Click through each
+and read the list.** A plausible reconciliation between two figures that are
+both wrong is exactly the failure recorded in `STATUS.md` section 8.
+
 ### Rules for every export below
 
 1. **Export unfiltered.** Do not narrow by date, department, status or content
@@ -95,18 +152,46 @@ Deck slides 68 and 69, the two tables the client drew:
 2. In the left nav find the **Physical records** section. **CONFIRMED** it sits
    below Reporting and above Activity.
 3. Click **Explorer**. **CONFIRMED** this node exists.
-4. **EXPECTED** you land on a tree or grid of physical items. If there is a
-   folder tree on the left, click the **top level / root** so the grid shows
-   everything, not one branch.
-5. Clear any filter that is applied by default. Look for a filter chip, a funnel
-   icon, or a search box with text already in it.
-6. **EXPECTED** find **Export**, **Download**, or an icon of a sheet with a
-   down arrow, on the grid toolbar or behind a **...** overflow menu.
-7. If offered a column chooser, **select all columns**.
-8. If offered a scope choice, pick **all items** or **current view with
-   subfolders**, not **selected items**.
-9. Submit, then go to **Activity → Job monitor** and wait for the job to finish.
-10. Collect the file from **Activity → Download center**.
+
+**CORRECTED 19 August, from the tenant. Explorer is a browser, not an
+exportable grid, and it carries no export control on its landing page.**
+
+**CONFIRMED** what Explorer actually shows:
+
+- A left panel with two tabs, **Terms** and **Locations**, plus a **Legend**
+  link. The Terms tab shows a tree: **Term groups**, containing **Department**
+  and **ADB**
+- A right panel headed **Summary**, carrying four figures, each rendered as a
+  link: **Total terms 65**, **Overdue loan requests 5/7**, **Pending loan 2**,
+  **Pending destruction 1**
+- **Top 5 most used terms**: Long Term 57, Short Term 30, Permanent 7, CSD 3,
+  Finance 2
+- A **Requests** donut, **Total 27**, split **Awaiting approval 2, Approved 17,
+  Rejected 8**, each count a link
+
+So there is no grid to export from here. Work down these three routes instead,
+in this order, and record which one works.
+
+**Route A, the Reporting node. Try this first.** In this class of product the
+exports live under Reporting, not on the browse screens. Left nav, expand
+**Reporting**, and see Export 5 below. **This is now the highest priority step
+in the whole document.**
+
+**Route B, the linked figures.** Every number on the Summary panel and the
+Requests donut is a link. Click each of **65**, **5/7**, **2**, **1**, and on
+the donut **2**, **17** and **8**. **EXPECTED** each opens the underlying list.
+Check that list's toolbar, and any **...** overflow menu, for an export control.
+
+**Route C, drill the tree.** Click the **Locations** tab, then click into a
+node in the tree rather than staying on the root. **EXPECTED** the item grid
+appears only once you are inside a location, and the export control with it.
+
+Whichever route produces a file: submit it, watch **Activity → Job monitor**,
+and collect from **Activity → Download center**.
+
+**Check Download center first regardless.** If anyone has ever run an export in
+this tenant, it is listed there, and it tells us what the export format and
+column set look like without generating anything.
 
 ### What to check for in the header row
 
@@ -270,7 +355,12 @@ Approved, Declined and Extended.** The client drew those three words on slides
 
 ## EXPORT 5. THE REPORTING NODE INVENTORY
 
-**Priority: do this before Exports 1 to 4 if you have five spare minutes.**
+**Priority: HIGHEST. Do this before everything else.**
+
+**Raised from "do it if you have five spare minutes" on 19 August**, after the
+Explorer screen turned out to carry no export control. If the browse screens
+cannot export, Reporting is where the exports are, and this node is the only
+part of Opus nobody has opened yet.
 
 **CONFIRMED** the left nav carries a **Reporting** node with an expand arrow.
 Nothing under it is visible in the screenshot.
@@ -411,12 +501,21 @@ If the exports carry what the dashboard suggests they carry:
 **Three of those are measures the client drew and we took off the page.** That
 is the case for putting Opus back to them.
 
-### And two new questions for the client
+### And the questions for the client
 
 1. **Is Opus deployed across all EDRMS sites in production, or is this a
-   pilot?** 25 configured nodes against 1,032 compliant sites.
-2. **Opus reports 65 terms, Purview reports 53 retention labels, same tenant.
-   Which governs the file plan?**
+   pilot?** 25 configured nodes against 1,032 compliant sites. This one governs
+   whether any Opus figure can go on Bank-wide at all.
+2. **Opus terms and Purview labels are different populations, not one list
+   counted twice.** Opus's 65 mixes retention terms with department terms, in
+   groups named Department and ADB. Which governs the institutional file plan on
+   slides 47 to 52?
+3. **Opus splits Long Term, Short Term and Permanent. The dashboard splits
+   Permanent and Temporary.** Do Long Term and Short Term both roll into
+   Temporary? This governs every figure on slides 44, 45 and 46.
+4. **Opus records Approved and Rejected but not Extended.** Slides 43 and 60 ask
+   for all three. Is Extended a process that exists at ADB and is recorded
+   somewhere else, or is it a column to drop?
 
 ---
 
