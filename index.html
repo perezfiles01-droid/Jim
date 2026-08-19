@@ -2756,11 +2756,8 @@ DASHBOARDS.dp=(function(){
                   {k:"due",lab:"Number of records due for disposal",num:1}];
 
   function drawSites(d,sites){
-    const rows=[...sites].sort((a,b)=>{
-      const cmp=(sortSite==="name"||sortSite==="owner")
-        ? String(a[sortSite]).localeCompare(String(b[sortSite])) : a[sortSite]-b[sortSite];
-      return dirSite==="asc"?cmp:-cmp;
-    });
+    /* Use shared sortTable() function for consistent sort behavior across dashboards */
+    const rows=sortTable(sites,sortSite,dirSite);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(sitePage>pages)sitePage=pages;
     const page=rows.slice((sitePage-1)*10,sitePage*10);
