@@ -1,0 +1,12 @@
+{
+  "name": "EDRMS Utilization Report",
+  "description": "Dashboard prototype and database design for ADB EDRMS utilization reporting",
+  "skills": {
+    "opus-planning-mode": {
+      "enabled": true
+    },
+    "fix": {
+      "enabled": true
+    }
+  }
+}
