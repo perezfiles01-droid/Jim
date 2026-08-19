@@ -1820,12 +1820,13 @@ DASHBOARDS.bw=(function(){
     const tiles=d.tiles();
 
     /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","rec","declaring"];
+    const SORT_KEYS=["code","rec","declaring","pctShare"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortRec==="code") cmp=a.code.localeCompare(b.code);
       else if(sortRec==="rec") cmp=a.rec-b.rec;
       else if(sortRec==="declaring") cmp=a.declaring-b.declaring;
+      else if(sortRec==="pctShare") cmp=(a.rec/TOTAL_REC)-(b.rec/TOTAL_REC);
       return dirRec==="asc"?cmp:-cmp;
     });
 
