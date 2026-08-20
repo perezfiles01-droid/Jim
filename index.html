@@ -3781,12 +3781,16 @@ DASHBOARDS.rd=(function(){
     const share=TEMP_PERIODS[period]/TEMP_ALL_PERIODS;
     tRecByDeptByPeriod[period]=split(Math.round(TEMP_REC*share), weights(nD,35));
   });
+  /* Add "others" retention period */
+  const otherShare=TEMP_OTHER/TEMP_ALL_PERIODS;
+  tRecByDeptByPeriod["others"]=split(Math.round(TEMP_REC*otherShare), weights(nD,35));
 
   const TEMP_BY_DEPT=DEPTS.map((d,i)=>({
     code:d.code, name:d.name,
     sites:tSitesByDept[i], libs:tLibsByDept[i], rec:tRecByDept[i], phys:tPhysByDept[i],
     rec3:tRecByDeptByPeriod["3"][i], rec5:tRecByDeptByPeriod["5"][i],
-    rec7:tRecByDeptByPeriod["7"][i], rec10:tRecByDeptByPeriod["10"][i]
+    rec7:tRecByDeptByPeriod["7"][i], rec10:tRecByDeptByPeriod["10"][i],
+    recOthers:tRecByDeptByPeriod["others"][i]
   }));
   console.assert(TEMP_BY_DEPT.reduce((a,d)=>a+d.rec,0)===TEMP_REC,
     "Temporary records by department must total temporary records");
@@ -4011,7 +4015,8 @@ DASHBOARDS.rd=(function(){
       <option value="3">3 years</option>
       <option value="5">5 years</option>
       <option value="7">7 years</option>
-      <option value="10">10 years</option>`;
+      <option value="10">10 years</option>
+      <option value="others">Others</option>`;
     periodFilter.onchange=e=>{tempPeriodFilter=e.target.value;tempPage=1;renderTempTable();};
 
     // Render the retention tables
