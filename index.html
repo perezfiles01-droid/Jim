@@ -152,6 +152,8 @@
   .pend-label{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:8px}
   .pend-value{font-size:28px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;margin-bottom:6px}
   .pend-desc{font-size:11px;color:var(--mut);line-height:1.4}
+  /* Retrieval Activity chart legend */
+  .retr-legend{font-size:11px;color:var(--mut);margin-top:8px;text-align:center}
 
   /* ===== KPI grouping =====
      Asked for on 13 Aug: a reader should be able to see at a glance which
@@ -4356,6 +4358,37 @@ DASHBOARDS.ra=(function(){
     </div>`;
   }
 
+  /* Retrieval Activity (Change 3): monthly boxes and folders retrieved, by department.
+     Last 6 months, distributed across departments using weights. */
+  const RETRIEVAL_ACTIVITY=MONTHS.map((mo,i)=>{
+    const monthBoxes=Math.round(85+Math.random()*65);
+    const monthFolders=Math.round(400+Math.random()*250);
+    const boxWeights=weights(16,88+i);
+    const folderWeights=weights(16,104+i);
+    return {
+      month:mo,
+      boxes:split(monthBoxes,boxWeights),
+      folders:split(monthFolders,folderWeights)
+    };
+  });
+
+  /* Render Retrieval Activity chart: boxes and folders retrieved per month */
+  function drawRetrievalActivityChart(){
+    const deptCols=DEPT_LIST.map((d,i)=>{
+      const boxes=RETRIEVAL_ACTIVITY.reduce((a,m)=>a+m.boxes[i],0);
+      const folders=RETRIEVAL_ACTIVITY.reduce((a,m)=>a+m.folders[i],0);
+      return {dept:d,boxes,folders};
+    });
+    return `<div class="chart cols" id="ra-retr-activity">
+      ${deptCols.map(d=>`<div class="ccol">
+        <div class="cb" style="height:${Math.max(3,Math.round(180*d.boxes/Math.max(...deptCols.map(x=>x.boxes))))}px;background:var(--teal)"></div>
+        <div class="cv">${F(d.boxes)}</div>
+        <div class="cl">${d.dept}</div>
+      </div>`).join("")}
+    </div>
+    <div class="retr-legend">Boxes retrieved over 6 months, by department</div>`;
+  }
+
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
   const STORE_ASKS=[
@@ -4440,10 +4473,12 @@ DASHBOARDS.ra=(function(){
       <div class="psub">Requests, requestors, boxes and folders taken out of the holdings (Slide 69).
         Status is one of loan, return to owner, or for disposal.</div>
       ${drawRetrievalTable()}
-      <div class="asks">
-        <div class="ah">Also asked for on this screen</div>
-        <ul>${RETR_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
-      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Retrieval activity</div>
+      <div class="psub">Boxes retrieved per department over the last 6 months (illustrative).</div>
+      ${drawRetrievalActivityChart()}
     </div>
 
     <div class="band">
