@@ -1693,8 +1693,8 @@ DASHBOARDS.bw=(function(){
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                              PCT(d.phys,d.rec).toFixed(1)+"%"]),
       tiles:()=>[["Physical counterparts",F(TOTAL_PHYS)],
-                 ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
                  ["Records declared",F(TOTAL_REC)],
+                 ["Share of declared records",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
                  ["Departments, offices and RMs in the list",F(DEPTS.length)]]
     },
     disp:{
