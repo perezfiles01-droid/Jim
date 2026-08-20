@@ -4297,6 +4297,18 @@ DASHBOARDS.ra=(function(){
       <div class="kpi stat"><div class="lab">Physical counterparts identified</div>
         <div class="val">${F(DATA.WITH_PHYSICAL)}</div>
         <div class="sub">Declared records recorded as having a paper counterpart</div></div>
+      <div class="kpi stat"><div class="lab">Unverified holdings</div>
+        <div class="val">${F(INVENTORY_UNVERIFIED)}</div>
+        <div class="sub">Items pending inventory verification (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Missing items</div>
+        <div class="val">${F(INVENTORY_MISSING)}</div>
+        <div class="sub">Records not located during last inventory audit (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Due for verification</div>
+        <div class="val">${F(INVENTORY_DUE_VERIFICATION)}</div>
+        <div class="sub">Holdings requiring verification in current cycle (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Legacy files</div>
+        <div class="val">${F(LEGACY_NOT_DIGITIZED)}</div>
+        <div class="sub">Physical files not yet digitized (illustrative)</div></div>
     </div>
 
     <div class="band">
