@@ -4272,6 +4272,383 @@ DASHBOARDS.rd=(function(){
    nothing fills it, which is the conversation this dashboard needs to
    start. Audit question 17.
    =================================================================== */
+
+/* =================================================================
+   Project Insights (pj) - Slide 38
+
+   One project's profile, eight profile fields, 7 clickable tiles with
+   drills, and 3 summary charts. Reads the project list from Bank-wide
+   rather than holding a second copy. Blocked on two sources: the
+   site-to-project register (which sites belong to this project) and
+   the ADB project system that holds the eight profile fields.
+
+   Illustrative data structure is used for project attributes since
+   the ADB project system has not been named. All site-level metrics
+   are synthesized from the department data, so rows always sum to the
+   project totals.
+   ================================================================= */
+DASHBOARDS.pj=(function(){
+  const BW=DASHBOARDS.bw.summary;
+  const DEPTS=BW.departments;
+  const split=splitTotal;
+
+  /* Illustrative project attributes from ADB project system (question 16) */
+  const PROJECT_ATTRIBUTES={
+    "57318-001":{
+      name:"Tropical Cyclone Lola Emergency Response Project",
+      facilityType:"Sovereign",
+      projectNumber:"57318-001",
+      projectTypeModality:"Grant",
+      modalityNumber:"0923",
+      country:"Vanuatu",
+      status:"Closed",
+      effectivityDate:"13 Dec 2023",
+      closingDate:"10 Sep 2024"
+    },
+    "50291-003":{
+      name:"Climate Resilience in Southeast Asia Program",
+      facilityType:"Sovereign",
+      projectNumber:"50291-003",
+      projectTypeModality:"Technical Assistance",
+      modalityNumber:"0824",
+      country:"Cambodia",
+      status:"Active",
+      effectivityDate:"01 Feb 2022",
+      closingDate:"31 Dec 2027"
+    },
+    "52104-005":{
+      name:"Regional Digital Transformation Initiative",
+      facilityType:"Sovereign",
+      projectNumber:"52104-005",
+      projectTypeModality:"Loan",
+      modalityNumber:"0710",
+      country:"Philippines",
+      status:"Active",
+      effectivityDate:"15 Mar 2023",
+      closingDate:"15 Sep 2029"
+    },
+    "48362-012":{
+      name:"Private Sector Development Support",
+      facilityType:"Nonsovereign",
+      projectNumber:"48362-012",
+      projectTypeModality:"Equity Investment",
+      modalityNumber:"0512",
+      country:"Indonesia",
+      status:"Active",
+      effectivityDate:"20 Jul 2021",
+      closingDate:"20 Dec 2026"
+    }
+  };
+
+  /* Sites belonging to this project (illustrative, normally from site-to-project register question 2) */
+  function generateProjectSites(projectCode){
+    const numSites=Math.floor(Math.random()*8)+3;/* 3 to 10 sites per project */
+    const STEMS=["Records","Operations","Programs","Country Planning","Governance",
+                 "Knowledge","Administration","Projects","Advisory","Portfolio"];
+    const sites=[];
+    for(let i=0;i<numSites;i++){
+      const stem=STEMS[i%STEMS.length];
+      sites.push({
+        name:`${projectCode} ${stem}${i>=STEMS.length?" "+(Math.floor(i/STEMS.length)+1):""}`,
+        owner:["a.mendoza","r.tan","j.cruz","m.reyes","l.fernandez"][i%5]+"@adb.org"
+      });
+    }
+    return sites;
+  }
+
+  /* Build metrics for a project by aggregating from its sites */
+  function buildProjectData(projectCode){
+    const sites=generateProjectSites(projectCode);
+    const n=sites.length;
+
+    /* Create illustrative metrics for this project */
+    const totalSites=n;
+    const totalUsers=Math.floor(Math.random()*120)+20;
+    const totalVisitors=Math.floor(Math.random()*450)+50;
+    const totalDocs=Math.floor(Math.random()*2500)+300;
+    const totalRecs=Math.floor(totalDocs*0.35);
+    const totalPhys=Math.floor(totalRecs*0.28);
+    const totalDue=Math.floor(totalRecs*0.12);
+
+    /* Split metrics across sites */
+    const s=projectCode.length*3;
+    const recWeights=weights(n,s+1), docWeights=weights(n,s+2), physWeights=weights(n,s+3),
+          dueWeights=weights(n,s+4), userWeights=weights(n,s+5), visWeights=weights(n,s+6);
+
+    const rec=split(totalRecs, recWeights), docs=split(totalDocs, docWeights),
+          phys=split(totalPhys, physWeights), due=split(totalDue, dueWeights),
+          users=split(totalUsers, userWeights), visitors=split(totalVisitors, visWeights);
+
+    /* Populate site rows */
+    sites.forEach((site,i)=>{
+      site.rec=rec[i];
+      site.docs=docs[i];
+      site.phys=phys[i];
+      site.due=due[i];
+      site.users=users[i];
+      site.visitors=visitors[i];
+      site.idle=((i*13+s)%90)+1;
+    });
+
+    return{
+      totalSites, totalUsers, totalVisitors, totalDocs, totalRecs, totalPhys, totalDue,
+      sites
+    };
+  }
+
+  /* State */
+  let currentProject="57318-001";
+  let projectData=buildProjectData(currentProject);
+  let openKpi="sites";
+  let sitePage=1, sortSite="rec", dirSite="desc";
+
+  /* Set the current project (called from Bank-wide navigation) */
+  function setProject(projectCode){
+    currentProject=projectCode;
+    projectData=buildProjectData(currentProject);
+    sitePage=1;
+    openKpi="sites";
+    render();
+  }
+
+  /* Drill rendering functions */
+  function renderSitesDrill(){
+    const SORT_KEYS=["name","users","visitors","docs","rec","phys","due"];
+    const sorted=projectData.sites.slice().sort((a,b)=>{
+      let cmp=0;
+      if(sortSite==="name") cmp=a.name.localeCompare(b.name);
+      else if(sortSite==="users") cmp=a.users-b.users;
+      else if(sortSite==="visitors") cmp=a.visitors-b.visitors;
+      else if(sortSite==="docs") cmp=a.docs-b.docs;
+      else if(sortSite==="rec") cmp=a.rec-b.rec;
+      else if(sortSite==="phys") cmp=a.phys-b.phys;
+      else if(sortSite==="due") cmp=a.due-b.due;
+      return dirSite==="asc"?cmp:-cmp;
+    });
+    const ROWS_PER_PAGE=7;
+    const rows=sorted.slice((sitePage-1)*ROWS_PER_PAGE, sitePage*ROWS_PER_PAGE);
+    const pages=Math.max(1,Math.ceil(sorted.length/ROWS_PER_PAGE));
+
+    let html=`<div class="ptitle">Sites in ${currentProject}</div>
+      <div class="psub">Site metrics within this project (Slide 38).</div>
+      <table class="dtab"><thead><tr>`;
+    SORT_KEYS.forEach(k=>{
+      const hdr=k==="name"?"Site Name":k==="users"?"Users":k==="visitors"?"Visitors":
+                k==="docs"?"Documents":k==="rec"?"Records Declared":k==="phys"?"Physical":
+                "Due for Disposal";
+      html+=`<th class="hd${sortSite===k?" on":""}" data-s="${k}" style="cursor:pointer">${hdr}${sortSite===k?(dirSite==="asc"?" ↑":" ↓"):""}</th>`;
+    });
+    html+=`</tr></thead><tbody>`;
+    rows.forEach(r=>{
+      html+=`<tr><td>${r.name}</td><td>${F(r.users)}</td><td>${F(r.visitors)}</td>
+        <td>${F(r.docs)}</td><td>${F(r.rec)}</td><td>${F(r.phys)}</td><td>${F(r.due)}</td></tr>`;
+    });
+    html+=`</tbody></table><div class="pager"><div class="pinfo">Page ${sitePage} of ${pages}</div>
+      <div class="pbtns"><button${sitePage===1?" disabled":""}>‹</button>`;
+    for(let p=1;p<=pages;p++){
+      html+=`<button class="${p===sitePage?"on":""}">${p}</button>`;
+    }
+    html+=`<button${sitePage===pages?" disabled":""}>›</button></div></div>`;
+    return html;
+  }
+
+  function renderUsersDrill(){
+    const staffCount=Math.round(projectData.totalUsers*0.65);
+    const contractorCount=Math.round(projectData.totalUsers*0.22);
+    const consultantCount=projectData.totalUsers-staffCount-contractorCount;
+    const svg=CHART.donut([
+      {label:"Staff",value:staffCount,color:"var(--blue)"},
+      {label:"Contractors",value:contractorCount,color:"var(--teal)"},
+      {label:"Consultants",value:consultantCount,color:"var(--orange)"}
+    ]);
+    return`<div class="ptitle">Users by type</div><div class="psub">User classification (Slide 38).</div>${svg}`;
+  }
+
+  function renderVisitorsDrill(){
+    return`<div class="ptitle">Site visitors</div><div class="psub">Unique visitors across project sites (Slide 38).</div>
+      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Visitors</th></tr></thead><tbody>
+      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.visitors)}</td></tr>`).join("")}
+      </tbody></table>`;
+  }
+
+  function renderDocsDrill(){
+    return`<div class="ptitle">Documents</div><div class="psub">Document count by site (Slide 38).</div>
+      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Documents</th></tr></thead><tbody>
+      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.docs)}</td></tr>`).join("")}
+      </tbody></table>`;
+  }
+
+  function renderRecordsDrill(){
+    return`<div class="ptitle">Records declared</div><div class="psub">Declared records by site (Slide 38).</div>
+      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Records</th></tr></thead><tbody>
+      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.rec)}</td></tr>`).join("")}
+      </tbody></table>`;
+  }
+
+  function renderPhysicalDrill(){
+    return`<div class="ptitle">Physical counterparts</div><div class="psub">Physical counterparts identified by site (Slide 38).</div>
+      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Physical</th></tr></thead><tbody>
+      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.phys)}</td></tr>`).join("")}
+      </tbody></table>`;
+  }
+
+  function renderDueDrill(){
+    return`<div class="ptitle">Records due for disposal</div><div class="psub">Records due by site (Slide 38).</div>
+      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Due</th></tr></thead><tbody>
+      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.due)}</td></tr>`).join("")}
+      </tbody></table>`;
+  }
+
+  function renderCumulativeTrend(){
+    /* Illustrative cumulative declaration trend over 12 months */
+    const months=["Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026",
+                  "Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"];
+    const monthlyIncrements=split(projectData.totalRecs,weights(12,42));
+    let cumulative=0;
+    const data=months.map((m,i)=>{cumulative+=monthlyIncrements[i];
+      return{label:m,short:m.split(" ")[0],value:cumulative};});
+    return`<div class="ptitle">Cumulative declaration trend</div><div class="psub">Records declared over 12 months (Slide 38).</div>${CHART.area(data,{height:240})}`;
+  }
+
+  function renderDeclarationRate(){
+    /* Top 5 sites by declaration volume, with rates */
+    const topSites=projectData.sites.sort((a,b)=>b.rec-a.rec).slice(0,5);
+    const items=topSites.map(s=>{
+      const rate=s.docs>0?(s.rec/s.docs*100).toFixed(0)+"%":"—";
+      const label=s.name.split(" ").slice(0,2).join(" ");
+      return{label:`${label} (${rate})`,value:s.rec};
+    });
+    return`<div class="ptitle">Records declared by site</div><div class="psub">Top 5 sites by declaration volume with declaration rate (Slide 38).</div>${CHART.hbars(items)}`;
+  }
+
+  function render(){
+    const attr=PROJECT_ATTRIBUTES[currentProject]||PROJECT_ATTRIBUTES["57318-001"];
+    const html=`
+    <section>
+      <div class="band">
+        <h2>${attr.name}</h2>
+        <div class="bd">Project profile, site metrics, and records compliance summary.</div>
+      </div>
+
+      <div class="panel" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px">
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Facility Type</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.facilityType}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Project Number</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.projectNumber}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Type &amp; Modality</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.projectTypeModality}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Modality Number</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.modalityNumber}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Country / Economy</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.country}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Project Status</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.status}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Effectivity Date</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.effectivityDate}</div></div>
+        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Closing Date</div>
+          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.closingDate}</div></div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi" data-kpi="sites"><div class="lab">Total number of sites created</div>
+          <div class="val">${F(projectData.totalSites)}</div></div>
+        <div class="kpi" data-kpi="users"><div class="lab">Total number of EDRMS users</div>
+          <div class="val">${F(projectData.totalUsers)}</div></div>
+        <div class="kpi" data-kpi="visitors"><div class="lab">Total number of site visitors</div>
+          <div class="val">${F(projectData.totalVisitors)}</div></div>
+        <div class="kpi" data-kpi="docs"><div class="lab">Total number of documents in EDRMS</div>
+          <div class="val">${F(projectData.totalDocs)}</div></div>
+        <div class="kpi" data-kpi="records"><div class="lab">Total number of records declared in EDRMS</div>
+          <div class="val">${F(projectData.totalRecs)}</div></div>
+        <div class="kpi" data-kpi="physical"><div class="lab">Total number of physical counterparts identified</div>
+          <div class="val">${F(projectData.totalPhys)}</div></div>
+        <div class="kpi" data-kpi="due"><div class="lab">Total number of records due for disposal</div>
+          <div class="val">${F(projectData.totalDue)}</div></div>
+      </div>
+
+      <div class="panel" id="pj-drill" style="display:none"></div>
+
+      <div class="crow">
+        <div class="chart">${renderUsersDrill()}</div>
+        <div class="chart">${renderCumulativeTrend()}</div>
+      </div>
+
+      <div class="crow">
+        <div class="chart wide">${renderDeclarationRate()}</div>
+      </div>
+    </section>`;
+    document.querySelector("section").innerHTML=html;
+
+    /* Wire KPI clicks */
+    document.querySelectorAll(".kpi[data-kpi]").forEach(el=>{
+      el.addEventListener("click",()=>{
+        const kpi=el.getAttribute("data-kpi");
+        document.querySelectorAll(".kpi[data-kpi]").forEach(e=>e.classList.remove("on"));
+        el.classList.add("on");
+        openKpi=kpi;
+
+        const drill=document.getElementById("pj-drill");
+        if(kpi==="sites") drill.innerHTML=renderSitesDrill();
+        else if(kpi==="users") drill.innerHTML=renderUsersDrill();
+        else if(kpi==="visitors") drill.innerHTML=renderVisitorsDrill();
+        else if(kpi==="docs") drill.innerHTML=renderDocsDrill();
+        else if(kpi==="records") drill.innerHTML=renderRecordsDrill();
+        else if(kpi==="physical") drill.innerHTML=renderPhysicalDrill();
+        else if(kpi==="due") drill.innerHTML=renderDueDrill();
+        drill.style.display="block";
+
+        /* Wire pager/sort if exists */
+        if(kpi==="sites") wireSitesTable();
+      });
+    });
+
+    /* Wire first KPI */
+    if(openKpi==="sites"){
+      document.querySelector(`[data-kpi="sites"]`).classList.add("on");
+      document.getElementById("pj-drill").innerHTML=renderSitesDrill();
+      document.getElementById("pj-drill").style.display="block";
+      wireSitesTable();
+    }
+  }
+
+  function wireSitesTable(){
+    const drill=document.getElementById("pj-drill");
+    drill.querySelectorAll("th[data-s]").forEach(th=>{
+      th.addEventListener("click",()=>{
+        const k=th.getAttribute("data-s");
+        sortSite=k;
+        dirSite=dirSite==="asc"?"desc":"asc";
+        drill.innerHTML=renderSitesDrill();
+        wireSitesTable();
+      });
+    });
+    drill.querySelectorAll("button").forEach((btn,i)=>{
+      if(i===0) btn.addEventListener("click",()=>{ sitePage=Math.max(1,sitePage-1); drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
+      else if(i===drill.querySelectorAll("button").length-1) btn.addEventListener("click",()=>{ sitePage++; drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
+      else if(btn.className==="on"||!btn.className){
+        const pageNum=parseInt(btn.textContent);
+        btn.addEventListener("click",()=>{ sitePage=pageNum; drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
+      }
+    });
+  }
+
+  const html=`<section id="pj-section"></section>`;
+
+  function init(){
+    render();
+  }
+
+  function focus(projectCode){
+    setProject(projectCode);
+  }
+
+  return{
+    summary:{projects:Object.keys(PROJECT_ATTRIBUTES).length,sourced:0},
+    html,init,setProject,focus
+  };
+})();
+
+
 DASHBOARDS.ra=(function(){
   const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
 
