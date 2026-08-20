@@ -3241,7 +3241,7 @@ DASHBOARDS.dp=(function(){
 
   function drawUsers(d){
     document.getElementById("dp-drill").innerHTML=
-      `<div class="ptitle">Users</div>
+      `<div class="ptitle">Users and Activity</div>
        <div class="psub">Users with recorded activity, and how recently they were last active.</div>
        ${summaryChart([
          {lab:"Users with recorded activity in EDRMS compliant sites",v:d.users},
@@ -3376,10 +3376,8 @@ DASHBOARDS.dp=(function(){
 
   function drawAll(){
     const d=D();
-    /* The aggregate already names itself, so it does not get the "CODE - "
-       prefix a real unit gets. */
-    document.getElementById("dp-name").textContent=
-      d.code===ALLCODE?d.name:d.code+" - "+d.name;
+    /* Display static "Department Profile" title instead of dynamic department name */
+    document.getElementById("dp-name").textContent="Department Profile";
     drawTiles(); wireTiles(); drawDrill(); drawLibs();
   }
 
