@@ -3150,8 +3150,7 @@ DASHBOARDS.dp=(function(){
        <div class="psub">Records with a physical counterpart, by site.</div>
        ${summaryChart([
          {lab:"Records with a counterpart",v:d.phys},
-         {lab:"Total number of records declared",v:d.rec},
-         {lab:"Share of declared records",txt:PCT(d.phys,d.rec).toFixed(1)+"%"}])}
+         {lab:"Total number of records declared",v:d.rec}])}
        <div class="scrollx"><div class="dtab wide" id="dp-physical"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(130px,1fr)">
          <div class="dhead">
