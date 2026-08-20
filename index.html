@@ -1694,8 +1694,7 @@ DASHBOARDS.bw=(function(){
                              PCT(d.phys,d.rec).toFixed(1)+"%"]),
       tiles:()=>[["Total number of physical records declared",F(TOTAL_PHYS)],
                  ["Records declared",F(TOTAL_REC)],
-                 ["Share of records with a counterpart",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"],
-                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
+                 ["Share of records with a counterpart",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"]]
     },
     disp:{
       title:"Total number of records due for disposal within 12 months, by department, office or RM",
