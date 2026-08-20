@@ -3489,6 +3489,28 @@ DASHBOARDS.fp=(function(){
     {cat:"Other", terms:["Photos and Audiovisual","Legacy Content","Unclassified"]},
   ];
 
+  /* Department-to-category mapping (illustrative, as there is no TermId join
+     available to source this from real data). Each department is assigned to
+     one primary category based on its function. */
+  const DEPT_CATS={
+    "ITD":"Institutional Management",
+    "OGC":"Institutional Management",
+    "FIN":"Administration",
+    "SARD":"Administration",
+    "HRD":"People Management",
+    "PARD":"People Management",
+    "OSFG":"Programs and Operations",
+    "EARD":"Programs and Operations",
+    "BRM":"Programs and Operations",
+    "PSOD":"Programs and Operations",
+    "SERD":"Other",
+    "SPD":"Other",
+    "SDCC":"Other",
+    "OAS":"Other",
+    "ERCD":"Other",
+    "CWRD":"Other"
+  };
+
   const split=splitTotal;
 
   /* Every term gets a share of the bank-wide totals, so the categories sum to
@@ -3501,20 +3523,36 @@ DASHBOARDS.fp=(function(){
      which is the tautology the division tier had. See weights(). */
   const nF=FLAT.length;
   const recS=split(DATA.DECLARED,weights(nF,31)), docS=split(DATA.DOCUMENTS,weights(nF,32)),
-        physS=split(DATA.WITH_PHYSICAL,weights(nF,33)), libS=split(267,weights(nF,34)),
-        depS=split(96,weights(nF,35));
-  FLAT.forEach((f,i)=>{f.rec=recS[i];f.docs=docS[i];f.phys=physS[i];f.libs=libS[i];f.depts=depS[i];});
+        physS=split(DATA.WITH_PHYSICAL,weights(nF,33)), libS=split(267,weights(nF,34));
+  FLAT.forEach((f,i)=>{f.rec=recS[i];f.docs=docS[i];f.phys=physS[i];f.libs=libS[i];});
+
   const CATTOT=PLAN.map(c=>{
     const rows=FLAT.filter(f=>f.cat===c.cat);
+    const catDepts=Object.keys(DEPT_CATS).filter(d=>DEPT_CATS[d]===c.cat);
     return {cat:c.cat, terms:rows.length,
       rec:rows.reduce((a,r)=>a+r.rec,0), docs:rows.reduce((a,r)=>a+r.docs,0),
       phys:rows.reduce((a,r)=>a+r.phys,0), libs:rows.reduce((a,r)=>a+r.libs,0),
-      depts:Math.max(...rows.map(r=>r.depts))};
+      depts:catDepts};
   });
-  console.assert(CATTOT.reduce((a,c)=>a+c.rec,0)===DATA.DECLARED,
-    "File plan categories must total the declared record count");
-  console.assert(CATTOT.reduce((a,c)=>a+c.docs,0)===DATA.DOCUMENTS,
-    "File plan categories must total the document count");
+
+  /* Compute the total row, which must equal the sum of the five category rows */
+  const TOTAL={
+    cat:"Total",
+    terms:CATTOT.reduce((a,c)=>a+c.terms,0),
+    rec:CATTOT.reduce((a,c)=>a+c.rec,0),
+    docs:CATTOT.reduce((a,c)=>a+c.docs,0),
+    phys:CATTOT.reduce((a,c)=>a+c.phys,0),
+    libs:CATTOT.reduce((a,c)=>a+c.libs,0),
+    depts:Object.keys(DEPT_CATS)
+  };
+  console.assert(TOTAL.rec===DATA.DECLARED,
+    "File plan total row must equal the declared record count");
+  console.assert(TOTAL.docs===DATA.DOCUMENTS,
+    "File plan total row must equal the document count");
+  console.assert(TOTAL.terms===FLAT.length,
+    "File plan total terms must equal the sum of category terms");
+  console.assert(TOTAL.depts.length===Object.keys(DEPT_CATS).length,
+    "File plan total departments must include all mapped departments");
 
   const TOTAL_TERMS=FLAT.length;
   const NOSRC=`<span class="nosrc">Not captured</span>`;
@@ -3532,17 +3570,23 @@ DASHBOARDS.fp=(function(){
      it is the drawn screen and because omitting two categories that exist
      would raise a question on the first reading. */
   function drawCats(){
+    const deptList=d=>d.depts.join(", ");
+    const catRows=CATTOT.map(c=>`<div class="drow"><div class="dn">Total ${c.cat} terms</div>
+      <div class="num">${F(c.terms)}</div><div>${deptList(c)}</div>
+      <div class="num">${F(c.libs)}</div><div class="num">${F(c.docs)}</div>
+      <div class="num">${F(c.rec)}</div><div class="num">${F(c.phys)}</div></div>`).join("");
+    const totalRow=`<div class="drow" style="font-weight:bold;border-top:2px solid #ccc"><div class="dn">Total</div>
+      <div class="num">${F(TOTAL.terms)}</div><div>${deptList(TOTAL)}</div>
+      <div class="num">${F(TOTAL.libs)}</div><div class="num">${F(TOTAL.docs)}</div>
+      <div class="num">${F(TOTAL.rec)}</div><div class="num">${F(TOTAL.phys)}</div></div>`;
     document.getElementById("fp-cats").innerHTML=
       `<div class="dhead"><div>Heading</div><div class="num">Total terms</div>
-        <div class="num">Departments, offices and RMs provisioned</div>
+        <div>Departments, offices and RMs provisioned</div>
         <div class="num">Number of libraries provisioned</div>
         <div class="num">Number of documents</div>
         <div class="num">Number of records declared</div>
         <div class="num">Number of physical counterparts</div></div>`+
-      CATTOT.map(c=>`<div class="drow"><div class="dn">Total ${c.cat} terms</div>
-        <div class="num">${F(c.terms)}</div><div class="num">${F(c.depts)}</div>
-        <div class="num">${F(c.libs)}</div><div class="num">${F(c.docs)}</div>
-        <div class="num">${F(c.rec)}</div><div class="num">${F(c.phys)}</div></div>`).join("");
+      catRows+totalRow;
   }
 
   /* ===== s48 to s52, one screen per category =====
@@ -3554,6 +3598,8 @@ DASHBOARDS.fp=(function(){
     const rows=FLAT.filter(f=>f.cat===cat);
     const t=f=>rows.reduce((a,r)=>a+r[f],0);
     const ranked=[...rows].sort((a,b)=>b.rec-a.rec);
+    const catTotal=CATTOT.find(c=>c.cat===cat);
+    const deptList=catTotal.depts.join(", ");
     document.getElementById("fp-terms").innerHTML=
       `<div class="tiles">
          <div class="tile"><div class="tl">Total terms (top level)</div><div class="tv">${F(rows.length)}</div></div>
@@ -3564,13 +3610,13 @@ DASHBOARDS.fp=(function(){
        </div>
        <div class="scrollx"><div class="dtab wide">
          <div class="dhead"><div>Term (top level)</div>
-           <div class="num">Departments, offices and RMs provisioned</div>
+           <div>Departments, offices and RMs provisioned</div>
            <div class="num">Number of libraries provisioned</div>
            <div class="num">Number of documents</div>
            <div class="num">Number of records declared</div>
            <div class="num">Number of physical counterparts</div></div>
          ${rows.map(r=>`<div class="drow"><div class="dn">${r.term}</div>
-           <div class="num">${F(r.depts)}</div><div class="num">${F(r.libs)}</div>
+           <div><span class="nosrc">Illustrative</span></div><div class="num">${F(r.libs)}</div>
            <div class="num">${F(r.docs)}</div><div class="num">${F(r.rec)}</div>
            <div class="num">${F(r.phys)}</div></div>`).join("")}
        </div></div>
@@ -3596,11 +3642,10 @@ DASHBOARDS.fp=(function(){
     </div>
 
     <div class="panel notice">
-      <div class="ptitle">Two things are missing behind this dashboard</div>
-      <div class="psub">The five categories exist in neither the SharePoint term store nor the Purview
-        file plan, so the file plan itself has no source yet. Separately, nothing links a term to a
-        library or to a document, so every count per term needs a join that does not exist. The
-        layout below follows the requirements so the shape can be agreed while both are resolved.</div>
+      <div class="ptitle">No TermId on document table</div>
+      <div class="psub">All per-term figures are illustrative pending a scan that populates the TermId field.
+        The five categories do not exist in the SharePoint term store or Purview file plan yet, and there is
+        no link between documents and terms. Once TermId is captured, this dashboard will show measured data.</div>
     </div>
 
     <div class="kpis">
