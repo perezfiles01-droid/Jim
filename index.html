@@ -3994,6 +3994,7 @@ DASHBOARDS.rd=(function(){
         <span class="lbl">Retention period</span>
         <select id="rd-temp-period-filter"></select>
       </div>
+      <div class="kpis" id="rd-temp-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:16px 0"></div>
       <div class="scrollx"><div class="dtab wide" id="rd-temp-table" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
         <div class="dhead" id="rd-temp-head"></div>
       </div></div>
@@ -4100,8 +4101,17 @@ DASHBOARDS.rd=(function(){
     /* Apply retention period filter if selected */
     let filtered=TEMP_BY_DEPT;
     if(tempPeriodFilter!=="all"){
-      const recField=`rec${tempPeriodFilter}`;
-      filtered=TEMP_BY_DEPT.map(d=>({...d, rec:d[recField]}));
+      // Normalize field name: "others" maps to "recOthers"
+      let recField=`rec${tempPeriodFilter}`;
+      if(tempPeriodFilter==="others") recField="recOthers";
+
+      // When filtering by retention period, recalculate sites/libs/phys proportionally
+      const totalTempRec=TEMP_BY_DEPT.reduce((a,d)=>a+d.rec,0);
+      filtered=TEMP_BY_DEPT.map(d=>{
+        const filteredRec=d[recField]||0;
+        const ratio=d.rec>0?filteredRec/d.rec:0;
+        return{...d, rec:filteredRec, sites:Math.round(d.sites*ratio), libs:Math.round(d.libs*ratio), phys:Math.round(d.phys*ratio)};
+      });
     }
 
     const sorted=filtered.slice().sort((a,b)=>{
@@ -4135,6 +4145,29 @@ DASHBOARDS.rd=(function(){
         <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
 
     document.getElementById("rd-temp-pager").innerHTML=pager(sorted.length, tempPage, pages, "departments");
+
+    // Update summary KPI boxes with filtered totals
+    const totalSites=filtered.reduce((a,d)=>a+d.sites,0);
+    const totalLibs=filtered.reduce((a,d)=>a+d.libs,0);
+    const totalRec=filtered.reduce((a,d)=>a+d.rec,0);
+    const totalPhys=filtered.reduce((a,d)=>a+d.phys,0);
+    document.getElementById("rd-temp-summary").innerHTML=`
+      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
+        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of sites provisioned</div>
+        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalSites)}</div>
+      </div>
+      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
+        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of libraries provisioned</div>
+        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalLibs)}</div>
+      </div>
+      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
+        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of records declared</div>
+        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalRec)}</div>
+      </div>
+      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
+        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of physical counterparts</div>
+        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalPhys)}</div>
+      </div>`;
 
     document.querySelectorAll("#rd-temp-table .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
