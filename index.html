@@ -4214,17 +4214,50 @@ DASHBOARDS.ra=(function(){
                    "Total number of boxes retrieved","Total number of folders retrieved",
                    "Status","Remarks"];
 
-  /* The client drew these two tables with real column headings, so the SHAPE
-     is a requirement even though nothing fills it. They are listed as the
-     columns each screen needs, rather than drawn as a grid of empty cells: a
-     table of blanks reads as a broken report, while a list of columns reads
-     as a specification, which is what this is until a source exists. */
-  const table=(cols,id)=>`
-    <div class="spec" id="${id}">
-      <div class="sh">Columns this screen needs</div>
-      <ol>${cols.map(c=>`<li>${c}</li>`).join("")}</ol>
-      <div class="sf">Storage locations to be listed per row: ${LOCATIONS.join(", ")}.</div>
-    </div>`;
+  /* Render Storage table (Slide 68): Location | Requests | Requestors (depts) |
+     Requestors (RMs) | Boxes | Folders | Remarks. All data is illustrative. */
+  function drawStorageTable(){
+    const html=`<div class="scrollx"><div class="dtab wide">
+      <div class="dhead">
+        <div>${STORE_COLS[0]}</div><div class="num">${STORE_COLS[1]}</div>
+        <div class="num">${STORE_COLS[2]}</div><div class="num">${STORE_COLS[3]}</div>
+        <div class="num">${STORE_COLS[4]}</div><div class="num">${STORE_COLS[5]}</div>
+        <div>${STORE_COLS[6]}</div></div>
+      ${STORE_DATA.map(d=>`<div class="drow">
+        <div class="dn">${d.location}</div><div class="num">${F(d.requests)}</div>
+        <div class="num">${F(d.requestors_depts)}</div><div class="num">${F(d.requestors_rms)}</div>
+        <div class="num">${F(d.boxes)}</div><div class="num">${F(d.folders)}</div>
+        <div class="rem">${d.remarks}</div></div>`).join("")}
+      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
+        <div class="dn">${STORE_TOTAL.location}</div><div class="num">${F(STORE_TOTAL.requests)}</div>
+        <div class="num">${F(STORE_TOTAL.requestors_depts)}</div><div class="num">${F(STORE_TOTAL.requestors_rms)}</div>
+        <div class="num">${F(STORE_TOTAL.boxes)}</div><div class="num">${F(STORE_TOTAL.folders)}</div>
+        <div></div></div>
+    </div></div>`;
+    return html;
+  }
+
+  /* Render Retrieval table (Slide 69): Location | Requests | Requestors |
+     Boxes retrieved | Folders retrieved | Status | Remarks. All data is illustrative. */
+  function drawRetrievalTable(){
+    const html=`<div class="scrollx"><div class="dtab wide">
+      <div class="dhead">
+        <div>${RETR_COLS[0]}</div><div class="num">${RETR_COLS[1]}</div>
+        <div class="num">${RETR_COLS[2]}</div><div class="num">${RETR_COLS[3]}</div>
+        <div class="num">${RETR_COLS[4]}</div><div class="num">${RETR_COLS[5]}</div>
+        <div>${RETR_COLS[6]}</div></div>
+      ${RETR_DATA.map(d=>`<div class="drow">
+        <div class="dn">${d.location}</div><div class="num">${F(d.requests)}</div>
+        <div class="num">${F(d.requestors)}</div><div class="num">${F(d.boxes_retrieved)}</div>
+        <div class="num">${F(d.folders_retrieved)}</div><div class="num">${d.status}</div>
+        <div class="rem">${d.remarks}</div></div>`).join("")}
+      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
+        <div class="dn">${RETR_TOTAL.location}</div><div class="num">${F(RETR_TOTAL.requests)}</div>
+        <div class="num">${F(RETR_TOTAL.requestors)}</div><div class="num">${F(RETR_TOTAL.boxes_retrieved)}</div>
+        <div class="num">${F(RETR_TOTAL.folders_retrieved)}</div><div></div><div></div></div>
+    </div></div>`;
+    return html;
+  }
 
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
@@ -4248,11 +4281,11 @@ DASHBOARDS.ra=(function(){
     </div>
 
     <div class="panel notice">
-      <div class="ptitle">This dashboard is not yet specified</div>
-      <div class="psub">The layout below follows the two tables in the requirements. The measures are
-        listed as the columns each screen needs, because no system this report reads holds a box, a
-        folder, a storage room, a transfer or a retrieval. Storage and retrieval are managed outside
-        EDRMS, so this screen needs its own source before it can show a figure.</div>
+      <div class="ptitle">Sourced data: Physical counterparts only</div>
+      <div class="psub">Only "Physical counterparts identified" comes from EDRMS. All holdings data—boxes, folders,
+        storage, retrieval, and locations—come from RAC and are illustrative pending integration with Opus
+        and the IR Dashboard. No system this report reads holds a box, folder, transfer, or retrieval.
+        See gap register items 1-7 and Audit question 17.</div>
     </div>
 
     <!-- One figure on this dashboard IS sourceable, and it is the useful one:
@@ -4272,8 +4305,8 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, storage</div>
-      <div class="psub">Requests, requestors, boxes and folders held at each location.</div>
-      ${table(STORE_COLS,"ra-store")}
+      <div class="psub">Requests, requestors, boxes and folders held at each location (Slide 68).</div>
+      ${drawStorageTable()}
       <div class="asks">
         <div class="ah">Also asked for on this screen</div>
         <ul>${STORE_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
@@ -4286,9 +4319,9 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, retrieval</div>
-      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings.
+      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings (Slide 69).
         Status is one of loan, return to owner, or for disposal.</div>
-      ${table(RETR_COLS,"ra-retrieve")}
+      ${drawRetrievalTable()}
       <div class="asks">
         <div class="ah">Also asked for on this screen</div>
         <ul>${RETR_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
