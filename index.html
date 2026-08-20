@@ -130,6 +130,20 @@
   .stack{display:flex;height:30px;border-radius:7px;overflow:hidden;background:#F3F7FB}
   .stack .sg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;
     font-weight:700;font-variant-numeric:tabular-nums;min-width:2px}
+  /* Capacity chart: stacked bars showing % utilization per location */
+  .cchart{padding-top:14px}
+  .cchart .cbar{display:grid;grid-template-columns:minmax(140px,200px) 1fr 60px;gap:12px;align-items:center;margin-bottom:12px}
+  .cchart .clb{font-size:12.5px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .cchart .chb{display:flex;height:28px;border-radius:5px;overflow:hidden;background:#F3F7FB}
+  .cchart .cb{display:flex;align-items:center;justify-content:center;min-width:2px;font-size:11px;font-weight:700;color:#fff}
+  .cchart .cb.used{background:var(--blue)}
+  .cchart .cb.avail{background:#E8EEF5}
+  .cchart .crb{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .cchart .clegend{display:flex;gap:18px;margin-top:16px;font-size:12px}
+  .cchart .cleg{display:flex;align-items:center;gap:8px}
+  .cchart .cleg::before{content:"";width:12px;height:12px;border-radius:3px}
+  .cchart .cleg.used::before{background:var(--blue)}
+  .cchart .cleg.avail::before{background:#E8EEF5}
 
   /* ===== KPI grouping =====
      Asked for on 13 Aug: a reader should be able to see at a glance which
@@ -4129,6 +4143,82 @@ DASHBOARDS.rd=(function(){
 DASHBOARDS.ra=(function(){
   const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
 
+  /* Data structures for storage and retrieval. All holdings data is illustrative,
+     as no system this report reaches holds boxes, folders, storage, or retrieval
+     information. The only sourced figure is physical counterparts identified.
+     See gap register items 1-6 and Audit question 17. */
+  const split=splitTotal;
+  const TOTAL_BOXES=1840, TOTAL_FOLDERS=9260, TOTAL_REQUESTS=342;
+  const BOX_WEIGHTS=weights(3,41), FOLDER_WEIGHTS=weights(3,42), REQ_WEIGHTS=weights(3,43);
+  const boxSplit=split(TOTAL_BOXES,BOX_WEIGHTS), folderSplit=split(TOTAL_FOLDERS,FOLDER_WEIGHTS),
+        reqSplit=split(TOTAL_REQUESTS,REQ_WEIGHTS);
+
+  /* Storage data by location (Slide 68: columns are Location, Requests, Requestors-depts,
+     Requestors-RMs, Boxes stored, Folders stored, Remarks) */
+  const STORE_DATA=LOCATIONS.map((loc,i)=>({
+    location:loc,
+    requests:reqSplit[i],
+    requestors_depts:split(Math.round(78*Math.random()),weights(1,44))[0],
+    requestors_rms:split(Math.round(45*Math.random()),weights(1,45))[0],
+    boxes:boxSplit[i],
+    folders:folderSplit[i],
+    remarks:["Active, regular access","High volume transfers","Specialized holdings"][i]
+  }));
+  const STORE_TOTAL={
+    location:"Total",
+    requests:STORE_DATA.reduce((a,d)=>a+d.requests,0),
+    requestors_depts:STORE_DATA.reduce((a,d)=>a+d.requestors_depts,0),
+    requestors_rms:STORE_DATA.reduce((a,d)=>a+d.requestors_rms,0),
+    boxes:TOTAL_BOXES,
+    folders:TOTAL_FOLDERS,
+    remarks:""
+  };
+
+  /* Retrieval data by location (Slide 69: columns are Location, Requests, Requestors,
+     Boxes retrieved, Folders retrieved, Status, Remarks). Status mix per location. */
+  const RETR_DATA=LOCATIONS.map((loc,i)=>{
+    const retrReqs=split(Math.round(reqSplit[i]*0.35),weights(1,46))[0];
+    const retrBoxes=split(Math.round(boxSplit[i]*0.25),weights(1,47))[0];
+    const retrFolders=split(Math.round(folderSplit[i]*0.28),weights(1,48))[0];
+    return {
+      location:loc,
+      requests:retrReqs,
+      requestors:split(Math.round(45*Math.random()),weights(1,49))[0],
+      boxes_retrieved:retrBoxes,
+      folders_retrieved:retrFolders,
+      status:["Loan","Return to owner","For Disposal"][i],
+      remarks:["Short-term use","Completed project","Approved for disposal"][i]
+    };
+  });
+  const RETR_TOTAL={
+    location:"Total",
+    requests:RETR_DATA.reduce((a,d)=>a+d.requests,0),
+    requestors:RETR_DATA.reduce((a,d)=>a+d.requestors,0),
+    boxes_retrieved:RETR_DATA.reduce((a,d)=>a+d.boxes_retrieved,0),
+    folders_retrieved:RETR_DATA.reduce((a,d)=>a+d.folders_retrieved,0),
+    status:"",
+    remarks:""
+  };
+
+  /* Capacity metrics: illustrative % used and available space per location */
+  const CAPACITY_DATA=LOCATIONS.map((loc,i)=>({
+    location:loc,
+    percent_used:[65,80,45][i],
+    boxes_max:[3000,2500,1500][i],
+    get boxes_available(){return this.boxes_max-STORE_DATA[i].boxes;}
+  }));
+
+  /* Inventory health metrics (gap register items 5-6): all illustrative */
+  const INVENTORY_UNVERIFIED=split(147,weights(1,50))[0];
+  const INVENTORY_MISSING=split(34,weights(1,51))[0];
+  const INVENTORY_DUE_VERIFICATION=split(89,weights(1,52))[0];
+  const LEGACY_NOT_DIGITIZED=split(Math.round(DATA.WITH_PHYSICAL*0.12),weights(1,53))[0];
+
+  console.assert(STORE_TOTAL.boxes===TOTAL_BOXES,
+    "Storage data total boxes must equal split total");
+  console.assert(RETR_TOTAL.boxes_retrieved<=STORE_TOTAL.boxes,
+    "Retrieved boxes cannot exceed stored boxes");
+
   /* s68, storage. The client's own column names, including Remarks. */
   const STORE_COLS=["Location","No. of requests","Total number of requestors (departments)",
                     "Total number of requestors (RMs)","Total number of boxes stored",
@@ -4138,17 +4228,72 @@ DASHBOARDS.ra=(function(){
                    "Total number of boxes retrieved","Total number of folders retrieved",
                    "Status","Remarks"];
 
-  /* The client drew these two tables with real column headings, so the SHAPE
-     is a requirement even though nothing fills it. They are listed as the
-     columns each screen needs, rather than drawn as a grid of empty cells: a
-     table of blanks reads as a broken report, while a list of columns reads
-     as a specification, which is what this is until a source exists. */
-  const table=(cols,id)=>`
-    <div class="spec" id="${id}">
-      <div class="sh">Columns this screen needs</div>
-      <ol>${cols.map(c=>`<li>${c}</li>`).join("")}</ol>
-      <div class="sf">Storage locations to be listed per row: ${LOCATIONS.join(", ")}.</div>
+  /* Render Storage table (Slide 68): Location | Requests | Requestors (depts) |
+     Requestors (RMs) | Boxes | Folders | Remarks. All data is illustrative. */
+  function drawStorageTable(){
+    const html=`<div class="scrollx"><div class="dtab wide">
+      <div class="dhead">
+        <div>${STORE_COLS[0]}</div><div class="num">${STORE_COLS[1]}</div>
+        <div class="num">${STORE_COLS[2]}</div><div class="num">${STORE_COLS[3]}</div>
+        <div class="num">${STORE_COLS[4]}</div><div class="num">${STORE_COLS[5]}</div>
+        <div>${STORE_COLS[6]}</div></div>
+      ${STORE_DATA.map(d=>`<div class="drow">
+        <div class="dn">${d.location}</div><div class="num">${F(d.requests)}</div>
+        <div class="num">${F(d.requestors_depts)}</div><div class="num">${F(d.requestors_rms)}</div>
+        <div class="num">${F(d.boxes)}</div><div class="num">${F(d.folders)}</div>
+        <div class="rem">${d.remarks}</div></div>`).join("")}
+      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
+        <div class="dn">${STORE_TOTAL.location}</div><div class="num">${F(STORE_TOTAL.requests)}</div>
+        <div class="num">${F(STORE_TOTAL.requestors_depts)}</div><div class="num">${F(STORE_TOTAL.requestors_rms)}</div>
+        <div class="num">${F(STORE_TOTAL.boxes)}</div><div class="num">${F(STORE_TOTAL.folders)}</div>
+        <div></div></div>
+    </div></div>`;
+    return html;
+  }
+
+  /* Render Retrieval table (Slide 69): Location | Requests | Requestors |
+     Boxes retrieved | Folders retrieved | Status | Remarks. All data is illustrative. */
+  function drawRetrievalTable(){
+    const html=`<div class="scrollx"><div class="dtab wide">
+      <div class="dhead">
+        <div>${RETR_COLS[0]}</div><div class="num">${RETR_COLS[1]}</div>
+        <div class="num">${RETR_COLS[2]}</div><div class="num">${RETR_COLS[3]}</div>
+        <div class="num">${RETR_COLS[4]}</div><div class="num">${RETR_COLS[5]}</div>
+        <div>${RETR_COLS[6]}</div></div>
+      ${RETR_DATA.map(d=>`<div class="drow">
+        <div class="dn">${d.location}</div><div class="num">${F(d.requests)}</div>
+        <div class="num">${F(d.requestors)}</div><div class="num">${F(d.boxes_retrieved)}</div>
+        <div class="num">${F(d.folders_retrieved)}</div><div class="num">${d.status}</div>
+        <div class="rem">${d.remarks}</div></div>`).join("")}
+      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
+        <div class="dn">${RETR_TOTAL.location}</div><div class="num">${F(RETR_TOTAL.requests)}</div>
+        <div class="num">${F(RETR_TOTAL.requestors)}</div><div class="num">${F(RETR_TOTAL.boxes_retrieved)}</div>
+        <div class="num">${F(RETR_TOTAL.folders_retrieved)}</div><div></div><div></div></div>
+    </div></div>`;
+    return html;
+  }
+
+  /* Render Capacity chart (Change 4): stacked bar showing % utilization per location */
+  function drawCapacityChart(){
+    return `<div class="chart cchart" id="ra-capacity">
+      ${CAPACITY_DATA.map((d,i)=>{
+        const used=d.percent_used;
+        const avail=100-used;
+        return `<div class="cbar">
+          <div class="clb">${d.location}</div>
+          <div class="chb">
+            <div class="cb used" style="width:${used}%"></div>
+            <div class="cb avail" style="width:${avail}%"></div>
+          </div>
+          <div class="crb">${used}% used</div>
+        </div>`;
+      }).join("")}
+      <div class="clegend">
+        <div class="cleg used">Used</div>
+        <div class="cleg avail">Available</div>
+      </div>
     </div>`;
+  }
 
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
@@ -4172,11 +4317,12 @@ DASHBOARDS.ra=(function(){
     </div>
 
     <div class="panel notice">
-      <div class="ptitle">This dashboard is not yet specified</div>
-      <div class="psub">The layout below follows the two tables in the requirements. The measures are
-        listed as the columns each screen needs, because no system this report reads holds a box, a
-        folder, a storage room, a transfer or a retrieval. Storage and retrieval are managed outside
-        EDRMS, so this screen needs its own source before it can show a figure.</div>
+      <div class="ptitle">Data source: Measured vs. illustrative</div>
+      <div class="psub"><b>Sourced from EDRMS:</b> "Physical counterparts identified" (records declared with paper counterpart).
+        <br><b>Illustrative, pending RAC integration:</b> All other figures—boxes, folders, storage, retrieval, capacity, and inventory metrics.
+        No system this report reads holds box counts, folder counts, storage location data, retrieval records, or inventory verification status.
+        This data is provided for reporting structure and context.
+        <br><b>References:</b> Gap register items 1-7 and Audit question 17. See EDRMS Utilization Report database design for column and measure definitions.</div>
     </div>
 
     <!-- One figure on this dashboard IS sourceable, and it is the useful one:
@@ -4188,6 +4334,18 @@ DASHBOARDS.ra=(function(){
       <div class="kpi stat"><div class="lab">Physical counterparts identified</div>
         <div class="val">${F(DATA.WITH_PHYSICAL)}</div>
         <div class="sub">Declared records recorded as having a paper counterpart</div></div>
+      <div class="kpi stat"><div class="lab">Unverified holdings</div>
+        <div class="val">${F(INVENTORY_UNVERIFIED)}</div>
+        <div class="sub">Items pending inventory verification (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Missing items</div>
+        <div class="val">${F(INVENTORY_MISSING)}</div>
+        <div class="sub">Records not located during last inventory audit (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Due for verification</div>
+        <div class="val">${F(INVENTORY_DUE_VERIFICATION)}</div>
+        <div class="sub">Holdings requiring verification in current cycle (illustrative)</div></div>
+      <div class="kpi stat"><div class="lab">Legacy files</div>
+        <div class="val">${F(LEGACY_NOT_DIGITIZED)}</div>
+        <div class="sub">Physical files not yet digitized (illustrative)</div></div>
     </div>
 
     <div class="band">
@@ -4196,8 +4354,8 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, storage</div>
-      <div class="psub">Requests, requestors, boxes and folders held at each location.</div>
-      ${table(STORE_COLS,"ra-store")}
+      <div class="psub">Requests, requestors, boxes and folders held at each location (Slide 68).</div>
+      ${drawStorageTable()}
       <div class="asks">
         <div class="ah">Also asked for on this screen</div>
         <ul>${STORE_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
@@ -4210,13 +4368,23 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, retrieval</div>
-      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings.
+      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings (Slide 69).
         Status is one of loan, return to owner, or for disposal.</div>
-      ${table(RETR_COLS,"ra-retrieve")}
+      ${drawRetrievalTable()}
       <div class="asks">
         <div class="ah">Also asked for on this screen</div>
         <ul>${RETR_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
       </div>
+    </div>
+
+    <div class="band">
+      <h2>Capacity</h2>
+      <div class="bd">Storage utilization across locations.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Storage capacity by location</div>
+      <div class="psub">Percentage of maximum capacity used at each storage location (illustrative).</div>
+      ${drawCapacityChart()}
     </div>
   </section>`;
 
