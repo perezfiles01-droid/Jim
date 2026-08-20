@@ -3093,7 +3093,7 @@ DASHBOARDS.dp=(function(){
     const page=rows.slice((recPage-1)*10,recPage*10);
 
     document.getElementById("dp-drill").innerHTML=
-      `<div class="ptitle">Compliance review, record declaration</div>
+      `<div class="ptitle">Records Declaration</div>
        <div class="psub">Records declared and the people declaring them, by site.</div>
        ${summaryChart([
          {lab:"Total number of records declared",v:d.rec},
