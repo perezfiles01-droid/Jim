@@ -130,6 +130,20 @@
   .stack{display:flex;height:30px;border-radius:7px;overflow:hidden;background:#F3F7FB}
   .stack .sg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;
     font-weight:700;font-variant-numeric:tabular-nums;min-width:2px}
+  /* Capacity chart: stacked bars showing % utilization per location */
+  .cchart{padding-top:14px}
+  .cchart .cbar{display:grid;grid-template-columns:minmax(140px,200px) 1fr 60px;gap:12px;align-items:center;margin-bottom:12px}
+  .cchart .clb{font-size:12.5px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .cchart .chb{display:flex;height:28px;border-radius:5px;overflow:hidden;background:#F3F7FB}
+  .cchart .cb{display:flex;align-items:center;justify-content:center;min-width:2px;font-size:11px;font-weight:700;color:#fff}
+  .cchart .cb.used{background:var(--blue)}
+  .cchart .cb.avail{background:#E8EEF5}
+  .cchart .crb{text-align:right;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+  .cchart .clegend{display:flex;gap:18px;margin-top:16px;font-size:12px}
+  .cchart .cleg{display:flex;align-items:center;gap:8px}
+  .cchart .cleg::before{content:"";width:12px;height:12px;border-radius:3px}
+  .cchart .cleg.used::before{background:var(--blue)}
+  .cchart .cleg.avail::before{background:#E8EEF5}
 
   /* ===== KPI grouping =====
      Asked for on 13 Aug: a reader should be able to see at a glance which
@@ -4259,6 +4273,28 @@ DASHBOARDS.ra=(function(){
     return html;
   }
 
+  /* Render Capacity chart (Change 4): stacked bar showing % utilization per location */
+  function drawCapacityChart(){
+    return `<div class="chart cchart" id="ra-capacity">
+      ${CAPACITY_DATA.map((d,i)=>{
+        const used=d.percent_used;
+        const avail=100-used;
+        return `<div class="cbar">
+          <div class="clb">${d.location}</div>
+          <div class="chb">
+            <div class="cb used" style="width:${used}%"></div>
+            <div class="cb avail" style="width:${avail}%"></div>
+          </div>
+          <div class="crb">${used}% used</div>
+        </div>`;
+      }).join("")}
+      <div class="clegend">
+        <div class="cleg used">Used</div>
+        <div class="cleg avail">Available</div>
+      </div>
+    </div>`;
+  }
+
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
   const STORE_ASKS=[
@@ -4338,6 +4374,16 @@ DASHBOARDS.ra=(function(){
         <div class="ah">Also asked for on this screen</div>
         <ul>${RETR_ASKS.map(a=>`<li>${a}</li>`).join("")}</ul>
       </div>
+    </div>
+
+    <div class="band">
+      <h2>Capacity</h2>
+      <div class="bd">Storage utilization across locations.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Storage capacity by location</div>
+      <div class="psub">Percentage of maximum capacity used at each storage location (illustrative).</div>
+      ${drawCapacityChart()}
     </div>
   </section>`;
 
