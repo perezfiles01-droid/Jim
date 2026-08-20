@@ -1654,8 +1654,7 @@ DASHBOARDS.bw=(function(){
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.docs), GB(d.gb),
                              PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]),
       tiles:()=>[["Documents held",(TOTAL_DOCS/1e6).toFixed(2)+"M"],
-                 ["Storage consumed",GB(DEPTS.reduce((a,d)=>a+d.gb,0))],
-                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
+                 ["Storage consumed",GB(DEPTS.reduce((a,d)=>a+d.gb,0))]]
     },
     rec:{
       title:"Total number of records declared in EDRMS, by department, office or RM",
