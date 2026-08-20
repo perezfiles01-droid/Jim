@@ -3711,6 +3711,7 @@ DASHBOARDS.rd=(function(){
 
   let mode="temporary";
   let rdFilter="all";
+  let tempPeriodFilter="all";  // Retention period filter for temporary retention (3, 5, 7, 10, all)
   let permPage=1;  // Permanent retention table page (1-based for pager function)
   let tempPage=1;  // Temporary retention table page (1-based for pager function)
   let sortPermRd="name";  // Sort column for permanent retention table
@@ -3764,9 +3765,28 @@ DASHBOARDS.rd=(function(){
         tPhysByDept=split(TEMP_PHYS, weights(nD,36)),
         tSitesByDept=split(tSites[0], weights(nD,37)),
         tLibsByDept=tSitesByDept.map(s=>Math.round(s*LIBS_MULTIPLIER));
+  /* Calculate retention period shares of temporary records (from LABELS data) */
+  const TEMP_PERIODS={
+    "3":1420,   /* 3 years */
+    "5":3820,   /* 5 years */
+    "7":5100,   /* 7 years */
+    "10":8100   /* 10 years */
+  };
+  const TEMP_OTHER=574+232;  /* Others + No retention label */
+  const TEMP_ALL_PERIODS=Object.values(TEMP_PERIODS).reduce((a,b)=>a+b,0)+TEMP_OTHER;
+
+  /* Create retention period breakdown for each department */
+  const tRecByDeptByPeriod={};
+  Object.keys(TEMP_PERIODS).forEach(period=>{
+    const share=TEMP_PERIODS[period]/TEMP_ALL_PERIODS;
+    tRecByDeptByPeriod[period]=split(Math.round(TEMP_REC*share), weights(nD,35));
+  });
+
   const TEMP_BY_DEPT=DEPTS.map((d,i)=>({
     code:d.code, name:d.name,
-    sites:tSitesByDept[i], libs:tLibsByDept[i], rec:tRecByDept[i], phys:tPhysByDept[i]
+    sites:tSitesByDept[i], libs:tLibsByDept[i], rec:tRecByDept[i], phys:tPhysByDept[i],
+    rec3:tRecByDeptByPeriod["3"][i], rec5:tRecByDeptByPeriod["5"][i],
+    rec7:tRecByDeptByPeriod["7"][i], rec10:tRecByDeptByPeriod["10"][i]
   }));
   console.assert(TEMP_BY_DEPT.reduce((a,d)=>a+d.rec,0)===TEMP_REC,
     "Temporary records by department must total temporary records");
@@ -3824,6 +3844,10 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, temporary retention</div>
+      <div class="toolbar">
+        <span class="lbl">Retention period</span>
+        <select id="rd-temp-period-filter"></select>
+      </div>
       <div class="scrollx"><div class="dtab wide" id="rd-temp-table" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
         <div class="dhead" id="rd-temp-head"></div>
       </div></div>
@@ -3926,7 +3950,15 @@ DASHBOARDS.rd=(function(){
 
   function renderTempTable(){
     const SORT_KEYS=["name","sites","libs","rec","phys"];
-    const sorted=TEMP_BY_DEPT.slice().sort((a,b)=>{
+
+    /* Apply retention period filter if selected */
+    let filtered=TEMP_BY_DEPT;
+    if(tempPeriodFilter!=="all"){
+      const recField=`rec${tempPeriodFilter}`;
+      filtered=TEMP_BY_DEPT.map(d=>({...d, rec:d[recField]}));
+    }
+
+    const sorted=filtered.slice().sort((a,b)=>{
       let cmp=0;
       if(sortTempRd==="name") cmp=a.name.localeCompare(b.name);
       else if(sortTempRd==="sites") cmp=a.sites-b.sites;
@@ -3973,6 +4005,14 @@ DASHBOARDS.rd=(function(){
       <option value="Permanent">Permanent retention</option>
       <option value="Temporary">Temporary retention</option>`;
     filter.onchange=e=>{rdFilter=e.target.value;drawChart();};
+
+    const periodFilter=document.getElementById("rd-temp-period-filter");
+    periodFilter.innerHTML=`<option value="all">All retention periods</option>
+      <option value="3">3 years</option>
+      <option value="5">5 years</option>
+      <option value="7">7 years</option>
+      <option value="10">10 years</option>`;
+    periodFilter.onchange=e=>{tempPeriodFilter=e.target.value;tempPage=1;renderTempTable();};
 
     // Render the retention tables
     renderPermTable();
