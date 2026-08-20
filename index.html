@@ -4389,6 +4389,41 @@ DASHBOARDS.ra=(function(){
     <div class="retr-legend">Boxes retrieved over 6 months, by department</div>`;
   }
 
+  /* Disposal Tracking (Change 4): boxes and folders disposed, freed capacity per location */
+  const DISPOSAL_DATA=LOCATIONS.map((loc,i)=>{
+    const disposed_boxes=Math.round(RETR_DATA[i].boxes_retrieved*0.65);
+    const disposed_folders=Math.round(RETR_DATA[i].folders_retrieved*0.60);
+    const freed_capacity_pct=Math.round(20+Math.random()*15);
+    return {
+      location:loc,
+      boxes_disposed:disposed_boxes,
+      folders_disposed:disposed_folders,
+      storage_freed_pct:freed_capacity_pct
+    };
+  });
+  const DISPOSAL_TOTAL={
+    location:"Total",
+    boxes_disposed:DISPOSAL_DATA.reduce((a,d)=>a+d.boxes_disposed,0),
+    folders_disposed:DISPOSAL_DATA.reduce((a,d)=>a+d.folders_disposed,0),
+    storage_freed_pct:Math.round(DISPOSAL_DATA.reduce((a,d)=>a+d.storage_freed_pct,0)/DISPOSAL_DATA.length)
+  };
+
+  /* Render Disposal Tracking panel */
+  function drawDisposalPanel(){
+    const cols=["Location","Boxes Disposed","Folders Disposed","Storage Freed"];
+    return `<div class="scrollx"><div class="dtab">
+      <div class="dhead">
+        <div>${cols[0]}</div><div class="num">${cols[1]}</div>
+        <div class="num">${cols[2]}</div><div class="num">${cols[3]}</div></div>
+      ${DISPOSAL_DATA.map(d=>`<div class="drow">
+        <div class="dn">${d.location}</div><div class="num">${F(d.boxes_disposed)}</div>
+        <div class="num">${F(d.folders_disposed)}</div><div class="num">${d.storage_freed_pct}%</div></div>`).join("")}
+      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
+        <div class="dn">${DISPOSAL_TOTAL.location}</div><div class="num">${F(DISPOSAL_TOTAL.boxes_disposed)}</div>
+        <div class="num">${F(DISPOSAL_TOTAL.folders_disposed)}</div><div class="num">${DISPOSAL_TOTAL.storage_freed_pct}%</div></div>
+    </div></div>`;
+  }
+
   /* The indicators each slide asks for, listed rather than drawn, because
      drawing them would mean inventing them a second time. */
   const STORE_ASKS=[
@@ -4479,6 +4514,12 @@ DASHBOARDS.ra=(function(){
       <div class="ptitle">Retrieval activity</div>
       <div class="psub">Boxes retrieved per department over the last 6 months (illustrative).</div>
       ${drawRetrievalActivityChart()}
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Disposal tracking</div>
+      <div class="psub">Records disposed and storage capacity freed at each location (illustrative).</div>
+      ${drawDisposalPanel()}
     </div>
 
     <div class="band">
