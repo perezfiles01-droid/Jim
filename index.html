@@ -1036,6 +1036,10 @@ const DATA=(function(){
                     "2026-06-01","2026-07-01"];
   const MONTH_FULL=["Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026",
                     "Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"];
+  const MONTH_LABELS_WITH_YEAR=MONTH_LABELS.map((label,i)=>{
+    const year=MONTH_KEYS[i].substring(2,4);
+    return label+" '"+year;
+  });
   const RANGE_FROM=MONTH_KEYS[0], RANGE_TO="2026-07-31";
   console.assert(MONTH_KEYS.length===MONTH_LABELS.length&&MONTH_FULL.length===MONTH_LABELS.length,
     "Every month in the declaration series must carry a label, a full label and a date key");
@@ -1280,7 +1284,7 @@ const DATA=(function(){
     "Declared records cannot occupy more storage than every document holds");
 
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
-    MONTH_LABELS,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
+    MONTH_LABELS,MONTH_LABELS_WITH_YEAR,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
     USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,ACTIVITY_WINDOW,
@@ -2112,7 +2116,7 @@ DASHBOARDS.bw=(function(){
     let run=0;
     const pts=inRange.map(m=>{
       run+=DATA.MONTH_VALUES[m.i];
-      return {label:DATA.MONTH_FULL[m.i],short:DATA.MONTH_LABELS[m.i],value:run};
+      return {label:DATA.MONTH_FULL[m.i],short:DATA.MONTH_LABELS_WITH_YEAR[m.i],value:run};
     });
     wrap.innerHTML=CHART.area(pts,{height:240});
 
