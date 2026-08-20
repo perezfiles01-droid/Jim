@@ -4086,6 +4086,14 @@ DASHBOARDS.rd=(function(){
 
     document.getElementById("rd-perm-pager").innerHTML=pager(sorted.length, permPage, pages, "departments");
 
+    // Re-wire pagination buttons after render (they're new DOM elements)
+    wirePager("#rd-perm-pager",pg=>{
+      if(pg==="prev"){if(permPage>1)permPage--;}
+      else if(pg==="next"){const pages=Math.ceil(PERM_BY_DEPT.length/ROWS_PER_PAGE);if(permPage<pages)permPage++;}
+      else permPage=parseInt(pg);
+      renderPermTable();
+    });
+
     document.querySelectorAll("#rd-perm-table .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortPermRd===k) dirPermRd=dirPermRd==="asc"?"desc":"asc";
@@ -4145,6 +4153,14 @@ DASHBOARDS.rd=(function(){
         <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
 
     document.getElementById("rd-temp-pager").innerHTML=pager(sorted.length, tempPage, pages, "departments");
+
+    // Re-wire pagination buttons after render (they're new DOM elements)
+    wirePager("#rd-temp-pager",pg=>{
+      if(pg==="prev"){if(tempPage>1)tempPage--;}
+      else if(pg==="next"){const pages=Math.ceil(TEMP_BY_DEPT.length/ROWS_PER_PAGE);if(tempPage<pages)tempPage++;}
+      else tempPage=parseInt(pg);
+      renderTempTable();
+    });
 
     // Update summary KPI boxes with filtered totals
     const totalSites=filtered.reduce((a,d)=>a+d.sites,0);
