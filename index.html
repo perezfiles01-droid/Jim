@@ -4129,6 +4129,82 @@ DASHBOARDS.rd=(function(){
 DASHBOARDS.ra=(function(){
   const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
 
+  /* Data structures for storage and retrieval. All holdings data is illustrative,
+     as no system this report reaches holds boxes, folders, storage, or retrieval
+     information. The only sourced figure is physical counterparts identified.
+     See gap register items 1-6 and Audit question 17. */
+  const split=splitTotal;
+  const TOTAL_BOXES=1840, TOTAL_FOLDERS=9260, TOTAL_REQUESTS=342;
+  const BOX_WEIGHTS=weights(3,41), FOLDER_WEIGHTS=weights(3,42), REQ_WEIGHTS=weights(3,43);
+  const boxSplit=split(TOTAL_BOXES,BOX_WEIGHTS), folderSplit=split(TOTAL_FOLDERS,FOLDER_WEIGHTS),
+        reqSplit=split(TOTAL_REQUESTS,REQ_WEIGHTS);
+
+  /* Storage data by location (Slide 68: columns are Location, Requests, Requestors-depts,
+     Requestors-RMs, Boxes stored, Folders stored, Remarks) */
+  const STORE_DATA=LOCATIONS.map((loc,i)=>({
+    location:loc,
+    requests:reqSplit[i],
+    requestors_depts:split(Math.round(78*Math.random()),weights(1,44))[0],
+    requestors_rms:split(Math.round(45*Math.random()),weights(1,45))[0],
+    boxes:boxSplit[i],
+    folders:folderSplit[i],
+    remarks:["Active, regular access","High volume transfers","Specialized holdings"][i]
+  }));
+  const STORE_TOTAL={
+    location:"Total",
+    requests:STORE_DATA.reduce((a,d)=>a+d.requests,0),
+    requestors_depts:STORE_DATA.reduce((a,d)=>a+d.requestors_depts,0),
+    requestors_rms:STORE_DATA.reduce((a,d)=>a+d.requestors_rms,0),
+    boxes:TOTAL_BOXES,
+    folders:TOTAL_FOLDERS,
+    remarks:""
+  };
+
+  /* Retrieval data by location (Slide 69: columns are Location, Requests, Requestors,
+     Boxes retrieved, Folders retrieved, Status, Remarks). Status mix per location. */
+  const RETR_DATA=LOCATIONS.map((loc,i)=>{
+    const retrReqs=split(Math.round(reqSplit[i]*0.35),weights(1,46))[0];
+    const retrBoxes=split(Math.round(boxSplit[i]*0.25),weights(1,47))[0];
+    const retrFolders=split(Math.round(folderSplit[i]*0.28),weights(1,48))[0];
+    return {
+      location:loc,
+      requests:retrReqs,
+      requestors:split(Math.round(45*Math.random()),weights(1,49))[0],
+      boxes_retrieved:retrBoxes,
+      folders_retrieved:retrFolders,
+      status:["Loan","Return to owner","For Disposal"][i],
+      remarks:["Short-term use","Completed project","Approved for disposal"][i]
+    };
+  });
+  const RETR_TOTAL={
+    location:"Total",
+    requests:RETR_DATA.reduce((a,d)=>a+d.requests,0),
+    requestors:RETR_DATA.reduce((a,d)=>a+d.requestors,0),
+    boxes_retrieved:RETR_DATA.reduce((a,d)=>a+d.boxes_retrieved,0),
+    folders_retrieved:RETR_DATA.reduce((a,d)=>a+d.folders_retrieved,0),
+    status:"",
+    remarks:""
+  };
+
+  /* Capacity metrics: illustrative % used and available space per location */
+  const CAPACITY_DATA=LOCATIONS.map((loc,i)=>({
+    location:loc,
+    percent_used:[65,80,45][i],
+    boxes_max:[3000,2500,1500][i],
+    get boxes_available(){return this.boxes_max-STORE_DATA[i].boxes;}
+  }));
+
+  /* Inventory health metrics (gap register items 5-6): all illustrative */
+  const INVENTORY_UNVERIFIED=split(147,weights(1,50))[0];
+  const INVENTORY_MISSING=split(34,weights(1,51))[0];
+  const INVENTORY_DUE_VERIFICATION=split(89,weights(1,52))[0];
+  const LEGACY_NOT_DIGITIZED=split(Math.round(DATA.WITH_PHYSICAL*0.12),weights(1,53))[0];
+
+  console.assert(STORE_TOTAL.boxes===TOTAL_BOXES,
+    "Storage data total boxes must equal split total");
+  console.assert(RETR_TOTAL.boxes_retrieved<=STORE_TOTAL.boxes,
+    "Retrieved boxes cannot exceed stored boxes");
+
   /* s68, storage. The client's own column names, including Remarks. */
   const STORE_COLS=["Location","No. of requests","Total number of requestors (departments)",
                     "Total number of requestors (RMs)","Total number of boxes stored",
