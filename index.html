@@ -3866,19 +3866,19 @@ DASHBOARDS.rd=(function(){
     /* Build grouped column data: for each retention category, show 3 bars (sites, libs, records) */
     const items=[];
     const colors=[CHART.C.blue, CHART.C.teal, CHART.C.green];
-    const labels=["Sites","Libraries","Records"];
+    const labels=["sites","libraries","records"];
 
     filtered.forEach((r,ri)=>{
       const title=r.lab.replace(/<[^>]*>/g,"");  /* strip HTML tags */
-      items.push({label:`${title}\nSites`,value:r.sites,color:colors[0]});
-      items.push({label:`${title}\nLibraries`,value:r.libs,color:colors[1]});
-      items.push({label:`${title}\nRecords`,value:r.rec,color:colors[2]});
+      items.push({label:`${title}\nsites`,value:r.sites,color:colors[0]});
+      items.push({label:`${title}\nlibraries`,value:r.libs,color:colors[1]});
+      items.push({label:`${title}\nrecords`,value:r.rec,color:colors[2]});
     });
 
     const legend=`<div class="dlegend row">${labels.map((l,i)=>
       `<div class="lg"><i style="background:${colors[i]}"></i><span>${l}</span></div>`).join("")}</div>`;
 
-    chart.innerHTML=`${CHART.columns(items,{height:280})}<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">Three bars per retention category: Sites, Libraries, and Records declared</div>${legend}`;
+    chart.innerHTML=`${CHART.columns(items,{height:280})}<div style="text-align:center;margin-top:12px;font-size:12px;color:var(--mut)">Three bars per retention category: sites, libraries, and records declared</div>${legend}`;
   }
 
   function renderPermTable(){
