@@ -3706,13 +3706,7 @@ DASHBOARDS.fp=(function(){
          <div class="chart"><div class="ctitle">Least used terms</div>
            ${CHART.hbars(ranked.slice(-5).reverse().map(r=>({label:r.term,value:r.rec,color:"var(--greyblue)"})))}</div>
        </div>
-       <div class="asks"><div class="ah">Also asked for on this screen</div>
-         <ul>
-           <li>Unused terms, candidates for review and deletion</li>
-           <li>New libraries created outside the convention</li>
-           <li>Requests for new library creation or deletion</li>
-           <li>Requests for a new term</li>
-         </ul></div>`;
+`;
   }
 
   const html=`<section class="dash-fp">
