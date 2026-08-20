@@ -3582,6 +3582,62 @@ DASHBOARDS.fp=(function(){
   const NOSRC=`<span class="nosrc">Not captured</span>`;
   let cat=PLAN[0].cat;
 
+  /* Unused Terms (Change 1): terms marked as candidates for review and deletion.
+     All illustrative. */
+  const UNUSED_TERMS=[
+    {term:"Legacy System Records",cat:"Other",usage:2,last_modified:"2024-06-15",reason:"Deprecated system"},
+    {term:"Historical Archives",cat:"Other",usage:1,last_modified:"2024-05-20",reason:"No recent activity"},
+    {term:"Test Files",cat:"Administration",usage:0,last_modified:"2023-12-01",reason:"Testing only"},
+    {term:"Archived Projects",cat:"Programs and Operations",usage:3,last_modified:"2024-03-10",reason:"Completed projects"}
+  ];
+
+  /* New Libraries (Change 2): libraries created outside the standard convention.
+     All illustrative. */
+  const NEW_LIBRARIES=[
+    {name:"Africa Regional Hub",created:"2024-08-05",office:"AFR",category:"Administration",docs:234},
+    {name:"Climate Action Initiative",created:"2024-07-28",office:"OSFG",category:"Programs and Operations",docs:456},
+    {name:"Executive Decision Log",created:"2024-08-10",office:"OGC",category:"Institutional Management",docs:89}
+  ];
+
+  /* Pending Requests (Change 3): requests for new libraries, term deletion, and new terms.
+     All illustrative. */
+  const PENDING_REQUESTS=[
+    {type:"New library creation",description:"South Asia Regional Hub",requestor:"HRD",date_submitted:"2024-08-12",status:"In review"},
+    {type:"New term request",description:"Climate Risk Assessment",category:"Programs and Operations",requestor:"OSFG",date_submitted:"2024-08-08",status:"Pending approval"},
+    {type:"Library deletion",description:"Pilot Test Library",reason:"Completed pilot",requestor:"ITD",date_submitted:"2024-08-05",status:"Approved"},
+    {type:"Term deletion",description:"Legacy System Records",reason:"Deprecated system",requestor:"OGC",date_submitted:"2024-08-01",status:"In review"}
+  ];
+
+  /* Render Unused Terms panel */
+  function drawUnusedTerms(){
+    return `<div class="scrollx"><div class="dtab">
+      <div class="dhead"><div>Term</div><div class="num">Usage Count</div><div>Last Modified</div><div>Reason for Review</div></div>
+      ${UNUSED_TERMS.map(t=>`<div class="drow">
+        <div class="dn">${t.term}</div><div class="num">${t.usage}</div>
+        <div>${t.last_modified}</div><div>${t.reason}</div></div>`).join("")}
+    </div></div>`;
+  }
+
+  /* Render New Libraries panel */
+  function drawNewLibraries(){
+    return `<div class="scrollx"><div class="dtab">
+      <div class="dhead"><div>Library Name</div><div>Office</div><div>Category</div><div class="num">Documents</div><div>Created</div></div>
+      ${NEW_LIBRARIES.map(l=>`<div class="drow">
+        <div class="dn">${l.name}</div><div>${l.office}</div>
+        <div>${l.category}</div><div class="num">${F(l.docs)}</div><div>${l.created}</div></div>`).join("")}
+    </div></div>`;
+  }
+
+  /* Render Pending Requests panel */
+  function drawPendingRequests(){
+    return `<div class="scrollx"><div class="dtab wide">
+      <div class="dhead"><div>Request Type</div><div>Description</div><div>Requestor</div><div>Status</div><div>Date Submitted</div></div>
+      ${PENDING_REQUESTS.map(r=>`<div class="drow">
+        <div class="dn">${r.type}</div><div>${r.description}</div>
+        <div>${r.requestor}</div><div class="stat">${r.status}</div><div>${r.date_submitted}</div></div>`).join("")}
+    </div></div>`;
+  }
+
   /* ===== s47, the rollup =====
      The client's own column names. Five categories and a total, which is the
      landing screen reached from the Institutional File Plan insights tile on
@@ -3694,6 +3750,36 @@ DASHBOARDS.fp=(function(){
         <select id="fp-cat">${PLAN.map(c=>`<option value="${c.cat}">${c.cat}</option>`).join("")}</select>
       </div>
       <div id="fp-terms"></div>
+    </div>
+
+    <div class="band">
+      <h2>Unused terms</h2>
+      <div class="bd">Terms marked as candidates for review and deletion.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Unused terms pending review</div>
+      <div class="psub">Terms with low usage that may be retired (illustrative).</div>
+      ${drawUnusedTerms()}
+    </div>
+
+    <div class="band">
+      <h2>New libraries</h2>
+      <div class="bd">Libraries created outside the standard convention.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">New libraries created outside convention</div>
+      <div class="psub">Libraries that do not follow standard naming or organizational structure (illustrative).</div>
+      ${drawNewLibraries()}
+    </div>
+
+    <div class="band">
+      <h2>Pending requests</h2>
+      <div class="bd">Requests for new libraries, terms, and deletions.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Pending term and library requests</div>
+      <div class="psub">Requests for new library creation, deletion, and new term requests awaiting approval (illustrative).</div>
+      ${drawPendingRequests()}
     </div>
   </section>`;
 
