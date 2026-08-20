@@ -4424,21 +4424,6 @@ DASHBOARDS.ra=(function(){
     </div></div>`;
   }
 
-  /* The indicators each slide asks for, listed rather than drawn, because
-     drawing them would mean inventing them a second time. */
-  const STORE_ASKS=[
-    "Number of new boxes and folders stored month on month, per department",
-    "Outstanding and pending requests, and physical records awaiting transfer",
-    "Physical counterparts identified but not transferred",
-    "Room capacity and percentage of storage capacity available",
-  ];
-  const RETR_ASKS=[
-    "Retrieval requests, and boxes and folders retrieved, month on month per department",
-    "Outstanding and pending requests",
-    "Number of boxes and folders disposed",
-    "Whether room activity updates the capacity and the storage freed up",
-  ];
-
   const html=`<section class="dash-ra">
     <div class="band">
       <h2>Records and archive holdings</h2>
