@@ -1340,6 +1340,8 @@ DASHBOARDS.bw=(function(){
   const siteSplit=split(DATA.SITES_CREATED,W);
   const userSplit=split(DATA.MONTHLY_ACTIVE_USERS,W);
   const dueSplit=split(DATA.DUE_NEXT_12,BASE.map(d=>d.phys));
+  const due30Split=split(DATA.DUE_30,BASE.map(d=>d.phys));
+  const due90Split=split(DATA.DUE_90,BASE.map(d=>d.phys));
 
   /* Each of the measures below gets its OWN weight vector. Until 17 August
      they were fixed multiples of the user count on the same row, which meant
@@ -1368,6 +1370,7 @@ DASHBOARDS.bw=(function(){
     code:d.code, name:d.name,
     sites:siteSplit[i], users:userSplit[i],
     docs:d.docs, rec:d.rec, phys:d.phys, due:dueSplit[i],
+    due30:due30Split[i], due90:due90Split[i],
     /* Users declaring records is a subset of active users. Documents are
        created by more people than declare records, which is the point of the
        comparison panel on PPT s17. */
@@ -1703,8 +1706,8 @@ DASHBOARDS.bw=(function(){
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
          not have, so they say so. Audit question 7 specifies the change request. */
-      cols:["Department / office / RM","Records due within 12 months","Next due date","With counterpart"],
-      rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due),
+      cols:["Department / office / RM","Records due within 30 days","Records due within 90 days","Records due within 12 months","Next due date","With counterpart"],
+      rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due30), F(d.due90), F(d.due),
                                  DUE_DATES[i%DUE_DATES.length],
                                  F(d.duephys)]),
       tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
@@ -1921,10 +1924,12 @@ DASHBOARDS.bw=(function(){
     DEPTS.forEach((dept,i)=>{origIndex[dept.code]=i;});
 
     /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","due","duedate","duephys"];
+    const SORT_KEYS=["code","due30","due90","due","duedate","duephys"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortDisp==="code") cmp=a.code.localeCompare(b.code);
+      else if(sortDisp==="due30") cmp=a.due30-b.due30;
+      else if(sortDisp==="due90") cmp=a.due90-b.due90;
       else if(sortDisp==="due") cmp=a.due-b.due;
       else if(sortDisp==="duedate") {
         const ai=origIndex[a.code]%DUE_DATES.length;
@@ -1935,7 +1940,7 @@ DASHBOARDS.bw=(function(){
       return dirDisp==="asc"?cmp:-cmp;
     });
 
-    const rows=sortedDepts.map((d,i)=>[d.code+" - "+d.name, F(d.due),
+    const rows=sortedDepts.map((d,i)=>[d.code+" - "+d.name, F(d.due30), F(d.due90), F(d.due),
                                        DUE_DATES[i%DUE_DATES.length],
                                        F(d.duephys)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
