@@ -1650,6 +1650,14 @@ DASHBOARDS.bw=(function(){
   const TILES=[
     {k:"sites",lab:"Number of active EDRMS SharePoint sites for Department, RM, office",
      val:()=>F(DEPT_SITES)},
+    /* s34 tiles 2 and 3, drawn again in full on s36 and s37. Restored
+       21 August 2026. Layout only: no source classifies a site as a project
+       site, so the figures are the derived re-cut described above and the
+       drill says so on the screen. Question 2. */
+    {k:"sov",   lab:"Total number of active EDRMS SharePoint sites for Sovereign projects",
+     val:()=>F(PROJECTS[0].sites)},
+    {k:"nonsov",lab:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+     val:()=>F(PROJECTS[1].sites)},
     /* s34 labels this "Total number of EDRMS users". That is the population
        who hold access, and no source we can reach knows it: the activity
        report lists every LICENSED user in the tenant, which in production is
@@ -1758,7 +1766,31 @@ DASHBOARDS.bw=(function(){
     },
     /* s36 and s37. Both carry the Bank-wide banner in the deck, so the project
        lists belong here, and each row opens Project Insights, which is s38 and
-       is one project's profile. */
+       is one project's profile. Column names are the client's own, including
+       the first heading, which on their table is the facility type itself.
+
+       Both slides end their list with "Etc.", so the named projects are only
+       part of the facility. The total row is the facility, not the sum of the
+       rows above it, and it is labelled to say so: a tile reading 116 over a
+       table totalling 10 was a real defect on this screen once. */
+    sov:{
+      title:"Total number of active EDRMS SharePoint sites for Sovereign projects",
+      facility:"Sovereign",
+      projects:true,
+      cols:["Sovereign projects","Number of EDRMS SharePoint sites",
+            "Total number of documents","Total number of records declared",
+            "Total number of physical counterparts"],
+      sub:"Click a project to open Project Insights. Figures are illustrative: no source yet says which site belongs to which project."
+    },
+    nonsov:{
+      title:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+      facility:"Nonsovereign",
+      projects:true,
+      cols:["Nonsovereign projects","Number of EDRMS SharePoint sites",
+            "Total number of documents","Total number of records declared",
+            "Total number of physical counterparts"],
+      sub:"Click a project to open Project Insights. Figures are illustrative: no source yet says which site belongs to which project."
+    },
     users:{
       /* s39 asks for staff, contractor, consultant, training completion and
          onboarded since go-live. Microsoft 365 knows who signed in and when.
@@ -2116,6 +2148,8 @@ DASHBOARDS.bw=(function(){
        sortable and its names navigate, so it has its own small builder and
        shares the panel chrome. */
     if(d.sortable)  return drawSitesDrill(d);
+    /* s36 and s37, the two project lists. One builder, two facility types. */
+    if(d.projects) return drawProjectsDrill(d);
 
     /* Route to specific drill functions for pagination support */
     if(openKpi==="users") return drawUsersDrill();
@@ -2167,9 +2201,53 @@ DASHBOARDS.bw=(function(){
     wireGo();
   }
 
+  /* s36 and s37. The projects the client drew by name, each row opening that
+     project on Project Insights, which is their clickable note word for word:
+     "The Nonsovereign projects / sovereign projects should also be clickable,
+     taking the user to Project insights." */
+  function drawProjectsDrill(d){
+    const fac=PROJECTS.find(p=>p.fac===d.facility);
+    const rows=PROJECT_ROWS.filter(r=>r.facility===d.facility)
+                           .sort((a,b)=>b.rec-a.rec);
+    const named=f=>rows.reduce((a,r)=>a+r[f],0);
+    document.getElementById("bw-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">${d.sub}</div>
+       <div class="tiles">
+         <div class="tile hi"><div class="tl">EDRMS sites, all ${d.facility.toLowerCase()} projects</div>
+           <div class="tv">${F(fac.sites)}</div></div>
+         <div class="tile"><div class="tl">Documents</div><div class="tv">${F(fac.docs)}</div></div>
+         <div class="tile"><div class="tl">Records declared</div><div class="tv">${F(fac.rec)}</div></div>
+         <div class="tile"><div class="tl">Physical counterparts</div><div class="tv">${F(fac.phys)}</div></div>
+         <div class="tile"><div class="tl">Projects drawn by name</div><div class="tv">${F(rows.length)}</div></div>
+       </div>
+       <div class="scrollx"><div class="dtab wide" id="bw-projects">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":"hd"}">${c}</div>`).join("")}</div>
+         ${rows.map(r=>`<div class="drow go" role="link" tabindex="0" data-proj="${r.no}">
+           <div class="dn"><span class="lk">${r.no}</span><small>${r.name}</small></div>
+           <div class="num">${F(r.sites)}</div><div class="num">${F(r.docs)}</div>
+           <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div></div>`).join("")}
+         <div class="drow"><div class="dn"><span>Etc.</span>
+           <small>Projects the deck did not draw by name</small></div>
+           <div class="num">${F(fac.sites-named("sites"))}</div>
+           <div class="num">${F(fac.docs-named("docs"))}</div>
+           <div class="num">${F(fac.rec-named("rec"))}</div>
+           <div class="num">${F(fac.phys-named("phys"))}</div></div>
+         <div class="dtot"><div>All ${d.facility.toLowerCase()} projects</div>
+           <div class="num">${F(fac.sites)}</div><div class="num">${F(fac.docs)}</div>
+           <div class="num">${F(fac.rec)}</div><div class="num">${F(fac.phys)}</div></div>
+       </div></div>`;
+    wireGo();
+  }
+
   function wireGo(){
     document.querySelectorAll("#bw-drill .drow.go").forEach(el=>{
-      const go=()=>{ openDashboard("dp",el.dataset.dept); };
+      /* A department row opens Department Insights, a project row opens
+         Project Insights. Both routes go through the same helper. */
+      const go=()=>{ el.dataset.proj!==undefined
+                       ? openDashboard("pj",el.dataset.proj)
+                       : openDashboard("dp",el.dataset.dept); };
       el.onclick=go;
       el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
     });
