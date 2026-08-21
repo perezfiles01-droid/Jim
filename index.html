@@ -4461,377 +4461,415 @@ DASHBOARDS.rd=(function(){
    =================================================================== */
 
 /* =================================================================
-   Project Insights (pj) - Slide 38
-
-   One project's profile, eight profile fields, 7 clickable tiles with
-   drills, and 3 summary charts. Reads the project list from Bank-wide
-   rather than holding a second copy. Blocked on two sources: the
-   site-to-project register (which sites belong to this project) and
-   the ADB project system that holds the eight profile fields.
-
-   Illustrative data structure is used for project attributes since
-   the ADB project system has not been named. All site-level metrics
-   are synthesized from the department data, so rows always sum to the
-   project totals.
+   project.js
    ================================================================= */
+/* ===================================================================
+   Project Insights. PPT s38, with the two lists that reach it, s36
+   and s37, drawn again here behind a facility type picker so the
+   screen is usable without arriving from Bank-wide.
+
+   The sixth of the six key views the client names on s13 and s14.
+   Rebuilt 21 August 2026: the module that stood here mounted nowhere,
+   because it was never added to the nav, carried no dash-pj class so
+   none of the styles written for it applied, and built every figure
+   with Math.random(), which meant the numbers changed on reload and
+   reconciled with nothing.
+
+   Blocked on TWO sources, and this dashboard is the only one where
+   the second is fatal to the top third of the screen:
+
+     Question 2   the site to project register. Nothing anywhere says
+                  which SharePoint site belongs to which project.
+     Question 16  the ADB project system holding the eight profile
+                  fields: facility type, modality, country, status,
+                  effectivity and closing dates. Never named in this
+                  work, by anyone, at any point.
+
+   So this is a specification with illustrative figures, and it says
+   so on the screen rather than in a comment nobody reading the
+   dashboard will see. What IS real is the shape and the arithmetic:
+   every figure is a re-cut of a bank-wide total, site rows sum to
+   their project, named projects never exceed their facility type, and
+   the declaration curve ends at the project's declared count. All
+   asserted, so the screen cannot quietly stop reconciling.
+   =================================================================== */
 DASHBOARDS.pj=(function(){
   const BW=DASHBOARDS.bw.summary;
-  const DEPTS=BW.departments;
-  const split=splitTotal;
 
-  /* Illustrative project attributes from ADB project system (question 16) */
-  const PROJECT_ATTRIBUTES={
-    "57318-001":{
-      name:"Tropical Cyclone Lola Emergency Response Project",
-      facilityType:"Sovereign",
-      projectNumber:"57318-001",
-      projectTypeModality:"Grant",
-      modalityNumber:"0923",
-      country:"Vanuatu",
-      status:"Closed",
-      effectivityDate:"13 Dec 2023",
-      closingDate:"10 Sep 2024"
-    },
-    "50291-003":{
-      name:"Climate Resilience in Southeast Asia Program",
-      facilityType:"Sovereign",
-      projectNumber:"50291-003",
-      projectTypeModality:"Technical Assistance",
-      modalityNumber:"0824",
-      country:"Cambodia",
-      status:"Active",
-      effectivityDate:"01 Feb 2022",
-      closingDate:"31 Dec 2027"
-    },
-    "52104-005":{
-      name:"Regional Digital Transformation Initiative",
-      facilityType:"Sovereign",
-      projectNumber:"52104-005",
-      projectTypeModality:"Loan",
-      modalityNumber:"0710",
-      country:"Philippines",
-      status:"Active",
-      effectivityDate:"15 Mar 2023",
-      closingDate:"15 Sep 2029"
-    },
-    "48362-012":{
-      name:"Private Sector Development Support",
-      facilityType:"Nonsovereign",
-      projectNumber:"48362-012",
-      projectTypeModality:"Equity Investment",
-      modalityNumber:"0512",
-      country:"Indonesia",
-      status:"Active",
-      effectivityDate:"20 Jul 2021",
-      closingDate:"20 Dec 2026"
-    }
+  /* The projects come from Bank-wide, which owns them because PPT s36 and s37
+     are Bank-wide screens. Reading them rather than keeping a second copy is
+     what stops this dashboard and that one disagreeing about a project. */
+  const PROJECTS=BW.projectRows;
+  const FACILITIES=BW.projectFacilities;
+
+  /* ===== sites within a project =====
+     The comparison chart on s38 is read site by site, so a project needs its
+     sites broken out. Every measure is split from the project total and the
+     remainder lands on the first site with room, so the site rows always add
+     back up to the project. A declaration rate that varies between sites is
+     the whole point of that chart: their drawing shows 100 percent, 60
+     percent and 20 percent side by side.
+
+     Fixed weights, so a site keeps the same shape between draws. Nothing here
+     is random: a figure that changes when the page is reloaded cannot be
+     discussed in a workshop. The declared weights deliberately differ from
+     the document weights, which is what makes one site declare nearly
+     everything and another very little. */
+  const split=splitTotal;
+  const DOC_W=[5,4,3,3,2], REC_W=[5,2,4,1,3];
+  const SITES={};
+  PROJECTS.forEach(p=>{
+    const n=p.sites;
+    const docs=split(p.docs,DOC_W.slice(0,n));
+    const rec=split(p.rec,REC_W.slice(0,n));
+    const phys=split(p.phys,REC_W.slice(0,n));
+    const users=split(p.users,DOC_W.slice(0,n));
+    const vis=split(p.visitors,DOC_W.slice(0,n));
+    SITES[p.no]=docs.map((d,i)=>({
+      name:p.no+" site "+(i+1),
+      docs:d,
+      /* A site can never declare more than it holds. Without this clamp the
+         two independent splits can cross and print a rate above 100 percent,
+         which is the kind of plausible wrong number that survives review. */
+      rec:Math.min(d,rec[i]),
+      phys:Math.min(d,phys[i]), users:users[i], visitors:vis[i]
+    }));
+    /* Whatever the clamp took off the declared total is returned to the first
+       site that has room, so the site rows still sum to the project. */
+    let short=p.rec-SITES[p.no].reduce((a,s)=>a+s.rec,0);
+    for(const s of SITES[p.no]){ if(short<=0)break;
+      const room=s.docs-s.rec; const add=Math.min(room,short); s.rec+=add; short-=add; }
+  });
+  PROJECTS.forEach(p=>{
+    const s=SITES[p.no];
+    console.assert(s.reduce((a,x)=>a+x.docs,0)===p.docs,
+      "Site documents must total the project document count, "+p.no);
+    console.assert(s.reduce((a,x)=>a+x.rec,0)===p.rec,
+      "Site declarations must total the project declared count, "+p.no);
+    console.assert(s.every(x=>x.rec<=x.docs),
+      "A site can never declare more records than it holds documents, "+p.no);
+  });
+
+  /* The user mix is the client's own split from their pie on s38: staff three
+     quarters, consultants a sixth, contractors the rest. Illustrative, and
+     blocked on the same user register as every other staff, contractor and
+     consultant figure in this report. Question 3. */
+  const MIX=[{k:"Staff",w:0.75,c:"var(--blue)"},
+             {k:"Consultants",w:0.17,c:"var(--green)"},
+             {k:"Contractors",w:0.08,c:"var(--teal)"}];
+  const MIX_W=MIX.map(m=>Math.round(m.w*1000));
+  function mixFor(p){
+    const parts=split(p.users,MIX_W);
+    return MIX.map((m,i)=>({label:m.k,value:parts[i],color:m.c}));
+  }
+
+  const PCT=(a,b)=>b?(a/b*100):0;
+  let facility="Sovereign";
+  let selected=PROJECTS[0].no;
+  let openKpi="sites";
+
+  const inScope=()=>PROJECTS.filter(p=>p.facility===facility);
+  const P=()=>PROJECTS.find(p=>p.no===selected)||PROJECTS[0];
+  const sum=(list,k)=>list.reduce((a,p)=>a+p[k],0);
+
+  /* ===== the sovereign and nonsovereign tables, s36 and s37 =====
+     Column names are the client's, word for word. A row opens that project in
+     the profile panel below, which is what their clickable note asks for. */
+  const PCOLS=["Project number and name","Number of EDRMS SharePoint sites",
+               "Total number of documents","Total number of records declared",
+               "Total number of physical counterparts"];
+
+  function drawList(){
+    const rows=inScope();
+    const fac=FACILITIES.find(f=>f.fac===facility);
+    document.getElementById("pj-list").innerHTML=
+      `<div class="dhead">`+PCOLS.map((c,i)=>
+        `<div class="${i?"num":""}">${c}</div>`).join("")+`</div>`+
+      rows.map(p=>`<div class="drow go${p.no===selected?" on":""}" data-no="${p.no}"
+          role="link" tabindex="0" title="Open the profile for ${p.no}">
+        <div class="dn"><span class="lk">${p.no}</span><small>${p.name}</small></div>
+        <div class="num">${F(p.sites)}</div><div class="num">${F(p.docs)}</div>
+        <div class="num">${F(p.rec)}</div><div class="num">${F(p.phys)}</div></div>`).join("")+
+      /* The facility row is the authority for the totals, not the sum of the
+         projects drawn by name: both slides end their list with "Etc.". */
+      `<div class="dtot"><div>All ${facility.toLowerCase()} projects</div>
+        <div class="num">${F(fac.sites)}</div><div class="num">${F(fac.docs)}</div>
+        <div class="num">${F(fac.rec)}</div><div class="num">${F(fac.phys)}</div></div>`;
+
+    document.querySelectorAll("#pj-list .drow.go").forEach(el=>{
+      const go=()=>{ selected=el.dataset.no; drawList(); drawProfile(); };
+      el.onclick=go;
+      el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};
+    });
+  }
+
+  /* ===== the seven top panel tiles, and the drill behind each =====
+     Labels are the client's own wording from s38. All seven are clickable,
+     because on their drawing all seven are underlined, so every one carries
+     the tap chevron and its own handler. Their note on that slide says to
+     follow Department Insights for the template, and this does. */
+  const TILES=[
+    {k:"sites",   lab:"Total number of sites created",                   val:p=>F(p.sites)},
+    {k:"users",   lab:"Total number of EDRMS users",                     val:p=>F(p.users)},
+    {k:"visitors",lab:"Total number of site visitors",                   val:p=>F(p.visitors)},
+    {k:"docs",    lab:"Total number of documents in EDRMS",              val:p=>F(p.docs)},
+    {k:"rec",     lab:"Total number of records declared in EDRMS",       val:p=>F(p.rec)},
+    {k:"phys",    lab:"Total number of physical counterparts identified",val:p=>F(p.phys)},
+    {k:"due",     lab:"Total number of records due for disposal",        val:p=>F(p.due)}
+  ];
+
+  const DRILL={
+    sites:{title:"Sites created for this project",
+      cols:["Site","Documents","Records declared","Counterparts","Declaration rate"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.docs),F(s.rec),F(s.phys),
+        PCT(s.rec,s.docs).toFixed(1)+"%"])},
+    users:{title:"EDRMS users on this project",
+      cols:["Site","Users","Staff","Consultants","Contractors"],
+      rows:p=>SITES[p.no].map(s=>{
+        const parts=split(s.users,MIX_W);
+        return [s.name,F(s.users),F(parts[0]),F(parts[1]),F(parts[2])];})},
+    visitors:{title:"Site visitors on this project",
+      cols:["Site","Visitors","Users","Visitors per user","Documents"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.visitors),F(s.users),
+        (s.visitors/Math.max(1,s.users)).toFixed(2),F(s.docs)])},
+    docs:{title:"Documents held on this project",
+      cols:["Site","Documents","Share of project","Records declared","Not declared"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.docs),PCT(s.docs,p.docs).toFixed(1)+"%",
+        F(s.rec),F(s.docs-s.rec)])},
+    rec:{title:"Records declared on this project",
+      cols:["Site","Records declared","Share of project","Documents","Declaration rate"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.rec),PCT(s.rec,p.rec).toFixed(1)+"%",
+        F(s.docs),PCT(s.rec,s.docs).toFixed(1)+"%"])},
+    phys:{title:"Physical counterparts identified on this project",
+      cols:["Site","Counterparts","Records declared","Share with a counterpart","Documents"],
+      rows:p=>SITES[p.no].map(s=>[s.name,F(s.phys),F(s.rec),
+        PCT(s.phys,s.rec).toFixed(1)+"%",F(s.docs)])},
+    due:{title:"Records due for disposal on this project",
+      cols:["Site","Records due","Records declared","Share due","Counterparts"],
+      rows:p=>{
+        const parts=split(p.due,SITES[p.no].map(s=>s.rec));
+        return SITES[p.no].map((s,i)=>[s.name,F(parts[i]),F(s.rec),
+          PCT(parts[i],s.rec).toFixed(2)+"%",F(s.phys)]);}}
   };
 
-  /* Sites belonging to this project (illustrative, normally from site-to-project register question 2) */
-  function generateProjectSites(projectCode){
-    const numSites=Math.floor(Math.random()*8)+3;/* 3 to 10 sites per project */
-    const STEMS=["Records","Operations","Programs","Country Planning","Governance",
-                 "Knowledge","Administration","Projects","Advisory","Portfolio"];
-    const sites=[];
-    for(let i=0;i<numSites;i++){
-      const stem=STEMS[i%STEMS.length];
-      sites.push({
-        name:`${projectCode} ${stem}${i>=STEMS.length?" "+(Math.floor(i/STEMS.length)+1):""}`,
-        owner:["a.mendoza","r.tan","j.cruz","m.reyes","l.fernandez"][i%5]+"@adb.org"
-      });
-    }
-    return sites;
+  function drawTiles(){
+    const p=P();
+    document.getElementById("pj-kpis").innerHTML=
+      `<div class="kpigrp act">
+         <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
+         <div class="kpis">${TILES.map(t=>
+           `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
+              <div class="val">${t.val(p)}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+       </div>`;
   }
 
-  /* Build metrics for a project by aggregating from its sites */
-  function buildProjectData(projectCode){
-    const sites=generateProjectSites(projectCode);
-    const n=sites.length;
-
-    /* Create illustrative metrics for this project */
-    const totalSites=n;
-    const totalUsers=Math.floor(Math.random()*120)+20;
-    const totalVisitors=Math.floor(Math.random()*450)+50;
-    const totalDocs=Math.floor(Math.random()*2500)+300;
-    const totalRecs=Math.floor(totalDocs*0.35);
-    const totalPhys=Math.floor(totalRecs*0.28);
-    const totalDue=Math.floor(totalRecs*0.12);
-
-    /* Split metrics across sites */
-    const s=projectCode.length*3;
-    const recWeights=weights(n,s+1), docWeights=weights(n,s+2), physWeights=weights(n,s+3),
-          dueWeights=weights(n,s+4), userWeights=weights(n,s+5), visWeights=weights(n,s+6);
-
-    const rec=split(totalRecs, recWeights), docs=split(totalDocs, docWeights),
-          phys=split(totalPhys, physWeights), due=split(totalDue, dueWeights),
-          users=split(totalUsers, userWeights), visitors=split(totalVisitors, visWeights);
-
-    /* Populate site rows */
-    sites.forEach((site,i)=>{
-      site.rec=rec[i];
-      site.docs=docs[i];
-      site.phys=phys[i];
-      site.due=due[i];
-      site.users=users[i];
-      site.visitors=visitors[i];
-      site.idle=((i*13+s)%90)+1;
+  /* Per card, updating the rail in place rather than rebuilding the grid, for
+     the same reason as the other dashboards: rebuilding destroys the node
+     being clicked part way through the event and the selection is lost. */
+  function wireTiles(){
+    document.querySelectorAll("#pj-kpis .kpi[data-k]").forEach(card=>{
+      card.onclick=()=>{
+        openKpi=card.dataset.k;
+        document.querySelectorAll("#pj-kpis .kpi[data-k]").forEach(el=>
+          el.classList.toggle("on",el.dataset.k===openKpi));
+        drawDrill();
+      };
     });
-
-    return{
-      totalSites, totalUsers, totalVisitors, totalDocs, totalRecs, totalPhys, totalDue,
-      sites
-    };
   }
 
-  /* State */
-  let currentProject="57318-001";
-  let projectData=buildProjectData(currentProject);
-  let openKpi="sites";
-  let sitePage=1, sortSite="rec", dirSite="desc";
-
-  /* Set the current project (called from Bank-wide navigation) */
-  function setProject(projectCode){
-    currentProject=projectCode;
-    projectData=buildProjectData(currentProject);
-    sitePage=1;
-    openKpi="sites";
-    render();
+  function drawDrill(){
+    const p=P(), d=DRILL[openKpi], rows=d.rows(p);
+    document.getElementById("pj-drill").innerHTML=
+      `<div class="ptitle">${d.title}</div>
+       <div class="psub">Every site carrying this project, and what it holds.</div>
+       <div class="scrollx"><div class="dtab" style="--dc:190px repeat(${d.cols.length-1},1fr)">
+         <div class="dhead">${d.cols.map((c,i)=>
+           `<div class="${i?"num":""}">${c}</div>`).join("")}</div>
+         ${rows.map(r=>`<div class="drow">${r.map((c,j)=>
+           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
+       </div></div>`;
   }
 
-  /* Drill rendering functions */
-  function renderSitesDrill(){
-    const SORT_KEYS=["name","users","visitors","docs","rec","phys","due"];
-    const sorted=projectData.sites.slice().sort((a,b)=>{
-      let cmp=0;
-      if(sortSite==="name") cmp=a.name.localeCompare(b.name);
-      else if(sortSite==="users") cmp=a.users-b.users;
-      else if(sortSite==="visitors") cmp=a.visitors-b.visitors;
-      else if(sortSite==="docs") cmp=a.docs-b.docs;
-      else if(sortSite==="rec") cmp=a.rec-b.rec;
-      else if(sortSite==="phys") cmp=a.phys-b.phys;
-      else if(sortSite==="due") cmp=a.due-b.due;
-      return dirSite==="asc"?cmp:-cmp;
+  function drawProfile(){
+    const p=P();
+    document.getElementById("pj-pname").textContent=p.name;
+    document.getElementById("pj-sel").value=p.no;
+    /* The eight fields s38 draws, in the order it draws them. Every one of
+       them comes from an ADB project system that has never been named in this
+       work, which is why the panel carries a notice. Question 16. */
+    document.getElementById("pj-profile").innerHTML=[
+      ["Facility type",p.facility],["Project number",p.no],
+      ["Project type, modality of assistance",p.modality],["Modality number",p.modNo],
+      ["Country or economy",p.country],["Project status",p.status],
+      ["Effectivity date",p.effective],["Closing date, actual",p.closing]
+    ].map(([k,v])=>`<div class="pf"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+    drawTiles(); wireTiles(); drawDrill();
+    drawMix(); drawTrend(); drawCompare();
+  }
+
+  /* ===== the three charts on s38 ===== */
+  function drawMix(){
+    const p=P(), parts=mixFor(p);
+    document.getElementById("pj-mix").innerHTML=CHART.donut(parts,
+      {centreValue:F(p.users),centreLabel:"users",size:170});
+    document.getElementById("pj-mix-legend").innerHTML=parts.map(x=>
+      `<span><i style="background:${x.color}"></i>${x.label}, ${F(x.value)}</span>`).join("");
+  }
+
+  /* Cumulative, matching the Records Declaration Trend on Bank-wide and the
+     curve the client drew on this slide. The project's monthly shape is the
+     bank-wide one scaled to its own declared total, so the LAST POINT of the
+     curve is the project's declared count. A per month series sums to the
+     total; a cumulative one ends at it. Asserting the wrong one passes on a
+     chart that is wrong by a factor of six, so the endpoint is asserted. */
+  function drawTrend(){
+    const p=P();
+    const monthTotal=DATA.MONTH_VALUES.reduce((a,v)=>a+v,0);
+    const share=p.rec/monthTotal;
+    const monthly=DATA.MONTH_VALUES.map(v=>Math.round(v*share));
+    monthly[monthly.length-1]+=p.rec-monthly.reduce((a,v)=>a+v,0);
+    let run=0;
+    const pts=DATA.MONTH_VALUES.map((v,i)=>{
+      run+=monthly[i];
+      return {label:DATA.MONTH_FULL[i],short:DATA.MONTH_LABELS[i],value:run};
     });
-    const ROWS_PER_PAGE=7;
-    const rows=sorted.slice((sitePage-1)*ROWS_PER_PAGE, sitePage*ROWS_PER_PAGE);
-    const pages=Math.max(1,Math.ceil(sorted.length/ROWS_PER_PAGE));
-
-    let html=`<div class="ptitle">Sites in ${currentProject}</div>
-      <div class="psub">Site metrics within this project (Slide 38).</div>
-      <table class="dtab"><thead><tr>`;
-    SORT_KEYS.forEach(k=>{
-      const hdr=k==="name"?"Site Name":k==="users"?"Users":k==="visitors"?"Visitors":
-                k==="docs"?"Documents":k==="rec"?"Records Declared":k==="phys"?"Physical":
-                "Due for Disposal";
-      html+=`<th class="hd${sortSite===k?" on":""}" data-s="${k}" style="cursor:pointer">${hdr}${sortSite===k?(dirSite==="asc"?" ↑":" ↓"):""}</th>`;
-    });
-    html+=`</tr></thead><tbody>`;
-    rows.forEach(r=>{
-      html+=`<tr><td>${r.name}</td><td>${F(r.users)}</td><td>${F(r.visitors)}</td>
-        <td>${F(r.docs)}</td><td>${F(r.rec)}</td><td>${F(r.phys)}</td><td>${F(r.due)}</td></tr>`;
-    });
-    html+=`</tbody></table><div class="pager"><div class="pinfo">Page ${sitePage} of ${pages}</div>
-      <div class="pbtns"><button${sitePage===1?" disabled":""}>‹</button>`;
-    for(let p=1;p<=pages;p++){
-      html+=`<button class="${p===sitePage?"on":""}">${p}</button>`;
-    }
-    html+=`<button${sitePage===pages?" disabled":""}>›</button></div></div>`;
-    return html;
+    console.assert(pts[pts.length-1].value===p.rec,
+      "The project declaration curve must end at the project declared count, "+p.no);
+    document.getElementById("pj-trend").innerHTML=CHART.area(pts,{height:200});
   }
 
-  function renderUsersDrill(){
-    const staffCount=Math.round(projectData.totalUsers*0.65);
-    const contractorCount=Math.round(projectData.totalUsers*0.22);
-    const consultantCount=projectData.totalUsers-staffCount-contractorCount;
-    const svg=CHART.donut([
-      {label:"Staff",value:staffCount,color:"var(--blue)"},
-      {label:"Contractors",value:contractorCount,color:"var(--teal)"},
-      {label:"Consultants",value:consultantCount,color:"var(--orange)"}
-    ]);
-    return`<div class="ptitle">Users by type</div><div class="psub">User classification (Slide 38).</div>${svg}`;
+  /* Documents against records declared, site by site, with the declaration
+     rate alongside. Their drawing puts the rate on a second axis; two bars
+     and a printed percentage says the same thing without a dual axis, which
+     Power BI supports but reads badly at this width. */
+  function drawCompare(){
+    const p=P(), sites=SITES[p.no];
+    const mx=Math.max(...sites.map(s=>s.docs),1);
+    document.getElementById("pj-cmp").innerHTML=sites.map(s=>`
+      <div class="cmp">
+        <div class="cl">${s.name}<small>${PCT(s.rec,s.docs).toFixed(1)}% declared</small></div>
+        <div class="cbars">
+          <div class="cbar" style="width:${Math.max(4,100*s.docs/mx)}%;background:var(--orange)">${F(s.docs)}</div>
+          <div class="cbar" style="width:${Math.max(4,100*s.rec/mx)}%;background:var(--green)">${F(s.rec)}</div>
+        </div>
+      </div>`).join("");
   }
 
-  function renderVisitorsDrill(){
-    return`<div class="ptitle">Site visitors</div><div class="psub">Unique visitors across project sites (Slide 38).</div>
-      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Visitors</th></tr></thead><tbody>
-      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.visitors)}</td></tr>`).join("")}
-      </tbody></table>`;
-  }
+  const html=`<section class="dash-pj">
+    <div class="band">
+      <h2>Project Insights</h2>
+      <div class="bd">Are project sites being used and maintained in line with recordkeeping requirements?</div>
+    </div>
 
-  function renderDocsDrill(){
-    return`<div class="ptitle">Documents</div><div class="psub">Document count by site (Slide 38).</div>
-      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Documents</th></tr></thead><tbody>
-      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.docs)}</td></tr>`).join("")}
-      </tbody></table>`;
-  }
+    <div class="panel">
+      <div class="ptitle">This screen is a specification, not a sourced dashboard</div>
+      <div class="psub">Two sources are missing and neither has an owner yet. Nothing says which SharePoint site
+        belongs to which project, and the eight profile fields come from an ADB project system that has never
+        been named in this work. Every figure below is illustrative and reconciles to the bank-wide totals so the
+        shape can be discussed; none of it is measured. Questions 2 and 16.</div>
+    </div>
 
-  function renderRecordsDrill(){
-    return`<div class="ptitle">Records declared</div><div class="psub">Declared records by site (Slide 38).</div>
-      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Records</th></tr></thead><tbody>
-      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.rec)}</td></tr>`).join("")}
-      </tbody></table>`;
-  }
-
-  function renderPhysicalDrill(){
-    return`<div class="ptitle">Physical counterparts</div><div class="psub">Physical counterparts identified by site (Slide 38).</div>
-      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Physical</th></tr></thead><tbody>
-      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.phys)}</td></tr>`).join("")}
-      </tbody></table>`;
-  }
-
-  function renderDueDrill(){
-    return`<div class="ptitle">Records due for disposal</div><div class="psub">Records due by site (Slide 38).</div>
-      <table class="dtab"><thead><tr><th>Site</th><th style="text-align:right">Due</th></tr></thead><tbody>
-      ${projectData.sites.map(s=>`<tr><td>${s.name}</td><td style="text-align:right">${F(s.due)}</td></tr>`).join("")}
-      </tbody></table>`;
-  }
-
-  function renderCumulativeTrend(){
-    /* Illustrative cumulative declaration trend over 12 months */
-    const months=["Aug 2025","Sep 2025","Oct 2025","Nov 2025","Dec 2025","Jan 2026",
-                  "Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"];
-    const monthlyIncrements=split(projectData.totalRecs,weights(12,42));
-    let cumulative=0;
-    const data=months.map((m,i)=>{cumulative+=monthlyIncrements[i];
-      return{label:m,short:m.split(" ")[0],value:cumulative};});
-    return`<div class="ptitle">Cumulative declaration trend</div><div class="psub">Records declared over 12 months (Slide 38).</div>${CHART.area(data,{height:240})}`;
-  }
-
-  function renderDeclarationRate(){
-    /* Top 5 sites by declaration volume, with rates */
-    const topSites=projectData.sites.sort((a,b)=>b.rec-a.rec).slice(0,5);
-    const items=topSites.map(s=>{
-      const rate=s.docs>0?(s.rec/s.docs*100).toFixed(0)+"%":"—";
-      const label=s.name.split(" ").slice(0,2).join(" ");
-      return{label:`${label} (${rate})`,value:s.rec};
-    });
-    return`<div class="ptitle">Records declared by site</div><div class="psub">Top 5 sites by declaration volume with declaration rate (Slide 38).</div>${CHART.hbars(items)}`;
-  }
-
-  function render(){
-    const attr=PROJECT_ATTRIBUTES[currentProject]||PROJECT_ATTRIBUTES["57318-001"];
-    const html=`
-    <section>
-      <div class="band">
-        <h2>${attr.name}</h2>
-        <div class="bd">Project profile, site metrics, and records compliance summary.</div>
+    <div class="band">
+      <h2>Projects</h2>
+      <div class="bd">Sovereign and nonsovereign projects, keyed by project number and project name.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Total number of active EDRMS SharePoint sites by project</div>
+      <div class="psub">Click a project to open its profile below.</div>
+      <div class="toolbar">
+        <span class="lbl">Facility type</span>
+        <select id="pj-fac">
+          <option value="Sovereign">Sovereign projects</option>
+          <option value="Nonsovereign">Nonsovereign projects</option>
+        </select>
+        <button class="resetbtn" id="pj-reset">Reset</button>
       </div>
+      <div class="scrollx"><div class="dtab wide" id="pj-list"></div></div>
+    </div>
 
-      <div class="panel" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:20px">
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Facility Type</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.facilityType}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Project Number</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.projectNumber}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Type &amp; Modality</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.projectTypeModality}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Modality Number</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.modalityNumber}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Country / Economy</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.country}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Project Status</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.status}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Effectivity Date</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.effectivityDate}</div></div>
-        <div><div style="font-size:11px;color:var(--mut);text-transform:uppercase;font-weight:600">Closing Date</div>
-          <div style="font-size:16px;font-weight:600;margin-top:6px">${attr.closingDate}</div></div>
+    <div class="band">
+      <h2>Project profile</h2>
+      <div class="bd">Profile, activity and recordkeeping for one project.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle" id="pj-pname"></div>
+      <div class="psub">Profile, activity and recordkeeping for one project.</div>
+      <div class="toolbar">
+        <span class="lbl">Project</span>
+        <select id="pj-sel"></select>
       </div>
-
-      <div class="kpis">
-        <div class="kpi" data-kpi="sites"><div class="lab">Total number of sites created</div>
-          <div class="val">${F(projectData.totalSites)}</div></div>
-        <div class="kpi" data-kpi="users"><div class="lab">Total number of EDRMS users</div>
-          <div class="val">${F(projectData.totalUsers)}</div></div>
-        <div class="kpi" data-kpi="visitors"><div class="lab">Total number of site visitors</div>
-          <div class="val">${F(projectData.totalVisitors)}</div></div>
-        <div class="kpi" data-kpi="docs"><div class="lab">Total number of documents in EDRMS</div>
-          <div class="val">${F(projectData.totalDocs)}</div></div>
-        <div class="kpi" data-kpi="records"><div class="lab">Total number of records declared in EDRMS</div>
-          <div class="val">${F(projectData.totalRecs)}</div></div>
-        <div class="kpi" data-kpi="physical"><div class="lab">Total number of physical counterparts identified</div>
-          <div class="val">${F(projectData.totalPhys)}</div></div>
-        <div class="kpi" data-kpi="due"><div class="lab">Total number of records due for disposal</div>
-          <div class="val">${F(projectData.totalDue)}</div></div>
-      </div>
-
-      <div class="panel" id="pj-drill" style="display:none"></div>
-
+      <div class="profile" id="pj-profile"></div>
+      <div id="pj-kpis"></div>
+    </div>
+    <div class="panel" id="pj-drill"></div>
+    <div class="panel">
+      <div class="ptitle">Users, declaration trend and documents against records</div>
+      <div class="psub">The user mix, records declared over time, and how each site compares.</div>
       <div class="crow">
-        <div class="chart">${renderUsersDrill()}</div>
-        <div class="chart">${renderCumulativeTrend()}</div>
+        <div class="chart"><div class="ctitle">Number of users</div>
+          <div id="pj-mix"></div><div class="legend" id="pj-mix-legend"></div></div>
+        <div class="chart"><div class="ctitle">Record declaration trend</div><div id="pj-trend"></div></div>
       </div>
-
-      <div class="crow">
-        <div class="chart wide">${renderDeclarationRate()}</div>
+      <div class="ctitle" style="margin-top:18px">Comparison: documents against records declared</div>
+      <div class="legend">
+        <span><i style="background:var(--orange)"></i>Number of documents</span>
+        <span><i style="background:var(--green)"></i>Number of records declared</span>
       </div>
-    </section>`;
-    document.querySelector("section").innerHTML=html;
+      <div id="pj-cmp"></div>
+    </div>
+  </section>`;
 
-    /* Wire KPI clicks */
-    document.querySelectorAll(".kpi[data-kpi]").forEach(el=>{
-      el.addEventListener("click",()=>{
-        const kpi=el.getAttribute("data-kpi");
-        document.querySelectorAll(".kpi[data-kpi]").forEach(e=>e.classList.remove("on"));
-        el.classList.add("on");
-        openKpi=kpi;
-
-        const drill=document.getElementById("pj-drill");
-        if(kpi==="sites") drill.innerHTML=renderSitesDrill();
-        else if(kpi==="users") drill.innerHTML=renderUsersDrill();
-        else if(kpi==="visitors") drill.innerHTML=renderVisitorsDrill();
-        else if(kpi==="docs") drill.innerHTML=renderDocsDrill();
-        else if(kpi==="records") drill.innerHTML=renderRecordsDrill();
-        else if(kpi==="physical") drill.innerHTML=renderPhysicalDrill();
-        else if(kpi==="due") drill.innerHTML=renderDueDrill();
-        drill.style.display="block";
-
-        /* Wire pager/sort if exists */
-        if(kpi==="sites") wireSitesTable();
-      });
-    });
-
-    /* Wire first KPI */
-    if(openKpi==="sites"){
-      document.querySelector(`[data-kpi="sites"]`).classList.add("on");
-      document.getElementById("pj-drill").innerHTML=renderSitesDrill();
-      document.getElementById("pj-drill").style.display="block";
-      wireSitesTable();
-    }
+  function fillSel(){
+    document.getElementById("pj-sel").innerHTML=PROJECTS.map(p=>
+      `<option value="${p.no}" ${p.no===selected?"selected":""}>${p.no} - ${p.country}</option>`).join("");
   }
-
-  function wireSitesTable(){
-    const drill=document.getElementById("pj-drill");
-    drill.querySelectorAll("th[data-s]").forEach(th=>{
-      th.addEventListener("click",()=>{
-        const k=th.getAttribute("data-s");
-        sortSite=k;
-        dirSite=dirSite==="asc"?"desc":"asc";
-        drill.innerHTML=renderSitesDrill();
-        wireSitesTable();
-      });
-    });
-    drill.querySelectorAll("button").forEach((btn,i)=>{
-      if(i===0) btn.addEventListener("click",()=>{ sitePage=Math.max(1,sitePage-1); drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
-      else if(i===drill.querySelectorAll("button").length-1) btn.addEventListener("click",()=>{ sitePage++; drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
-      else if(btn.className==="on"||!btn.className){
-        const pageNum=parseInt(btn.textContent);
-        btn.addEventListener("click",()=>{ sitePage=pageNum; drill.innerHTML=renderSitesDrill(); wireSitesTable(); });
-      }
-    });
-  }
-
-  const html=`<section id="pj-section"></section>`;
 
   function init(){
-    render();
+    const fac=document.getElementById("pj-fac");
+    const sel=document.getElementById("pj-sel");
+    /* Switching facility type moves the selected project into the list being
+       shown, so the table and the profile below it never disagree about which
+       project the reader is looking at. */
+    fac.onchange=e=>{
+      facility=e.target.value;
+      if(!inScope().some(p=>p.no===selected))selected=inScope()[0].no;
+      fillSel(); drawList(); drawProfile();
+    };
+    sel.onchange=e=>{
+      selected=e.target.value;
+      const p=P();
+      if(p.facility!==facility){facility=p.facility;fac.value=facility;}
+      drawList(); drawProfile();
+    };
+    document.getElementById("pj-reset").onclick=()=>{
+      facility="Sovereign"; selected=inScope()[0].no; openKpi="sites";
+      fac.value=facility; fillSel(); drawList(); drawProfile();
+    };
+    fac.value=facility;
+    fillSel(); drawList(); drawProfile();
   }
 
-  function focus(projectCode){
-    setProject(projectCode);
-  }
-
-  return{
-    summary:{projects:Object.keys(PROJECT_ATTRIBUTES).length,sourced:0},
-    html,init,setProject,focus
+  return {
+    summary:{projects:PROJECTS.length,
+      sovereign:PROJECTS.filter(p=>p.facility==="Sovereign").length,
+      nonsovereign:PROJECTS.filter(p=>p.facility==="Nonsovereign").length,
+      sourced:0},
+    /* Called by openDashboard() before this dashboard mounts, so it draws the
+       requested selection on its first pass rather than drawing a default and
+       then visibly redrawing. Bank-wide sends a project number from the s36
+       and s37 lists; a facility type is accepted too, because the tile above
+       those lists names one. */
+    focus(arg){
+      if(arg==="Sovereign"||arg==="Nonsovereign"){
+        facility=arg;
+        if(!inScope().some(p=>p.no===selected))selected=inScope()[0].no;
+        return;
+      }
+      const p=PROJECTS.find(x=>x.no===arg);
+      if(!p)return;
+      selected=p.no; facility=p.facility; openKpi="sites";
+    },
+    html,init
   };
 })();
 
