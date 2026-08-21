@@ -232,6 +232,54 @@ temporary has the label, the due date and the disposed count. **Removed:
 "Disposition risk" and "Records with and without a schedule". Neither appears in
 the deck.**
 
+### 21 August 2026: Project Insights restored, and the two lists that reach it
+
+**The sixth key view was unreachable, not missing.** `DASHBOARDS.pj` was in the
+file, but it was never added to the nav, so nothing ever mounted it; its section
+carried no `dash-pj` class, so none of the styles written for that screen
+applied; and every figure on it was built with `Math.random()`, so the numbers
+changed on each reload and reconciled with nothing. **A dashboard that is in the
+source but not in the nav reads as built to grep and as absent to a client.**
+Both of those checks were passing on it.
+
+**The project register is back on Bank-wide, derived rather than carried.**
+Tiles 2 and 3 of s34 return, each opening the list the client drew in full on
+s36 and s37 with their column names word for word. The six named projects and
+the two facility rows are a **re-cut of the estate, not an addition to it**: every
+figure is a share of a bank-wide total, and three asserts hold it, named
+projects never exceeding their facility row, the two facility rows never
+exceeding the bank-wide figure, and no project declaring more records than it
+holds documents. That first assert is the one that caught the 44 percent error
+in section 8, which is why the block is derived at all.
+
+**Every project row opens Project Insights**, through the existing
+`openDashboard()` helper, which is the client's own note on both slides.
+
+**Project Insights itself follows s38**: the eight profile fields in their
+order, seven clickable tiles with the client's labels and a drill behind each
+read site by site, and the three charts they drew. The declaration curve is
+**cumulative and asserted on its endpoint**, not its sum, for the reason in the
+16 August entry above.
+
+**It says on the screen that it is a specification.** The first panel names both
+missing sources in plain words: nothing says which SharePoint site belongs to
+which project (question 2), and the eight profile fields come from an ADB
+project system that **has never been named in this work by anyone** (question
+16). The screen is a shape to react to in the workshop, and the figures are
+illustrative. That belongs on the screen, not in a comment the reader never
+sees.
+
+**What this does not do.** It sources nothing. All 21 rows on sheet 3 of the gap
+checker read "No Source" and they still do. What changed is that the client can
+now look at the screen and answer the two questions, instead of being asked to
+imagine it.
+
+**Noticed while doing it, not acted on:** `wireGo()` on Bank-wide was dead for
+departments. The sites drill emits no `.drow.go` and no `data-dept`, so the
+department names on s35 are not clickable even though the checker records them
+as built. The project rows added here do carry both and do navigate. The
+department half is a separate fix.
+
 ### The split bug: five copies, two ways wrong, totals silently broken
 
 Found by an assert while rebuilding Department Insights, and it is the most
