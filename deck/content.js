@@ -2,6 +2,17 @@
    checker item numbers whose requirement lands on that screen. Item text is
    read from gap.json so the deck and the workbook cannot drift apart. */
 module.exports={
+ /* Items that are not missing a data source but a feature. Disposal is not in
+    the system yet and Physical Records comes after Utilization, so these
+    cannot be built now for a reason the client controls, not one we failed at.
+    Kept apart from the red items on purpose: red needs an answer from them,
+    this needs a release to ship. */
+ later:{
+  '1 Bank-wide Oversight':{ns:[55,56,57,58,59,60,61],rel:'Disposal release'},
+  '2 Department Insights':{ns:[73,74,75,76,77,78],rel:'Disposal release'},
+  '5 Retention and Disposal':{ns:[26],rel:'Disposal release'},
+  '6 Records and Archive Holdings':{ns:[25,26],rel:'Physical Records release'},
+ },
  order:[
   {key:'bw',sheet:'1 Bank-wide Oversight',name:'Bank-wide Oversight',
    q:'How is EDRMS being used across the whole bank?',
@@ -200,6 +211,16 @@ module.exports={
 
   {key:'rd',sheet:'5 Retention and Disposal',name:'Retention and Disposal',
    q:'What must be kept forever, and what is coming up for disposal?',
+   seq:{rel:'Disposal release',
+    head:'Retention works today. Disposal is not in the system yet.',
+    now:['Retention labels are being applied to records right now, and we can read them.',
+         'We can show what is permanent, what is temporary, and when each item falls due.',
+         'That half of this dashboard is real and working.'],
+    blocked:['There is no screen in EDRMS where somebody approves a disposal.',
+             'There is no field anywhere that records approved, declined or extended.',
+             'So nothing can tell the report that a disposal actually happened.'],
+    ask:'We propose building the retention half now, and the disposal half once the Disposal release ships. The screens are already drawn and waiting — when the feature exists, they fill in.',
+    count:14},
    slides:[
     {img:'rd-01.png',t:'Permanent against temporary',items:[1,12],
      say:['Six figures: sites, libraries and records, split permanent and temporary.',
@@ -219,9 +240,9 @@ module.exports={
           'It is also a good check: labels nobody expected will show up here.']},
    ],
    asks:[
-    {q:'Where is a completed disposal recorded?',
-     b:'We can show you everything that is due. The moment something is actually disposed of, the report goes blind — there is nowhere in the system to write that down.',
-     n:'How does a disposal get signed off today, and is the outcome written anywhere we could read? This is the single biggest gap across the whole report.'},
+    {q:'Can we agree the disposal half follows the Disposal release?',
+     b:'This is not a data problem we can solve by looking harder. Disposal is not built in EDRMS yet — there is no approval screen and no field to record an outcome. Fourteen items across three dashboards are waiting on that one release.',
+     n:'We build the screens now so they are ready, and switch them on when Disposal ships. Nothing is wasted and nothing is invented in the meantime.'},
     {q:'Do you still want the slide 44 summary table?',
      b:'Your slide 44 had a table across the top with six columns. It was taken out of the prototype because most of its columns repeat what the screens below already show.',
      n:'Do you want it back, or is the current layout clearer? Your call — we can put it back easily.'},
@@ -232,6 +253,16 @@ module.exports={
 
   {key:'ra',sheet:'6 Records and Archive Holdings',name:'Records and Archive Holdings',
    q:'What is in the physical archive, and what is moving in and out?',
+   seq:{rel:'Physical Records release',
+    head:'This one is about paper, and paper comes after Utilization.',
+    now:['One figure here is real: how many declared records are marked as having a paper copy.',
+         'That is the bridge between this report and what RAC physically holds.',
+         'The layout answers every column and every indicator you drew.'],
+    blocked:['Boxes, folders, rooms, requests and retrievals live in the physical world.',
+             'The systems that will track them are part of the Physical Records work, which comes after Utilization.',
+             'Nothing we can reach today holds any of it, so every figure on this screen is invented.'],
+    ask:'We propose treating this dashboard as a Physical Records deliverable rather than a Utilization one. Showing it now would mean showing you numbers we made up, and those have a way of being quoted back as real.',
+    count:26},
    slides:[
     {img:'ra-01.png',t:'What we can and cannot see',items:[1,2],
      say:['One figure here is real: the count of records with a paper counterpart.',
@@ -251,15 +282,15 @@ module.exports={
           'None of it is measured yet. That is what the questions slide is for.']},
    ],
    asks:[
+    {q:'Can we agree this dashboard follows the Physical Records release?',
+     b:'Everything on it — boxes, folders, rooms, requests — is physical, and the systems that will hold that information come with the Physical Records work, after Utilization. Building it now means inventing all 26 figures.',
+     n:'Keep the layout as the agreed specification, sign it off today if you are happy with it, and build it when the physical side has real sources behind it.'},
     {q:'When someone asks RAC for a box, where does that go?',
-     b:'Your slide 67 mentions eServe. Nothing in this work has ever reached it, so every retrieval figure on this dashboard is invented.',
-     n:'Can we see what eServe holds, and who would we ask for access?'},
-    {q:'What does RAC actually keep, and where?',
-     b:'Boxes, folders, which room they are in, how full each room is — none of this exists in any system we can read. It may live in a spreadsheet, or on paper.',
-     n:'How does RAC track its holdings today? Whatever the answer, it is a starting point.'},
-    {q:'What is in Opus, and can we use it?',
-     b:'Your slide 67 asks what is available in Opus and how it could be applied. We have never been told what Opus holds.',
-     n:'Can someone walk us through it, so we can say honestly whether it helps here?'},
+     b:'Your slide 67 mentions eServe. Nothing in this work has ever reached it. Even after the Physical release we will need this answered.',
+     n:'Can we see what eServe holds, and who would we ask for access? Worth starting the conversation now so it is not the thing that delays the physical build later.'},
+    {q:'What does RAC actually keep today, and where?',
+     b:'Boxes, folders, which room they are in, how full each room is. It may live in a spreadsheet, or on paper, or in somebody\u2019s head.',
+     n:'Whatever the answer, it is the starting point for the physical work. A spreadsheet is a perfectly good answer.'},
    ]},
  ]
 };
