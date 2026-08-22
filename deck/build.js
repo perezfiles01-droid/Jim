@@ -15,7 +15,11 @@ const C={navy:'0E1F35',ink:'10243E',ink2:'33475F',blue:'0072BC',blued:'005A96',
 const SER='Cambria', SAN='Calibri';
 const W=13.333,H=7.5;
 
+const MANIFEST=[];
 const p=new pptxgen();
+const _add=p.addSlide.bind(p);
+p.addSlide=function(){const s=_add();MANIFEST.push({n:MANIFEST.length+1});return s;};
+function mark(kind,extra){Object.assign(MANIFEST[MANIFEST.length-1],{kind},extra||{});}
 p.layout='LAYOUT_WIDE';
 p.author='ADB EDRMS Utilization Report';
 p.title='EDRMS Utilization Report — Workshop';
@@ -65,7 +69,7 @@ function notes(s,txt){s.addNotes(txt);}
 
 /* ---------- 1. title ---------- */
 {
-  const s=p.addSlide(); s.background={color:C.navy};
+  const s=p.addSlide(); mark('title'); s.background={color:C.navy};
   s.addShape(p.ShapeType.rect,{x:0,y:0,w:W,h:0.055,fill:{color:C.green},line:{color:C.green}});
   s.addText('EDRMS Utilization Report',{x:0.9,y:2.15,w:11.5,h:0.9,fontFace:SER,fontSize:46,
     bold:true,color:C.white,margin:0});
@@ -87,7 +91,7 @@ function notes(s,txt){s.addNotes(txt);}
 /* ---------- 2. how to read this deck ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'Before we start','How to read every slide from here on');
+  mark('legend'); head(s,'Before we start','How to read every slide from here on');
   const fx=0.55,fy=1.42,fw=6.5,fh=4.1;
   s.addShape(p.ShapeType.roundRect,{x:fx,y:fy,w:fw,h:fh,fill:{color:C.soft},
     line:{color:C.line},rectRadius:0.08});
@@ -130,7 +134,7 @@ function notes(s,txt){s.addNotes(txt);}
 /* ---------- 3. the six views ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'The shape of the report','Six views, each answering one question');
+  mark('sixviews'); head(s,'The shape of the report','Six views, each answering one question');
   const cards=CONTENT.order.map((d,i)=>({n:i+1,name:d.name,q:d.q,sheet:d.sheet}));
   cards.forEach((c,i)=>{
     const col=i%3, row=Math.floor(i/3);
@@ -159,7 +163,7 @@ function notes(s,txt){s.addNotes(txt);}
 /* ---------- 4. scoreboard ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'Where we are',`${TOT.yes} of the ${TOT.tot} things you asked for are built`);
+  mark('scoreboard'); head(s,'Where we are',`${TOT.yes} of the ${TOT.tot} things you asked for are built`);
   const labels=[],built=[],needs=[],later=[];
   CONTENT.order.forEach(d=>{
     const t=tally(d.sheet);
@@ -194,7 +198,7 @@ function notes(s,txt){s.addNotes(txt);}
 /* ---------- 5. how this gets delivered ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'Sequencing','Two of the six views are waiting on a release, not on data');
+  mark('timeline'); head(s,'Sequencing','Two of the six views are waiting on a release, not on data');
   s.addText('Four dashboards can be finished on the Utilization work alone. The other two depend on things that do not exist in the system yet — so the honest plan is to sequence them, not to force them.',
     {x:0.55,y:1.18,w:12.2,h:0.42,fontFace:SAN,fontSize:12.5,color:C.ink2,margin:0,lineSpacing:16});
 
@@ -240,7 +244,7 @@ CONTENT.order.forEach((d,di)=>{
 
   /* divider */
   {
-    const s=p.addSlide(); s.background={color:C.navy};
+    const s=p.addSlide(); mark('divider',{dash:d.name}); s.background={color:C.navy};
     s.addShape(p.ShapeType.rect,{x:0,y:0,w:W,h:0.055,fill:{color:C.teal},line:{color:C.teal}});
     s.addText(`VIEW ${di+1} OF 6`,{x:0.9,y:2.3,w:6,h:0.3,fontFace:SAN,fontSize:11.5,bold:true,
       charSpacing:1.6,color:C.teal,margin:0});
@@ -267,7 +271,7 @@ CONTENT.order.forEach((d,di)=>{
   d.slides.forEach(sl=>{
     let items=rows(d.sheet,sl.items[0],sl.items[1]);
     if(sl.extra) items=items.concat(rows(d.sheet,sl.extra[0],sl.extra[1]));
-    const s=p.addSlide(); s.background={color:C.bg};
+    const s=p.addSlide(); mark('screen',{dash:d.name,title:sl.t,img:sl.img}); s.background={color:C.bg};
     head(s,d.name,sl.t);
 
     /* left: the screenshot, at its own aspect ratio */
@@ -326,7 +330,7 @@ CONTENT.order.forEach((d,di)=>{
   /* the sequencing case, for the two views that depend on a later release */
   if(d.seq){
     const q=d.seq;
-    const s=p.addSlide(); s.background={color:C.bg};
+    const s=p.addSlide(); mark('seq',{dash:d.name,title:q.head}); s.background={color:C.bg};
     head(s,d.name,q.head);
     s.addShape(p.ShapeType.roundRect,{x:0.55,y:1.32,w:6.0,h:3.5,fill:{color:C.greenbg},
       line:{color:'CFE4C2'},rectRadius:0.07});
@@ -365,7 +369,7 @@ CONTENT.order.forEach((d,di)=>{
   const CHUNK=5;
   for(let i=0;i<d.asks.length;i+=CHUNK){
     const part=d.asks.slice(i,i+CHUNK);
-    const s=p.addSlide(); s.background={color:C.soft};
+    const s=p.addSlide(); mark('asks',{dash:d.name,from:i,to:i+part.length}); s.background={color:C.soft};
     const many=d.asks.length>CHUNK;
     head(s,d.name,many?`What we need from you (${Math.floor(i/CHUNK)+1} of ${Math.ceil(d.asks.length/CHUNK)})`
                       :'What we need from you');
@@ -400,7 +404,7 @@ CONTENT.order.forEach((d,di)=>{
 /* ---------- closing: everything we need ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'Pulling it together','The three answers that unlock almost everything');
+  mark('rootcause'); head(s,'Pulling it together','The three answers that unlock almost everything');
   const big=[
     ['Who is who','A list that says, for each person, whether they are staff, a consultant or a contractor — and which department they sit in.',
      '18 items','Unlocks every user split on Bank-wide and Department Insights, plus the internal / external visitor question.',C.blue],
@@ -433,7 +437,7 @@ CONTENT.order.forEach((d,di)=>{
 /* ---------- closing: the three decisions we need ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'Before we finish','Three decisions we would like from you today');
+  mark('decisions'); head(s,'Before we finish','Three decisions we would like from you today');
   const asks=[
     ['1','Accept the four dashboards that are ready',
      'Bank-wide Oversight, Department Insights, Project Insights and the Institutional File Plan. They are built. Once the open questions are answered, they run on real data.',
@@ -468,7 +472,7 @@ CONTENT.order.forEach((d,di)=>{
 /* ---------- closing: next steps ---------- */
 {
   const s=p.addSlide(); s.background={color:C.bg};
-  head(s,'After today','What happens next');
+  mark('nextsteps'); head(s,'After today','What happens next');
   const steps=[
     ['1','You point us at the sources','Even a name — a system, a team, a person who keeps the spreadsheet. We do the chasing from there.','This week'],
     ['2','We confirm what is really there','We check each source ourselves rather than assuming. Every claim in the checklist has been tested this way.','1–2 weeks'],
@@ -500,7 +504,7 @@ CONTENT.order.forEach((d,di)=>{
 {
   const s=p.addSlide(); s.background={color:C.navy};
   s.addShape(p.ShapeType.rect,{x:0,y:0,w:W,h:0.055,fill:{color:C.green},line:{color:C.green}});
-  s.addText('Over to you',{x:0.9,y:2.6,w:9,h:1.0,fontFace:SER,fontSize:44,bold:true,
+  mark('close'); s.addText('Over to you',{x:0.9,y:2.6,w:9,h:1.0,fontFace:SER,fontSize:44,bold:true,
     color:C.white,margin:0});
   s.addText('Which of the red items matters most to you — and which could we drop without anyone missing it?',
     {x:0.9,y:3.75,w:9.8,h:1.1,fontFace:SAN,fontSize:17,color:'AFC4D8',margin:0,lineSpacing:24});
@@ -509,5 +513,6 @@ CONTENT.order.forEach((d,di)=>{
   notes(s,'Ask the dropping question genuinely. A requirement nobody actually wants is worth more to lose than a requirement we cannot source is worth to keep.');
 }
 
+fs.writeFileSync(path.join(D,'manifest.json'),JSON.stringify(MANIFEST,null,1));
 const OUT=path.join(D,'..','EDRMS_Client_Workshop_2026-08-22.pptx');
 p.writeFile({fileName:OUT}).then(()=>console.log('written',OUT));

@@ -1,0 +1,2904 @@
+{
+ "slides": [
+  {
+   "n": 1,
+   "kind": "title"
+  },
+  {
+   "n": 2,
+   "kind": "legend"
+  },
+  {
+   "n": 3,
+   "kind": "sixviews"
+  },
+  {
+   "n": 4,
+   "kind": "scoreboard"
+  },
+  {
+   "n": 5,
+   "kind": "timeline"
+  },
+  {
+   "n": 6,
+   "kind": "divider",
+   "dash": "Bank-wide Oversight",
+   "q": "How is EDRMS being used across the whole bank?",
+   "tally": {
+    "yes": 44,
+    "no": 14,
+    "later": 7,
+    "tot": 65
+   },
+   "screens": 9
+  },
+  {
+   "n": 7,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "The ten headline figures",
+   "img": "bw-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Number of active EDRMS SharePoint sites for Department, RM, office",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 2,
+     "item": "Total number of EDRMS users",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 3,
+     "item": "Total number of documents in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "Total number of records declared in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Total number of physical counterparts identified",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Total number of records due for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Retention and disposal insights (navigation tile)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Institutional File Plan insights (navigation tile)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Total number of active EDRMS SharePoint sites for Sovereign projects",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Every figure the client drew on slide 34 is on this one strip.",
+    "The two grey tiles are doors, not numbers: they open the other dashboards.",
+    "Two labels changed. I will explain why on the questions slide."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "This strip of ten boxes is the top of the whole report. Six of them are counts — sites, people, documents, records declared, paper counterparts, and records coming up for disposal. Two of them tell you how many project sites exist, split sovereign and nonsovereign. The last two are not numbers at all: they are doors. Clicking them takes you to another dashboard.",
+    "say": "This is your slide 34, built. Every figure you drew is here, in the same order you drew it. If you click any one of these boxes, the table underneath the strip changes to show you what sits behind that number — so you are never looking at a total you cannot break apart. Two of them behave differently: Retention and Disposal insights, and Institutional File Plan insights. Those two are navigation. They take you somewhere else rather than opening a table.",
+    "flag": "Two labels are not word for word what you wrote, and I would rather point that out now than have you spot it later. Where you wrote total number of EDRMS users, the screen says users with recorded activity in the last 180 days. And where you wrote records due for disposal, it says due within twelve months. I will explain both when we get to those screens.",
+    "q": "Why did you change my labels?",
+    "a": "Because the original label would have been a promise the number cannot keep. We can see everyone who has used EDRMS. We cannot see everyone who has been given access but never opened it. Calling that total users would overstate it, and someone would eventually notice. The label says exactly what the number is."
+   }
+  },
+  {
+   "n": 8,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Sites, department by department",
+   "img": "bw-drill-sites.png",
+   "items": [
+    {
+     "n": 11,
+     "item": "Department / office / RM",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 12,
+     "item": "Number of EDRMS SharePoint sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 13,
+     "item": "Total number of documents",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 14,
+     "item": "Total number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "Total number of physical counterparts",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Each name clickable into that unit's dashboard",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 17,
+     "item": "Indicator: no. of sites created",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Indicator: no. of sites deleted",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 19,
+     "item": "Indicator: no. of sites archived",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 20,
+     "item": "Indicator: inactive site for 90 days",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Click any figure on the strip above and the table underneath changes.",
+    "Every department name opens that department’s own dashboard.",
+    "The four indicators on the right are sites created, deleted, archived and gone quiet."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "One row per department, office or resident mission, with how many sites it has and what those sites hold. The four small figures on the right are your indicators: sites created, sites deleted, sites archived, and sites that have had no activity for ninety days.",
+    "say": "This is the table behind the first box. Every department, every office, every resident mission, one row each. And every one of these names is clickable — click a department name and the whole report jumps to that department's own dashboard, already filtered. That is the drill-down you asked for on slide 35.",
+    "flag": "The inactive-site indicator is worth pausing on. A site with no activity for ninety days is either finished, or forgotten. This tells you which ones to go and ask about.",
+    "q": "Can we change ninety days to something else?",
+    "a": "Yes, easily. It is a setting, not a rebuild. If sixty days or a hundred and eighty is more useful to you, say so and we will change it."
+   }
+  },
+  {
+   "n": 9,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Project sites, sovereign and nonsovereign",
+   "img": "bw-drill-sov.png",
+   "items": [
+    {
+     "n": 21,
+     "item": "Sovereign project site list, all columns",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 22,
+     "item": "Nonsovereign project site list, all columns",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 23,
+     "item": "Project rows clickable into Project Insights",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "The client asked for these as two separate lists. Both are here.",
+    "Any project row opens Project Insights for that project.",
+    "The bottom row is the facility total, because their own slide ends the list with “Etc.”"
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "Two lists, one for sovereign projects and one for nonsovereign, each with the project number, the project name, and what its sites hold. The last row is the total for that whole facility type.",
+    "say": "Slides 36 and 37, both here, with your column names word for word. Click any project row and you land in Project Insights for that project. The bottom row is the total for all sovereign projects — not just the ones named above it — because your own slide ends the list with the word Etc.",
+    "flag": "The figures on this screen are illustrative. That is the Project Insights problem and I will come to it properly in view three.",
+    "q": "Where did these project numbers come from?",
+    "a": "They are real project numbers, but the site counts against them are made up, because nothing today tells us which SharePoint site belongs to which project. That is the single question I most need answered today."
+   }
+  },
+  {
+   "n": 10,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Users",
+   "img": "bw-drill-users.png",
+   "items": [
+    {
+     "n": 24,
+     "item": "Total number of users, count",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 25,
+     "item": "Indicator: % of active users",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 26,
+     "item": "Indicator: never accessed EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 27,
+     "item": "Indicator: not accessed in 90 days",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 28,
+     "item": "Total number of users (staff)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 29,
+     "item": "Total number of users (Contractors)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 30,
+     "item": "Total number of users (Consultants)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 31,
+     "item": "Completion of training",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 32,
+     "item": "Onboarded since go-live",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 33,
+     "item": "User to department mapping",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "We can see who has actually used EDRMS. We cannot see who they are.",
+    "Six of the ten things asked for here need something from you.",
+    "This is the biggest single gap in the whole report."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "How many people are actually using EDRMS, and how engaged they are. Three indicators: what share are active, how many have never opened it, and how many have not been in for ninety days.",
+    "say": "Here is where the report is strongest and weakest at the same time. We can see activity very well. We can tell you who used EDRMS this month, who has not been in since March, and who has never opened it at all. What we cannot do is tell you anything about who those people are.",
+    "flag": "Six of the ten things you asked for on this screen are red. Staff, contractors and consultants as separate counts. Training completion. Who joined since go-live. Which department each person belongs to. All six need the same thing: a list that says what kind of person each user is.",
+    "q": "Surely the system knows who is staff and who is a consultant?",
+    "a": "SharePoint knows there is an account. It does not know what that account is contractually. That distinction lives in HR, or in a directory, and nobody has yet pointed us at it. It is one line of information per person and it would unblock six items on this screen alone."
+   }
+  },
+  {
+   "n": 11,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Documents",
+   "img": "bw-drill-docs.png",
+   "items": [
+    {
+     "n": 34,
+     "item": "Number of documents created / uploaded",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 35,
+     "item": "Documents size (in GB)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 36,
+     "item": "Number of users creating documents",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 37,
+     "item": "Indicator: new documents month on month",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 38,
+     "item": "Indicator: average monthly storage growth",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 39,
+     "item": "Per division breakdown",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Document counts and storage size are solid and come from real data.",
+    "What is missing is history: we can show today, not the trend.",
+    "“Per division” appears again here. It appears on six screens in total."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "How many documents are in EDRMS and how much space they take up, across the whole bank.",
+    "say": "Document counts and storage size, both real, both coming from live data. This is one of the more solid screens in the report.",
+    "flag": "What is missing here is history. We can tell you where you are today. We cannot tell you where you were last month, because nothing is keeping a monthly record. The good news is this one we can fix ourselves — we just need your agreement to start taking a monthly snapshot. The catch is that the history only starts building from the day we switch it on, so the sooner that is agreed, the sooner the trend lines become useful.",
+    "q": "How far back can you go if we start now?",
+    "a": "Nowhere, honestly. Month one gives you a number. Month three starts to give you a trend. That is why starting early matters more than getting it perfect."
+   }
+  },
+  {
+   "n": 12,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Records declared",
+   "img": "bw-drill-rec.png",
+   "items": [
+    {
+     "n": 40,
+     "item": "Total number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 41,
+     "item": "Total number of users declaring records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 42,
+     "item": "Indicator: zero record declarations",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 43,
+     "item": "Indicator: declaration rate against documents",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 44,
+     "item": "Number of records declared per division",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 45,
+     "item": "Number of users declaring records per division",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "This is the number the whole programme is judged on.",
+    "The declaration rate compares records declared against documents held.",
+    "Departments with zero declarations are flagged so they can be chased."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "How many records have been formally declared, how many people are doing the declaring, and the declaration rate — declared records as a share of documents held.",
+    "say": "This is the number your programme is judged on, so it gets its own screen. Records declared, people declaring, and the rate. The rate is the one to watch: it tells you whether people are filing properly or just storing files.",
+    "flag": "Departments that have declared nothing at all are flagged separately, so you have a list to go and chase rather than a number to worry about.",
+    "q": "What is a good declaration rate?",
+    "a": "That is genuinely your call, not ours. The report will show you the number and rank departments against each other. Whether seventy per cent is good or bad is a policy question."
+   }
+  },
+  {
+   "n": 13,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Physical counterparts",
+   "img": "bw-drill-phys.png",
+   "items": [
+    {
+     "n": 46,
+     "item": "Total number of physical records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 47,
+     "item": "Total number of users declaring records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 48,
+     "item": "Share of records with a counterpart",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 49,
+     "item": "Per division, two columns",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 50,
+     "item": "Indicator: physical counterpart completion rate (turned over to RAC)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "A physical counterpart is a declared record that also exists on paper.",
+    "This is the bridge between this report and what RAC holds in its rooms.",
+    "What we cannot show is whether the paper actually reached RAC."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "A physical counterpart is a declared record that also exists on paper. This screen counts them and shows what share of declared records have one.",
+    "say": "This is the bridge between the digital report and the physical archive. Every record here is one that exists both in EDRMS and as paper somewhere.",
+    "flag": "What we cannot show is whether that paper ever reached RAC. The system records that a paper copy exists. Nothing records that it was handed over. Your slide 42 asked for a turned-over-to-RAC completion rate, and that is why it is red.",
+    "q": "Does RAC not keep a record of what it receives?",
+    "a": "Very likely it does — but we have never seen it, and we do not know whether it can be matched back to the record in EDRMS. That is a question for the physical records conversation later in this deck."
+   }
+  },
+  {
+   "n": 14,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Records due for disposal",
+   "img": "bw-drill-disp.png",
+   "items": [
+    {
+     "n": 51,
+     "item": "Number of records due for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 52,
+     "item": "Next due date for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 53,
+     "item": "With physical counterpart?",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 54,
+     "item": "Indicator: upcoming next quarter",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 55,
+     "item": "Disposal approver",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 56,
+     "item": "Status (Approved)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 57,
+     "item": "Status (Declined)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 58,
+     "item": "Status (Extended)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 59,
+     "item": "Indicator: records disposed month on month",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 60,
+     "item": "Indicator: overdue actions, pending approvals",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 61,
+     "item": "Indicator: disposal completion rate",
+     "d": "No",
+     "amber": false,
+     "later": true
+    }
+   ],
+   "say": [
+    "We can show what is due, and when. That part is solid.",
+    "We cannot show what happened next, because nothing records an outcome.",
+    "Seven of the eleven items here are waiting on that one gap."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "Everything with a retention period that is running out. What is due, when the next due date falls, and whether there is paper alongside it.",
+    "say": "Everything on the left of this screen works. We can tell you what is due for disposal, when, and whether there is a paper copy to deal with as well. That is real, and it comes from the retention labels that are already being applied.",
+    "flag": "Everything about what happened next does not work, and it is not because we did not look. Disposal is not built in EDRMS yet. There is no screen where anyone approves a disposal and no field where the outcome gets written down. Seven of the eleven items here are waiting on that, and I have a slide on it later.",
+    "q": "So how do disposals happen today?",
+    "a": "That is exactly what I need to understand. If it is happening by email or in a meeting, that is fine — it just means the report cannot see it until the Disposal release gives it somewhere to live."
+   }
+  },
+  {
+   "n": 15,
+   "kind": "screen",
+   "dash": "Bank-wide Oversight",
+   "title": "Trends and comparisons",
+   "img": "bw-04.png",
+   "items": [
+    {
+     "n": 62,
+     "item": "Comparison, three named ratios",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 63,
+     "item": "Bank-wide records declaration trend, cumulative",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 64,
+     "item": "Records declared in range",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 65,
+     "item": "Monthly average in range",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "The curve is cumulative, so the last point is the running total to date.",
+    "You can set any date range and the two figures beneath update.",
+    "The comparison panel above ranks departments on three named ratios."
+   ],
+   "sheet": "1 Bank-wide Oversight",
+   "script": {
+    "does": "A curve showing records declared building up over time, and a panel that ranks departments against each other on three ratios.",
+    "say": "Two things here. The curve is cumulative, so the last point is your running total to date, not this month's figure. You can drag the date range and the two summary figures underneath follow. And above it, the comparison panel ranks departments on three named ratios so you can see who is ahead and who needs a nudge.",
+    "flag": "This whole screen is built and sourced. Nothing red.",
+    "q": "Can we export this?",
+    "a": "In the finished Power BI version, yes — export is standard. This prototype is a specification of what to build, so it does not have it wired up."
+   }
+  },
+  {
+   "n": 16,
+   "kind": "asks",
+   "dash": "Bank-wide Oversight",
+   "from": 0,
+   "to": 5,
+   "asks": [
+    {
+     "q": "Who is staff, who is a consultant, and who is a contractor?",
+     "b": "The report can see that 1,200 people used EDRMS. It cannot see what kind of person each one is, so we cannot split any user figure three ways as you asked.",
+     "n": "Is there a list somewhere — HR, or a directory — that says which category each person falls into? Even a monthly export would do."
+    },
+    {
+     "q": "Which department does each person belong to?",
+     "b": "Same problem. We can count people, but we cannot say a person belongs to SARD rather than HRD, so “users per department” cannot be built.",
+     "n": "Where is that held today, and could we read it?"
+    },
+    {
+     "q": "Who has completed EDRMS training?",
+     "b": "You asked for a training completion figure on two screens. Nothing we can reach records training.",
+     "n": "Who keeps the training records, and in what form?"
+    },
+    {
+     "q": "Who joined since go-live?",
+     "b": "We can see activity, but not a start date, so “onboarded since go-live” cannot be counted.",
+     "n": "Is a joining date recorded anywhere we could match to a person?"
+    },
+    {
+     "q": "What counts as a division?",
+     "b": "“Per division” appears on six different screens. We can group by department today, but nothing tells us which division inside a department a site or a person belongs to.",
+     "n": "Is there an agreed list of divisions, and does something already tag sites or people with one?"
+    }
+   ]
+  },
+  {
+   "n": 17,
+   "kind": "asks",
+   "dash": "Bank-wide Oversight",
+   "from": 5,
+   "to": 9,
+   "asks": [
+    {
+     "q": "Can we keep a monthly history?",
+     "b": "Several of your indicators are month-on-month — new documents, storage growth, records disposed. Today we can only see the current position, not last month’s.",
+     "n": "This one we can solve ourselves by taking a monthly snapshot. We just need your agreement to start, because the history only builds from the day we begin."
+    },
+    {
+     "q": "Who approves a disposal, and what did they decide?",
+     "b": "The report can show what is due for disposal. It cannot show approved, declined or extended, because the system has nowhere to record that decision.",
+     "n": "How is a disposal approved today — email, a form, a meeting? If we know where the decision lives, we can work out how to bring it in."
+    },
+    {
+     "q": "How do we know a paper file actually reached RAC?",
+     "b": "We can see which records are marked as having a paper counterpart. We cannot see whether that paper was handed over.",
+     "n": "Does RAC record what it receives, and could we match that back to the record in EDRMS?"
+    },
+    {
+     "q": "How many people are creating documents?",
+     "b": "We can count documents. Counting the distinct people who created them needs a different kind of report than the one we have access to.",
+     "n": "This is one for us to solve, but it may need a change request. Flagging it so it is not a surprise later."
+    }
+   ]
+  },
+  {
+   "n": 18,
+   "kind": "divider",
+   "dash": "Department Insights",
+   "q": "How is one department using EDRMS?",
+   "tally": {
+    "yes": 59,
+    "no": 19,
+    "later": 6,
+    "tot": 84
+   },
+   "screens": 9
+  },
+  {
+   "n": 19,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "The department profile",
+   "img": "dp-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Department picker driving the whole screen",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 2,
+     "item": "Total number of sites created",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 3,
+     "item": "Total number of EDRMS users",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "Total number of site visitors",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Total number of documents in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Total number of records declared in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Total number of physical counterparts identified",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Total number of records due for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Clickable top panel stats",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Approved SharePoint site, library and folder convention",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 11,
+     "item": "Go-Live date",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Pick a department at the top and every figure on the screen follows it.",
+    "The same seven headline figures as bank-wide, narrowed to one unit.",
+    "Two things are missing from the profile: the naming convention and the go-live date."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "The same headline figures as bank-wide, but for one department at a time. Pick a department at the top and everything on the screen follows it.",
+    "say": "This is bank-wide narrowed to one unit. Choose a department from the picker at the top and every figure, every table and every chart below changes to match. Seven headline figures, all clickable, all opening a breakdown underneath.",
+    "flag": "Two things you asked for are not on the profile. One is the approved naming convention — whether this department's sites and libraries follow the standard. The other is the go-live date. We would need both from you.",
+    "q": "Why do you need the naming convention written down?",
+    "a": "Because to tell you whether a site follows the rule, we have to know the rule. If it is documented anywhere, we can check all 1,032 sites against it automatically in one pass."
+   }
+  },
+  {
+   "n": 20,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Users and activity",
+   "img": "dp-drill-users.png",
+   "items": [
+    {
+     "n": 12,
+     "item": "Total number of active users",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 13,
+     "item": "Used EDRMS in the last 180 days",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 14,
+     "item": "No access in EDRMS compliant sites, last 180 days",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "Never accessed EDRMS compliant sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Total number of staff",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 17,
+     "item": "Total number of contractors (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Total number of consultants (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 19,
+     "item": "Training completion rate (%)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Used in the last 180 days, gone quiet, never touched it — all three are here.",
+    "The same user-type gap as bank-wide appears again.",
+    "Training completion is asked for here too."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "Who in this department is using EDRMS: active in the last 180 days, gone quiet, or never opened it.",
+    "say": "Three groups: used it recently, used it once but not lately, and never touched it. That third group is usually the interesting one for a department head.",
+    "flag": "Same gap as bank-wide. We can count them, we cannot say what kind of person each one is. And training completion is asked for here too.",
+    "q": "Can we see individual names?",
+    "a": "Technically yes, and the underlying data has them. Whether the report should show individuals or only counts is a decision for you — there are privacy implications and we would rather you set that line than us."
+   }
+  },
+  {
+   "n": 21,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "This department’s sites",
+   "img": "dp-drill-sites.png",
+   "items": [
+    {
+     "n": 20,
+     "item": "Total number of sites created",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 21,
+     "item": "Total number of documents in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 22,
+     "item": "Total number of records declared in EDRMS",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 23,
+     "item": "Total number of physical counterparts identified",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 24,
+     "item": "Total number of records due for disposal within 12 months",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 25,
+     "item": "Name of sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 26,
+     "item": "Site owners",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 27,
+     "item": "Number of documents",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 28,
+     "item": "Number of records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 29,
+     "item": "Number of physical counterparts",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 30,
+     "item": "Number of records due for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Every site the department owns, with its owner named.",
+    "All six columns the client drew are present.",
+    "This screen is complete — nothing red on it."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "Every site the department owns, who owns each one, and what each holds.",
+    "say": "Every site in the department, with a named owner against each. All six columns you drew are here.",
+    "flag": "Nothing red on this screen. It is complete.",
+    "q": "Where does the site owner come from?",
+    "a": "From SharePoint itself — it is the recorded owner of the site. If those are out of date, the report will faithfully show you out-of-date owners, which is arguably useful in itself."
+   }
+  },
+  {
+   "n": 22,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Site visitors",
+   "img": "dp-drill-visitors.png",
+   "items": [
+    {
+     "n": 31,
+     "item": "Total number of visitors",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 32,
+     "item": "Site visits table, by site",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 33,
+     "item": "Page View Count",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 34,
+     "item": "Visited Page Count",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 35,
+     "item": "Quick Windows (Last 7,30,90,180 days)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 36,
+     "item": "Filter by month/year",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 37,
+     "item": "Name of sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 38,
+     "item": "Page View Count",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 39,
+     "item": "Visited Page Count",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 40,
+     "item": "EDRMS Site Type",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 41,
+     "item": "Total number of visitors (external) (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 42,
+     "item": "Total number of visitors (internal) (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 43,
+     "item": "Total number of access requests granted (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 44,
+     "item": "Total number of access requests denied (#, %)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Page views and unique pages, per site, with quick date windows.",
+    "You can also pick any month and year.",
+    "What we cannot yet do is separate ADB people from outsiders."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "How much each site is actually being looked at. Page views, how many different pages were opened, and quick buttons for the last seven, thirty, ninety or a hundred and eighty days — or pick any month and year.",
+    "say": "This tells you whether a site is being used or just exists. Page views and unique pages visited, per site. The buttons across the top give you quick windows, and if you want a specific month you can pick one.",
+    "flag": "Four items here are red, and they are all the same underlying problem: we cannot tell an ADB person from an outside visitor. So internal versus external, and access requests granted versus denied, cannot be built yet.",
+    "q": "Do outsiders really access these sites?",
+    "a": "We honestly do not know, and that is part of why you asked for the split. Until we can tell the two apart, neither of us can answer that with confidence."
+   }
+  },
+  {
+   "n": 23,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Documents",
+   "img": "dp-drill-docs.png",
+   "items": [
+    {
+     "n": 45,
+     "item": "Number of documents created / uploaded",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 46,
+     "item": "EDRMS Active Sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 47,
+     "item": "Total documents size",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 48,
+     "item": "Name of sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 49,
+     "item": "Number of documents created / uploaded",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 50,
+     "item": "Documents size (in GB)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 51,
+     "item": "Number of users creating documents",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Counts and storage size, per site.",
+    "Solid and sourced, apart from one item.",
+    "Same “how many people are creating documents” question as bank-wide."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "How many documents this department has created or uploaded, and how much space they take, broken down site by site.",
+    "say": "Counts and storage, per site, so you can see which sites are doing the work and which are quiet.",
+    "flag": "One red item: how many people are creating documents. We can count documents easily; counting the distinct people behind them needs a different kind of report than the one we have access to today.",
+    "q": "Is that a big change?",
+    "a": "Probably a change request rather than a quick fix. Worth flagging now so it is not a surprise later."
+   }
+  },
+  {
+   "n": 24,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Records declaration",
+   "img": "dp-drill-rec.png",
+   "items": [
+    {
+     "n": 52,
+     "item": "Total number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 53,
+     "item": "Total number of users declaring records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 54,
+     "item": "Sites with no declared record in 180 days",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 55,
+     "item": "Total number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 56,
+     "item": "Total number of users declaring records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 57,
+     "item": "Total declared record size (in GB)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 58,
+     "item": "Number of records declared per division",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 59,
+     "item": "Number of users declaring records per division",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Records declared, people declaring, and total declared size.",
+    "Sites that have declared nothing in 180 days are flagged.",
+    "Only the two per-division items are missing."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "Records declared by this department, how many people are declaring, the total size of what has been declared, and which sites have gone quiet.",
+    "say": "Records declared, people declaring, and total declared size. Sites that have not declared anything in a hundred and eighty days are called out separately.",
+    "flag": "Only the two per-division items are missing, and division is one problem that shows up on six different screens. I will cover it once, on the questions slide.",
+    "q": "What counts as a site going quiet?",
+    "a": "No new declaration in a hundred and eighty days. Same as the user threshold, and equally adjustable if you want a different number."
+   }
+  },
+  {
+   "n": 25,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Physical counterparts",
+   "img": "dp-drill-phys.png",
+   "items": [
+    {
+     "n": 62,
+     "item": "Records with a counterpart, by site",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 63,
+     "item": "Total number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 64,
+     "item": "Share of records with a counterpart",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 65,
+     "item": "Per division, two columns",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 66,
+     "item": "Physical counterpart completion rate (turned over to RAC)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Which sites hold records with a paper copy, and what share that is.",
+    "Same handover gap as bank-wide.",
+    "Note items 60 and 61 sit under this heading in the workbook."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "Which of this department's sites hold records that also exist on paper, and what share that is.",
+    "say": "Which sites in this department are generating paper as well as digital records. Useful for knowing who to talk to about transfers.",
+    "flag": "Same handover gap as bank-wide: we can see the paper is supposed to exist, not that it was moved.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 26,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Disposal",
+   "img": "dp-drill-disp.png",
+   "items": [
+    {
+     "n": 67,
+     "item": "Records due for disposal within 3 months",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 68,
+     "item": "Records due for disposal within 6 months",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 69,
+     "item": "Records due for disposal within 12 months",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 70,
+     "item": "Number of records due for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 71,
+     "item": "Next due date for disposal",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 72,
+     "item": "With physical counterpart?",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 73,
+     "item": "Disposal approver",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 74,
+     "item": "Status (Approved)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 75,
+     "item": "Status (Declined)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 76,
+     "item": "Status (Extended)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 77,
+     "item": "Total number of records disposed, per year and month",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 78,
+     "item": "Total disposed record size (in GB)",
+     "d": "No",
+     "amber": false,
+     "later": true
+    }
+   ],
+   "say": [
+    "Due within three, six and twelve months, all three windows.",
+    "Next due date and whether there is paper alongside.",
+    "Six of the twelve items wait on the same disposal-outcome gap."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "What this department has coming up for disposal, in three windows: three months, six months and twelve months.",
+    "say": "Three windows rather than one, because a department head plans differently for next quarter than for next year. Next due date and whether there is paper alongside are both here.",
+    "flag": "Six of the twelve items are red and every one of them is about what happened after the disposal was due. Same reason as bank-wide. This is the release-sequencing conversation.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 27,
+   "kind": "screen",
+   "dash": "Department Insights",
+   "title": "Library usage",
+   "img": "dp-03.png",
+   "items": [
+    {
+     "n": 79,
+     "item": "Library names",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 80,
+     "item": "Number of documents",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 81,
+     "item": "Number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 82,
+     "item": "Number of physical counterparts",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 83,
+     "item": "Category picker across the six categories",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 84,
+     "item": "Number of users per library",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 85,
+     "item": "Indicators per library, per division",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 86,
+     "item": "Programme dates",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "The client drew this as six screens, one per file plan category.",
+    "We have the library table. We cannot yet group libraries by category.",
+    "That is the same file plan gap we will see on the next dashboard."
+   ],
+   "sheet": "2 Department Insights",
+   "script": {
+    "does": "Which libraries the department has, and what each one holds.",
+    "say": "You drew this as six screens, one per file plan category. We have the library table, with documents, records and counterparts against each library.",
+    "flag": "What we cannot do is group them into your six categories, because nothing today says which category a library belongs to. That is the file plan problem, and it is the next dashboard.",
+    "q": "Can you not tell from the library name?",
+    "a": "Sometimes, maybe. But a rule that works most of the time produces a report that is wrong some of the time, and you would never know which rows. If there is a real mapping somewhere we would much rather use it."
+   }
+  },
+  {
+   "n": 28,
+   "kind": "asks",
+   "dash": "Department Insights",
+   "from": 0,
+   "to": 5,
+   "asks": [
+    {
+     "q": "What is the approved naming convention?",
+     "b": "You asked us to show whether sites, libraries and folders follow the approved convention. We have never been shown what the convention actually is.",
+     "n": "Is it written down? If we have the rule, we can check every site against it automatically."
+    },
+    {
+     "q": "When did each department go live?",
+     "b": "The profile has a space for a go-live date, but nothing records one.",
+     "n": "Is there a rollout schedule we could use — even a spreadsheet?"
+    },
+    {
+     "q": "Who is an ADB person and who is an outside visitor?",
+     "b": "We can count visits to a site. We cannot tell whether the visitor was ADB staff or someone external, so the internal / external split cannot be built.",
+     "n": "Same underlying question as the user types on the last dashboard. One answer would unlock both."
+    },
+    {
+     "q": "Where are access requests recorded?",
+     "b": "You asked how many requests for access were granted and how many were denied. Nothing we reach records either.",
+     "n": "When someone asks for access to a site, where does that request go, and is the outcome kept?"
+    },
+    {
+     "q": "Which libraries belong to which file plan category?",
+     "b": "You drew library usage as six screens, one per category. We can list the libraries; we cannot say which category each one belongs to.",
+     "n": "Is that mapping written down anywhere, or does it live in someone’s head?"
+    }
+   ]
+  },
+  {
+   "n": 29,
+   "kind": "asks",
+   "dash": "Department Insights",
+   "from": 5,
+   "to": 6,
+   "asks": [
+    {
+     "q": "What are the programme dates?",
+     "b": "The deck refers to programme milestones. We have no dates to plot against.",
+     "n": "Can we have the agreed milestone dates, so progress can be shown against plan?"
+    }
+   ]
+  },
+  {
+   "n": 30,
+   "kind": "divider",
+   "dash": "Project Insights",
+   "q": "Are project sites being kept up to recordkeeping standards?",
+   "tally": {
+    "yes": 21,
+    "no": 0,
+    "later": 0,
+    "tot": 21
+   },
+   "screens": 3
+  },
+  {
+   "n": 31,
+   "kind": "screen",
+   "dash": "Project Insights",
+   "title": "The project list",
+   "img": "pj-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Project Insights, as one of the six required key views",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 20,
+     "item": "Sovereign project site list",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 21,
+     "item": "Nonsovereign project site list",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Sovereign and nonsovereign, switched with the picker.",
+    "Click any project to open its profile below.",
+    "The totals reconcile: named projects sit inside the facility total, which sits inside bank-wide."
+   ],
+   "sheet": "3 Project Insights",
+   "script": {
+    "does": "All the projects, split sovereign and nonsovereign, with what their sites hold. Click any project to open it.",
+    "say": "Switch between sovereign and nonsovereign with the picker. Click any project row and its full profile opens below. And the totals hold together — the projects named here sit inside the facility total, which sits inside your bank-wide total. Those checks run automatically every time the screen draws.",
+    "flag": "Every figure on this dashboard is illustrative. The layout is right. The numbers are invented. I will explain why in a moment.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 32,
+   "kind": "screen",
+   "dash": "Project Insights",
+   "title": "The project profile and its seven figures",
+   "img": "pj-02.png",
+   "items": [
+    {
+     "n": 2,
+     "item": "Facility type",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 3,
+     "item": "Modality",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "Country",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Status",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Effectivity date",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Closing date",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Project number",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Project name",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Sites for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 11,
+     "item": "Users for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 12,
+     "item": "Site visits for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 13,
+     "item": "Documents for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 14,
+     "item": "Records declared for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "Physical counterparts for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Records due for disposal for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "All eight profile fields the client drew, in their order.",
+    "All seven figures are clickable and open a table site by site.",
+    "The site rows always add back up to the project total."
+   ],
+   "sheet": "3 Project Insights",
+   "script": {
+    "does": "Eight facts about the project — facility type, number, modality, country, status, effectivity and closing dates — then seven figures, each of which opens a site-by-site table.",
+    "say": "All eight details you drew on slide 38, in the order you drew them. Then the seven figures across the top, and every single one of them opens a table underneath showing you site by site. And the site rows always add back up to the project total — a site can never show more records declared than documents held, because the report checks that itself.",
+    "flag": "Those eight details clearly live in an ADB project system. In all this work, nobody has ever told us which one. That is the second of my two questions on this dashboard.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 33,
+   "kind": "screen",
+   "dash": "Project Insights",
+   "title": "The three charts",
+   "img": "pj-03.png",
+   "items": [
+    {
+     "n": 17,
+     "item": "Users pie, split staff / consultants / contractors",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Cumulative declaration trend for this project",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 19,
+     "item": "Documents against records declared, site by site, with declaration rate",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "User mix uses the client’s own three-way split.",
+    "The curve is cumulative, so it ends at the project’s declared total.",
+    "The bottom chart shows why one site declares everything and another almost nothing."
+   ],
+   "sheet": "3 Project Insights",
+   "script": {
+    "does": "Three pictures: how the project's users split between staff, consultants and contractors; how declarations have built up over time; and how each site compares on documents against records declared.",
+    "say": "The user mix uses your own three-way split. The curve is cumulative, so it ends at the project's declared total. And the bottom chart is the interesting one — it shows you why one site on a project declares almost everything and another declares almost nothing. That difference is the thing worth acting on.",
+    "flag": "You drew the declaration rate on a second axis. We have printed it as a percentage alongside instead, because a dual axis is supported in Power BI but reads badly at this width. If you would rather have the second axis, say so.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 34,
+   "kind": "asks",
+   "dash": "Project Insights",
+   "from": 0,
+   "to": 2,
+   "asks": [
+    {
+     "q": "Which SharePoint site belongs to which project?",
+     "b": "This is the one that matters. Nothing today connects a SharePoint site to a project number, so every figure on this dashboard is a placeholder — the layout is right, the numbers are invented.",
+     "n": "Is there a list anywhere, even a spreadsheet someone keeps by hand? If sites are named to a pattern that includes the project number, that would work too."
+    },
+    {
+     "q": "Where do the eight project details come from?",
+     "b": "Facility type, modality, country, status, effectivity and closing dates — these clearly live in an ADB project system, but that system has never been named in this work.",
+     "n": "Which system holds them, and who owns it? Once we know, we can ask for a feed."
+    }
+   ]
+  },
+  {
+   "n": 35,
+   "kind": "divider",
+   "dash": "Institutional File Plan",
+   "q": "Is the file plan actually being used?",
+   "tally": {
+    "yes": 22,
+    "no": 4,
+    "later": 0,
+    "tot": 26
+   },
+   "screens": 5
+  },
+  {
+   "n": 36,
+   "kind": "screen",
+   "dash": "Institutional File Plan",
+   "title": "The five categories",
+   "img": "fp-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Total Institutional Management terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 2,
+     "item": "Total Administration terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 3,
+     "item": "Total People management terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "Total Programs and operations terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Total other terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Total terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Departments / Offices / RMs provisioned",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Number of libraries provisioned",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Number of documents",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Number of records declared",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 11,
+     "item": "Number of physical counterparts",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "Five categories and a total, with the client’s own column names.",
+    "The total row is checked against the bank-wide figures automatically.",
+    "The department column is assigned, not measured. That is the gap on this dashboard."
+   ],
+   "sheet": "4 Institutional File Plan",
+   "script": {
+    "does": "Your five file plan categories and a total row, with how many terms each has and what sits under them.",
+    "say": "Five categories and a total, with your column names. The total row is checked against the bank-wide figures automatically, so this screen cannot quietly disagree with the rest of the report.",
+    "flag": "One column is honest but weak: departments provisioned. We have assigned each department to a category by hand. It is not measured, and that is the whole problem with this dashboard.",
+    "q": "Why is there an Other category?",
+    "a": "Because your slide 47 has one, and your slide 29 does not. We followed the detailed screen. If Other should not exist, that is easy to remove."
+   }
+  },
+  {
+   "n": 37,
+   "kind": "screen",
+   "dash": "Institutional File Plan",
+   "title": "Inside one category",
+   "img": "fp-02.png",
+   "items": [
+    {
+     "n": 12,
+     "item": "Term (Top level) list per category",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 13,
+     "item": "Category screens, all five present",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 14,
+     "item": "A notice saying what is missing behind this dashboard",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "Departments / Offices / RMs provisioned, per term",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Number of libraries provisioned, per term",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 17,
+     "item": "Number of documents, per term",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Number of records declared, per term",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 19,
+     "item": "Number of physical counterparts, per term",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "The client drew five screens. We built one screen with a category picker.",
+    "Five figures at the top, then every top-level term underneath.",
+    "Most used and least used terms are charted below the table."
+   ],
+   "sheet": "4 Institutional File Plan",
+   "script": {
+    "does": "Every top-level term inside a category, with five summary figures above and two charts below showing most-used and least-used terms.",
+    "say": "You drew five separate screens, one per category. We built one screen with a picker, because the only thing that changes between your five slides is which category is in view. Everything else is identical.",
+    "flag": "The per-term department column is drawn but empty — it prints the word illustrative on every row. We can assign departments to a category. We cannot assign them to an individual term, because nothing links a term to anything.",
+    "q": "Would five separate screens be better?",
+    "a": "For a Power BI build, one screen with a picker is less to maintain and behaves identically for the user. But if your users expect five tabs, we can do five tabs."
+   }
+  },
+  {
+   "n": 38,
+   "kind": "screen",
+   "dash": "Institutional File Plan",
+   "title": "Unused terms",
+   "img": "fp-03.png",
+   "items": [
+    {
+     "n": 20,
+     "item": "Indicator: top most used terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 21,
+     "item": "Indicator: least used and unused terms",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "Terms nobody is using, with when they were last touched and why they are flagged.",
+    "This is the list you would work from when tidying the file plan.",
+    "The figures are illustrative until we can measure real usage."
+   ],
+   "sheet": "4 Institutional File Plan",
+   "script": {
+    "does": "Terms nobody is using, with how many times each has been used, when it was last touched, and why it has been flagged.",
+    "say": "This is the list you would work from if you were tidying up the file plan. Terms with almost no use, and when they were last touched.",
+    "flag": "Illustrative until we can measure real usage.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 39,
+   "kind": "screen",
+   "dash": "Institutional File Plan",
+   "title": "Libraries created outside convention",
+   "img": "fp-04.png",
+   "items": [
+    {
+     "n": 22,
+     "item": "Indicator: new libraries created outside convention",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "Libraries that do not follow the standard pattern.",
+    "To make this real we need the convention itself.",
+    "Same question as on Department Insights."
+   ],
+   "sheet": "4 Institutional File Plan",
+   "script": {
+    "does": "Libraries that do not follow the standard naming or structure.",
+    "say": "Libraries that look like somebody went off-script. Name, office, category, document count and when it was created.",
+    "flag": "To make this real we need the convention itself, which is the same thing I asked for on Department Insights.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 40,
+   "kind": "screen",
+   "dash": "Institutional File Plan",
+   "title": "Requests waiting for a decision",
+   "img": "fp-05.png",
+   "items": [
+    {
+     "n": 23,
+     "item": "Request for new library creation and/or deletion",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 24,
+     "item": "Request for new term",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 25,
+     "item": "Where the Institutional File Plan actually lives",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 26,
+     "item": "How a library or document is known to use a term",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "New library, new term, and both kinds of deletion, in one place.",
+    "Requestor, status and date submitted on every row.",
+    "The last two rows are the gaps that govern this whole dashboard."
+   ],
+   "sheet": "4 Institutional File Plan",
+   "script": {
+    "does": "Requests for a new library, a new term, or the deletion of either — all in one place, with who asked and what state it is in.",
+    "say": "Four kinds of request in one table: new library, new term, library deletion, term deletion. Requestor, status and date submitted on each.",
+    "flag": "The last two rows on the checklist are not about this screen. They are the two gaps that govern this entire dashboard, and I am going to spend a minute on them on the next slide.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 41,
+   "kind": "asks",
+   "dash": "Institutional File Plan",
+   "from": 0,
+   "to": 4,
+   "asks": [
+    {
+     "q": "Where does the official file plan live?",
+     "b": "Every term you can see on these screens is our own example. Nothing in this work has ever named the system that holds the real institutional file plan.",
+     "n": "Which system is it? If it is a document rather than a system, that is fine too — we just need to know."
+    },
+    {
+     "q": "How do we know a library is using a term?",
+     "b": "This is the technical heart of the problem, put simply: the system knows which library a document sits in, but nothing says which file plan category that library belongs to. Without that link, no figure on this dashboard can be measured.",
+     "n": "Is that mapping recorded anywhere? If not, is there a rule we could apply — for example, does the library name tell you the category?"
+    },
+    {
+     "q": "Where are new term and new library requests raised?",
+     "b": "The screen shows requests waiting for a decision. We invented them, because we do not know where real ones are submitted.",
+     "n": "When someone wants a new term or a new library, what do they do today?"
+    },
+    {
+     "q": "Should the screen say what is missing?",
+     "b": "Until yesterday this dashboard carried a notice explaining that the figures were placeholders. It has been taken off.",
+     "n": "For the workshop — do you want that notice back on screen, or is it enough that it is tracked in the checklist?"
+    }
+   ]
+  },
+  {
+   "n": 42,
+   "kind": "divider",
+   "dash": "Retention and Disposal",
+   "q": "What must be kept forever, and what is coming up for disposal?",
+   "tally": {
+    "yes": 18,
+    "no": 8,
+    "later": 1,
+    "tot": 27
+   },
+   "screens": 4
+  },
+  {
+   "n": 43,
+   "kind": "screen",
+   "dash": "Retention and Disposal",
+   "title": "Permanent against temporary",
+   "img": "rd-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Permanent retention sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 2,
+     "item": "Permanent retention libraries",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 3,
+     "item": "Permanent retention records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "Temporary retention sites",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Temporary retention libraries",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Temporary retention records",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Departments / Offices / RMs provisioned",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Number of libraries provisioned",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Number of records declared",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Number of physical counterparts",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 11,
+     "item": "Number of records due for disposal",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 12,
+     "item": "Number of records disposed",
+     "d": "No",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Six figures: sites, libraries and records, split permanent and temporary.",
+    "This is the closest match of the six to something we already had built.",
+    "The summary table the client drew on slide 44 was taken off. That needs your view."
+   ],
+   "sheet": "5 Retention and Disposal",
+   "script": {
+    "does": "Six figures splitting the estate into what must be kept forever and what has an end date: sites, libraries and records for each.",
+    "say": "Permanent and temporary, side by side. Sites, libraries and records for each. This comes from retention labels that are genuinely being applied today, so it is real.",
+    "flag": "Your slide 44 had a summary table across the top with six columns. It was taken out, because most of its columns repeat what the screens below already show. I want your view on whether to put it back.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 44,
+   "kind": "screen",
+   "dash": "Retention and Disposal",
+   "title": "Permanent retention",
+   "img": "rd-02.png",
+   "items": [
+    {
+     "n": 13,
+     "item": "Term (Top level)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 14,
+     "item": "Departments / Offices / RMs provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "Number of sites provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Number of libraries provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 17,
+     "item": "Number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Number of physical counterparts",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Everything that must be kept indefinitely, department by department.",
+    "All five columns the client asked for are here.",
+    "One column is missing: the file plan term."
+   ],
+   "sheet": "5 Retention and Disposal",
+   "script": {
+    "does": "Everything that must be kept indefinitely, listed by department, with sites, libraries, records and paper counterparts.",
+    "say": "Everything that must be kept indefinitely, department by department. All five of your columns are here.",
+    "flag": "One column is missing: the file plan term. Same reason as the file plan dashboard — nothing links a record to a term.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 45,
+   "kind": "screen",
+   "dash": "Retention and Disposal",
+   "title": "Temporary retention",
+   "img": "rd-03.png",
+   "items": [
+    {
+     "n": 19,
+     "item": "Term (Top level)",
+     "d": "No",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 20,
+     "item": "Departments / Offices / RMs provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 21,
+     "item": "Number of sites provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 22,
+     "item": "Number of libraries provisioned",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 23,
+     "item": "Number of records declared",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 24,
+     "item": "Number of physical counterparts",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 25,
+     "item": "Retention filter (All, 3, 5, 7, 10, others. years)",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    },
+    {
+     "n": 26,
+     "item": "Number of records disposed",
+     "d": "No",
+     "amber": false,
+     "later": true
+    }
+   ],
+   "say": [
+    "Same shape, for records with an end date.",
+    "The retention filter lets you look at just the seven-year records, or just the ten-year.",
+    "What we cannot show is anything that has already been disposed of."
+   ],
+   "sheet": "5 Retention and Disposal",
+   "script": {
+    "does": "The same view for records that have an end date, with a filter so you can look at just the three-year records, or just the ten-year.",
+    "say": "Same shape, for records that will eventually expire. The filter across the top lets you isolate a single retention period — just the seven-year records, for instance.",
+    "flag": "What is not here is anything already disposed of. That is the release conversation, coming up.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 46,
+   "kind": "screen",
+   "dash": "Retention and Disposal",
+   "title": "Retention labels",
+   "img": "rd-04.png",
+   "items": [
+    {
+     "n": 27,
+     "item": "Declared records by retention label",
+     "d": "Yes",
+     "amber": false,
+     "later": false
+    }
+   ],
+   "say": [
+    "Every declared record grouped by the label actually applied to it.",
+    "This comes from real data — it is one of the most solid panels in the report.",
+    "It is also a good check: labels nobody expected will show up here."
+   ],
+   "sheet": "5 Retention and Disposal",
+   "script": {
+    "does": "Every declared record grouped by the retention label actually applied to it.",
+    "say": "This is one of the most solid panels in the whole report, because it comes straight from the labels in the system. It is also a good check on yourselves: if a label shows up here that nobody expected, that is worth knowing.",
+    "flag": "",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 47,
+   "kind": "seq",
+   "dash": "Retention and Disposal",
+   "title": "Retention works today. Disposal is not in the system yet.",
+   "seq": {
+    "rel": "Disposal release",
+    "head": "Retention works today. Disposal is not in the system yet.",
+    "now": [
+     "Retention labels are being applied to records right now, and we can read them.",
+     "We can show what is permanent, what is temporary, and when each item falls due.",
+     "That half of this dashboard is real and working."
+    ],
+    "blocked": [
+     "There is no screen in EDRMS where somebody approves a disposal.",
+     "There is no field anywhere that records approved, declined or extended.",
+     "So nothing can tell the report that a disposal actually happened."
+    ],
+    "ask": "We propose building the retention half now, and the disposal half once the Disposal release ships. The screens are already drawn and waiting — when the feature exists, they fill in.",
+    "count": 14
+   }
+  },
+  {
+   "n": 48,
+   "kind": "asks",
+   "dash": "Retention and Disposal",
+   "from": 0,
+   "to": 3,
+   "asks": [
+    {
+     "q": "Can we agree the disposal half follows the Disposal release?",
+     "b": "This is not a data problem we can solve by looking harder. Disposal is not built in EDRMS yet — there is no approval screen and no field to record an outcome. Fourteen items across three dashboards are waiting on that one release.",
+     "n": "We build the screens now so they are ready, and switch them on when Disposal ships. Nothing is wasted and nothing is invented in the meantime."
+    },
+    {
+     "q": "Do you still want the slide 44 summary table?",
+     "b": "Your slide 44 had a table across the top with six columns. It was taken out of the prototype because most of its columns repeat what the screens below already show.",
+     "n": "Do you want it back, or is the current layout clearer? Your call — we can put it back easily."
+    },
+    {
+     "q": "Should retention be shown per file plan term?",
+     "b": "Slides 45 and 46 both start with a “Term (top level)” column. We cannot fill it for the same reason as the file plan dashboard — nothing links a record to a term.",
+     "n": "If the file plan question gets answered, this fills itself in. Same root cause."
+    }
+   ]
+  },
+  {
+   "n": 49,
+   "kind": "divider",
+   "dash": "Records and Archive Holdings",
+   "q": "What is in the physical archive, and what is moving in and out?",
+   "tally": {
+    "yes": 24,
+    "no": 0,
+    "later": 2,
+    "tot": 26
+   },
+   "screens": 4
+  },
+  {
+   "n": 50,
+   "kind": "screen",
+   "dash": "Records and Archive Holdings",
+   "title": "What we can and cannot see",
+   "img": "ra-01.png",
+   "items": [
+    {
+     "n": 1,
+     "item": "Records and Archive Holdings, as a key view",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 2,
+     "item": "The two tables drawn with the client's own column headings",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "One figure here is real: the count of records with a paper counterpart.",
+    "Everything else on this dashboard is a placeholder.",
+    "This is the dashboard with the least data behind it, and the most to discuss."
+   ],
+   "sheet": "6 Records and Archive Holdings",
+   "script": {
+    "does": "The top of the physical archive dashboard. One figure is real; the rest are placeholders.",
+    "say": "I want to be straight with you about this dashboard before we look at it. One figure here is real — how many declared records are marked as having a paper copy. Everything else you are about to see is invented.",
+    "flag": "I am not showing it to impress you. I am showing it so you can tell me whether the layout is right, because when the physical sources exist, this is what we would build.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 51,
+   "kind": "screen",
+   "dash": "Records and Archive Holdings",
+   "title": "Storage",
+   "img": "ra-02.png",
+   "items": [
+    {
+     "n": 3,
+     "item": "Location, as Archives Room / Records Center / Offsite Storage",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 4,
+     "item": "No. of requests",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 5,
+     "item": "Total number of requestors (departments)",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 6,
+     "item": "Total number of requestors (RMs)",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 7,
+     "item": "Total number of boxes stored",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 8,
+     "item": "Total number of folders stored",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 9,
+     "item": "Remarks",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 10,
+     "item": "Indicator: new boxes and folders month on month per department",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 11,
+     "item": "No. and list of outstanding / pending requests",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 12,
+     "item": "Physical counterparts identified but not transferred",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 13,
+     "item": "Room capacity and % available storage capacity",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "All seven columns from your slide 68, with your own wording.",
+    "Three locations: Archives Room, Records Center, Offsite Storage.",
+    "Below it, storage activity by department and how full each room is."
+   ],
+   "sheet": "6 Records and Archive Holdings",
+   "script": {
+    "does": "What is held at each storage location: requests, requestors, boxes, folders and remarks. Below it, how much was stored each month and how full each room is.",
+    "say": "All seven columns from your slide 68, with your own wording. Three locations: Archives Room, Records Center, Offsite Storage. Underneath, storage activity by department over six months, and a bar showing how full each room is.",
+    "flag": "Every number is illustrative. And some of them are worse than illustrative — six figures on this dashboard are redrawn every time the page loads, so if I refresh right now they will change. Please do not quote any figure from this screen.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 52,
+   "kind": "screen",
+   "dash": "Records and Archive Holdings",
+   "title": "Retrieval",
+   "img": "ra-03.png",
+   "items": [
+    {
+     "n": 14,
+     "item": "Location",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 15,
+     "item": "No. of requests",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 16,
+     "item": "Total number of requestors (departments / RMs)",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 17,
+     "item": "Total number of boxes retrieved",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 18,
+     "item": "Total number of folders retrieved",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 19,
+     "item": "Status: Loan, Return to owner, For Disposal",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 20,
+     "item": "Remarks",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    }
+   ],
+   "say": [
+    "All seven columns from your slide 69.",
+    "Status uses your own three words: Loan, Return to owner, For Disposal.",
+    "Everything on this table is invented, because we cannot reach the request system."
+   ],
+   "sheet": "6 Records and Archive Holdings",
+   "script": {
+    "does": "What is being taken out of the archive: requests, requestors, boxes and folders retrieved, and what happens to them.",
+    "say": "All seven columns from your slide 69, and your own three status words: Loan, Return to owner, For Disposal.",
+    "flag": "Your slide 67 says retrieval is processed from eServe. We have never reached eServe, so every row here is invented.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 53,
+   "kind": "screen",
+   "dash": "Records and Archive Holdings",
+   "title": "Activity, disposal and capacity",
+   "img": "ra-04.png",
+   "items": [
+    {
+     "n": 21,
+     "item": "Indicator: retrieval requests and boxes / folders retrieved month on month per department",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 22,
+     "item": "No. and list of outstanding / pending requests",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 23,
+     "item": "No. of boxes / folders disposed",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 24,
+     "item": "Can room activities update capacity and freed up storage?",
+     "d": "Yes",
+     "amber": true,
+     "later": false
+    },
+    {
+     "n": 25,
+     "item": "Retrieval as processed from eServe",
+     "d": "No",
+     "amber": false,
+     "later": true
+    },
+    {
+     "n": 26,
+     "item": "What is available in Opus and how we can apply it",
+     "d": "No",
+     "amber": false,
+     "later": true
+    }
+   ],
+   "say": [
+    "Retrieval by department, what was disposed, and how much space that freed.",
+    "The layout answers every indicator you asked for.",
+    "None of it is measured yet. That is what the questions slide is for."
+   ],
+   "sheet": "6 Records and Archive Holdings",
+   "script": {
+    "does": "Retrieval by department over time, what was disposed of, and how much storage that freed.",
+    "say": "This answers the last of your indicators: retrieval month on month, boxes and folders disposed, and the capacity that freed up.",
+    "flag": "The layout answers everything you asked for. None of it is measured. That is the conversation on the next slide.",
+    "q": "",
+    "a": ""
+   }
+  },
+  {
+   "n": 54,
+   "kind": "seq",
+   "dash": "Records and Archive Holdings",
+   "title": "This one is about paper, and paper comes after Utilization.",
+   "seq": {
+    "rel": "Physical Records release",
+    "head": "This one is about paper, and paper comes after Utilization.",
+    "now": [
+     "One figure here is real: how many declared records are marked as having a paper copy.",
+     "That is the bridge between this report and what RAC physically holds.",
+     "The layout answers every column and every indicator you drew."
+    ],
+    "blocked": [
+     "Boxes, folders, rooms, requests and retrievals live in the physical world.",
+     "The systems that will track them are part of the Physical Records work, which comes after Utilization.",
+     "Nothing we can reach today holds any of it, so every figure on this screen is invented."
+    ],
+    "ask": "We propose treating this dashboard as a Physical Records deliverable rather than a Utilization one. Showing it now would mean showing you numbers we made up, and those have a way of being quoted back as real.",
+    "count": 26
+   }
+  },
+  {
+   "n": 55,
+   "kind": "asks",
+   "dash": "Records and Archive Holdings",
+   "from": 0,
+   "to": 3,
+   "asks": [
+    {
+     "q": "Can we agree this dashboard follows the Physical Records release?",
+     "b": "Everything on it — boxes, folders, rooms, requests — is physical, and the systems that will hold that information come with the Physical Records work, after Utilization. Building it now means inventing all 26 figures.",
+     "n": "Keep the layout as the agreed specification, sign it off today if you are happy with it, and build it when the physical side has real sources behind it."
+    },
+    {
+     "q": "When someone asks RAC for a box, where does that go?",
+     "b": "Your slide 67 mentions eServe. Nothing in this work has ever reached it. Even after the Physical release we will need this answered.",
+     "n": "Can we see what eServe holds, and who would we ask for access? Worth starting the conversation now so it is not the thing that delays the physical build later."
+    },
+    {
+     "q": "What does RAC actually keep today, and where?",
+     "b": "Boxes, folders, which room they are in, how full each room is. It may live in a spreadsheet, or on paper, or in somebody’s head.",
+     "n": "Whatever the answer, it is the starting point for the physical work. A spreadsheet is a perfectly good answer."
+    }
+   ]
+  },
+  {
+   "n": 56,
+   "kind": "rootcause"
+  },
+  {
+   "n": 57,
+   "kind": "decisions"
+  },
+  {
+   "n": 58,
+   "kind": "nextsteps"
+  },
+  {
+   "n": 59,
+   "kind": "close"
+  }
+ ],
+ "tot": {
+  "yes": 188,
+  "no": 45,
+  "later": 16,
+  "tot": 249
+ },
+ "dash": {
+  "Bank-wide Oversight": {
+   "yes": 44,
+   "no": 14,
+   "later": 7,
+   "tot": 65
+  },
+  "Department Insights": {
+   "yes": 59,
+   "no": 19,
+   "later": 6,
+   "tot": 84
+  },
+  "Project Insights": {
+   "yes": 21,
+   "no": 0,
+   "later": 0,
+   "tot": 21
+  },
+  "Institutional File Plan": {
+   "yes": 22,
+   "no": 4,
+   "later": 0,
+   "tot": 26
+  },
+  "Retention and Disposal": {
+   "yes": 18,
+   "no": 8,
+   "later": 1,
+   "tot": 27
+  },
+  "Records and Archive Holdings": {
+   "yes": 24,
+   "no": 0,
+   "later": 2,
+   "tot": 26
+  }
+ }
+}

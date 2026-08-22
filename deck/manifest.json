@@ -1,0 +1,374 @@
+[
+ {
+  "n": 1,
+  "kind": "title"
+ },
+ {
+  "n": 2,
+  "kind": "legend"
+ },
+ {
+  "n": 3,
+  "kind": "sixviews"
+ },
+ {
+  "n": 4,
+  "kind": "scoreboard"
+ },
+ {
+  "n": 5,
+  "kind": "timeline"
+ },
+ {
+  "n": 6,
+  "kind": "divider",
+  "dash": "Bank-wide Oversight"
+ },
+ {
+  "n": 7,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "The ten headline figures",
+  "img": "bw-01.png"
+ },
+ {
+  "n": 8,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Sites, department by department",
+  "img": "bw-drill-sites.png"
+ },
+ {
+  "n": 9,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Project sites, sovereign and nonsovereign",
+  "img": "bw-drill-sov.png"
+ },
+ {
+  "n": 10,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Users",
+  "img": "bw-drill-users.png"
+ },
+ {
+  "n": 11,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Documents",
+  "img": "bw-drill-docs.png"
+ },
+ {
+  "n": 12,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Records declared",
+  "img": "bw-drill-rec.png"
+ },
+ {
+  "n": 13,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Physical counterparts",
+  "img": "bw-drill-phys.png"
+ },
+ {
+  "n": 14,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Records due for disposal",
+  "img": "bw-drill-disp.png"
+ },
+ {
+  "n": 15,
+  "kind": "screen",
+  "dash": "Bank-wide Oversight",
+  "title": "Trends and comparisons",
+  "img": "bw-04.png"
+ },
+ {
+  "n": 16,
+  "kind": "asks",
+  "dash": "Bank-wide Oversight",
+  "from": 0,
+  "to": 5
+ },
+ {
+  "n": 17,
+  "kind": "asks",
+  "dash": "Bank-wide Oversight",
+  "from": 5,
+  "to": 9
+ },
+ {
+  "n": 18,
+  "kind": "divider",
+  "dash": "Department Insights"
+ },
+ {
+  "n": 19,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "The department profile",
+  "img": "dp-01.png"
+ },
+ {
+  "n": 20,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Users and activity",
+  "img": "dp-drill-users.png"
+ },
+ {
+  "n": 21,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "This department’s sites",
+  "img": "dp-drill-sites.png"
+ },
+ {
+  "n": 22,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Site visitors",
+  "img": "dp-drill-visitors.png"
+ },
+ {
+  "n": 23,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Documents",
+  "img": "dp-drill-docs.png"
+ },
+ {
+  "n": 24,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Records declaration",
+  "img": "dp-drill-rec.png"
+ },
+ {
+  "n": 25,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Physical counterparts",
+  "img": "dp-drill-phys.png"
+ },
+ {
+  "n": 26,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Disposal",
+  "img": "dp-drill-disp.png"
+ },
+ {
+  "n": 27,
+  "kind": "screen",
+  "dash": "Department Insights",
+  "title": "Library usage",
+  "img": "dp-03.png"
+ },
+ {
+  "n": 28,
+  "kind": "asks",
+  "dash": "Department Insights",
+  "from": 0,
+  "to": 5
+ },
+ {
+  "n": 29,
+  "kind": "asks",
+  "dash": "Department Insights",
+  "from": 5,
+  "to": 6
+ },
+ {
+  "n": 30,
+  "kind": "divider",
+  "dash": "Project Insights"
+ },
+ {
+  "n": 31,
+  "kind": "screen",
+  "dash": "Project Insights",
+  "title": "The project list",
+  "img": "pj-01.png"
+ },
+ {
+  "n": 32,
+  "kind": "screen",
+  "dash": "Project Insights",
+  "title": "The project profile and its seven figures",
+  "img": "pj-02.png"
+ },
+ {
+  "n": 33,
+  "kind": "screen",
+  "dash": "Project Insights",
+  "title": "The three charts",
+  "img": "pj-03.png"
+ },
+ {
+  "n": 34,
+  "kind": "asks",
+  "dash": "Project Insights",
+  "from": 0,
+  "to": 2
+ },
+ {
+  "n": 35,
+  "kind": "divider",
+  "dash": "Institutional File Plan"
+ },
+ {
+  "n": 36,
+  "kind": "screen",
+  "dash": "Institutional File Plan",
+  "title": "The five categories",
+  "img": "fp-01.png"
+ },
+ {
+  "n": 37,
+  "kind": "screen",
+  "dash": "Institutional File Plan",
+  "title": "Inside one category",
+  "img": "fp-02.png"
+ },
+ {
+  "n": 38,
+  "kind": "screen",
+  "dash": "Institutional File Plan",
+  "title": "Unused terms",
+  "img": "fp-03.png"
+ },
+ {
+  "n": 39,
+  "kind": "screen",
+  "dash": "Institutional File Plan",
+  "title": "Libraries created outside convention",
+  "img": "fp-04.png"
+ },
+ {
+  "n": 40,
+  "kind": "screen",
+  "dash": "Institutional File Plan",
+  "title": "Requests waiting for a decision",
+  "img": "fp-05.png"
+ },
+ {
+  "n": 41,
+  "kind": "asks",
+  "dash": "Institutional File Plan",
+  "from": 0,
+  "to": 4
+ },
+ {
+  "n": 42,
+  "kind": "divider",
+  "dash": "Retention and Disposal"
+ },
+ {
+  "n": 43,
+  "kind": "screen",
+  "dash": "Retention and Disposal",
+  "title": "Permanent against temporary",
+  "img": "rd-01.png"
+ },
+ {
+  "n": 44,
+  "kind": "screen",
+  "dash": "Retention and Disposal",
+  "title": "Permanent retention",
+  "img": "rd-02.png"
+ },
+ {
+  "n": 45,
+  "kind": "screen",
+  "dash": "Retention and Disposal",
+  "title": "Temporary retention",
+  "img": "rd-03.png"
+ },
+ {
+  "n": 46,
+  "kind": "screen",
+  "dash": "Retention and Disposal",
+  "title": "Retention labels",
+  "img": "rd-04.png"
+ },
+ {
+  "n": 47,
+  "kind": "seq",
+  "dash": "Retention and Disposal",
+  "title": "Retention works today. Disposal is not in the system yet."
+ },
+ {
+  "n": 48,
+  "kind": "asks",
+  "dash": "Retention and Disposal",
+  "from": 0,
+  "to": 3
+ },
+ {
+  "n": 49,
+  "kind": "divider",
+  "dash": "Records and Archive Holdings"
+ },
+ {
+  "n": 50,
+  "kind": "screen",
+  "dash": "Records and Archive Holdings",
+  "title": "What we can and cannot see",
+  "img": "ra-01.png"
+ },
+ {
+  "n": 51,
+  "kind": "screen",
+  "dash": "Records and Archive Holdings",
+  "title": "Storage",
+  "img": "ra-02.png"
+ },
+ {
+  "n": 52,
+  "kind": "screen",
+  "dash": "Records and Archive Holdings",
+  "title": "Retrieval",
+  "img": "ra-03.png"
+ },
+ {
+  "n": 53,
+  "kind": "screen",
+  "dash": "Records and Archive Holdings",
+  "title": "Activity, disposal and capacity",
+  "img": "ra-04.png"
+ },
+ {
+  "n": 54,
+  "kind": "seq",
+  "dash": "Records and Archive Holdings",
+  "title": "This one is about paper, and paper comes after Utilization."
+ },
+ {
+  "n": 55,
+  "kind": "asks",
+  "dash": "Records and Archive Holdings",
+  "from": 0,
+  "to": 3
+ },
+ {
+  "n": 56,
+  "kind": "rootcause"
+ },
+ {
+  "n": 57,
+  "kind": "decisions"
+ },
+ {
+  "n": 58,
+  "kind": "nextsteps"
+ },
+ {
+  "n": 59,
+  "kind": "close"
+ }
+]
