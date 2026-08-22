@@ -1,0 +1,2615 @@
+{
+ "1 Bank-wide Oversight": [
+  {
+   "hdr": "TOP PANEL, THE TEN TILES THE CLIENT DREW ON SLIDE 34"
+  },
+  {
+   "n": 1,
+   "item": "Number of active EDRMS SharePoint sites for Department, RM, office",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 2,
+   "item": "Total number of EDRMS users",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s39",
+   "why": "Built, but relabelled 'EDRMS users with recorded activity, last 180 days'. The population who hold access is not knowable from any source we reach.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 3,
+   "item": "Total number of documents in EDRMS",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s40",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 4,
+   "item": "Total number of records declared in EDRMS",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s41",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 5,
+   "item": "Total number of physical counterparts identified",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s42",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 6,
+   "item": "Total number of records due for disposal",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s43",
+   "why": "Built, but relabelled 'Total number of records due for disposal within 12 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 7,
+   "item": "Retention and disposal insights (navigation tile)",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s44",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 8,
+   "item": "Institutional File Plan insights (navigation tile)",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34, s47",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 9,
+   "item": "Total number of active EDRMS SharePoint sites for Sovereign projects",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34",
+   "why": "Built as layout 21 Aug 2026. On the prototype, rows open Project Insights. Figures are illustrative: still unsourced pending the site-to-project register.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 10,
+   "item": "Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s34",
+   "why": "Built as layout 21 Aug 2026. On the prototype, rows open Project Insights. Figures are illustrative: still unsourced pending the site-to-project register.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 35, OVERVIEW OF EDRMS SITES. Also drawn at s16, the same table"
+  },
+  {
+   "n": 11,
+   "item": "Department / office / RM",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s16, s35",
+   "why": null,
+   "need": "Number of active EDRMS SharePoint sites for Department, RM, office",
+   "amber": false
+  },
+  {
+   "n": 12,
+   "item": "Number of EDRMS SharePoint sites",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s16, s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 13,
+   "item": "Total number of documents",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s16, s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 14,
+   "item": "Total number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s16, s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 15,
+   "item": "Total number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s16, s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 16,
+   "item": "Each name clickable into that unit's dashboard",
+   "type": "Behaviour",
+   "d": "Yes",
+   "slide": "s35",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 17,
+   "item": "Indicator: no. of sites created",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s35",
+   "why": "Built as a tile on the sites drill. Sourceable from CG Created Time. Note this is site CREATION, not EDRMS go-live, which is a different date.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 18,
+   "item": "Indicator: no. of sites deleted",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s35",
+   "why": null,
+   "need": "M365 report",
+   "amber": false
+  },
+  {
+   "n": 19,
+   "item": "Indicator: no. of sites archived",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s35",
+   "why": null,
+   "need": "M365 report",
+   "amber": false
+  },
+  {
+   "n": 20,
+   "item": "Indicator: inactive site for 90 days",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s35",
+   "why": null,
+   "need": "M365 report",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 36 AND 37, SOVEREIGN AND NONSOVEREIGN PROJECT SITE LISTS"
+  },
+  {
+   "n": 21,
+   "item": "Sovereign project site list, all columns",
+   "type": "Table",
+   "d": "Yes",
+   "slide": "s36",
+   "why": "Built as layout 21 Aug 2026. On the prototype, rows open Project Insights. Figures are illustrative: still unsourced pending the site-to-project register.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 22,
+   "item": "Nonsovereign project site list, all columns",
+   "type": "Table",
+   "d": "Yes",
+   "slide": "s37",
+   "why": "Built as layout 21 Aug 2026. On the prototype, rows open Project Insights. Figures are illustrative: still unsourced pending the site-to-project register.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 23,
+   "item": "Project rows clickable into Project Insights",
+   "type": "Behaviour",
+   "d": "Yes",
+   "slide": "s35, s36, s37",
+   "why": "Built as layout 21 Aug 2026. On the prototype, rows open Project Insights. Figures are illustrative: still unsourced pending the site-to-project register.",
+   "need": "Build Project Insights first.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 39, USERS"
+  },
+  {
+   "n": 24,
+   "item": "Total number of users, count",
+   "type": "Drill",
+   "d": "Yes",
+   "slide": "s39",
+   "why": "Not bult, but replaced with 'Users with recorded activity'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 25,
+   "item": "Indicator: % of active users",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s39",
+   "why": "Not bult, but replaced with 'Departments, offices and RMs in the list'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 26,
+   "item": "Indicator: never accessed EDRMS",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s39",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 27,
+   "item": "Indicator: not accessed in 90 days",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s39",
+   "why": "Built, but relabelled 'No access in 90 days'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 28,
+   "item": "Total number of users (staff)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s39",
+   "why": "Removed. No register of EDRMS users exists that carries employment type.",
+   "need": "ASK. A user register with staff / contractor / consultant.",
+   "amber": false
+  },
+  {
+   "n": 29,
+   "item": "Total number of users (Contractors)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s39",
+   "why": "Removed. Same register.",
+   "need": "ASK. The same register.",
+   "amber": false
+  },
+  {
+   "n": 30,
+   "item": "Total number of users (Consultants)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s39",
+   "why": "Removed. Same register.",
+   "need": "ASK. The same register.",
+   "amber": false
+  },
+  {
+   "n": 31,
+   "item": "Completion of training",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s39",
+   "why": "Removed. No training system is connected to this project.",
+   "need": "ASK. Where training completion is recorded.",
+   "amber": false
+  },
+  {
+   "n": 32,
+   "item": "Onboarded since go-live",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s39",
+   "why": "Removed. Needs both the user register and a go-live date per site.",
+   "need": "ASK. The register, and the go-live date.",
+   "amber": false
+  },
+  {
+   "n": 33,
+   "item": "User to department mapping",
+   "type": "Join",
+   "d": "No",
+   "slide": "s39",
+   "why": null,
+   "need": "ASK. A user to department source.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 40, DOCUMENTS"
+  },
+  {
+   "n": 34,
+   "item": "Number of documents created / uploaded",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s40",
+   "why": "Present, but the figure waits on the weekly scan for a real value.",
+   "need": "M365 report/Cloud Gov",
+   "amber": false
+  },
+  {
+   "n": 35,
+   "item": "Documents size (in GB)",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s40",
+   "why": "Present as Storage. Waits on the scan for a real value.",
+   "need": "M365 report/Cloud Gov",
+   "amber": false
+  },
+  {
+   "n": 36,
+   "item": "Number of users creating documents",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s40",
+   "why": "Not built. CreatedBy on the document table is the DECLARER, not the creator. A distinct creator count needs a second column.",
+   "need": "SCAN, plus a new column on the document table.",
+   "amber": false
+  },
+  {
+   "n": 37,
+   "item": "Indicator: new documents month on month",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s40",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 38,
+   "item": "Indicator: average monthly storage growth",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s40",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 39,
+   "item": "Per division breakdown",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s40",
+   "why": "Removed. Division is currently not populated from any reports.",
+   "need": "ASK. A source for it.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 41, RECORDS DECLARED"
+  },
+  {
+   "n": 40,
+   "item": "Total number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s41",
+   "why": "Built, but relabelled 'Records declared'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 41,
+   "item": "Total number of users declaring records",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s41",
+   "why": "Built, but relabelled 'People who declared a record'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 42,
+   "item": "Indicator: zero record declarations",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s41",
+   "why": "Built, but relabelled 'Departments, offices and RMs with zero declarations'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 43,
+   "item": "Indicator: declaration rate against documents",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s41",
+   "why": "Built, but relabelled 'Share of documents declared as records'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 44,
+   "item": "Number of records declared per division",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s41",
+   "why": "Removed. Division is undefined.",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "n": 45,
+   "item": "Number of users declaring records per division",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s41",
+   "why": "Removed. Division is undefined.",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 42, PHYSICAL COUNTERPARTS"
+  },
+  {
+   "n": 46,
+   "item": "Total number of physical records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s42",
+   "why": "Built, but relabelled 'Physical counterparts'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 47,
+   "item": "Total number of users declaring records",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s42",
+   "why": "Not bult, but replaced with 'Records declared'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 48,
+   "item": "Share of records with a counterpart",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s42",
+   "why": "Built as a derived column in place of the removed completion rate.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 49,
+   "item": "Per division, two columns",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s42",
+   "why": "Division is undefined. Note these columns look copied verbatim from s41 ",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "n": 50,
+   "item": "Indicator: physical counterpart completion rate (turned over to RAC)",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s42",
+   "why": "Removed. 'Turned over for RAC storage' is a physical custody event. No system we can reach records it. (To check if Opus can handle this)",
+   "need": "NONE today. Check Opus physical records for a custody or transfer event.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 43, RECORDS DUE FOR DISPOSAL"
+  },
+  {
+   "n": 51,
+   "item": "Number of records due for disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s43",
+   "why": "Present as the due within 30, 90 day, 12-month tiles",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 52,
+   "item": "Next due date for disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s43",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 53,
+   "item": "With physical counterpart?",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s43",
+   "why": "Built, but relabelled 'With counterpart'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 54,
+   "item": "Indicator: upcoming next quarter",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s43",
+   "why": "Present as the due within 30, 90 day, 12-month tiles",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 55,
+   "item": "Disposal approver",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 56,
+   "item": "Status (Approved)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 57,
+   "item": "Status (Declined)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 58,
+   "item": "Status (Extended)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 59,
+   "item": "Indicator: records disposed month on month",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 60,
+   "item": "Indicator: overdue actions, pending approvals",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 61,
+   "item": "Indicator: disposal completion rate",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s43",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "THE REST OF BANK-WIDE"
+  },
+  {
+   "n": 62,
+   "item": "Comparison, three named ratios",
+   "type": "Panel",
+   "d": "Yes",
+   "slide": "s17, s6",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 63,
+   "item": "Bank-wide records declaration trend, cumulative",
+   "type": "Panel",
+   "d": "Yes",
+   "slide": "s18, s10",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 64,
+   "item": "Records declared in range",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 65,
+   "item": "Monthly average in range",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  }
+ ],
+ "2 Department Insights": [
+  {
+   "hdr": "SLIDE 53, DEPARTMENT PROFILE"
+  },
+  {
+   "n": 1,
+   "item": "Department picker driving the whole screen",
+   "type": "Behaviour",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 2,
+   "item": "Total number of sites created",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 3,
+   "item": "Total number of EDRMS users",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": "Built, but relabelled 'Total number of EDRMS compliant sites created'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 4,
+   "item": "Total number of site visitors",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": "Not built, but replaced with 'Total number of EDRMS users with recorded activity, last 180 days'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 5,
+   "item": "Total number of documents in EDRMS",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 6,
+   "item": "Total number of records declared in EDRMS",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 7,
+   "item": "Total number of physical counterparts identified",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 8,
+   "item": "Total number of records due for disposal",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s53",
+   "why": "Built, but relabelled 'Total number of records due for disposal within 12 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 9,
+   "item": "Clickable top panel stats",
+   "type": "Behaviour",
+   "d": "Yes",
+   "slide": "s53",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 10,
+   "item": "Approved SharePoint site, library and folder convention",
+   "type": "Panel",
+   "d": "No",
+   "slide": "s53, s26, s28",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 11,
+   "item": "Go-Live date",
+   "type": "Field",
+   "d": "No",
+   "slide": "s53",
+   "why": "Removed. Cloud Governance carries site CREATION date, which is a different thing. Nobody holds the date a site became EDRMS compliant.",
+   "need": "ASK. A go-live date per site, or agreement that creation date stands in.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 54, USERS AND ACTIVITY"
+  },
+  {
+   "n": 12,
+   "item": "Total number of active users",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": "s54",
+   "why": "Built, but relabelled 'Users with recorded activity in EDRMS compliant sites'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 13,
+   "item": "Used EDRMS in the last 180 days",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 14,
+   "item": "No access in EDRMS compliant sites, last 180 days",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 15,
+   "item": "Never accessed EDRMS compliant sites",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 16,
+   "item": "Total number of staff",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s54",
+   "why": "Removed.",
+   "need": "ASK. The user register.",
+   "amber": false
+  },
+  {
+   "n": 17,
+   "item": "Total number of contractors (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s54",
+   "why": "Removed.",
+   "need": "ASK. The user register.",
+   "amber": false
+  },
+  {
+   "n": 18,
+   "item": "Total number of consultants (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s54",
+   "why": "Removed.",
+   "need": "ASK. The user register.",
+   "amber": false
+  },
+  {
+   "n": 19,
+   "item": "Training completion rate (%)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s54",
+   "why": "Removed.",
+   "need": "ASK. Where training completion lives.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 55, OVERVIEW OF EDRMS SITES"
+  },
+  {
+   "n": 20,
+   "item": "Total number of sites created",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 21,
+   "item": "Total number of documents in EDRMS",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 22,
+   "item": "Total number of records declared in EDRMS",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 23,
+   "item": "Total number of physical counterparts identified",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 24,
+   "item": "Total number of records due for disposal within 12 months",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 25,
+   "item": "Name of sites",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 26,
+   "item": "Site owners",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 27,
+   "item": "Number of documents",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 28,
+   "item": "Number of records",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 29,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 30,
+   "item": "Number of records due for disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": "Built, but relabelled 'Total number of records due for disposal within 12 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 56, SITE VISITORS"
+  },
+  {
+   "n": 31,
+   "item": "Total number of visitors",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s56",
+   "why": "Not built, but replaced with 'Total number of site visits'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 32,
+   "item": "Site visits table, by site",
+   "type": "Table",
+   "d": "Yes",
+   "slide": "s56",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 33,
+   "item": "Page View Count",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 34,
+   "item": "Visited Page Count",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 35,
+   "item": "Quick Windows (Last 7,30,90,180 days)",
+   "type": "Filter",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 36,
+   "item": "Filter by month/year",
+   "type": "Filter",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 37,
+   "item": "Name of sites",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 38,
+   "item": "Page View Count",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 39,
+   "item": "Visited Page Count",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 40,
+   "item": "EDRMS Site Type",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 41,
+   "item": "Total number of visitors (external) (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s56",
+   "why": "RemoveD. Which report to use that shows visitors split by internal and external.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 42,
+   "item": "Total number of visitors (internal) (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s56",
+   "why": "RemoveD. Which report to use that shows visitors split by internal and external.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 43,
+   "item": "Total number of access requests granted (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s56",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 44,
+   "item": "Total number of access requests denied (#, %)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s56",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 57, DOCUMENTS"
+  },
+  {
+   "n": 45,
+   "item": "Number of documents created / uploaded",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": "s57",
+   "why": "Built, but relabelled 'Total number of documents'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 46,
+   "item": "EDRMS Active Sites",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 47,
+   "item": "Total documents size",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s57",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 48,
+   "item": "Name of sites",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s55",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 49,
+   "item": "Number of documents created / uploaded",
+   "type": "Table Column",
+   "d": "Yes",
+   "slide": "s57",
+   "why": "Built, but relabelled 'Total number of documents'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 50,
+   "item": "Documents size (in GB)",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s57",
+   "why": "Built, but relabelled 'Total documents size'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 51,
+   "item": "Number of users creating documents",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s57",
+   "why": "Never built. CreatedBy is the declarer, not the creator.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 58, RECORDS DECLARATION"
+  },
+  {
+   "n": 52,
+   "item": "Total number of records declared",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 53,
+   "item": "Total number of users declaring records",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 54,
+   "item": "Sites with no declared record in 180 days",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 55,
+   "item": "Total number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s58",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 56,
+   "item": "Total number of users declaring records",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s58",
+   "why": "Built, but relabelled 'People who declared a record'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 57,
+   "item": "Total declared record size (in GB)",
+   "type": "Tile",
+   "d": "Yes",
+   "slide": "s58",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 58,
+   "item": "Number of records declared per division",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s58",
+   "why": "Removed. Division is undefined.",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "n": 59,
+   "item": "Number of users declaring records per division",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s58",
+   "why": "Removed. Division is undefined.",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 59, PHYSICAL COUNTERPART"
+  },
+  {
+   "hdr": "60"
+  },
+  {
+   "hdr": "61"
+  },
+  {
+   "n": 62,
+   "item": "Records with a counterpart, by site",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s59",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 63,
+   "item": "Total number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s58",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 64,
+   "item": "Share of records with a counterpart",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s59",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 65,
+   "item": "Per division, two columns",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s59",
+   "why": "Removed. Division is undefined.",
+   "need": "ASK. Division.",
+   "amber": false
+  },
+  {
+   "n": 66,
+   "item": "Physical counterpart completion rate (turned over to RAC)",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s59",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 60, DISPOSAL"
+  },
+  {
+   "n": 67,
+   "item": "Records due for disposal within 3 months",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 68,
+   "item": "Records due for disposal within 6 months",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 69,
+   "item": "Records due for disposal within 12 months",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 70,
+   "item": "Number of records due for disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s60",
+   "why": "Not built, but replaced with 'Due within 3 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 71,
+   "item": "Next due date for disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s60",
+   "why": "Not built, but replaced with 'Due within 6 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 72,
+   "item": "With physical counterpart?",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s60",
+   "why": "Not built, but replaced with 'Due within 12 months'",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 73,
+   "item": "Disposal approver",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 74,
+   "item": "Status (Approved)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 75,
+   "item": "Status (Declined)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 76,
+   "item": "Status (Extended)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 77,
+   "item": "Total number of records disposed, per year and month",
+   "type": "Tile",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 78,
+   "item": "Total disposed record size (in GB)",
+   "type": "Tile",
+   "d": "No",
+   "slide": "s60",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDES 61 TO 66, DEPARTMENTAL LIBRARY USAGE, ONE PER FILE PLAN CATEGORY"
+  },
+  {
+   "n": 79,
+   "item": "Library names",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s61 to s66",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 80,
+   "item": "Number of documents",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s61 to s66",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 81,
+   "item": "Number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s61 to s66",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 82,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s61 to s66",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 83,
+   "item": "Category picker across the six categories",
+   "type": "Behaviour",
+   "d": "No",
+   "slide": "s61 to s66",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 84,
+   "item": "Number of users per library",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s61 to s66",
+   "why": "Removed. ",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 85,
+   "item": "Indicators per library, per division",
+   "type": "Indicator",
+   "d": "No",
+   "slide": "s61 to s66",
+   "why": "Removed. Division is undefined, and per library user counts is still pending if feasible.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "OTHER PANELS ON THIS DASHBOARD"
+  },
+  {
+   "n": 86,
+   "item": "Programme dates",
+   "type": "Panel",
+   "d": "No",
+   "slide": "s26, s28",
+   "why": null,
+   "need": null,
+   "amber": false
+  }
+ ],
+ "3 Project Insights": [
+  {
+   "hdr": "THIS ENTIRE DASHBOARD IS MISSING FROM THE PROTOTYPE"
+  },
+  {
+   "n": 1,
+   "item": "Project Insights, as one of the six required key views",
+   "type": "Dashboard",
+   "d": "Yes",
+   "slide": "s13, s14",
+   "why": "Built 21 Aug 2026. Reachable from the left nav and from the project rows on Bank-wide s34. Reconciles: named projects sum inside the facility totals, which sum inside bank-wide. Figures illustrative.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 38, THE EIGHT PROFILE FIELDS"
+  },
+  {
+   "n": 2,
+   "item": "Facility type",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, field 1 of 8, in the order s38 draws them. Value illustrative.",
+   "need": "ASK. Which system holds project attributes, and who owns it.",
+   "amber": false
+  },
+  {
+   "n": 3,
+   "item": "Modality",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, drawn as 'Project type, modality of assistance', with 'Modality number' beside it. Value illustrative.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 4,
+   "item": "Country",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, drawn as 'Country or economy'. Value illustrative.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 5,
+   "item": "Status",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, drawn as 'Project status'. Value illustrative.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 6,
+   "item": "Effectivity date",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel. Value illustrative.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 7,
+   "item": "Closing date",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, drawn as 'Closing date, actual'. Value illustrative.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 8,
+   "item": "Project number",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Project profile panel, and the key the project picker and both s36/s37 tables sort on.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "n": 9,
+   "item": "Project name",
+   "type": "Profile field",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Panel heading and project picker. Illustrative names.",
+   "need": "ASK. Same.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 38, THE SEVEN CLICKABLE TILES AND THEIR DRILLS"
+  },
+  {
+   "n": 10,
+   "item": "Sites for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of sites created'. Opens a per-site table: documents, records declared, counterparts, declaration rate. Site rows sum to the project.",
+   "need": "ASK. A site to project register.",
+   "amber": false
+  },
+  {
+   "n": 11,
+   "item": "Users for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of EDRMS users'. Opens a per-site table split staff / consultants / contractors.",
+   "need": "ASK. Both registers.",
+   "amber": false
+  },
+  {
+   "n": 12,
+   "item": "Site visits for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of site visitors'. Opens a per-site table with visitors per user.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 13,
+   "item": "Documents for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of documents in EDRMS'. Opens a per-site table with share of project and not-declared count.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 14,
+   "item": "Records declared for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of records declared in EDRMS'. Opens a per-site table with share of project and declaration rate.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 15,
+   "item": "Physical counterparts for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of physical counterparts identified'. Opens a per-site table with share of declared records carrying a counterpart.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 16,
+   "item": "Records due for disposal for this project",
+   "type": "Tile and drill",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Tile 'Total number of records due for disposal'. Opens a per-site table with share due.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 38, THE THREE CHARTS"
+  },
+  {
+   "n": 17,
+   "item": "Users pie, split staff / consultants / contractors",
+   "type": "Chart",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Donut with the client's own split from s38: staff, consultants, contractors. Centre reads the project user count.",
+   "need": "ASK. Both.",
+   "amber": false
+  },
+  {
+   "n": 18,
+   "item": "Cumulative declaration trend for this project",
+   "type": "Chart",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Cumulative area curve, matching the Records Declaration Trend on Bank-wide. Asserted to end at the project declared count, not sum to it.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 19,
+   "item": "Documents against records declared, site by site, with declaration rate",
+   "type": "Chart",
+   "d": "Yes",
+   "slide": "s38",
+   "why": "Built 21 Aug 2026. Two bars per site, documents against records declared, with the declaration rate printed alongside. Their dual axis is not used; Power BI supports it but it reads badly at this width.",
+   "need": "ASK. The register. Then SCAN.",
+   "amber": false
+  },
+  {
+   "hdr": "SLIDES 36 AND 37, THE PROJECT LISTS THAT REACH THIS DASHBOARD"
+  },
+  {
+   "n": 20,
+   "item": "Sovereign project site list",
+   "type": "Table",
+   "d": "Yes",
+   "slide": "s36",
+   "why": "Built 21 Aug 2026. Client's column names word for word. A row opens that project's profile below. Last row is the facility total, because both slides end their list with 'Etc.'.",
+   "need": "ASK. The register.",
+   "amber": false
+  },
+  {
+   "n": 21,
+   "item": "Nonsovereign project site list",
+   "type": "Table",
+   "d": "Yes",
+   "slide": "s37",
+   "why": "Built 21 Aug 2026. Same table, nonsovereign facility. Reached from the facility picker.",
+   "need": "ASK. The register.",
+   "amber": false
+  }
+ ],
+ "4 Institutional File Plan": [
+  {
+   "hdr": "SLIDE 47, THE ROLLUP ACROSS FIVE CATEGORIES"
+  },
+  {
+   "n": 1,
+   "item": "Total Institutional Management terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, first of five category rows. Terms are the client's own examples from s48 to s52, extended so each category reads as a list.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 2,
+   "item": "Total Administration terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, category row.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 3,
+   "item": "Total People management terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, category row.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 4,
+   "item": "Total Programs and operations terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, category row.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 5,
+   "item": "Total other terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, category row, drawn as 'Other'.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 6,
+   "item": "Total terms",
+   "type": "Table row",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built. Rollup table, bold total row. Asserted to equal the sum of the five categories, and to equal the bank-wide document and declared counts.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 7,
+   "item": "Departments / Offices / RMs provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built 21 Aug 2026. Rollup column 'Departments, offices and RMs provisioned'. Lists the departments mapped to each category. Mapping is illustrative: there is still no TermId on the document table to source it from.",
+   "need": "ASK plus design change. A TermId on the document table, and a scan that fills it, before this is measured rather than assigned.",
+   "amber": true
+  },
+  {
+   "n": 8,
+   "item": "Number of libraries provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built 21 Aug 2026. Rollup column 'Number of libraries provisioned'. Split from a bank-wide library count of 267, so the categories sum to the whole. Illustrative.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 9,
+   "item": "Number of documents",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built 21 Aug 2026. Rollup column 'Number of documents'. Split from the bank-wide document count and asserted to equal it. Illustrative per category.",
+   "need": "Same missing join, plus SCAN.",
+   "amber": true
+  },
+  {
+   "n": 10,
+   "item": "Number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built 21 Aug 2026. Rollup column 'Number of records declared'. Split from the bank-wide declared count and asserted to equal it. Illustrative per category.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 11,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s47",
+   "why": "Built 21 Aug 2026. Rollup column 'Number of physical counterparts'. Split from the bank-wide counterpart count. Illustrative per category.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "hdr": "SLIDES 48 TO 52, ONE SCREEN PER CATEGORY"
+  },
+  {
+   "n": 12,
+   "item": "Term (Top level) list per category",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built. Per-category screen, column 'Term (top level)'. One screen with a category picker rather than five screens, because only the category in scope changes between s48 and s52.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 13,
+   "item": "Category screens, all five present",
+   "type": "Panel",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built. All five categories reachable from the category picker: Institutional Management, Administration, People Management, Programs and Operations, Other.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "n": 14,
+   "item": "A notice saying what is missing behind this dashboard",
+   "type": "Panel",
+   "d": "No",
+   "slide": "Ours",
+   "why": "Removed 21 Aug 2026. The dashboard no longer carries a notice panel naming the missing sources. The two gaps are rows 25 and 26 below.",
+   "need": "Decide at the workshop whether the screen should say what is unsourced, or whether this register carries it alone.",
+   "amber": false
+  },
+  {
+   "n": 15,
+   "item": "Departments / Offices / RMs provisioned, per term",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s48 to s52",
+   "why": "Column is drawn but not filled: every term prints the literal word 'Illustrative' instead of a department list. The rollup can assign departments per category; there is nothing to assign them per term.",
+   "need": "Design change plus a source. A TermId on the document table.",
+   "amber": false
+  },
+  {
+   "n": 16,
+   "item": "Number of libraries provisioned, per term",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Per-term column 'Number of libraries provisioned'. Split per term, so the terms sum to the category and the categories to the whole. Illustrative.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 17,
+   "item": "Number of documents, per term",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Per-term column 'Number of documents', with a matching figure in the five-tile strip above the table. Illustrative.",
+   "need": "Same missing join, plus SCAN.",
+   "amber": true
+  },
+  {
+   "n": 18,
+   "item": "Number of records declared, per term",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Per-term column 'Number of records declared', with a matching tile above. Illustrative.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 19,
+   "item": "Number of physical counterparts, per term",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Per-term column 'Number of physical counterparts', with a matching tile above. Illustrative.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 20,
+   "item": "Indicator: top most used terms",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. 'Most used terms' bar chart under each category screen, top five terms by records declared. Illustrative ranking.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 21,
+   "item": "Indicator: least used and unused terms",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Two places. 'Least used terms' bar chart under each category screen, and an 'Unused terms pending review' panel listing term, usage count, last modified and reason. Illustrative.",
+   "need": "Same missing join.",
+   "amber": true
+  },
+  {
+   "n": 22,
+   "item": "Indicator: new libraries created outside convention",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Panel 'New libraries created outside convention': library name, office, category, documents, created date. Illustrative.",
+   "need": "ASK. What the naming convention is, and what counts as outside it.",
+   "amber": true
+  },
+  {
+   "n": 23,
+   "item": "Request for new library creation and/or deletion",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Panel 'Pending term and library requests', which carries both request types: new library creation and library deletion, with requestor, status and date submitted. Illustrative.",
+   "need": "ASK. Where library requests are raised, and whether that system can be read.",
+   "amber": true
+  },
+  {
+   "n": 24,
+   "item": "Request for new term",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s48 to s52",
+   "why": "Built 21 Aug 2026. Same panel, request types 'New term request' and 'Term deletion'. Illustrative.",
+   "need": "ASK. Where term requests are raised.",
+   "amber": true
+  },
+  {
+   "hdr": "THE TWO GAPS THAT GOVERN THIS WHOLE DASHBOARD"
+  },
+  {
+   "n": 25,
+   "item": "Where the Institutional File Plan actually lives",
+   "type": "Source",
+   "d": "No",
+   "slide": "s47 to s52",
+   "why": "No source. Nothing in this work has named the system that holds the institutional file plan, so every term on the screen is our own example.",
+   "need": "ASK. Which system is the institutional file plan.",
+   "amber": false
+  },
+  {
+   "n": 26,
+   "item": "How a library or document is known to use a term",
+   "type": "Join",
+   "d": "No",
+   "slide": "s47 to s52",
+   "why": "No join. The file plan has no key that reaches the document table, and the document table carries no TermId, so no per-term figure can be measured.",
+   "need": "Design change. A TermId on the document table, and a scan that fills it.",
+   "amber": false
+  }
+ ],
+ "5 Retention and Disposal": [
+  {
+   "hdr": "SLIDE 44, EDRMS retention and disposal insights"
+  },
+  {
+   "n": 1,
+   "item": "Permanent retention sites",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 2,
+   "item": "Permanent retention libraries",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 3,
+   "item": "Permanent retention records",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 4,
+   "item": "Temporary retention sites",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 5,
+   "item": "Temporary retention libraries",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 6,
+   "item": "Temporary retention records",
+   "type": "Graph",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 7,
+   "item": "Departments / Offices / RMs provisioned",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 8,
+   "item": "Number of libraries provisioned",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 9,
+   "item": "Number of records declared",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 10,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 11,
+   "item": "Number of records due for disposal",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 12,
+   "item": "Number of records disposed",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s44",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 45, PERMANENT RETENTION"
+  },
+  {
+   "n": 13,
+   "item": "Term (Top level)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s45",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 14,
+   "item": "Departments / Offices / RMs provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 15,
+   "item": "Number of sites provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 16,
+   "item": "Number of libraries provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 17,
+   "item": "Number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 18,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "SLIDE 46, TEMPORARY RETENTION"
+  },
+  {
+   "n": 19,
+   "item": "Term (Top level)",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s45",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 20,
+   "item": "Departments / Offices / RMs provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 21,
+   "item": "Number of sites provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 22,
+   "item": "Number of libraries provisioned",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 23,
+   "item": "Number of records declared",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 24,
+   "item": "Number of physical counterparts",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s45",
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 25,
+   "item": "Retention filter (All, 3, 5, 7, 10, others. years)",
+   "type": "Filter",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  },
+  {
+   "n": 26,
+   "item": "Number of records disposed",
+   "type": "Table column",
+   "d": "No",
+   "slide": "s46",
+   "why": "Removed.",
+   "need": null,
+   "amber": false
+  },
+  {
+   "hdr": "RETENTION LABELS"
+  },
+  {
+   "n": 27,
+   "item": "Declared records by retention label",
+   "type": "Panel",
+   "d": "Yes",
+   "slide": null,
+   "why": null,
+   "need": null,
+   "amber": false
+  }
+ ],
+ "6 Records and Archive Holdings": [
+  {
+   "hdr": "THE DASHBOARD ITSELF"
+  },
+  {
+   "n": 1,
+   "item": "Records and Archive Holdings, as a key view",
+   "type": "Dashboard",
+   "d": "Yes",
+   "slide": "s13, s14",
+   "why": "Built. Reachable from the left nav. One figure on it is sourced, the physical counterparts identified; everything else on the screen is illustrative.",
+   "need": "ASK. Which system RAC uses for boxes, folders, storage and retrieval.",
+   "amber": true
+  },
+  {
+   "n": 2,
+   "item": "The two tables drawn with the client's own column headings",
+   "type": "Panel",
+   "d": "Yes",
+   "slide": "s68, s69",
+   "why": "Built. Two tables, 'Records and archives holdings, storage' (s68) and 'Records and archives holdings, retrieval' (s69), both with the client's column headings word for word.",
+   "need": null,
+   "amber": true
+  },
+  {
+   "hdr": "SLIDE 68, STORAGE"
+  },
+  {
+   "n": 3,
+   "item": "Location, as Archives Room / Records Center / Offsite Storage",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Location'. Three rows, the client's own three: Archives Room, Records Center, Offsite Storage.",
+   "need": "ASK. Whether these three are the whole estate.",
+   "amber": true
+  },
+  {
+   "n": 4,
+   "item": "No. of requests",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'No. of requests'. Split across the three locations from an illustrative total of 342.",
+   "need": "ASK. The request system.",
+   "amber": true
+  },
+  {
+   "n": 5,
+   "item": "Total number of requestors (departments)",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Total number of requestors (departments)'. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. The request system.",
+   "amber": true
+  },
+  {
+   "n": 6,
+   "item": "Total number of requestors (RMs)",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Total number of requestors (RMs)'. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. The request system.",
+   "amber": true
+  },
+  {
+   "n": 7,
+   "item": "Total number of boxes stored",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Total number of boxes stored', with a bold total row asserted to equal the split total of 1,840. Illustrative.",
+   "need": "ASK. The holdings inventory.",
+   "amber": true
+  },
+  {
+   "n": 8,
+   "item": "Total number of folders stored",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Total number of folders stored', total row 9,260. Illustrative.",
+   "need": "ASK. The holdings inventory.",
+   "amber": true
+  },
+  {
+   "n": 9,
+   "item": "Remarks",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Storage table, column 'Remarks'. Free text per location. Illustrative.",
+   "need": "ASK. Whether remarks are captured anywhere, or entered by hand.",
+   "amber": true
+  },
+  {
+   "n": 10,
+   "item": "Indicator: new boxes and folders month on month per department",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Panel 'Storage activity': boxes stored per department over six months, sixteen departments. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. The holdings inventory, with a transfer date and a requesting department on each box.",
+   "amber": true
+  },
+  {
+   "n": 11,
+   "item": "No. and list of outstanding / pending requests",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Panel 'Pending requests and transfers' gives the count, 'Requests awaiting fulfilment'. The list the client asked for is not there, only the number. Illustrative.",
+   "need": "ASK. The request system, if the list is wanted as well as the count.",
+   "amber": true
+  },
+  {
+   "n": 12,
+   "item": "Physical counterparts identified but not transferred",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Same panel, 'Counterparts awaiting transfer to RAC'. Derived as a share of the sourced physical counterpart count, so it moves with a real figure, but the share itself is illustrative.",
+   "need": "ASK. Whether a transfer is recorded anywhere EDRMS can see.",
+   "amber": true
+  },
+  {
+   "n": 13,
+   "item": "Room capacity and % available storage capacity",
+   "type": "Chart",
+   "d": "Yes",
+   "slide": "s68",
+   "why": "Built 21 Aug 2026. Panel 'Storage capacity by location': a used/available bar per location with the percentage printed. Illustrative capacities.",
+   "need": "ASK. Room capacities, and who maintains them.",
+   "amber": true
+  },
+  {
+   "hdr": "SLIDE 69, RETRIEVAL"
+  },
+  {
+   "n": 14,
+   "item": "Location",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Location'. Same three locations as storage.",
+   "need": "ASK. The retrieval system, said on s67 to be eServe.",
+   "amber": true
+  },
+  {
+   "n": 15,
+   "item": "No. of requests",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'No. of requests'. Derived from the storage request split. Illustrative.",
+   "need": "ASK. eServe.",
+   "amber": true
+  },
+  {
+   "n": 16,
+   "item": "Total number of requestors (departments / RMs)",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Total number of requestors (departments and RMs)', drawn as one column because s69 draws one. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. eServe.",
+   "amber": true
+  },
+  {
+   "n": 17,
+   "item": "Total number of boxes retrieved",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Total number of boxes retrieved'. Asserted never to exceed the boxes stored. Illustrative.",
+   "need": "ASK. eServe.",
+   "amber": true
+  },
+  {
+   "n": 18,
+   "item": "Total number of folders retrieved",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Total number of folders retrieved'. Illustrative.",
+   "need": "ASK. eServe.",
+   "amber": true
+  },
+  {
+   "n": 19,
+   "item": "Status: Loan, Return to owner, For Disposal",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Status', using the client's own vocabulary: Loan, Return to owner, For Disposal. One status per location row, not per box. Illustrative.",
+   "need": "ASK. eServe, and whether status is held per request or per box.",
+   "amber": true
+  },
+  {
+   "n": 20,
+   "item": "Remarks",
+   "type": "Table column",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Retrieval table, column 'Remarks'. Illustrative.",
+   "need": "ASK. As for storage remarks.",
+   "amber": true
+  },
+  {
+   "n": 21,
+   "item": "Indicator: retrieval requests and boxes / folders retrieved month on month per department",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Panel 'Retrieval activity': boxes retrieved per department over six months. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. eServe, with a retrieval date and a requesting department.",
+   "amber": true
+  },
+  {
+   "n": 22,
+   "item": "No. and list of outstanding / pending requests",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Carried by the same 'Pending requests and transfers' panel as the storage side. The count is there; the list is not.",
+   "need": "ASK. eServe, if the list is wanted as well as the count.",
+   "amber": true
+  },
+  {
+   "n": 23,
+   "item": "No. of boxes / folders disposed",
+   "type": "Indicator",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Panel 'Disposal tracking': boxes disposed and folders disposed per location, with a bold total row. Illustrative.",
+   "need": "ASK. Where a physical disposal is recorded. Note this is the same gap as 'Number of records disposed' on Retention and Disposal.",
+   "amber": true
+  },
+  {
+   "n": 24,
+   "item": "Can room activities update capacity and freed up storage?",
+   "type": "Question",
+   "d": "Yes",
+   "slide": "s69",
+   "why": "Built 21 Aug 2026. Answered on screen as 'Storage freed', a percentage per location on the disposal panel, sitting beside the capacity bars. Illustrative. Figure is redrawn on every page load, so it is not stable enough to quote.",
+   "need": "ASK. Whether disposal and capacity are held in one system, so freed space can follow a disposal.",
+   "amber": true
+  },
+  {
+   "hdr": "SLIDE 67, WHAT THE CLIENT SAID ABOUT THIS DASHBOARD"
+  },
+  {
+   "n": 25,
+   "item": "Retrieval as processed from eServe",
+   "type": "Source",
+   "d": "No",
+   "slide": "s67",
+   "why": "No source. s67 names eServe as where retrieval is processed, but nothing in this work has reached it, so every retrieval figure on the screen is illustrative.",
+   "need": "ASK. Access to eServe, and who owns it.",
+   "amber": false
+  },
+  {
+   "n": 26,
+   "item": "What is available in Opus and how we can apply it",
+   "type": "Source",
+   "d": "No",
+   "slide": "s67",
+   "why": "No source. What Opus holds, and whether any of it reaches boxes and folders, has never been established.",
+   "need": "ASK. What is available in Opus and how it can be applied.",
+   "amber": false
+  }
+ ]
+}

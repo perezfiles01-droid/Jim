@@ -1,0 +1,162 @@
+{
+  "bw": [
+    {
+      "file": "bw-drill-sites.png",
+      "key": "sites",
+      "title": "Number of active EDRMS SharePoint sites for Department, RM, office",
+      "w": 1400,
+      "h": 702
+    },
+    {
+      "file": "bw-drill-sov.png",
+      "key": "sov",
+      "title": "Total number of active EDRMS SharePoint sites for Sovereign projects",
+      "w": 1400,
+      "h": 437
+    },
+    {
+      "file": "bw-drill-nonsov.png",
+      "key": "nonsov",
+      "title": "Total number of active EDRMS SharePoint sites for Nonsovereign projects",
+      "w": 1400,
+      "h": 437
+    },
+    {
+      "file": "bw-drill-users.png",
+      "key": "users",
+      "title": "EDRMS users with recorded activity, last 180 days, by department, office or RM",
+      "w": 1400,
+      "h": 548
+    },
+    {
+      "file": "bw-drill-docs.png",
+      "key": "docs",
+      "title": "Total number of documents in EDRMS, by department, office or RM",
+      "w": 1400,
+      "h": 563
+    },
+    {
+      "file": "bw-drill-rec.png",
+      "key": "rec",
+      "title": "Total number of records declared in EDRMS, by department, office or RM",
+      "w": 1400,
+      "h": 561
+    },
+    {
+      "file": "bw-drill-phys.png",
+      "key": "phys",
+      "title": "Total number of physical counterparts identified, by department, office or RM",
+      "w": 1400,
+      "h": 563
+    },
+    {
+      "file": "bw-drill-disp.png",
+      "key": "disp",
+      "title": "Total number of records due for disposal within 12 months, by department, office or RM",
+      "w": 1400,
+      "h": 574
+    }
+  ],
+  "dp": [
+    {
+      "file": "dp-drill-sites.png",
+      "key": "sites",
+      "title": "Overview of EDRMS sites",
+      "w": 1400,
+      "h": 744
+    },
+    {
+      "file": "dp-drill-users.png",
+      "key": "users",
+      "title": "Users and Activity",
+      "w": 1400,
+      "h": 361
+    },
+    {
+      "file": "dp-drill-visitors.png",
+      "key": "visitors",
+      "title": "Site Visits",
+      "w": 1400,
+      "h": 793
+    },
+    {
+      "file": "dp-drill-docs.png",
+      "key": "docs",
+      "title": "Total number of documents in EDRMS",
+      "w": 1400,
+      "h": 759
+    },
+    {
+      "file": "dp-drill-rec.png",
+      "key": "rec",
+      "title": "Records Declaration",
+      "w": 1400,
+      "h": 759
+    },
+    {
+      "file": "dp-drill-phys.png",
+      "key": "phys",
+      "title": "Physical counterpart",
+      "w": 1400,
+      "h": 731
+    },
+    {
+      "file": "dp-drill-disp.png",
+      "key": "disp",
+      "title": "Disposal",
+      "w": 1400,
+      "h": 731
+    }
+  ],
+  "pj": [
+    {
+      "file": "pj-drill-sites.png",
+      "key": "sites",
+      "title": "Sites created for this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-users.png",
+      "key": "users",
+      "title": "EDRMS users on this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-visitors.png",
+      "key": "visitors",
+      "title": "Site visitors on this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-docs.png",
+      "key": "docs",
+      "title": "Documents held on this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-rec.png",
+      "key": "rec",
+      "title": "Records declared on this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-phys.png",
+      "key": "phys",
+      "title": "Physical counterparts identified on this project",
+      "w": 1400,
+      "h": 206
+    },
+    {
+      "file": "pj-drill-due.png",
+      "key": "due",
+      "title": "Records due for disposal on this project",
+      "w": 1400,
+      "h": 206
+    }
+  ]
+}

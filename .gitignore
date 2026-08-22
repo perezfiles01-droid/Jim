@@ -1,3 +1,5 @@
 # Python bytecode, created whenever the workbook or Data Design generators run
 __pycache__/
 *.pyc
+deck/*.pdf
+deck/slide-*.jpg

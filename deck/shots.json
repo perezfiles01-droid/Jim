@@ -1,0 +1,152 @@
+{
+  "bw": [
+    {
+      "file": "bw-01.png",
+      "title": "Bank-wide oversight",
+      "w": 1400,
+      "h": 585
+    },
+    {
+      "file": "bw-02.png",
+      "title": "Bank-wide oversight",
+      "w": 1400,
+      "h": 740
+    },
+    {
+      "file": "bw-03.png",
+      "title": "Comparison",
+      "w": 1400,
+      "h": 1013
+    },
+    {
+      "file": "bw-04.png",
+      "title": "Records Declaration Trend",
+      "w": 1400,
+      "h": 594
+    }
+  ],
+  "dp": [
+    {
+      "file": "dp-01.png",
+      "title": "Department insights",
+      "w": 1400,
+      "h": 555
+    },
+    {
+      "file": "dp-02.png",
+      "title": "Department insights",
+      "w": 1400,
+      "h": 782
+    },
+    {
+      "file": "dp-03.png",
+      "title": "Library usage",
+      "w": 1400,
+      "h": 664
+    }
+  ],
+  "pj": [
+    {
+      "file": "pj-01.png",
+      "title": "Project insights",
+      "w": 1400,
+      "h": 577
+    },
+    {
+      "file": "pj-02.png",
+      "title": "Project profile",
+      "w": 1400,
+      "h": 734
+    },
+    {
+      "file": "pj-03.png",
+      "title": "Project profile",
+      "w": 1400,
+      "h": 788
+    }
+  ],
+  "fp": [
+    {
+      "file": "fp-01.png",
+      "title": "Institutional file plan insights",
+      "w": 1400,
+      "h": 783
+    },
+    {
+      "file": "fp-02.png",
+      "title": "Terms within a category",
+      "w": 1400,
+      "h": 756
+    },
+    {
+      "file": "fp-03.png",
+      "title": "Unused terms",
+      "w": 1400,
+      "h": 367
+    },
+    {
+      "file": "fp-04.png",
+      "title": "New libraries",
+      "w": 1400,
+      "h": 337
+    },
+    {
+      "file": "fp-05.png",
+      "title": "Pending requests",
+      "w": 1400,
+      "h": 370
+    }
+  ],
+  "rd": [
+    {
+      "file": "rd-01.png",
+      "title": "Retention and disposal insights",
+      "w": 1400,
+      "h": 544
+    },
+    {
+      "file": "rd-02.png",
+      "title": "Permanent retention",
+      "w": 1400,
+      "h": 560
+    },
+    {
+      "file": "rd-03.png",
+      "title": "Temporary retention",
+      "w": 1400,
+      "h": 717
+    },
+    {
+      "file": "rd-04.png",
+      "title": "Retention labels",
+      "w": 1400,
+      "h": 487
+    }
+  ],
+  "ra": [
+    {
+      "file": "ra-01.png",
+      "title": "Records and archive holdings",
+      "w": 1400,
+      "h": 634
+    },
+    {
+      "file": "ra-02.png",
+      "title": "Storage",
+      "w": 1400,
+      "h": 661
+    },
+    {
+      "file": "ra-03.png",
+      "title": "Retrieval",
+      "w": 1400,
+      "h": 795
+    },
+    {
+      "file": "ra-04.png",
+      "title": "Retrieval",
+      "w": 1400,
+      "h": 634
+    }
+  ]
+}
