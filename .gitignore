@@ -5,5 +5,3 @@ deck/*.pdf
 deck/slide-*.jpg
 deck/qa-*.png
 deck/preview.html
-node_modules/
-package-lock.json
