@@ -1,10 +1,10 @@
 ---
 name: opus-planning-mode
 description: |
-  High-level analysis and confirmation layer for every prompt. This skill intercepts your request, provides a comprehensive summary of what will be done (like Opus 5 would reason), then asks for confirmation before proceeding.
+  High-level analysis and confirmation layer for complex requests. Provides a comprehensive summary of what will be done (like Opus 5 would reason), then asks for confirmation before proceeding.
   
-  Get detailed plans, automatic bug verification after each change, seamless orchestration with the fix skill, and autonomous execution. One-at-a-time implementation with automatic verification — no manual testing needed. Once you confirm "Yes", the skill executes fully autonomously: implements each change, auto-verifies for bugs, commits, pushes, merges to main, and moves to the next change without interruption.
-compatibility: Read, Edit, Bash, Grep, Agent
+  Creates detailed plans, verifies each change with the fix skill, and implements changes one at a time. Once you confirm "Yes", executes autonomously: implements, verifies, commits, pushes, and merges each change to main without interruption.
+compatibility: Read, Edit, Bash, Grep, Agent, Skill
 ---
 
 # Opus Planning Mode - Integrated with Fix Skill for Coordinated Workflows
@@ -301,39 +301,35 @@ If a bug is found during implementation of Change 3:
 
 **This means:** You get safety, functionality, AND user satisfaction. "No bugs" doesn't just mean syntax is correct — it means the feature is actually usable and meets your requirements.
 
-## Execution Control Flow (Critical Fix)
+## Execution Control Flow
 
 ### When User Confirms "Yes"
 
-The skill **immediately transitions to autonomous execution mode**. Here's the explicit control flow:
+After you confirm "Yes", the skill **enters autonomous execution mode** and implements changes according to this workflow:
 
 ```
 USER CONFIRMS "Yes"
   ↓
-EXECUTION PHASE BEGINS (Skill now operates autonomously)
+EXECUTION BEGINS (No more confirmations needed)
   ↓
 FOR EACH CHANGE IN PLAN:
   ├─ 1. IMPLEMENT
   │    └─ Make the code change(s)
   │
-  ├─ 2. VERIFY PHASE
-  │    ├─ Invoke Fix skill automatically
-  │    ├─ Fix skill analyzes code for bugs
-  │    │  ├─ Bugs found? → Fix skill fixes, then re-verify (GOTO verify loop)
-  │    │  └─ No bugs? → Continue
-  │    ├─ Browser/runtime testing (run check.js if HTML change)
-  │    │  ├─ Errors found? → Fix, re-test (GOTO verify loop)
-  │    │  └─ Clean? → Continue
-  │    └─ Requirement alignment check
-  │       ├─ Missing feature or wrong behavior? → Fix, re-verify (GOTO verify loop)
-  │       └─ Fully compliant? → Continue
+  ├─ 2. VERIFY WITH FIX SKILL
+  │    ├─ Invoke /fix skill to analyze for bugs
+  │    ├─ Bugs found? → fix skill outputs diagnosis
+  │    │              → I fix the issues
+  │    │              → Re-verify with fix skill
+  │    │              → Repeat until clean
+  │    └─ No bugs? → Continue
   │
   ├─ 3. COMMIT & PUSH
   │    ├─ git add [changed files]
   │    ├─ git commit -m "Change X: [description]"
   │    └─ git push origin [branch]
   │
-  ├─ 4. MERGE TO MAIN
+  ├─ 4. MERGE TO MAIN (Per standing instruction)
   │    ├─ git checkout main
   │    ├─ git merge --no-edit [branch]
   │    ├─ git push origin main
@@ -342,95 +338,69 @@ FOR EACH CHANGE IN PLAN:
   ├─ 5. STATUS REPORT
   │    └─ Brief message: "✅ Change X deployed. Starting Change Y..."
   │
-  └─ (CONTINUE TO NEXT CHANGE)
+  └─ (CONTINUE TO NEXT CHANGE - no pause, no asking for permission)
 
 ALL CHANGES COMPLETE
   ↓
 FINAL STATUS: "✅ All changes deployed to main"
-  ↓
-END
 ```
 
-### Verification Loop (Silent Unless Issues Found)
+### Verification Checklist
 
+When verifying each change, I check:
+
+- ✅ **Syntax & Correctness** — No broken code, proper structure, all braces/brackets closed
+- ✅ **Requirement Alignment** — Does it actually do what was requested?
+- ✅ **Logic & Scope** — Variables declared before use, functions in scope, no temporal dead zone issues
+- ✅ **User Experience** — Is it intuitive and production-ready?
+- ✅ **Runtime Testing** — For HTML changes, run browser tests (e.g., check.js)
+
+### Key Behaviors During Execution
+
+1. **No interruptions after "Yes"** — Workflow runs to completion, one change at a time
+2. **Auto-invoke fix skill** — After implementing each change, I call the fix skill automatically (no manual testing)
+3. **Silent verification** — Only report issues if found; clean changes don't need narration
+4. **Auto-fix and re-verify** — When fix skill finds a bug, I fix it and re-verify immediately
+5. **One change at a time** — Each change is isolated in its own commit
+6. **Auto-merge per standing instruction** — Each verified change is merged to main immediately (standing instruction from 17 August 2026)
+7. **Progress updates** — Brief status after each change completes
+
+## How Verification Works With Fix Skill
+
+When I implement a change, here's how verification happens:
+
+### 1. Invoke Fix Skill
+```bash
+/fix
 ```
-VERIFY CHANGE
-  ↓
-  ├─ SYNTAX CHECK (Read code, check braces, brackets, scope)
-  │  └─ Issues? → Report + Fix
-  │
-  ├─ LOGIC CHECK (Trace execution paths, check operators, conditions)
-  │  └─ Issues? → Report + Fix
-  │
-  ├─ REQUIREMENT ALIGNMENT (Does it do what was asked?)
-  │  └─ Missing feature? → Report + Fix
-  │
-  ├─ UX/USABILITY (Would a user find this ready to use?)
-  │  └─ Issues? → Report + Fix
-  │
-  ├─ RUNTIME TEST (If applicable: browser test, API check)
-  │  └─ Errors? → Report + Fix
-  │
-  └─ All checks pass? → Mark READY TO DEPLOY
-```
+This analyzes the code I just changed for:
+- Syntax errors and logic bugs
+- Variables properly declared and in scope
+- Functions available where they're called
+- Type mismatches and reference errors
+- Temporal dead zone issues (especially in dashboards)
 
-### Key Rules for Execution Phase
+### 2. Review Fix Skill's Findings
 
-1. **No interruptions once "Yes" is given** — The skill runs to completion without asking for additional confirmations
-2. **Silent verification** — Only report issues if they're found; if verification passes, don't narrate each step
-3. **Auto-fix on verification failure** — When the fix skill finds a bug, it fixes it; no waiting for user input
-4. **Re-verify after any fix** — Every fix is immediately re-tested to confirm it worked
-5. **One change at a time** — Never bundle multiple changes in one commit; each change is isolated
-6. **Auto-merge when ready** — Don't ask "should I merge?"; ready = merged immediately
-7. **Track progress visually** — User sees: "Change 1 deployed → Change 2 deployed → All done"
+Fix skill reports:
+- ✅ **No issues found** → Code is clean, proceed to commit
+- ❌ **Issues found** → Get specific findings (file, line, description)
 
-## Bug Diagnosis and Fixing Workflow
+### 3. Fix & Re-Verify
 
-When you report a bug or encounter an issue, this skill automatically engages **Opus-level diagnostic reasoning** to:
+If issues are found:
+- I read the specific findings
+- I make corrections to the code
+- I invoke /fix again to re-verify
+- Repeat until clean
 
-### 1. **Root Cause Analysis**
-   - **Reproduce** — Gather exact symptoms, when it occurs, what changed
-   - **Search** — Trace related code, check for similar issues, examine dependencies
-   - **Diagnose** — Identify the real cause (not just the symptom):
-     - Is it a logic error, scope issue, type mismatch, or architectural problem?
-     - What was the intent vs. what is actually happening?
-     - Are there hidden dependencies or side effects?
+### 4. Commit When Verified
 
-### 2. **Impact Assessment**
-   - **Scope** — What else might be affected by this bug?
-   - **Risk** — Could the fix break something else?
-   - **Related Bugs** — Are there similar patterns elsewhere in the code?
-
-### 3. **Fix Proposal and Validation**
-   - **Propose** — Present the fix with clear explanation of why it works
-   - **Test** — Verify the fix locally before deployment
-   - **Validate** — Confirm no regressions or new issues introduced
-
-### Common Bug Patterns in Web Dashboards
-
-The skill learns from bugs found in this project:
-
-**Scope & Visibility Issues:**
-- Functions defined in module closures not accessible to other modules (e.g., `pager()` function only accessible within Department Insights)
-- Fix: Move shared utilities to global scope or pass as parameters
-
-**CSS Layout Problems:**
-- Fixed `min-width` constraints preventing responsive design (e.g., `min-width: 900px` forcing horizontal scroll)
-- Proportional grid columns not working at different zoom levels
-- Fix: Use flexible grid layouts (`1fr 120px`) with reduced min-width constraints
-
-**Pagination & Data Rendering:**
-- Page state not tracking correctly across drill switches
-- Missing or incorrect array slicing for pagination display
-- Fix: Ensure state variables are isolated per drill, verify slice boundaries
-
-**Event Binding & Handlers:**
-- Click handlers not wiring correctly after pagination adds new elements
-- Fix: Wire handlers after each render, use event delegation
-
-**Type & Reference Errors:**
-- Calling functions from wrong scope, accessing undefined properties
-- Fix: Verify scope chain, test function availability before calling
+Only after fix skill confirms no issues do I:
+- `git add` the changed files
+- `git commit` with a clear message
+- `git push` to the feature branch
+- `git merge` to main per standing instruction
 
 ## How to Trigger Planning Mode
 
@@ -447,51 +417,97 @@ The skill will:
 4. Ask for your confirmation before proceeding
 5. **For multiple changes:** Automatically verify each change with the fix skill
 
-## The "Yes" Transition: From Planning to Autonomous Execution
+## How The Skill Works: Planning → Confirmation → Execution
 
-**THIS IS THE CRITICAL PART THAT MAKES THE SKILL WORK:**
+### Phase 1: Planning (Your Input Required)
 
-### Planning Phase (User Input Required)
-When you submit a request → Skill analyzes it → Skill presents comprehensive plan → **Skill STOPS and WAITS**
+When you invoke the skill with a request:
+
+1. I analyze what you're asking for
+2. I break it down into specific changes
+3. I present a **detailed plan** with:
+   - What each change involves
+   - How I'll approach it
+   - What the end result will be
+   - Any assumptions or dependencies
 
 ```
-Skill: "Here's the plan: [plan details]
+You: "I need to make 3 improvements to the dashboard..."
 
-Does this plan look right? Say 'Yes' to proceed..."
+Me: "Here's my plan:
+
+## Change 1: Update styling
+What: Modify CSS and layout
+How: [step by step]
+Time: ~30 min
+
+## Change 2: Add filter
+What: New visitor filter
+How: [step by step]
+Time: ~1-2 hours
+
+## Change 3: Optimize data
+What: Cache department data
+How: [step by step]
+Time: ~2 hours
+
+Does this plan look right? Say 'Yes' to proceed, or tell me what to change."
 ```
 
-### User Says "Yes"
-Your single word "Yes" is the **execution trigger**. It signals:
-- ✅ Plan is approved as-is
-- ✅ Skill should NOW switch to autonomous execution mode
-- ✅ Skill should STOP asking for confirmation
-- ✅ Skill should implement and deploy all changes without further input
+### Phase 2: Confirmation (Your Decision)
 
-### Execution Phase (No User Input Required)
-Skill transitions into autonomous mode and:
-```
-1. Implement change 1 (only change 1, not all of them)
-2. Verify change 1 comprehensively (invoke fix skill automatically)
-3. If bugs found → Fix skill fixes them → Re-verify
-4. When verified: commit → push → merge to main
-5. Brief progress update: "✅ Change 1 deployed. Starting Change 2..."
-6. Implement change 2 (repeat verification and merge)
-7. ... (continue for each change)
-8. Final status: "✅ All changes deployed"
-```
+You have three options:
 
-**IMPORTANT:** Between step 5 and 6, there is NO pause waiting for your confirmation. The skill automatically proceeds to the next change. You only confirm once ("Yes"), then the workflow runs to completion.
+**Option A: Say "Yes"** → I proceed to Phase 3 (execution)
 
-### If Plan Needs Revision (You Don't Say "Yes")
-If the plan isn't quite right, you provide feedback:
+**Option B: Ask for changes** → I revise the plan and ask again
 ```
-You: "Actually, I also need to update the chart colors"
-Skill: "Got it. Here's the revised plan: [updated plan]
+You: "Can you also update the chart colors in Change 1?"
+Me: "Got it. Here's the revised plan: [updated]
 
 Does this work now?"
 ```
 
-Then the loop repeats until you say "Yes".
+**Option C: Add more context** → I incorporate it and re-present
+```
+You: "Actually, the dashboard should also support mobile"
+Me: "Got it. Here's how I'll handle that: [revised plan]
+
+Better?"
+```
+
+The loop continues until you confirm with "Yes".
+
+### Phase 3: Execution (No More Confirmations)
+
+Once you say "Yes":
+
+```
+CHANGE 1: Update styling
+  → Implement the change
+  → Verify with /fix skill (check for bugs)
+  → If bugs found: fix + re-verify
+  → Commit + Push + Merge to main
+  ✅ Change 1 deployed.
+
+CHANGE 2: Add filter
+  → Implement the change
+  → Verify with /fix skill
+  → If bugs found: fix + re-verify
+  → Commit + Push + Merge to main
+  ✅ Change 2 deployed.
+
+CHANGE 3: Optimize data
+  → Implement the change
+  → Verify with /fix skill
+  → If bugs found: fix + re-verify
+  → Commit + Push + Merge to main
+  ✅ Change 3 deployed.
+
+ALL DONE ✅
+```
+
+**Key:** After "Yes", I don't ask permission again. Each change goes through the full cycle automatically.
 
 ## Example Flow
 
@@ -558,94 +574,94 @@ Does this plan look right?
 - **Status updates only** — e.g., "✅ Change 1 deployed. Starting Change 2..."
 - **You get notified when all changes are complete**
 
-## Troubleshooting: "Skill Not Functioning"
+## Troubleshooting
 
-If the skill doesn't seem to be working, here are the most common issues and fixes:
+If the skill doesn't seem to be working as expected:
 
-### Issue 1: Skill asks for confirmation multiple times after "Yes"
-**Problem:** After you say "Yes", the skill should run autonomously, but it keeps asking "Does this look right?" or "Should I proceed?"
+### Issue 1: Skill doesn't create a clear plan
+**Problem:** After invoking the skill, I jump straight into implementation or present a vague plan.
 
-**Fix:** The skill should **switch modes** after "Yes". If this isn't happening, check:
-- [ ] Skill is receiving your "Yes" message (not getting cut off or ignored)
-- [ ] Skill is transitioning to execution phase (not stuck in planning loop)
-- [ ] Each change is being implemented one at a time (not all bundled)
-- [ ] Skill is committing and merging after each change (not staging everything at the end)
+**Fix:** The planning phase should always present:
+- [ ] **What** — Clear statement of what work involves
+- [ ] **How** — Step-by-step breakdown of approach
+- [ ] **Why** — Context on why this approach makes sense
+- [ ] **Order** — If multiple changes, clear sequence
+- [ ] **Verification** — How each change will be tested
 
-**Action:** If the skill asks for confirmation after you've already said "Yes", that means it's still in planning mode when it should be in execution mode. This is a critical bug in the workflow.
+**Action:** Tell me to "create a detailed plan first" if I skip this step.
 
-### Issue 2: Skill doesn't invoke fix skill for automatic verification
-**Problem:** You say "Yes", changes get made, but they're committed without verification. The fix skill is never invoked.
+### Issue 2: Skill asks for confirmation repeatedly during execution
+**Problem:** After you say "Yes", I keep asking for permission between changes.
 
-**Fix:** After each change is implemented, the skill MUST invoke the fix skill automatically to verify no bugs were introduced. If this isn't happening:
-- [ ] After implementing change 1, skill should call fix skill (not ask you to test)
-- [ ] Fix skill output should appear (either "no bugs found" or bug diagnosis)
-- [ ] If bugs found, fix skill should fix them automatically
-- [ ] Only after verification passes should the commit happen
+**Fix:** Once "Yes" is given, the workflow should proceed without interruption:
+- [ ] Implement change 1 → Verify → Commit → Merge
+- [ ] Automatically start change 2 (no pause)
+- [ ] Repeat for each change
+- [ ] Only report status, don't ask for permission
 
-**Action:** If changes are being committed without fix skill verification, the autonomous verification workflow is broken.
+**Action:** If I'm asking permission between changes, tell me to "proceed with the next change automatically" or "stop asking for confirmation."
 
-### Issue 3: Skill doesn't auto-merge to main
-**Problem:** Changes are committed and pushed, but not merged to main. They sit on the feature branch.
+### Issue 3: Skill doesn't use fix skill for verification
+**Problem:** Changes are being committed without checking for bugs first.
 
-**Fix:** Standing instruction: "Every accepted change is merged to main, never ask". After each change is verified:
-- [ ] `git checkout main`
-- [ ] `git merge --no-edit [branch]`
-- [ ] `git push origin main`
-- [ ] `git checkout [branch]`
+**Fix:** After implementing each change, I must:
+- [ ] Invoke the fix skill explicitly: `/fix`
+- [ ] Review fix skill's findings
+- [ ] Fix any issues found and re-verify
+- [ ] Only commit when clean
 
-**Action:** If changes aren't auto-merging, check git history. Changes should be landing on main immediately after verification passes, not sitting on feature branches.
+**Action:** Tell me to "verify this change with /fix skill" if I skip verification.
 
-### Issue 4: Skill doesn't implement changes one at a time
-**Problem:** Multiple changes get bundled into one big commit instead of separate commits.
+### Issue 4: Skill doesn't merge to main automatically
+**Problem:** Changes sit on the feature branch instead of landing on main.
 
-**Fix:** The "incremental protocol" requires:
-- [ ] Implement ONLY change 1 (not changes 1, 2, 3 all at once)
-- [ ] Verify change 1
-- [ ] Commit change 1
-- [ ] Then implement change 2
-- [ ] Each change is a separate commit with clear message
-
-**Action:** If multiple changes are in one commit, the skill isn't following the incremental protocol correctly.
-
-### Issue 5: Skill doesn't provide status updates
-**Problem:** After you say "Yes", you get no feedback about what's happening.
-
-**Fix:** The skill should provide brief status messages as it progresses:
+**Fix:** Standing instruction (from CLAUDE.md): Every accepted change merges to main immediately:
+```bash
+git checkout main
+git merge --no-edit [branch]
+git push origin main
+git checkout [branch]
 ```
-✅ Change 1 (Improve visitor filter styling) deployed to main.
-Starting Change 2 (Add export functionality)...
+
+**Action:** If changes aren't on main, check git log and remind me of the standing instruction.
+
+### Issue 5: Skill bundles multiple changes into one commit
+**Problem:** Instead of separate commits for each change, all changes land in one large commit.
+
+**Fix:** The "incremental protocol" requires strict separation:
+- [ ] Each change gets its own commit with a clear message
+- [ ] Commit message format: "Change N: [description]"
+- [ ] One logical change per commit
+- [ ] Easy to see which commit introduced which feature
+
+**Action:** If commits are too large, ask me to "split this into separate commits by change."
+
+### Issue 6: Skill doesn't provide progress updates
+**Problem:** After saying "Yes", you get silence until the end, making it unclear what's happening.
+
+**Fix:** I should provide clear progress messages:
+```
+✅ Change 1 (Update styling) verified and deployed to main.
+→ Now implementing Change 2 (Add filter)...
 
 ✅ Change 2 deployed to main.
-Starting Change 3 (Optimize data loading)...
+→ Now implementing Change 3 (Optimize performance)...
 
-✅ Change 3 deployed to main.
-All changes complete!
+✅ All 3 changes deployed to main.
 ```
 
-**Action:** If you're getting silence after "Yes", the skill might be executing but not reporting. Check git history to see if changes actually landed on main.
-
-### How to Report a Skill Bug
-
-If the skill isn't working as described above:
-
-1. **Describe what you asked for** — Be specific about the request
-2. **Describe what should happen** — Reference the workflow above
-3. **Describe what actually happened** — What did the skill do instead?
-4. **Provide evidence** — Git log, error messages, or specific behavior
-5. **Example:** "I said 'Yes', but the skill asked 'Does this look right?' again. It's stuck in planning mode. Here's the git log showing no commits were made."
-
-With this information, the skill can be debugged and fixed.
+**Action:** Ask for a progress update if I'm being silent.
 
 ## Key Principles
 
-1. **Plan everything upfront** — Know the full scope before starting
-2. **One confirmation only** — You confirm the plan once ("Yes"), then everything runs autonomously
-3. **Implement one change at a time** — No bundling multiple features
-4. **Auto-verify each change** — Fix skill checks for bugs automatically
-5. **Fix bugs immediately** — Don't accumulate technical debt
-6. **Commit frequently** — Each change is a separate commit
-7. **Auto-merge when ready** — No asking permission; ready = merged to main immediately
-8. **No interruptions** — Once you say "Yes", the workflow runs uninterrupted until complete
+1. **Plan upfront, execute later** — I present the full plan before doing any implementation
+2. **One "Yes" confirms everything** — You approve the plan once, then I execute all changes without further confirmation
+3. **Incremental implementation** — Each change is implemented and deployed separately, not bundled
+4. **Verify every change** — I invoke /fix skill after each change to catch bugs before merging
+5. **Fix bugs immediately** — If fix skill finds issues, I fix and re-verify before committing
+6. **Clean git history** — Each change gets its own commit with a clear message
+7. **Merge to main immediately** — Per standing instruction, verified changes land on main right away (not left on feature branch)
+8. **Progress updates** — I tell you when each change deploys so you know what's happening
 
 ---
 

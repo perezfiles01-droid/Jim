@@ -1,93 +1,159 @@
-# Opus Planning Mode
+# Opus Planning Mode Skill
 
-High-level analysis and confirmation layer for every prompt with automatic bug verification and autonomous execution.
+High-level analysis and confirmation layer for complex work. Creates detailed plans, asks for confirmation, then executes with verification.
 
 ## What It Does
 
-This skill provides:
+1. **Analyzes your request** — Understands what you're asking for
+2. **Creates a detailed plan** — Breaks down what, how, and why
+3. **Asks for confirmation** — You review and approve before any work starts
+4. **Executes step-by-step** — Implements changes one at a time
+5. **Verifies each change** — Uses fix skill to catch bugs before merging
+6. **Deploys to main** — Per standing instruction, merges each verified change immediately
 
-1. **Detailed Planning** — Comprehensive breakdown of what will be done before starting
-2. **Confirmation Gate** — Review and approve the plan before execution begins
-3. **Autonomous Execution** — Once confirmed, implements changes end-to-end without interruption
-4. **Automatic Verification** — Integrated with the fix skill to verify each change for bugs
-5. **Seamless Orchestration** — Multi-change workflows with automatic verification between changes
+## How to Invoke
 
-## How to Use
-
-Simply invoke with your request using the Skill tool:
-
+**Explicitly:**
 ```
-Skill: opus-planning-mode
-```
+/opus-planning-mode
 
-Or say naturally:
-
-```
-I need to make 3 improvements to the dashboard:
-1. Update styling
-2. Add new filter
-3. Optimize performance
+I need to make 3 improvements to the dashboard...
 ```
 
-## The Workflow (TL;DR)
-
+**Or naturally:**
 ```
-1. You submit request
-2. Skill presents comprehensive plan
-3. Skill asks: "Does this plan look right?"
-4. You say: "Yes"
-5. Skill executes FULLY AUTONOMOUSLY:
-   → Implement change 1 only
-   → Verify (auto-invoke fix skill)
-   → If bugs: fix skill fixes them
-   → Commit + Push + Merge to main
-   → Brief status: "✅ Change 1 deployed"
-   → Start change 2 (no asking for permission)
-   → Repeat for all changes
-   → Final status: "✅ All changes deployed"
+I need to fix these 5 issues with the report. Can you create a plan first?
 ```
 
-**Key:** After "Yes", the skill runs uninterrupted. You're done. Check the result when it's finished.
+**Or via the Skill tool:**
+```
+/fix opus-planning-mode
+[request details]
+```
 
-## Features
+## The Workflow
 
-- **Planning Phase**: Presents a clear plan with what, how, and why
-- **Confirmation**: One simple "Yes" to proceed with execution (only ask once)
-- **Autonomous Execution**: Implements, verifies, commits, pushes, and merges automatically
-- **Silent Verification**: Fix skill automatically checks each change; only report bugs if found
-- **Incremental Implementation**: Handles multiple changes one at a time with verification
-- **Auto-Merge**: Each verified change is merged to main immediately (no asking)
-- **Clean Commits**: Each change gets its own descriptive commit message
-- **Status Updates**: Brief progress notifications showing what was deployed
+### Step 1: Planning (You provide feedback)
+```
+You: "I need to update styling and add a new filter"
+
+Me: "Here's my plan:
+
+## Change 1: Update styling
+- Modify CSS
+- Improve layout
+- ~30 minutes
+
+## Change 2: Add new filter  
+- Create filter UI
+- Wire to data
+- ~2 hours
+
+Does this look right?"
+```
+
+### Step 2: Confirmation (You approve)
+```
+You: "Yes, proceed"
+
+OR
+
+You: "Actually, also add dark mode support"
+Me: "Got it. Revised plan:
+[updated plan]
+
+Better?"
+```
+
+### Step 3: Execution (Automatic)
+Once you say "Yes":
+```
+Change 1: Update styling
+  ✓ Implement
+  ✓ Verify with /fix
+  ✓ Commit + Push + Merge
+  → Next change...
+
+Change 2: Add new filter
+  ✓ Implement
+  ✓ Verify with /fix
+  ✓ Commit + Push + Merge
+  → Next change...
+
+✅ All changes deployed to main
+```
+
+**No asking for permission between changes.** One "Yes" approves the whole workflow.
+
+## Key Features
+
+| Feature | What It Does |
+|---------|-------------|
+| **Detailed Plans** | Break down complex work before starting |
+| **Confirmation Gate** | Review and approve the approach first |
+| **Incremental Implementation** | Each change done one at a time, separate commits |
+| **Automatic Verification** | Invoke /fix after each change to check for bugs |
+| **Auto-Fix** | If bugs found, I fix them and re-verify |
+| **Clean Merges** | Each verified change lands on main immediately |
+| **Progress Updates** | You see status as work completes |
+
+## Common Scenarios
+
+### Scenario 1: Simple Request
+```
+You: "Add a 'Back' button to the dashboard"
+Me: "1-line plan: Add button to top-left, wire click handler, style consistently"
+You: "Yes"
+Me: [implement, verify, merge] Done ✅
+```
+
+### Scenario 2: Multiple Changes
+```
+You: "Improve dashboard UX - 4 things: ..."
+Me: [detailed 4-change plan]
+You: "Yes"
+Me: [Change 1: implement→verify→merge] [Change 2: implement→verify→merge] ... Done ✅
+```
+
+### Scenario 3: Revise Plan
+```
+You: "Redesign the report. Here's what I need..."
+Me: [initial plan]
+You: "Also need mobile support"
+Me: [revised plan with mobile included]
+You: "Yes"
+Me: [execute revised plan] ✅
+```
 
 ## Verification Standards
 
-Each change is verified on four critical dimensions:
+After each change, I verify:
 
-1. **Syntax & Logic Correctness** — No broken code, proper structure
-2. **Requirement Alignment** — Does it actually do what was requested?
-3. **User Experience** — Is it intuitive and production-ready?
-4. **Production Readiness** — Can users actually use it end-to-end?
+- ✅ **No syntax errors** — Code is valid
+- ✅ **Logic is correct** — Does what it's supposed to
+- ✅ **Variables in scope** — No "undefined" or temporal dead zone issues
+- ✅ **Functions callable** — Everything used is available
+- ✅ **User-ready** — Actually works as expected
 
-Only changes passing all four dimensions are deployed to main.
+Fix skill handles this automatically when I invoke `/fix`.
 
-## Critical Rules (Must Follow)
+## What You Should Know
 
-| Rule | Why | What Happens If Broken |
-|------|-----|------------------------|
-| **One "Yes" confirms plan** | Prevents endless confirmation loops | Skill asks "confirm?" multiple times after start |
-| **Implement one change at a time** | Isolate bugs, clean git history | Multiple features bundled, hard to debug |
-| **Auto-invoke fix skill after each change** | Verify before merge | Bad code ships to main |
-| **Auto-merge when verified** | Deliver immediately per standing instruction | Changes sit on feature branch unused |
-| **Don't ask for confirmation after "Yes"** | Autonomous execution, no interruption | Workflow stalls waiting for human input |
-| **Report progress with status updates** | User knows what's happening | Silence after "Yes" = unclear if working |
-
-## Integration
-
-Works seamlessly with the fix skill to provide automatic bug diagnosis and fixing during multi-change workflows.
-
-The fix skill is **automatically invoked** after each change is implemented, requiring no manual action from you.
+- **One "Yes" approves everything** — Changes execute without re-asking for permission
+- **Each change is separate** — Different commits, easy to revert if needed
+- **Verification is automatic** — I call /fix, review findings, fix issues if needed
+- **Merges happen automatically** — Per standing instruction, verified changes land on main
+- **Status updates keep you informed** — You see what deployed and what's next
 
 ## Troubleshooting
 
-See SKILL.md "Troubleshooting: Skill Not Functioning" section for detailed diagnosis and fixes for common workflow issues.
+**Problem:** Skill seems stuck or repeating itself  
+**Solution:** This usually means plan revision is needed. Provide specific feedback on what to change.
+
+**Problem:** Not seeing status updates  
+**Solution:** Ask for a progress update - I should be reporting what's happening.
+
+**Problem:** Concerned about a change  
+**Solution:** Before saying "Yes", ask questions or ask me to revise that part of the plan.
+
+For detailed troubleshooting, see SKILL.md.
