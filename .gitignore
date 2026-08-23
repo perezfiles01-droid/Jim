@@ -5,3 +5,6 @@ deck/*.pdf
 deck/slide-*.jpg
 deck/qa-*.png
 deck/preview.html
+
+# Separate git repositories
+animiru-app-fork/
