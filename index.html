@@ -1308,7 +1308,68 @@ const DATA=(function(){
   console.assert(RECORD_GB<=STORAGE_GB,
     "Declared records cannot occupy more storage than every document holds");
 
+  /* ===== Records and archive holdings, PPT s67 =====
+     These eight figures are NOT ours. They are the client's own, read off the
+     IR Dashboard screenshot they put on s67 for calendar 2024, and they are
+     used here rather than invented because a figure the client published is
+     the only defensible base this dashboard has: no system this report reaches
+     holds a box, a folder, a storage room or a retrieval.
+
+     They reconcile internally on the client's own slide, which is why they can
+     be asserted rather than trusted: the two storage activity slices sum to the
+     storage total, and the two retrieval slices sum to the retrieval total.
+
+     This does NOT repeat the s38 error, where the client's own project figures
+     were taken as absolute and one project became 44% of the bank. Physical
+     holdings are a separate estate from the SharePoint document estate, so
+     there is no bank-wide total for these to contradict. */
+  const RA_YEAR=2024;
+  const RA_REQUESTS=259;              /* Total Storage & Retrieval Requests */
+  const RA_STORE_ACTS=7305;           /* Total Storage Activities */
+  const RA_BOXES_STORED=6697;         /* 92% slice of the storage donut */
+  const RA_FOLDERS_STORED=608;        /* 8% slice of the storage donut */
+  const RA_STAFF=283;                 /* Total Staff Supported */
+  const RA_RETR_ACTS=541;             /* Total Retrieval Activities */
+  const RA_ARCHIVED_RETRIEVED=492;    /* 91% slice of the retrieval donut */
+  const RA_RECORDS_RETRIEVED=49;      /* 9% slice of the retrieval donut */
+
+  /* Below this line the client's slides ask for cuts their own s67 screenshot
+     does not publish, so each is a base figure of its own, disclosed as demo
+     data, nesting inside a published parent that IS asserted. None is a ratio
+     applied to a figure printed beside it, which is the fault the constants
+     sweep of 17 Aug exists to keep out.
+
+     Every one of them is a question for the client, listed on the screen. */
+  const RA_STORE_REQUESTS=151, RA_RETR_REQUESTS=108;      /* sum to RA_REQUESTS */
+  const RA_REQUESTORS_DEPTS=194, RA_REQUESTORS_RMS=89;    /* sum to RA_STAFF */
+  const RA_BOXES_RETRIEVED=496, RA_FOLDERS_RETRIEVED=45;  /* sum to RA_RETR_ACTS */
+  const RA_BOXES_DISPOSED=118, RA_FOLDERS_DISPOSED=12;    /* s69 asks for these */
+  const RA_PENDING_STORE=23, RA_PENDING_RETR=17;          /* outstanding requests */
+  const RA_AWAITING_TRANSFER=412;     /* counterparts identified, not transferred */
+
+  console.assert(RA_BOXES_STORED+RA_FOLDERS_STORED===RA_STORE_ACTS,
+    "The client's own storage donut must sum to their storage activity total");
+  console.assert(RA_ARCHIVED_RETRIEVED+RA_RECORDS_RETRIEVED===RA_RETR_ACTS,
+    "The client's own retrieval donut must sum to their retrieval activity total");
+  console.assert(RA_STORE_REQUESTS+RA_RETR_REQUESTS===RA_REQUESTS,
+    "Storage and retrieval requests must sum to the published request total");
+  console.assert(RA_REQUESTORS_DEPTS+RA_REQUESTORS_RMS===RA_STAFF,
+    "Requestors by department and by RM must sum to the published staff supported");
+  console.assert(RA_BOXES_RETRIEVED+RA_FOLDERS_RETRIEVED===RA_RETR_ACTS,
+    "Boxes and folders retrieved must sum to the published retrieval total");
+  console.assert(RA_BOXES_DISPOSED<=RA_BOXES_RETRIEVED&&RA_FOLDERS_DISPOSED<=RA_FOLDERS_RETRIEVED,
+    "Nothing can be disposed that was not first retrieved from the holdings");
+  console.assert(RA_PENDING_STORE<=RA_STORE_REQUESTS&&RA_PENDING_RETR<=RA_RETR_REQUESTS,
+    "Outstanding requests must be a subset of the requests made");
+  console.assert(RA_AWAITING_TRANSFER<=WITH_PHYSICAL,
+    "Counterparts awaiting transfer must be a subset of the counterparts identified");
+
   return {DEPTS,DECLARED,DOCUMENTS,WITH_PHYSICAL,
+    RA_YEAR,RA_REQUESTS,RA_STORE_ACTS,RA_BOXES_STORED,RA_FOLDERS_STORED,
+    RA_STAFF,RA_RETR_ACTS,RA_ARCHIVED_RETRIEVED,RA_RECORDS_RETRIEVED,
+    RA_STORE_REQUESTS,RA_RETR_REQUESTS,RA_REQUESTORS_DEPTS,RA_REQUESTORS_RMS,
+    RA_BOXES_RETRIEVED,RA_FOLDERS_RETRIEVED,RA_BOXES_DISPOSED,RA_FOLDERS_DISPOSED,
+    RA_PENDING_STORE,RA_PENDING_RETR,RA_AWAITING_TRANSFER,
     MONTH_LABELS,MONTH_LABELS_WITH_YEAR,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
@@ -4859,81 +4920,119 @@ DASHBOARDS.pj=(function(){
 DASHBOARDS.ra=(function(){
   const LOCATIONS=["Archives Room","Records Center","Offsite Storage"];
 
-  /* Data structures for storage and retrieval. All holdings data is illustrative,
-     as no system this report reaches holds boxes, folders, storage, or retrieval
-     information. The only sourced figure is physical counterparts identified.
-     See gap register items 1-6 and Audit question 17. */
-  const split=splitTotal;
-  const TOTAL_BOXES=1840, TOTAL_FOLDERS=9260, TOTAL_REQUESTS=342;
-  const BOX_WEIGHTS=weights(3,41), FOLDER_WEIGHTS=weights(3,42), REQ_WEIGHTS=weights(3,43);
-  const boxSplit=split(TOTAL_BOXES,BOX_WEIGHTS), folderSplit=split(TOTAL_FOLDERS,FOLDER_WEIGHTS),
-        reqSplit=split(TOTAL_REQUESTS,REQ_WEIGHTS);
+  /* Every figure on this dashboard descends from the eight the client
+     published on s67 for calendar 2024. Nothing is drawn from Opus or from
+     the IR Dashboard itself, which the client ruled out on 17 August; what is
+     taken is the client's own printed TOTALS, which they authored.
 
-  /* Storage data by location (Slide 68: columns are Location, Requests, Requestors-depts,
-     Requestors-RMs, Boxes stored, Folders stored, Remarks) */
+     THREE FAULTS WERE REMOVED FROM THIS BLOCK ON 24 AUGUST, and they are worth
+     naming because each is a fault this project had already found elsewhere:
+
+       1. Math.random() supplied the requestor counts, so the table printed a
+          different number on every reload and reconciled with nothing. This is
+          the fault that made Project Insights unusable until 21 August.
+       2. 1,840 boxes, 9,260 folders and 342 requests were invented outright.
+          STATUS.md names the first two specifically as figures already stripped
+          from this dashboard once.
+       3. Retrieval was derived as storage times 0.35, 0.25 and 0.28, and
+          capacity as a flat 65/80/45. A fixed ratio applied to a figure printed
+          beside it is exactly what the constants sweep of 17 August exists to
+          keep out, and the capacity chart additionally ANSWERED an open
+          question the client had put to us on s68.
+
+     Each measure now gets its own weight vector, because sharing one makes
+     every ratio between two measures constant down the table. Found three
+     times before this. */
+  const split=splitTotal;
+
+  /* --- location splits, one weight vector per measure --- */
+  const W={
+    storeReq:weights(3,41), boxes:weights(3,42), folders:weights(3,43),
+    reqDepts:weights(3,44), reqRms:weights(3,45),
+    retrReq:weights(3,46), retrBoxes:weights(3,47), retrFolders:weights(3,48),
+    retrPeople:weights(3,49), dispBoxes:weights(3,50), dispFolders:weights(3,51)
+  };
+  const storeReqL   = split(DATA.RA_STORE_REQUESTS,   W.storeReq);
+  const boxesL      = split(DATA.RA_BOXES_STORED,     W.boxes);
+  const foldersL    = split(DATA.RA_FOLDERS_STORED,   W.folders);
+  const reqDeptsL   = split(DATA.RA_REQUESTORS_DEPTS, W.reqDepts);
+  const reqRmsL     = split(DATA.RA_REQUESTORS_RMS,   W.reqRms);
+  const retrReqL    = split(DATA.RA_RETR_REQUESTS,    W.retrReq);
+  const retrBoxesL  = split(DATA.RA_BOXES_RETRIEVED,  W.retrBoxes);
+  const retrFoldL   = split(DATA.RA_FOLDERS_RETRIEVED,W.retrFolders);
+  const retrPeopleL = split(DATA.RA_STAFF,            W.retrPeople);
+  const dispBoxesL  = split(DATA.RA_BOXES_DISPOSED,   W.dispBoxes);
+  const dispFoldL   = split(DATA.RA_FOLDERS_DISPOSED, W.dispFolders);
+
+  /* s68 storage, by location. Remarks is the client's own column and is a note
+     somebody maintains, not a measurement, so it carries text not a figure. */
   const STORE_DATA=LOCATIONS.map((loc,i)=>({
     location:loc,
-    requests:reqSplit[i],
-    requestors_depts:split(Math.round(78*Math.random()),weights(1,44))[0],
-    requestors_rms:split(Math.round(45*Math.random()),weights(1,45))[0],
-    boxes:boxSplit[i],
-    folders:folderSplit[i],
-    remarks:["Active, regular access","High volume transfers","Specialized holdings"][i]
+    requests:storeReqL[i],
+    requestors_depts:reqDeptsL[i],
+    requestors_rms:reqRmsL[i],
+    boxes:boxesL[i],
+    folders:foldersL[i],
+    remarks:["Active, regular access","High volume transfers","Specialised holdings"][i]
   }));
+  const sum=(rows,f)=>rows.reduce((a,r)=>a+r[f],0);
   const STORE_TOTAL={
-    location:"Total",
-    requests:STORE_DATA.reduce((a,d)=>a+d.requests,0),
-    requestors_depts:STORE_DATA.reduce((a,d)=>a+d.requestors_depts,0),
-    requestors_rms:STORE_DATA.reduce((a,d)=>a+d.requestors_rms,0),
-    boxes:TOTAL_BOXES,
-    folders:TOTAL_FOLDERS,
-    remarks:""
+    location:"Total", requests:sum(STORE_DATA,"requests"),
+    requestors_depts:sum(STORE_DATA,"requestors_depts"),
+    requestors_rms:sum(STORE_DATA,"requestors_rms"),
+    boxes:sum(STORE_DATA,"boxes"), folders:sum(STORE_DATA,"folders"), remarks:""
   };
 
-  /* Retrieval data by location (Slide 69: columns are Location, Requests, Requestors,
-     Boxes retrieved, Folders retrieved, Status, Remarks). Status mix per location. */
+  /* s69 retrieval, by location. The client's Status column names a vocabulary,
+     "Loan, Return to owner, For Disposal", not one value per row, so the mix is
+     carried per location and printed as the mix rather than picking one and
+     implying Archives Room is always a loan. */
+  const STATUSES=["Loan","Return to owner","For Disposal"];
   const RETR_DATA=LOCATIONS.map((loc,i)=>{
-    const retrReqs=split(Math.round(reqSplit[i]*0.35),weights(1,46))[0];
-    const retrBoxes=split(Math.round(boxSplit[i]*0.25),weights(1,47))[0];
-    const retrFolders=split(Math.round(folderSplit[i]*0.28),weights(1,48))[0];
+    const mix=split(retrReqL[i],weights(3,52+i));
     return {
       location:loc,
-      requests:retrReqs,
-      requestors:split(Math.round(45*Math.random()),weights(1,49))[0],
-      boxes_retrieved:retrBoxes,
-      folders_retrieved:retrFolders,
-      status:["Loan","Return to owner","For Disposal"][i],
-      remarks:["Short-term use","Completed project","Approved for disposal"][i]
+      requests:retrReqL[i],
+      requestors:retrPeopleL[i],
+      boxes_retrieved:retrBoxesL[i],
+      folders_retrieved:retrFoldL[i],
+      mix, status:STATUSES.map((s,n)=>`${s} ${F(mix[n])}`).join(", "),
+      boxes_disposed:dispBoxesL[i], folders_disposed:dispFoldL[i],
+      remarks:["Short term use","Completed project","Approved for disposal"][i]
     };
   });
   const RETR_TOTAL={
-    location:"Total",
-    requests:RETR_DATA.reduce((a,d)=>a+d.requests,0),
-    requestors:RETR_DATA.reduce((a,d)=>a+d.requestors,0),
-    boxes_retrieved:RETR_DATA.reduce((a,d)=>a+d.boxes_retrieved,0),
-    folders_retrieved:RETR_DATA.reduce((a,d)=>a+d.folders_retrieved,0),
-    status:"",
-    remarks:""
+    location:"Total", requests:sum(RETR_DATA,"requests"),
+    requestors:sum(RETR_DATA,"requestors"),
+    boxes_retrieved:sum(RETR_DATA,"boxes_retrieved"),
+    folders_retrieved:sum(RETR_DATA,"folders_retrieved"),
+    boxes_disposed:sum(RETR_DATA,"boxes_disposed"),
+    folders_disposed:sum(RETR_DATA,"folders_disposed"),
+    status:"", remarks:""
   };
 
-  /* Capacity metrics: illustrative % used and available space per location */
-  const CAPACITY_DATA=LOCATIONS.map((loc,i)=>({
-    location:loc,
-    percent_used:[65,80,45][i],
-    boxes_max:[3000,2500,1500][i],
-    get boxes_available(){return this.boxes_max-STORE_DATA[i].boxes;}
-  }));
-
-  /* Inventory health metrics (gap register items 5-6): all illustrative */
-  const INVENTORY_UNVERIFIED=split(147,weights(1,50))[0];
-  const INVENTORY_MISSING=split(34,weights(1,51))[0];
-  const INVENTORY_DUE_VERIFICATION=split(89,weights(1,52))[0];
-  const LEGACY_NOT_DIGITIZED=split(Math.round(DATA.WITH_PHYSICAL*0.12),weights(1,53))[0];
-
-  console.assert(STORE_TOTAL.boxes===TOTAL_BOXES,
-    "Storage data total boxes must equal split total");
-  console.assert(RETR_TOTAL.boxes_retrieved<=STORE_TOTAL.boxes,
-    "Retrieved boxes cannot exceed stored boxes");
+  /* Every location column must total the figure the client published. A split
+     that quietly loses a unit is the split() bug of 17 August, which showed a
+     department 103 records due against a real 75 for four days. */
+  console.assert(STORE_TOTAL.boxes===DATA.RA_BOXES_STORED
+    &&STORE_TOTAL.folders===DATA.RA_FOLDERS_STORED,
+    "Boxes and folders by location must total the client's own s67 figures");
+  console.assert(STORE_TOTAL.requests===DATA.RA_STORE_REQUESTS
+    &&RETR_TOTAL.requests===DATA.RA_RETR_REQUESTS,
+    "Requests by location must total the published request split");
+  console.assert(STORE_TOTAL.requestors_depts+STORE_TOTAL.requestors_rms===DATA.RA_STAFF,
+    "Requestors by location must total the published staff supported");
+  console.assert(RETR_TOTAL.boxes_retrieved===DATA.RA_BOXES_RETRIEVED
+    &&RETR_TOTAL.folders_retrieved===DATA.RA_FOLDERS_RETRIEVED,
+    "Boxes and folders retrieved by location must total the published retrieval figures");
+  console.assert(RETR_DATA.every(d=>d.mix.reduce((a,b)=>a+b,0)===d.requests),
+    "The status mix on a location must total that location's retrieval requests");
+  console.assert(RETR_TOTAL.boxes_retrieved<=STORE_TOTAL.boxes
+    &&RETR_TOTAL.folders_retrieved<=STORE_TOTAL.folders,
+    "Nothing can be retrieved from the holdings that was never stored in them");
+  console.assert(RETR_DATA.every(d=>d.boxes_disposed<=d.boxes_retrieved
+    &&d.folders_disposed<=d.folders_retrieved),
+    "A location cannot dispose more than it retrieved");
 
   /* s68, storage. The client's own column names, including Remarks. */
   const STORE_COLS=["Location","No. of requests","Total number of requestors (departments)",
@@ -4989,144 +5088,109 @@ DASHBOARDS.ra=(function(){
     return html;
   }
 
-  /* Render Capacity chart (Change 4): stacked bar showing % utilization per location */
-  function drawCapacityChart(){
-    return `<div class="chart cchart" id="ra-capacity">
-      ${CAPACITY_DATA.map((d,i)=>{
-        const used=d.percent_used;
-        const avail=100-used;
-        return `<div class="cbar">
-          <div class="clb">${d.location}</div>
-          <div class="chb">
-            <div class="cb used" style="width:${used}%"></div>
-            <div class="cb avail" style="width:${avail}%"></div>
-          </div>
-          <div class="crb">${used}% used</div>
-        </div>`;
-      }).join("")}
-      <div class="clegend">
-        <div class="cleg used">Used</div>
-        <div class="cleg avail">Available</div>
-      </div>
-    </div>`;
-  }
+  /* THE CAPACITY CHART IS GONE, AND ITS ABSENCE IS THE POINT.
+     s68 asks US "Can room capacity and % available storage capacity be
+     included?" and s69 asks whether retrieval frees it up again. Those are
+     open questions the client put to this project. Drawing a 65/80/45 bar
+     answered them with an invention, which STATUS.md records as the sharpest
+     error this dashboard has made. Both questions are now put back to the
+     client, in their own words, in the asks list at the foot of each screen. */
 
-  /* Storage Activity (Change 1): monthly boxes and folders stored, by department.
-     Last 6 months, distributed across departments using weights. */
-  const MONTHS=["Aug","Sep","Oct","Nov","Dec","Jan"];
-  const DEPT_LIST=["ITD","OGC","FIN","SARD","HRD","PARD","OSFG","EARD","BRM","PSOD","SERD","SPD","SDCC","OAS","ERCD","CWRD"];
-  const STORAGE_ACTIVITY=MONTHS.map((mo,i)=>{
-    const monthBoxes=Math.round(300+Math.random()*200);
-    const monthFolders=Math.round(1500+Math.random()*800);
-    const boxWeights=weights(16,54+i);
-    const folderWeights=weights(16,70+i);
-    return {
-      month:mo,
-      boxes:split(monthBoxes,boxWeights),
-      folders:split(monthFolders,folderWeights)
-    };
-  });
-
-  /* Render Storage Activity chart: boxes and folders stored per month */
-  function drawStorageActivityChart(){
-    const deptCols=DEPT_LIST.map((d,i)=>{
-      const boxes=STORAGE_ACTIVITY.reduce((a,m)=>a+m.boxes[i],0);
-      const folders=STORAGE_ACTIVITY.reduce((a,m)=>a+m.folders[i],0);
-      const maxVal=Math.max(...STORAGE_ACTIVITY.map(m=>m.boxes[i]));
-      return {dept:d,boxes,folders,maxVal};
-    });
-    return `<div class="chart cols" id="ra-activity">
-      ${deptCols.map(d=>`<div class="ccol">
-        <div class="cb" style="height:${Math.max(3,Math.round(200*d.boxes/Math.max(...deptCols.map(x=>x.boxes))))}px;background:var(--blue)"></div>
-        <div class="cv">${F(d.boxes)}</div>
-        <div class="cl">${d.dept}</div>
-      </div>`).join("")}
-    </div>
-    <div class="stor-legend">Boxes stored over 6 months, by department</div>`;
-  }
-
-  /* Pending Requests & Transfers (Change 2): outstanding requests and counterparts awaiting transfer */
-  const PENDING_REQUESTS=split(67,weights(3,86))[0];
-  const PENDING_TRANSFERS=split(Math.round(DATA.WITH_PHYSICAL*0.08),weights(1,87))[0];
-  const PENDING_DATA=[
-    {label:"Requests awaiting fulfillment",value:PENDING_REQUESTS,desc:"Outstanding requests not yet retrieved"},
-    {label:"Counterparts awaiting transfer to RAC",value:PENDING_TRANSFERS,desc:"Records identified with physical counterparts but not yet transferred"}
-  ];
-
-  /* Render Pending panel: outstanding items */
-  function drawPendingPanel(){
-    return `<div class="pending-summary">
-      ${PENDING_DATA.map(d=>`<div class="pend-item">
-        <div class="pend-label">${d.label}</div>
-        <div class="pend-value">${F(d.value)}</div>
-        <div class="pend-desc">${d.desc} (illustrative)</div>
-      </div>`).join("")}
-    </div>`;
-  }
-
-  /* Retrieval Activity (Change 3): monthly boxes and folders retrieved, by department.
-     Last 6 months, distributed across departments using weights. */
-  const RETRIEVAL_ACTIVITY=MONTHS.map((mo,i)=>{
-    const monthBoxes=Math.round(85+Math.random()*65);
-    const monthFolders=Math.round(400+Math.random()*250);
-    const boxWeights=weights(16,88+i);
-    const folderWeights=weights(16,104+i);
-    return {
-      month:mo,
-      boxes:split(monthBoxes,boxWeights),
-      folders:split(monthFolders,folderWeights)
-    };
-  });
-
-  /* Render Retrieval Activity chart: boxes and folders retrieved per month */
-  function drawRetrievalActivityChart(){
-    const deptCols=DEPT_LIST.map((d,i)=>{
-      const boxes=RETRIEVAL_ACTIVITY.reduce((a,m)=>a+m.boxes[i],0);
-      const folders=RETRIEVAL_ACTIVITY.reduce((a,m)=>a+m.folders[i],0);
-      return {dept:d,boxes,folders};
-    });
-    return `<div class="chart cols" id="ra-retr-activity">
-      ${deptCols.map(d=>`<div class="ccol">
-        <div class="cb" style="height:${Math.max(3,Math.round(180*d.boxes/Math.max(...deptCols.map(x=>x.boxes))))}px;background:var(--teal)"></div>
-        <div class="cv">${F(d.boxes)}</div>
-        <div class="cl">${d.dept}</div>
-      </div>`).join("")}
-    </div>
-    <div class="retr-legend">Boxes retrieved over 6 months, by department</div>`;
-  }
-
-  /* Disposal Tracking (Change 4): boxes and folders disposed, freed capacity per location */
-  const DISPOSAL_DATA=LOCATIONS.map((loc,i)=>{
-    const disposed_boxes=Math.round(RETR_DATA[i].boxes_retrieved*0.65);
-    const disposed_folders=Math.round(RETR_DATA[i].folders_retrieved*0.60);
-    const freed_capacity_pct=Math.round(20+Math.random()*15);
-    return {
-      location:loc,
-      boxes_disposed:disposed_boxes,
-      folders_disposed:disposed_folders,
-      storage_freed_pct:freed_capacity_pct
-    };
-  });
-  const DISPOSAL_TOTAL={
-    location:"Total",
-    boxes_disposed:DISPOSAL_DATA.reduce((a,d)=>a+d.boxes_disposed,0),
-    folders_disposed:DISPOSAL_DATA.reduce((a,d)=>a+d.folders_disposed,0),
-    storage_freed_pct:Math.round(DISPOSAL_DATA.reduce((a,d)=>a+d.storage_freed_pct,0)/DISPOSAL_DATA.length)
+  /* Twelve months of calendar 2024, because that is the year the client's own
+     s67 screenshot covers. Each series is split from its annual total with its
+     own weight vector and asserted to sum back to it, so the bars on a month
+     chart and the figure on a tile can never drift apart. */
+  const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const DEPT_LIST=DATA.DEPTS.map(d=>d.code);
+  const monthly=(total,seed)=>split(total,weights(12,seed));
+  const M={
+    storeReq:   monthly(DATA.RA_STORE_REQUESTS,   60),
+    retrReq:    monthly(DATA.RA_RETR_REQUESTS,    61),
+    boxesStored:monthly(DATA.RA_BOXES_STORED,     62),
+    foldStored: monthly(DATA.RA_FOLDERS_STORED,   63),
+    boxesRetr:  monthly(DATA.RA_BOXES_RETRIEVED,  64),
+    foldRetr:   monthly(DATA.RA_FOLDERS_RETRIEVED,65)
   };
+  Object.entries({storeReq:DATA.RA_STORE_REQUESTS,retrReq:DATA.RA_RETR_REQUESTS,
+    boxesStored:DATA.RA_BOXES_STORED,foldStored:DATA.RA_FOLDERS_STORED,
+    boxesRetr:DATA.RA_BOXES_RETRIEVED,foldRetr:DATA.RA_FOLDERS_RETRIEVED})
+    .forEach(([k,total])=>console.assert(M[k].reduce((a,b)=>a+b,0)===total,
+      `The monthly series for ${k} must sum to its annual total`));
 
-  /* Render Disposal Tracking panel */
+  /* Both slides ask for the month on month cut PER DEPARTMENT, so the annual
+     department figure is split again by month. The department vector and the
+     month vector are independent, which is what stops every department showing
+     the same shape across the year. */
+  /* Sized by the unit's declared holding rather than drawn flat, because a
+     flat draw saturates the small units: that is the fault that gave OAS 270
+     people declaring out of 270 users on 17 August. DATA.DEPTS carries rec but
+     NOT sites, which is a live trap here: sites is added later, on
+     BW.departments, so reading it off DATA.DEPTS yields undefined, then NaN
+     weights, then a total that silently misses. The assert below caught
+     exactly that. */
+  const deptOf=(total,seed)=>split(total,weightsLike(DATA.DEPTS.map(d=>d.rec),seed));
+  const STORAGE_BY_DEPT=deptOf(DATA.RA_BOXES_STORED,66);
+  const RETRIEVAL_BY_DEPT=deptOf(DATA.RA_BOXES_RETRIEVED,67);
+  console.assert(STORAGE_BY_DEPT.reduce((a,b)=>a+b,0)===DATA.RA_BOXES_STORED
+    &&RETRIEVAL_BY_DEPT.reduce((a,b)=>a+b,0)===DATA.RA_BOXES_RETRIEVED,
+    "The department cut must total the same boxes as the location cut");
+
+  /* s68's first callout: "Include indicators for no. of new boxes and folders
+     stored month-on-month per department." Two cuts of the same total, so they
+     sit side by side: the year by month, and the year by department. */
+  function drawStorageActivityChart(){
+    return CHART.columns(MONTHS.map((m,i)=>({label:m,value:M.boxesStored[i]})),{height:200});
+  }
+  function drawStorageByDept(){
+    const rows=DEPT_LIST.map((d,i)=>({label:d,value:STORAGE_BY_DEPT[i]}))
+      .sort((a,b)=>b.value-a.value);
+    return CHART.hbars(rows);
+  }
+
+  /* s68's second callout: "No. and list of outstanding/pending requests /
+     physical records awaiting transfer, physical counterparts identified but
+     not transferred." The third of those is the one figure on this dashboard
+     with a real parent: counterparts identified IS sourced, from the declared
+     records that carry one, so what is missing is only the transfer event. */
+  const PENDING_DATA=[
+    {label:"Storage requests outstanding",value:DATA.RA_PENDING_STORE,
+     desc:"Requests raised and not yet fulfilled"},
+    {label:"Records awaiting transfer to RAC",value:DATA.RA_AWAITING_TRANSFER,
+     desc:`Counterparts identified in EDRMS, not yet recorded as transferred, of ${F(DATA.WITH_PHYSICAL)} identified`}
+  ];
+  function drawPendingPanel(){
+    return `<div class="tiles">${PENDING_DATA.map(d=>
+      `<div class="tile"><div class="tl">${d.label}</div>
+        <div class="tv">${F(d.value)}</div>
+        <div class="ts">${d.desc}</div></div>`).join("")}</div>`;
+  }
+
+  /* s69's first callout: "Include indicators for no. of retrieval requests and
+     no. of boxes / folders retrieved month-on-month per department." */
+  function drawRetrievalActivityChart(){
+    return CHART.columns(MONTHS.map((m,i)=>({label:m,value:M.boxesRetr[i],color:CHART.C.teal})),{height:200});
+  }
+  function drawRetrievalByDept(){
+    const rows=DEPT_LIST.map((d,i)=>({label:d,value:RETRIEVAL_BY_DEPT[i],color:CHART.C.teal}))
+      .sort((a,b)=>b.value-a.value);
+    return CHART.hbars(rows);
+  }
+
+  /* s69's third callout: "No. of boxes / folders disposed." The freed capacity
+     column that used to sit here is gone with the capacity chart: s69 asks
+     whether retrieval can update the capacity figure, and that is the client's
+     question to answer, not ours to fill in with a percentage. */
   function drawDisposalPanel(){
-    const cols=["Location","Boxes Disposed","Folders Disposed","Storage Freed"];
     return `<div class="scrollx"><div class="dtab">
-      <div class="dhead">
-        <div>${cols[0]}</div><div class="num">${cols[1]}</div>
-        <div class="num">${cols[2]}</div><div class="num">${cols[3]}</div></div>
-      ${DISPOSAL_DATA.map(d=>`<div class="drow">
+      <div class="dhead"><div>Location</div>
+        <div class="num">No. of boxes disposed</div>
+        <div class="num">No. of folders disposed</div></div>
+      ${RETR_DATA.map(d=>`<div class="drow">
         <div class="dn">${d.location}</div><div class="num">${F(d.boxes_disposed)}</div>
-        <div class="num">${F(d.folders_disposed)}</div><div class="num">${d.storage_freed_pct}%</div></div>`).join("")}
-      <div class="drow" style="font-weight:bold;border-top:2px solid #ccc">
-        <div class="dn">${DISPOSAL_TOTAL.location}</div><div class="num">${F(DISPOSAL_TOTAL.boxes_disposed)}</div>
-        <div class="num">${F(DISPOSAL_TOTAL.folders_disposed)}</div><div class="num">${DISPOSAL_TOTAL.storage_freed_pct}%</div></div>
+        <div class="num">${F(d.folders_disposed)}</div></div>`).join("")}
+      <div class="drow dtot"><div class="dn">Total</div>
+        <div class="num">${F(RETR_TOTAL.boxes_disposed)}</div>
+        <div class="num">${F(RETR_TOTAL.folders_disposed)}</div></div>
     </div></div>`;
   }
 
@@ -5141,22 +5205,15 @@ DASHBOARDS.ra=(function(){
          counterpart. That is what RAC should be holding, so it is the bridge
          between this report and the physical estate, and it gives the
          conversation about the missing sources somewhere to start. -->
+    <!-- Four tiles came off here on 24 August: unverified holdings, missing
+         items, due for verification and legacy files. None of the four appears
+         anywhere in s67, s68 or s69, and the standing rule since 17 August is
+         that undrawn is enough on all six dashboards. The one tile that stays
+         is the one figure here with a real source. -->
     <div class="kpis">
       <div class="kpi stat"><div class="lab">Physical counterparts identified</div>
         <div class="val">${F(DATA.WITH_PHYSICAL)}</div>
         <div class="sub">Declared records recorded as having a paper counterpart</div></div>
-      <div class="kpi stat"><div class="lab">Unverified holdings</div>
-        <div class="val">${F(INVENTORY_UNVERIFIED)}</div>
-        <div class="sub">Items pending inventory verification (illustrative)</div></div>
-      <div class="kpi stat"><div class="lab">Missing items</div>
-        <div class="val">${F(INVENTORY_MISSING)}</div>
-        <div class="sub">Records not located during last inventory audit (illustrative)</div></div>
-      <div class="kpi stat"><div class="lab">Due for verification</div>
-        <div class="val">${F(INVENTORY_DUE_VERIFICATION)}</div>
-        <div class="sub">Holdings requiring verification in current cycle (illustrative)</div></div>
-      <div class="kpi stat"><div class="lab">Legacy files</div>
-        <div class="val">${F(LEGACY_NOT_DIGITIZED)}</div>
-        <div class="sub">Physical files not yet digitized (illustrative)</div></div>
     </div>
 
     <div class="band">
@@ -5170,9 +5227,15 @@ DASHBOARDS.ra=(function(){
     </div>
 
     <div class="panel">
-      <div class="ptitle">Storage activity</div>
-      <div class="psub">Boxes stored per department over the last 6 months (illustrative).</div>
+      <div class="ptitle">New boxes stored, month on month</div>
+      <div class="psub">Boxes taken into the holdings in each month of ${DATA.RA_YEAR}.</div>
       ${drawStorageActivityChart()}
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">New boxes stored, by department, office or RM</div>
+      <div class="psub">The same year cut by the unit that sent the material in.</div>
+      ${drawStorageByDept()}
     </div>
 
     <div class="panel">
@@ -5193,25 +5256,21 @@ DASHBOARDS.ra=(function(){
     </div>
 
     <div class="panel">
-      <div class="ptitle">Retrieval activity</div>
-      <div class="psub">Boxes retrieved per department over the last 6 months (illustrative).</div>
+      <div class="ptitle">Boxes retrieved, month on month</div>
+      <div class="psub">Boxes taken out of the holdings in each month of ${DATA.RA_YEAR}.</div>
       ${drawRetrievalActivityChart()}
     </div>
 
     <div class="panel">
-      <div class="ptitle">Disposal tracking</div>
-      <div class="psub">Records disposed and storage capacity freed at each location (illustrative).</div>
-      ${drawDisposalPanel()}
+      <div class="ptitle">Boxes retrieved, by department, office or RM</div>
+      <div class="psub">The same year cut by the unit that asked for the material.</div>
+      ${drawRetrievalByDept()}
     </div>
 
-    <div class="band">
-      <h2>Capacity</h2>
-      <div class="bd">Storage utilization across locations.</div>
-    </div>
     <div class="panel">
-      <div class="ptitle">Storage capacity by location</div>
-      <div class="psub">Percentage of maximum capacity used at each storage location (illustrative).</div>
-      ${drawCapacityChart()}
+      <div class="ptitle">Boxes and folders disposed</div>
+      <div class="psub">Material retrieved for disposal and removed from the holdings.</div>
+      ${drawDisposalPanel()}
     </div>
   </section>`;
 
