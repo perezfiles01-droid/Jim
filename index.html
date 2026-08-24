@@ -4344,22 +4344,10 @@ DASHBOARDS.rd=(function(){
     const totalRec=filtered.reduce((a,d)=>a+d.rec,0);
     const totalPhys=filtered.reduce((a,d)=>a+d.phys,0);
     document.getElementById("rd-temp-summary").innerHTML=`
-      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
-        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of sites provisioned</div>
-        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalSites)}</div>
-      </div>
-      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
-        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of libraries provisioned</div>
-        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalLibs)}</div>
-      </div>
-      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
-        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of records declared</div>
-        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalRec)}</div>
-      </div>
-      <div style="padding:12px;background:#F8FAFB;border-radius:6px;border-left:3px solid var(--blue)">
-        <div style="font-size:11px;color:var(--mut);text-transform:uppercase">Number of physical counterparts</div>
-        <div style="font-size:18px;font-weight:600;margin-top:6px">${F(totalPhys)}</div>
-      </div>`;
+      <div class="tile"><div class="tl">Number of sites provisioned</div><div class="tv">${F(totalSites)}</div></div>
+      <div class="tile"><div class="tl">Number of libraries provisioned</div><div class="tv">${F(totalLibs)}</div></div>
+      <div class="tile"><div class="tl">Number of records declared</div><div class="tv">${F(totalRec)}</div></div>
+      <div class="tile"><div class="tl">Number of physical counterparts</div><div class="tv">${F(totalPhys)}</div></div>`;
 
     document.querySelectorAll("#rd-temp-table .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
