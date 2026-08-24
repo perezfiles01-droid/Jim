@@ -4,7 +4,7 @@ const OUT='/home/user/Jim/deck/shots';
 const KEYS=['bw','dp','pj','fp','rd','ra'];
 
 (async()=>{
-  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
+  const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
   const p=await b.newPage({viewport:{width:1680,height:1000},deviceScaleFactor:2});
   const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.goto('file:///home/user/Jim/index.html',{waitUntil:'load'});

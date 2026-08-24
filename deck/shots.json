@@ -70,7 +70,7 @@
       "file": "fp-01.png",
       "title": "Institutional file plan insights",
       "w": 1400,
-      "h": 783
+      "h": 708
     },
     {
       "file": "fp-02.png",
@@ -108,7 +108,7 @@
       "file": "rd-02.png",
       "title": "Permanent retention",
       "w": 1400,
-      "h": 560
+      "h": 672
     },
     {
       "file": "rd-03.png",
@@ -128,25 +128,43 @@
       "file": "ra-01.png",
       "title": "Records and archive holdings",
       "w": 1400,
-      "h": 634
+      "h": 758
     },
     {
       "file": "ra-02.png",
-      "title": "Storage",
+      "title": "Overview",
       "w": 1400,
-      "h": 661
+      "h": 618
     },
     {
       "file": "ra-03.png",
-      "title": "Retrieval",
+      "title": "Storage",
       "w": 1400,
-      "h": 795
+      "h": 698
     },
     {
       "file": "ra-04.png",
+      "title": "Storage",
+      "w": 1400,
+      "h": 653
+    },
+    {
+      "file": "ra-05.png",
+      "title": "Storage",
+      "w": 1400,
+      "h": 964
+    },
+    {
+      "file": "ra-06.png",
       "title": "Retrieval",
       "w": 1400,
-      "h": 634
+      "h": 653
+    },
+    {
+      "file": "ra-07.png",
+      "title": "Retrieval",
+      "w": 1400,
+      "h": 283
     }
   ]
 }
