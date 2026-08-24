@@ -1,0 +1,324 @@
+{
+ "totals": {
+  "RA_YEAR": 2024,
+  "RA_REQUESTS": 259,
+  "RA_STORE_ACTS": 7305,
+  "RA_BOXES_STORED": 6697,
+  "RA_FOLDERS_STORED": 608,
+  "RA_STAFF": 283,
+  "RA_RETR_ACTS": 541,
+  "RA_ARCHIVED_RETRIEVED": 492,
+  "RA_RECORDS_RETRIEVED": 49,
+  "RA_STORE_REQUESTS": 151,
+  "RA_RETR_REQUESTS": 108,
+  "RA_REQUESTORS_DEPTS": 194,
+  "RA_REQUESTORS_RMS": 89,
+  "RA_BOXES_RETRIEVED": 496,
+  "RA_FOLDERS_RETRIEVED": 45,
+  "RA_BOXES_DISPOSED": 118,
+  "RA_FOLDERS_DISPOSED": 12,
+  "RA_PENDING_STORE": 23,
+  "RA_PENDING_RETR": 17,
+  "RA_AWAITING_TRANSFER": 412,
+  "WITH_PHYSICAL": 3830
+ },
+ "storage": [
+  {
+   "location": "Archives Room",
+   "requests": 61,
+   "requestors_depts": 64,
+   "requestors_rms": 22,
+   "boxes": 1940,
+   "folders": 213,
+   "remarks": "Active, regular access"
+  },
+  {
+   "location": "Records Center",
+   "requests": 38,
+   "requestors_depts": 65,
+   "requestors_rms": 29,
+   "boxes": 2670,
+   "folders": 168,
+   "remarks": "High volume transfers"
+  },
+  {
+   "location": "Offsite Storage",
+   "requests": 52,
+   "requestors_depts": 65,
+   "requestors_rms": 38,
+   "boxes": 2087,
+   "folders": 227,
+   "remarks": "Specialised holdings"
+  }
+ ],
+ "retrieval": [
+  {
+   "location": "Archives Room",
+   "requests": 31,
+   "requestors": 76,
+   "boxes_retrieved": 120,
+   "folders_retrieved": 11,
+   "mix": [
+    12,
+    10,
+    9
+   ],
+   "status": "Loan 12, Return to owner 10, For Disposal 9",
+   "boxes_disposed": 30,
+   "folders_disposed": 4,
+   "remarks": "Short term use"
+  },
+  {
+   "location": "Records Center",
+   "requests": 39,
+   "requestors": 73,
+   "boxes_retrieved": 267,
+   "folders_retrieved": 9,
+   "mix": [
+    13,
+    18,
+    8
+   ],
+   "status": "Loan 13, Return to owner 18, For Disposal 8",
+   "boxes_disposed": 29,
+   "folders_disposed": 3,
+   "remarks": "Completed project"
+  },
+  {
+   "location": "Offsite Storage",
+   "requests": 38,
+   "requestors": 134,
+   "boxes_retrieved": 109,
+   "folders_retrieved": 25,
+   "mix": [
+    17,
+    9,
+    12
+   ],
+   "status": "Loan 17, Return to owner 9, For Disposal 12",
+   "boxes_disposed": 59,
+   "folders_disposed": 5,
+   "remarks": "Approved for disposal"
+  }
+ ],
+ "MONTHS": [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
+ ],
+ "M": {
+  "storeReq": [
+   7,
+   18,
+   16,
+   10,
+   14,
+   12,
+   16,
+   12,
+   9,
+   8,
+   17,
+   12
+  ],
+  "retrReq": [
+   11,
+   4,
+   12,
+   9,
+   8,
+   12,
+   10,
+   12,
+   9,
+   4,
+   6,
+   11
+  ],
+  "boxesStored": [
+   292,
+   456,
+   360,
+   651,
+   822,
+   783,
+   799,
+   443,
+   541,
+   686,
+   483,
+   381
+  ],
+  "foldStored": [
+   29,
+   71,
+   52,
+   67,
+   65,
+   31,
+   46,
+   49,
+   47,
+   38,
+   58,
+   55
+  ],
+  "boxesRetr": [
+   26,
+   41,
+   50,
+   49,
+   36,
+   46,
+   43,
+   42,
+   39,
+   52,
+   45,
+   27
+  ],
+  "foldRetr": [
+   4,
+   5,
+   2,
+   5,
+   5,
+   4,
+   3,
+   2,
+   5,
+   5,
+   2,
+   3
+  ]
+ },
+ "depts": [
+  {
+   "code": "ITD",
+   "name": "Information Technology"
+  },
+  {
+   "code": "SARD",
+   "name": "South Asia Regional"
+  },
+  {
+   "code": "OSFG",
+   "name": "Sovereign Operations"
+  },
+  {
+   "code": "FIN",
+   "name": "Finance"
+  },
+  {
+   "code": "PARD",
+   "name": "Procurement and Admin"
+  },
+  {
+   "code": "HRD",
+   "name": "Human Resources"
+  },
+  {
+   "code": "SERD",
+   "name": "Southeast Asia"
+  },
+  {
+   "code": "EARD",
+   "name": "East Asia Regional"
+  },
+  {
+   "code": "CWRD",
+   "name": "Central and West Asia"
+  },
+  {
+   "code": "OGC",
+   "name": "General Counsel"
+  },
+  {
+   "code": "PSOD",
+   "name": "Private Sector Operations"
+  },
+  {
+   "code": "BRM",
+   "name": "Budget and Mgmt Services"
+  },
+  {
+   "code": "SPD",
+   "name": "Strategy and Policy"
+  },
+  {
+   "code": "SDCC",
+   "name": "Sustainable Dev and Climate"
+  },
+  {
+   "code": "OAS",
+   "name": "Administrative Services"
+  },
+  {
+   "code": "ERCD",
+   "name": "Economic Research"
+  }
+ ],
+ "storageByDept": [
+  714,
+  711,
+  573,
+  696,
+  697,
+  465,
+  437,
+  345,
+  419,
+  296,
+  304,
+  229,
+  242,
+  240,
+  162,
+  167
+ ],
+ "retrievalByDept": [
+  55,
+  42,
+  56,
+  49,
+  49,
+  38,
+  30,
+  28,
+  29,
+  29,
+  20,
+  16,
+  14,
+  16,
+  15,
+  10
+ ],
+ "headings": [
+  "Records and archive holdings",
+  "Overview",
+  "Records and archives holdings, overview",
+  "Storage and retrieval requests, by month",
+  "Storage and retrieval activities, by month",
+  "Storage",
+  "Records and archives holdings, storage",
+  "New boxes stored, month on month",
+  "New boxes stored, by department, office or RM",
+  "Pending requests and transfers",
+  "Retrieval",
+  "Records and archives holdings, retrieval",
+  "Boxes retrieved, month on month",
+  "Boxes retrieved, by department, office or RM",
+  "Boxes and folders disposed"
+ ],
+ "errors": []
+}
