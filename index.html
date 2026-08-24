@@ -1760,7 +1760,7 @@ DASHBOARDS.bw=(function(){
          but showing both readings side by side on one strip asked the reader
          to resolve an ambiguity that is ours to resolve with the client.
          The question survives as audit question 16; the tile does not. */
-      tiles:()=>[["Sites created, last "+IDLE_DAYS+" days",F(SITES_CREATED_90)],
+      tiles:()=>[["Sites created",F(SITES_CREATED_90)],
                  ["Sites deleted",F(12)],
                  ["Sites archived",F(31)],
                  ["Inactive over "+IDLE_DAYS+" days",F(SITES_INACTIVE)]]
