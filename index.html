@@ -3830,16 +3830,15 @@ DASHBOARDS.fp=(function(){
   function drawCats(){
     const deptList=d=>d.depts.join(", ");
     const catRows=CATTOT.map(c=>`<div class="drow"><div class="dn">Total ${c.cat} terms</div>
-      <div class="num">${F(c.terms)}</div><div>${deptList(c)}</div>
+      <div class="num">${F(c.terms)}</div>
       <div class="num">${F(c.libs)}</div><div class="num">${F(c.docs)}</div>
       <div class="num">${F(c.rec)}</div><div class="num">${F(c.phys)}</div></div>`).join("");
     const totalRow=`<div class="drow" style="font-weight:bold;border-top:2px solid #ccc"><div class="dn">Total</div>
-      <div class="num">${F(TOTAL.terms)}</div><div>${deptList(TOTAL)}</div>
+      <div class="num">${F(TOTAL.terms)}</div>
       <div class="num">${F(TOTAL.libs)}</div><div class="num">${F(TOTAL.docs)}</div>
       <div class="num">${F(TOTAL.rec)}</div><div class="num">${F(TOTAL.phys)}</div></div>`;
     document.getElementById("fp-cats").innerHTML=
       `<div class="dhead"><div>Heading</div><div class="num">Total terms</div>
-        <div>Departments, offices and RMs provisioned</div>
         <div class="num">Number of libraries provisioned</div>
         <div class="num">Number of documents</div>
         <div class="num">Number of records declared</div>
@@ -3868,13 +3867,12 @@ DASHBOARDS.fp=(function(){
        </div>
        <div class="scrollx"><div class="dtab wide">
          <div class="dhead"><div>Term (top level)</div>
-           <div>Departments, offices and RMs provisioned</div>
            <div class="num">Number of libraries provisioned</div>
            <div class="num">Number of documents</div>
            <div class="num">Number of records declared</div>
            <div class="num">Number of physical counterparts</div></div>
          ${rows.map(r=>`<div class="drow"><div class="dn">${r.term}</div>
-           <div><span class="nosrc">Illustrative</span></div><div class="num">${F(r.libs)}</div>
+           <div class="num">${F(r.libs)}</div>
            <div class="num">${F(r.docs)}</div><div class="num">${F(r.rec)}</div>
            <div class="num">${F(r.phys)}</div></div>`).join("")}
        </div></div>
