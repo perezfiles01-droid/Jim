@@ -1685,7 +1685,7 @@ DASHBOARDS.bw=(function(){
      defined after this module, so the value is a function called at draw time,
      by which point every module exists. */
   const NAVTILES=[
-    {to:"rd", lab:"Records due for disposal within 12 months",
+    {to:"rd", lab:"Records due for retention within 12 months",
      val:()=>F(TOTAL_DUE), sub:"Retention and disposal insights: due windows, retention terms and status"},
     /* Both navigation tiles were labelled "... insights", which named the
        destination but not the figure printed on them. A tile showing a number
@@ -1868,7 +1868,7 @@ DASHBOARDS.bw=(function(){
     },
     disp:{
       title:"Total number of records due for disposal within 12 months, by department, office or RM",
-      sub:"Records due for disposal by department, office or RM, with the next due date.",
+      sub:"Records due for retention by department, office or RM, with the next due date.",
       /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
          and HasPhysical. The disposal approver and the three status columns,
          Approved, Declined and Extended, need fields the EDRMS application does
@@ -3403,12 +3403,12 @@ DASHBOARDS.dp=(function(){
     const page=rows.slice((disposalPage-1)*10,disposalPage*10);
 
     document.getElementById("dp-drill").innerHTML=
-      `<div class="ptitle">Disposal</div>
-       <div class="psub">Records due for disposal, by site.</div>
+      `<div class="ptitle">Retention</div>
+       <div class="psub">Records due for retention, by site.</div>
        ${summaryChart([
-         {lab:"Records due for disposal within 3 months",v:due3},
-         {lab:"Records due for disposal within 6 months",v:due6},
-         {lab:"Records due for disposal within 12 months",v:d.due}])}
+         {lab:"Records due for retention within 3 months",v:due3},
+         {lab:"Records due for retention within 6 months",v:due6},
+         {lab:"Records due for retention within 12 months",v:d.due}])}
        <div class="scrollx"><div class="dtab wide" id="dp-disposal"
             style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(140px,1fr)">
          <div class="dhead">
