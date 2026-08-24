@@ -4154,6 +4154,7 @@ DASHBOARDS.rd=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">EDRMS retention and disposal insights, permanent retention</div>
+      <div class="kpis" id="rd-perm-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:16px 0"></div>
       <div class="scrollx"><div class="dtab wide" id="rd-perm-table" style="--dc:minmax(190px,1.3fr) repeat(4,minmax(110px,1fr))">
         <div class="dhead" id="rd-perm-head"></div>
       </div></div>
@@ -4259,6 +4260,18 @@ DASHBOARDS.rd=(function(){
       `${rows.map(d=>`<div class="drow"><div class="dn">${d.name}</div>
         <div class="num">${F(d.sites)}</div><div class="num">${F(d.libs)}</div>
         <div class="num">${F(d.rec)}</div><div class="num">${F(d.phys)}</div></div>`).join("")}`;
+
+    // Update summary KPI boxes with permanent retention totals
+    const totalSites=PERM_BY_DEPT.reduce((a,d)=>a+d.sites,0);
+    const totalLibs=PERM_BY_DEPT.reduce((a,d)=>a+d.libs,0);
+    const totalRec=PERM_BY_DEPT.reduce((a,d)=>a+d.rec,0);
+    const totalPhys=PERM_BY_DEPT.reduce((a,d)=>a+d.phys,0);
+    document.getElementById("rd-perm-summary").innerHTML=`
+      <div class="tile"><div class="tl">Number of sites provisioned</div><div class="tv">${F(totalSites)}</div></div>
+      <div class="tile"><div class="tl">Number of libraries provisioned</div><div class="tv">${F(totalLibs)}</div></div>
+      <div class="tile"><div class="tl">Number of records declared</div><div class="tv">${F(totalRec)}</div></div>
+      <div class="tile"><div class="tl">Number of physical counterparts</div><div class="tv">${F(totalPhys)}</div></div>
+    `;
 
     document.getElementById("rd-perm-pager").innerHTML=pager(sorted.length, permPage, pages, "departments");
 
