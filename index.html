@@ -2220,7 +2220,6 @@ DASHBOARDS.bw=(function(){
          <div class="tile"><div class="tl">Documents</div><div class="tv">${F(fac.docs)}</div></div>
          <div class="tile"><div class="tl">Records declared</div><div class="tv">${F(fac.rec)}</div></div>
          <div class="tile"><div class="tl">Physical counterparts</div><div class="tv">${F(fac.phys)}</div></div>
-         <div class="tile"><div class="tl">Projects drawn by name</div><div class="tv">${F(rows.length)}</div></div>
        </div>
        <div class="scrollx"><div class="dtab wide" id="bw-projects">
          <div class="dhead">${d.cols.map((c,i)=>
@@ -2229,15 +2228,6 @@ DASHBOARDS.bw=(function(){
            <div class="dn"><span class="lk">${r.no}</span><small>${r.name}</small></div>
            <div class="num">${F(r.sites)}</div><div class="num">${F(r.docs)}</div>
            <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div></div>`).join("")}
-         <div class="drow"><div class="dn"><span>Etc.</span>
-           <small>Projects the deck did not draw by name</small></div>
-           <div class="num">${F(fac.sites-named("sites"))}</div>
-           <div class="num">${F(fac.docs-named("docs"))}</div>
-           <div class="num">${F(fac.rec-named("rec"))}</div>
-           <div class="num">${F(fac.phys-named("phys"))}</div></div>
-         <div class="dtot"><div>All ${d.facility.toLowerCase()} projects</div>
-           <div class="num">${F(fac.sites)}</div><div class="num">${F(fac.docs)}</div>
-           <div class="num">${F(fac.rec)}</div><div class="num">${F(fac.phys)}</div></div>
        </div></div>`;
     wireGo();
   }
