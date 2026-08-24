@@ -5180,6 +5180,53 @@ DASHBOARDS.ra=(function(){
      column that used to sit here is gone with the capacity chart: s69 asks
      whether retrieval can update the capacity figure, and that is the client's
      question to answer, not ours to fill in with a percentage. */
+  /* ===== s67, the overview the client screenshotted =====
+     s67 is a picture of the IR Dashboard with three notes on it. The client
+     ruled out taking anything FROM Opus on 17 August, and nothing here does:
+     what is reproduced is the SHAPE they chose to show us, filled with the
+     totals they themselves printed on that slide.
+
+     Their third note is the one that changes a definition, so it is on the
+     screen rather than buried here: "Retrieval as processed from eServe,
+     retrieval here should reflect physical records/archives that are removed
+     from the holdings." Retrieval on this dashboard therefore counts material
+     that LEFT the holdings, not requests raised. */
+  const OVERVIEW_TILES=[
+    ["Total storage and retrieval requests",DATA.RA_REQUESTS,"Requests raised across both activities"],
+    ["Total storage activities",DATA.RA_STORE_ACTS,"Boxes and folders taken into the holdings"],
+    ["Total staff supported",DATA.RA_STAFF,"People served across departments and RMs"],
+    ["Total retrieval activities",DATA.RA_RETR_ACTS,"Material removed from the holdings"]
+  ];
+  function drawOverviewTiles(){
+    return `<div class="kpis">${OVERVIEW_TILES.map(([l,v,s])=>
+      `<div class="kpi stat"><div class="lab">${l}</div>
+        <div class="val">${F(v)}</div><div class="sub">${s}</div></div>`).join("")}</div>`;
+  }
+  function drawStorageDonut(){
+    return CHART.donut([
+      {label:"Boxes stored",value:DATA.RA_BOXES_STORED,color:CHART.C.blue},
+      {label:"Folders stored",value:DATA.RA_FOLDERS_STORED,color:CHART.C.orange}
+    ],{centreValue:F(DATA.RA_STORE_ACTS),centreLabel:"activities",size:170});
+  }
+  function drawRetrievalDonut(){
+    return CHART.donut([
+      {label:"Archived material retrieved",value:DATA.RA_ARCHIVED_RETRIEVED,color:CHART.C.deep},
+      {label:"Records material retrieved",value:DATA.RA_RECORDS_RETRIEVED,color:CHART.C.teal}
+    ],{centreValue:F(DATA.RA_RETR_ACTS),centreLabel:"activities",size:170});
+  }
+  /* Their two month charts. Requests and activities are different units and
+     different orders of magnitude, so they stay on separate axes rather than
+     being forced onto one: 259 requests against 7,305 activities on a shared
+     scale makes the request bars a sliver. */
+  function drawRequestsByMonth(){
+    return CHART.columns(MONTHS.map((m,i)=>({label:m,
+      value:M.storeReq[i]+M.retrReq[i]})),{height:190});
+  }
+  function drawActivitiesByMonth(){
+    return CHART.columns(MONTHS.map((m,i)=>({label:m,
+      value:M.boxesStored[i]+M.foldStored[i],color:CHART.C.deep})),{height:190});
+  }
+
   function drawDisposalPanel(){
     return `<div class="scrollx"><div class="dtab">
       <div class="dhead"><div>Location</div>
@@ -5214,6 +5261,35 @@ DASHBOARDS.ra=(function(){
       <div class="kpi stat"><div class="lab">Physical counterparts identified</div>
         <div class="val">${F(DATA.WITH_PHYSICAL)}</div>
         <div class="sub">Declared records recorded as having a paper counterpart</div></div>
+    </div>
+
+    <div class="band">
+      <h2>Overview</h2>
+      <div class="bd">Storage and retrieval across the holdings for ${DATA.RA_YEAR}.</div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Records and archives holdings, overview</div>
+      <div class="psub">Retrieval counts material removed from the holdings, as processed
+        from eServe, rather than requests raised.</div>
+      ${drawOverviewTiles()}
+      <div class="crow" style="margin-top:18px">
+        <div class="chart"><div class="ctitle">Storage activities</div>
+          ${drawStorageDonut()}</div>
+        <div class="chart"><div class="ctitle">Retrieval activities</div>
+          ${drawRetrievalDonut()}</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Storage and retrieval requests, by month</div>
+      <div class="psub">Requests raised in each month of ${DATA.RA_YEAR}.</div>
+      ${drawRequestsByMonth()}
+    </div>
+
+    <div class="panel">
+      <div class="ptitle">Storage and retrieval activities, by month</div>
+      <div class="psub">Boxes and folders taken into the holdings in each month of ${DATA.RA_YEAR}.</div>
+      ${drawActivitiesByMonth()}
     </div>
 
     <div class="band">
