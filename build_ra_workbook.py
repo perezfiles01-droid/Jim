@@ -223,9 +223,12 @@ ws = new_sheet(wb, "Storage (s68)", "Storage, slide 68",
                "Location columns total the published figures exactly. " + ILLUSTRATIVE, span=7)
 widths(ws, [22, 14, 20, 16, 18, 18, 28])
 r = 4
-cols = ["Location", "No. of requests", "Total number of requestors (departments)",
-        "Total number of requestors (RMs)", "Total number of boxes stored",
-        "Total number of folders stored", "Remarks"]
+# The column names are READ OFF THE RENDERED TABLE, never typed here. A
+# workbook that keeps its own copy of a name disagrees with the screen within
+# the week: this block used to say "(departments and RMs)" where the slide and
+# the screen both say "(departments / RMs)", and dropped the "(year, month)"
+# qualifier the client puts on ten of the fourteen columns.
+cols = D["storeCols"]
 r = header(ws, r, cols)
 first = r
 for d in D["storage"]:
@@ -250,10 +253,16 @@ ws = new_sheet(wb, "Retrieval (s69)", "Retrieval, slide 69",
                "a loan. " + ILLUSTRATIVE, span=10)
 widths(ws, [22, 14, 22, 18, 18, 10, 16, 12, 28, 12])
 r = 4
-cols = ["Location", "No. of requests", "Total number of requestors (departments and RMs)",
-        "Total number of boxes retrieved", "Total number of folders retrieved",
-        "Status: Loan", "Status: Return to owner", "Status: For Disposal", "Remarks",
-        "Status, as printed"]
+# As on s68, read off the page. The client's own Status column is one column
+# naming a vocabulary, so the workbook keeps it as printed AND breaks the mix
+# into three countable columns beside it, which a spreadsheet can total and a
+# sentence cannot.
+_rc = D["retrCols"]
+_status_i = next(i for i, c in enumerate(_rc) if c.startswith("Status"))
+cols = (_rc[:_status_i]
+        + ["Status: Loan", "Status: Return to owner", "Status: For Disposal"]
+        + _rc[_status_i + 1:]
+        + [_rc[_status_i] + ", as printed"])
 r = header(ws, r, cols)
 first = r
 for d in D["retrieval"]:

@@ -11,7 +11,7 @@
  *
  *   node check_stage3.js /home/user/Jim/index.html
  */
-const {chromium}=require("/tmp/node_modules/playwright-core");
+const {chromium}=(()=>{for(const m of ["playwright-core","/tmp/node_modules/playwright-core"]){try{return require(m);}catch(e){}}throw new Error("playwright-core not found");})();
 const path=process.argv[2]||"/home/user/Jim/index.html";
 const url=path.startsWith("http")?path:"file://"+path;
 
@@ -149,18 +149,55 @@ const n  =s=>+String(s).replace(/[^0-9]/g,"");
   /* ---------------- Records and Archive Holdings, PPT s67 to s69 ---------------- */
   console.log("\nRecords and Archive Holdings");
   await page.evaluate(()=>switchTo("ra"));
-  /* s68 and s69 are drawn with real column headings, so the SHAPE is a
-     requirement even though no system holds a box, a folder or a retrieval.
-     They are listed as the columns each screen needs rather than drawn as a
-     grid of empty cells, because a table of blanks reads as a broken report
-     while a list of columns reads as the specification this still is. */
-  const specs=await page.$$eval(".dash-ra .spec",els=>els.map(e=>
-    [...e.querySelectorAll("li")].map(li=>li.textContent.trim())));
-  eq(specs.length,2,"storage and retrieval are both specified, PPT s68 and s69");
-  ok(specs[0].includes("Remarks")&&specs[0].includes("Total number of boxes stored"),
-     "the storage spec carries the client's own column names, including Remarks");
-  ok(specs[1].includes("Status")&&specs[1].includes("Total number of boxes retrieved"),
-     "the retrieval spec carries the client's own column names, including Status");
+  /* REWRITTEN 24 AUGUST. This block used to assert two .spec LISTS, because
+     s68 and s69 were listed as the columns each screen needs rather than drawn
+     as tables. The dashboard has since been rebuilt to the three slides, so
+     the assertions now read the tables themselves. Asserting the old shape
+     against the new one passed nothing and proved nothing. */
+  const raText=await page.$eval(".dash-ra",e=>e.textContent);
+
+  /* The client's own column names, off s68 and s69 word for word. A rename
+     here is a rename away from the deck, so it fails the build. */
+  for(const col of ["Total number of requestors (departments)",
+                    "Total number of requestors (RMs)",
+                    "Total number of boxes stored",
+                    "Total number of folders stored","Remarks"])
+    ok(raText.includes(col),`s68 keeps the client's column name: ${col}`);
+  for(const col of ["Total number of boxes retrieved",
+                    "Total number of folders retrieved",
+                    "Status (Loan, Return to owner, For Disposal)"])
+    ok(raText.includes(col),`s69 keeps the client's column name: ${col}`);
+
+  /* The three locations the client names, on both screens. */
+  for(const loc of ["Archives Room","Records Center","Offsite Storage"])
+    ok(raText.includes(loc),`the holdings carry the client's location: ${loc}`);
+
+  /* s67. The four tiles and the two activity splits they drew. */
+  for(const t of ["Total storage and retrieval requests","Total storage activities",
+                  "Total staff supported","Total retrieval activities"])
+    ok(raText.includes(t),`s67 carries its own tile: ${t}`);
+
+  /* THE CAPACITY CHART MUST STAY OFF, and this is the point of asserting it.
+     s68 and s69 ask US whether capacity and freed capacity can be included.
+     A capacity bar was drawn here until 24 August with an invented 65, 80 and
+     45 per cent, which answered the client's open question with a fabrication.
+     A later edit that restores it would put that back in front of the
+     committee, so the absence is asserted and the question is kept alive in
+     the asks list instead. */
+  ok(!/%\s*used/i.test(raText),"no capacity chart answers the client's own open question");
+  ok(raText.includes("% available storage capacity"),
+     "the capacity question is put back to the client rather than answered");
+
+  /* Every figure must survive a reload. Until 24 August the requestor counts
+     came from Math.random(), so the tables printed different numbers on every
+     mount and reconciled with nothing. */
+  const first=await page.$$eval(".dash-ra .tv,.dash-ra .num",els=>els.map(e=>e.textContent));
+  await page.evaluate(()=>switchTo("bw"));
+  await page.evaluate(()=>switchTo("ra"));
+  const second=await page.$$eval(".dash-ra .tv,.dash-ra .num",els=>els.map(e=>e.textContent));
+  eq(JSON.stringify(second),JSON.stringify(first),
+     "every figure on the holdings is stable across a remount, so nothing is random");
+
   const raNos=await page.$$eval(".dash-ra .nosrc",els=>els.length);
   eq(raNos,0,"no unsourced cell is left on Records and Archive Holdings");
 

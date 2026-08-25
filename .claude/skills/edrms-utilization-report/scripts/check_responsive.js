@@ -17,7 +17,7 @@
  *
  *   node check_responsive.js [path or url]
  */
-const {chromium}=require("/tmp/node_modules/playwright-core");
+const {chromium}=(()=>{for(const m of ["playwright-core","/tmp/node_modules/playwright-core"]){try{return require(m);}catch(e){}}throw new Error("playwright-core not found");})();
 const A=process.argv[2]||"/home/user/Jim/index.html";
 const URL=A.startsWith("http")?A:"file://"+A;
 const KEYS=["bw","dp","pj","fp","rd","ra"];

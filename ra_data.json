@@ -313,12 +313,98 @@
   "Records and archives holdings, storage",
   "New boxes stored, month on month",
   "New boxes stored, by department, office or RM",
-  "Pending requests and transfers",
+  "Outstanding requests and records awaiting transfer",
   "Retrieval",
   "Records and archives holdings, retrieval",
   "Boxes retrieved, month on month",
   "Boxes retrieved, by department, office or RM",
   "Boxes and folders disposed"
+ ],
+ "storeCols": [
+  "Location",
+  "No. of requests",
+  "Total number of requestors (departments) (year, month)",
+  "Total number of requestors (RMs) (year, month)",
+  "Total number of boxes stored (year, month)",
+  "Total number of folders stored (year, month)",
+  "Remarks"
+ ],
+ "retrCols": [
+  "Location",
+  "No. of requests",
+  "Total number of requestors (departments / RMs) (year, month)",
+  "Total number of boxes retrieved (year, month)",
+  "Total number of folders retrieved (year, month)",
+  "Status (Loan, Return to owner, For Disposal)",
+  "Remarks"
+ ],
+ "dispCols": [
+  "Location",
+  "No. of boxes disposed",
+  "No. of folders disposed"
+ ],
+ "bands": [
+  [
+   [
+    "Total Requests (year, month)",
+    "151"
+   ],
+   [
+    "Total number of requestors (departments) (year, month)",
+    "194"
+   ],
+   [
+    "Total number of requestors (RMs) (year, month)",
+    "89"
+   ],
+   [
+    "Total number of boxes stored (year, month)",
+    "6,697"
+   ],
+   [
+    "Total number of folders stored (year, month)",
+    "608"
+   ]
+  ],
+  [
+   [
+    "Storage requests outstanding",
+    "23"
+   ],
+   [
+    "Records awaiting transfer to RAC",
+    "412"
+   ]
+  ],
+  [
+   [
+    "Total Requests (year, month)",
+    "108"
+   ],
+   [
+    "Total number of requestors (departments) (year, month)",
+    "194"
+   ],
+   [
+    "Total number of requestors (RMs) (year, month)",
+    "89"
+   ],
+   [
+    "Total number of boxes retrieved (year, month)",
+    "496"
+   ],
+   [
+    "Total number of folders retrieved (year, month)",
+    "45"
+   ]
+  ]
+ ],
+ "asks": [
+  "The LIST behind these two counts. s68 asks for the number \"and list\" of outstanding requests and of records awaiting transfer. The count needs only a status; the list needs a request record with a requester, a date and an item on it, and no system this report reaches holds one.",
+  "\"Can room capacity and % available storage capacity be included?\" This is the client's own question, put to us on s68, and it is left as a question. A capacity bar was drawn here until 24 August with a made up 65, 80 and 45 per cent, which answered their open question with an invention. Capacity needs a room, a shelf measure and a fill level, none of which exists in any source this report holds.",
+  "The LIST behind the outstanding requests count, as on the storage screen. A count needs a status; a list needs a request record with a requester, a date and an item on it.",
+  "\"Can room activities here update the capacity and % available storage capacity (freed up storage)?\" The client's own question, put to us on s69, and left as a question. It cannot be answered before the capacity question on s68 is, because there is no capacity figure for a disposal to free up.",
+  "The summary band on s69 reads \"boxes stored\" and \"folders stored\" above a table whose own columns read \"retrieved\", on a slide titled Retrieval. Read as a copy paste in the deck and drawn as \"retrieved\" to match the table. Worth one line of confirmation from the client."
  ],
  "errors": []
 }
