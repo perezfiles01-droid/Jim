@@ -38,7 +38,7 @@
  *
  *   node check_constants.js /home/user/Jim/index.html
  */
-const {chromium}=require("/tmp/node_modules/playwright-core");
+const {chromium}=(()=>{for(const m of ["playwright-core","/tmp/node_modules/playwright-core"]){try{return require(m);}catch(e){}}throw new Error("playwright-core not found");})();
 const path=process.argv[2]||"/home/user/Jim/index.html";
 const url=path.startsWith("http")?path:"file://"+path;
 
