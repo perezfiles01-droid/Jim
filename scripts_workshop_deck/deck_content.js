@@ -238,3 +238,64 @@ const SLIDES = {
 };
 
 module.exports = { TOTALS, DEPENDENCIES, GAP_SPLIT, SLIDES };
+
+/* ------------------------------------------------------------------
+   Colour key for the gap checker workbook.
+   Hex values read directly from the cell fills in
+   EDRMS_Util_Dashboard_Gap_Checker_2026-08-21.xlsx — these are the
+   actual colours the client will see on screen, not approximations.
+
+   The workbook itself carries NO legend on any tab, which is why this
+   slide exists.
+
+   Red and blue are unambiguous: red is exactly the unbuilt rows, blue is
+   exactly the rows whose reason reads "Not built, but replaced with...".
+
+   Amber could not be determined from the workbook. It covers three whole
+   tabs (Project Insights, Institutional File Plan, Records and Archive
+   Holdings) plus a handful of Bank-wide rows. Two readings fit equally
+   well: rows awaiting a confirmed source, or rows we proposed that were
+   not in the client's original deck. The wording below is deliberately
+   true under both and should be tightened once the requester confirms.
+   ------------------------------------------------------------------ */
+const COLOUR_KEY = [
+  {
+    hex: "FFFFFF", border: "C9D2D7", label: "No fill",
+    meaning: "Built the way you asked for it.",
+    detail: "Nothing to discuss unless you want it changed."
+  },
+  {
+    hex: "DBEEF4", border: "8FBFD4", label: "Blue",
+    meaning: "Built, but we swapped the measure for one that works better.",
+    detail: "The reason column names what it became, and why."
+  },
+  {
+    hex: "FFF3E0", border: "E3B778", label: "Amber",
+    meaning: "Built — but look at these closely.",
+    detail: "Either we proposed it ourselves, or it still needs a source confirmed. Tell us what to keep."
+  },
+  {
+    hex: "FCE4E4", border: "E0A6A6", label: "Red",
+    meaning: "Not built. There is no source for it today.",
+    detail: "The file says what we would need before it could be."
+  }
+];
+
+const FILE_IS = [
+  { h: "Every requirement, one row each",
+    d: "Every indicator, KPI, tile, table, column and profile field proposed for the Utilization Report, in one place. This file is the requirements document." },
+  { h: "The mockups sit beside them",
+    d: "Each row points to the screen it appears on, so you can see the thing rather than imagine it." },
+  { h: "Our sourcing assessment",
+    d: "Where something is not built, the file says plainly what it would need before it could be." }
+];
+
+const YOUR_ACTIONS = [
+  { n: "Confirm",  d: "Where the design is right, say so and we lock it." },
+  { n: "Change",   d: "Mark up any mockup you want different. Layout, wording, grouping — all still open." },
+  { n: "Add",      d: "Tell us what is missing. We will assess whether the system can supply it before we commit to it." }
+];
+
+module.exports.COLOUR_KEY = COLOUR_KEY;
+module.exports.FILE_IS = FILE_IS;
+module.exports.YOUR_ACTIONS = YOUR_ACTIONS;
