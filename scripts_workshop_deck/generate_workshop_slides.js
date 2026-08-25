@@ -26,7 +26,6 @@ const W = 13.333, H = 7.5, M = 0.6;
 const CONTENT_W = W - 2 * M;
 
 let slideNo = 0;
-const TOTAL_SLIDES = 9;
 
 function newSlide(section) {
   slideNo++;
@@ -217,7 +216,90 @@ function addBuiltNotes(s, notes, x, y, w) {
   });
 }
 
-/* ---------------- SLIDE 2: Bank-wide Oversight ---------------- */
+/* ---------------- SLIDE 2: Six things we need ---------------- */
+{
+  const s = newSlide("The whole workshop in one view");
+  let y = addHeader(s, "Six Things We Need From You",
+    "55 requirements are unbuilt. Six data dependencies account for nearly all of them.");
+
+  const cardW = (CONTENT_W - 2 * 0.28) / 3;
+  const cardH = 2.28;
+  DEPENDENCIES.forEach((dep, i) => {
+    const col = i % 3, row = Math.floor(i / 3);
+    const cx = M + col * (cardW + 0.28);
+    const cy = y + row * (cardH + 0.26);
+
+    s.addShape(prs.ShapeType.rect, {
+      x: cx, y: cy, w: cardW, h: cardH,
+      fill: { color: C.white }, line: { color: "D8DEE1", width: 1 }
+    });
+    s.addShape(prs.ShapeType.rect, {
+      x: cx, y: cy, w: cardW, h: 0.055,
+      fill: { color: C.teal }, line: { type: "none" }
+    });
+
+    // number badge
+    s.addShape(prs.ShapeType.ellipse, {
+      x: cx + 0.2, y: cy + 0.22, w: 0.34, h: 0.34,
+      fill: { color: C.blue }, line: { type: "none" }
+    });
+    s.addText(String(dep.n), {
+      x: cx + 0.2, y: cy + 0.26, w: 0.34, h: 0.28,
+      fontSize: 12, bold: true, color: C.white, fontFace: "Calibri", align: "center"
+    });
+
+    // unblocks count, right aligned
+    s.addText(String(dep.unblocks), {
+      x: cx + cardW - 1.15, y: cy + 0.18, w: 0.55, h: 0.4,
+      fontSize: 22, bold: true, color: C.orange, fontFace: "Cambria", align: "right"
+    });
+    s.addText("reqs", {
+      x: cx + cardW - 0.56, y: cy + 0.32, w: 0.42, h: 0.24,
+      fontSize: 9, color: C.mute, fontFace: "Calibri"
+    });
+
+    s.addText(dep.name, {
+      x: cx + 0.2, y: cy + 0.64, w: cardW - 0.4, h: 0.46,
+      fontSize: 12.5, bold: true, color: C.blue, fontFace: "Calibri", valign: "top"
+    });
+    s.addText(dep.ask, {
+      x: cx + 0.2, y: cy + 1.1, w: cardW - 0.4, h: 0.6,
+      fontSize: 9.5, color: C.ink, fontFace: "Calibri", valign: "top"
+    });
+
+    s.addShape(prs.ShapeType.line, {
+      x: cx + 0.2, y: cy + 1.74, w: cardW - 0.4, h: 0,
+      line: { color: "E5E9EB", width: 1 }
+    });
+    s.addText("Likely owner", {
+      x: cx + 0.2, y: cy + 1.8, w: cardW - 0.4, h: 0.2,
+      fontSize: 8, color: C.mute, fontFace: "Calibri", charSpacing: 1
+    });
+    s.addText(dep.owner, {
+      x: cx + 0.2, y: cy + 1.98, w: cardW - 0.4, h: 0.24,
+      fontSize: 9.5, bold: true,
+      color: dep.owner.startsWith("Unknown") ? C.burgundy : C.teal,
+      fontFace: "Calibri"
+    });
+  });
+
+  const fy = y + 2 * (cardH + 0.26) + 0.04;
+  s.addShape(prs.ShapeType.rect, {
+    x: M, y: fy, w: CONTENT_W, h: 0.42,
+    fill: { color: C.panel }, line: { color: "D8DEE1", width: 1 }
+  });
+  s.addText([
+    { text: "Deps 1–4 unblock 18 gaps.  Deps 5–6 source 21 built-but-unsourced requirements.  ",
+      options: { color: C.ink } },
+    { text: "The other 37 gaps carry no recorded reason — we need your steer on those.",
+      options: { color: C.burgundy, bold: true } }
+  ], {
+    x: M + 0.2, y: fy + 0.08, w: CONTENT_W - 0.4, h: 0.28,
+    fontSize: 10.5, fontFace: "Calibri", align: "center"
+  });
+}
+
+/* ---------------- SLIDE 3: Bank-wide Oversight ---------------- */
 {
   const d = SLIDES.bankwide;
   const s = newSlide("1 · Bank-wide Oversight");
