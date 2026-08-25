@@ -73,7 +73,33 @@ const fs = require('fs');
     const headings = [...document.querySelectorAll('.dash-ra .ptitle, .dash-ra .band h2')]
       .map(e => e.textContent.trim());
 
-    return { totals, storage, retrieval, MONTHS, M, depts, storageByDept, retrievalByDept, headings };
+    /* THE COLUMN NAMES ARE READ OFF THE RENDERED TABLES, NEVER TYPED.
+       Until 25 August the builder held its own copy of them, and they had
+       already drifted: it said "requestors (departments and RMs)" where s69
+       and the screen both say "(departments / RMs)", and it dropped the
+       "(year, month)" qualifier the client puts on ten of the fourteen. A
+       workbook that keeps a second copy of a name is a workbook that will
+       disagree with the screen within the week, which is the whole reason the
+       contents workbook is generated rather than hand listed. */
+    const heads = [...document.querySelectorAll('.dash-ra .dhead')]
+      .map(h => [...h.children].map(c => c.textContent.trim()))
+      .filter(cols => cols.length > 2);
+    const storeCols = heads.find(c => c.some(x => x.includes('boxes stored'))) || [];
+    const retrCols  = heads.find(c => c.some(x => x.includes('boxes retrieved'))) || [];
+    const dispCols  = heads.find(c => c.some(x => x.includes('disposed'))) || [];
+
+    /* The summary bands above each table, likewise read rather than typed. */
+    const bands = [...document.querySelectorAll('.dash-ra .tiles')]
+      .map(t => [...t.querySelectorAll('.tile')]
+        .map(x => [x.querySelector('.tl').textContent.trim(),
+                   x.querySelector('.tv').textContent.trim()]));
+
+    /* Everything the client asked for that is NOT built, in their own words. */
+    const asks = [...document.querySelectorAll('.dash-ra .asks li')]
+      .map(li => li.textContent.replace(/\s+/g,' ').trim());
+
+    return { totals, storage, retrieval, MONTHS, M, depts, storageByDept, retrievalByDept,
+             headings, storeCols, retrCols, dispCols, bands, asks };
   });
 
   out.errors = errors;
