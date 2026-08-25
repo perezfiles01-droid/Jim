@@ -5034,10 +5034,29 @@ DASHBOARDS.ra=(function(){
     &&d.folders_disposed<=d.folders_retrieved),
     "A location cannot dispose more than it retrieved");
 
-  /* s68, storage. The client's own column names, including Remarks. */
-  const STORE_COLS=["Location","No. of requests","Total number of requestors (departments)",
-                    "Total number of requestors (RMs)","Total number of boxes stored",
-                    "Total number of folders stored","Remarks"];
+  /* s68, storage. The client's own column names, word for word off the slide,
+     including Remarks and including the "(year, month)" qualifier they put on
+     five of the seven. The qualifier is kept because it is the client telling
+     us the grain: these are period figures, not a standing inventory. */
+  const STORE_COLS=["Location","No. of requests",
+                    "Total number of requestors (departments) (year, month)",
+                    "Total number of requestors (RMs) (year, month)",
+                    "Total number of boxes stored (year, month)",
+                    "Total number of folders stored (year, month)","Remarks"];
+  /* s68 draws a five cell summary band ABOVE the location table, with its own
+     headings. It is not the table's total row: it carries Total Requests where
+     the table carries No. of requests. Both are drawn. */
+  const STORE_SUMMARY=[
+    ["Total Requests (year, month)",DATA.RA_STORE_REQUESTS],
+    ["Total number of requestors (departments) (year, month)",DATA.RA_REQUESTORS_DEPTS],
+    ["Total number of requestors (RMs) (year, month)",DATA.RA_REQUESTORS_RMS],
+    ["Total number of boxes stored (year, month)",DATA.RA_BOXES_STORED],
+    ["Total number of folders stored (year, month)",DATA.RA_FOLDERS_STORED]
+  ];
+  function drawStorageSummary(){
+    return `<div class="tiles">${STORE_SUMMARY.map(([l,v])=>
+      `<div class="tile"><div class="tl">${l}</div><div class="tv">${F(v)}</div></div>`).join("")}</div>`;
+  }
   /* s69, retrieval. Note their status vocabulary: Loan, Return to owner, For Disposal. */
   const RETR_COLS=["Location","No. of requests","Total number of requestors (departments and RMs)",
                    "Total number of boxes retrieved","Total number of folders retrieved",
@@ -5298,7 +5317,8 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, storage</div>
-      <div class="psub">Requests, requestors, boxes and folders held at each location (Slide 68).</div>
+      <div class="psub">Requests, requestors, boxes and folders taken into each location.</div>
+      ${drawStorageSummary()}
       ${drawStorageTable()}
     </div>
 
@@ -5315,9 +5335,27 @@ DASHBOARDS.ra=(function(){
     </div>
 
     <div class="panel">
-      <div class="ptitle">Pending requests and transfers</div>
-      <div class="psub">Outstanding requests and records awaiting transfer to RAC (illustrative).</div>
+      <div class="ptitle">Outstanding requests and records awaiting transfer</div>
+      <div class="psub">Requests raised and not yet fulfilled, and counterparts identified in
+        EDRMS that are not yet recorded as transferred to RAC.</div>
       ${drawPendingPanel()}
+      <div class="asks">
+        <div class="ah">Also asked for on this screen, and not built</div>
+        <ul>
+          <li><b>The LIST behind these two counts.</b> s68 asks for the number
+            "and list" of outstanding requests and of records awaiting transfer.
+            The count needs only a status; the list needs a request record with
+            a requester, a date and an item on it, and no system this report
+            reaches holds one.</li>
+          <li><b>"Can room capacity and % available storage capacity be
+            included?"</b> This is the client's own question, put to us on s68,
+            and it is left as a question. A capacity bar was drawn here until
+            24 August with a made up 65, 80 and 45 per cent, which answered
+            their open question with an invention. Capacity needs a room, a
+            shelf measure and a fill level, none of which exists in any source
+            this report holds.</li>
+        </ul>
+      </div>
     </div>
 
     <div class="band">
