@@ -1,0 +1,10 @@
+{
+  "name": "ADB EDRMS Utilization Report",
+  "id": "adb-edrms-utilization-report",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page"
+}

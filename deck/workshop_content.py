@@ -1,0 +1,307 @@
+#!/usr/bin/env python3
+"""
+The editorial content of the workshop: the seventeen questions, the six tab
+handoffs, and the slide copy. Written once here and emitted as JSON so the deck
+and the script cannot disagree.
+
+Every question carries the tab and the ITEM NUMBERS it comes from. The Excel row
+numbers are resolved from workshop.json rather than typed, because a typed row
+number goes wrong the moment a row is inserted.
+"""
+import json, os
+
+D = os.path.dirname(os.path.abspath(__file__))
+W = json.load(open(os.path.join(D, "workshop.json")))
+BY_TAB = {s["tab"]: s for s in W["sheets"]}
+
+
+def rows_for(tab, items):
+    """Excel rows for a list of item numbers on a tab, as a compact range text."""
+    s = BY_TAB[tab]
+    rows = sorted(r["row"] for r in s["rows"] if r["n"] in items)
+    if not rows:
+        return ""
+    out, start, prev = [], rows[0], rows[0]
+    for x in rows[1:]:
+        if x == prev + 1:
+            prev = x; continue
+        out.append((start, prev)); start = prev = x
+    out.append((start, prev))
+    return ", ".join(str(a) if a == b else f"{a} to {b}" for a, b in out)
+
+
+TABS = [
+    dict(tab=1, key="bw", short="Bank-wide Oversight", shot="bw-01.png", minutes=18,
+         what="The ten tiles the client drew on slide 34, the overview of all 1,032 sites, "
+              "the two project lists, and the drills behind users, documents, records, "
+              "counterparts and disposal.",
+         decisions=["The user register, which is five columns on this tab alone",
+                    "Division, which is four more",
+                    "The disposal fields: approver, status, disposed month on month"],
+         jump="Start at row 6, the ten tiles. Then scroll to row 36, where the red starts."),
+    dict(tab=2, key="dp", short="Department Insights", shot="dp-01.png", minutes=20,
+         what="One department at a time: its profile, its users, its sites, its visits, "
+              "its documents, records, counterparts, disposal, and its libraries by "
+              "file plan category.",
+         decisions=["Go-live date per site, or agreement that the creation date stands in",
+                    "Visitors split internal and external, and access requests",
+                    "Whether the six library categories need their own picker"],
+         jump="Start at row 6, the department picker. The red runs from row 22."),
+    dict(tab=3, key="pj", short="Project Insights", shot="pj-01.png", minutes=10,
+         what="One project's profile: eight fields, seven clickable tiles and three "
+              "charts. Every row on this tab says Yes, and every row waits on the "
+              "same one thing.",
+         decisions=["Which SharePoint sites belong to which project",
+                    "Which system holds the project attributes, and who owns it"],
+         jump="This tab is short. Read the What it needs column down the whole tab: "
+              "it says ASK on every row."),
+    dict(tab=4, key="fp", short="Institutional File Plan", shot="fp-01.png", minutes=8,
+         what="The rollup across the five categories, then one screen per category with "
+              "its terms, libraries, documents, records and counterparts.",
+         decisions=["Where the file plan actually lives, and who maintains it",
+                    "How we know which library or document uses which term",
+                    "Whether new library and new term requests are tracked anywhere"],
+         jump="Every row on this tab says Yes. The question here is not what to build, "
+              "it is what feeds it."),
+    dict(tab=5, key="rd", short="Retention and Disposal", shot="rd-01.png", minutes=10,
+         what="The permanent and temporary split, the two retention tables, the retention "
+              "filter, and declared records by retention label.",
+         decisions=["Which retention labels are permanent and which are temporary",
+                    "The six removed columns on the slide 44 rollup",
+                    "Whether records disposed can be counted at all today"],
+         jump="Start at row 6. The red block is rows 12 to 17, and row 33."),
+    dict(tab=6, key="ra", short="Records and Archive Holdings", shot="ra-01.png", minutes=12,
+         what="The physical estate: the overview you screenshotted, the storage table, "
+              "the retrieval table, and disposal. Built from the totals on your own "
+              "slide 67, because nothing else exists to build it from.",
+         decisions=["Is eServe the retrieval system of record, and who owns it",
+                    "Can room capacity be included, which your slide 68 asks us",
+                    "Does retrieval free up capacity, which your slide 69 asks us"],
+         jump="Every row says Yes, and every figure on the screen is illustrative. "
+              "That distinction is the whole conversation on this tab."),
+]
+
+# ---------------------------------------------------------------- questions
+QUESTIONS = [
+    dict(id=1, tab=1, items=[11, 12, 13, 14, 15],
+         title="Can a site belong to more than one department?",
+         ask="Two hundred and forty of your one thousand and thirty-two sites carry more "
+             "than one department in the same field, separated by semicolons. Is that "
+             "site genuinely shared, or does the first department named own it?",
+         why="Every table in this file is per department and every column has to add up "
+             "to the bank-wide total. Counted under all three, the column totals more "
+             "than the bank. Counted under the first, two departments are under-reported.",
+         good="A rule we can apply to all 240. First named owns it is a fine answer.",
+         fallback="If you cannot decide today, give us the list of 240 and we will bring "
+                  "back what each rule does to the numbers.",
+         unblocks="The correctness of every per-department figure in the report."),
+    dict(id=2, tab=3, items=list(range(1, 21)),
+         title="Which SharePoint sites belong to which project?",
+         ask="We need a list: project number, project name, facility type, and the "
+             "SharePoint site or sites for that project. Does that list exist, and who "
+             "keeps it?",
+         why="Slides 36, 37 and 38 are three whole screens. Not one figure on any of "
+             "them can be produced without this. We can count documents, records and "
+             "users for any site. We cannot tell which sites are project sites.",
+         good="A named owner and a spreadsheet, even a one-off export.",
+         fallback="A one-off list unblocks the whole dashboard today. A maintained list "
+                  "keeps it correct. Start with the one-off.",
+         unblocks="The entire Project Insights dashboard, all 20 rows."),
+    dict(id=3, tab=1, items=[28, 29, 30, 31, 32, 33],
+         title="Where is the register of EDRMS users?",
+         ask="Your own slide 54 asks this question and answers it with the exact table "
+             "we need: name, staff or contractor or consultant, onboarded since go-live, "
+             "training completed. Who owns that list, and can we have it?",
+         why="Microsoft 365 tells us who used SharePoint and when. It cannot tell us "
+             "what kind of person they are, or whether they were trained. No system we "
+             "can reach holds that.",
+         good="An owner, a location, and a refresh cycle.",
+         fallback="If there is no register, say so plainly and we will take those columns "
+                  "off both dashboards rather than leave them looking pending.",
+         unblocks="Five columns on Bank-wide and four on Department Insights."),
+    dict(id=4, tab=2, items=[11],
+         title="When did each site become EDRMS compliant?",
+         ask="Slide 53 puts Go-Live date at the top of every department screen. Is there "
+             "a go-live date per department or per site, or may we use the site creation "
+             "date instead?",
+         why="We checked every date column in the Cloud Governance export. Created Time "
+              "is when the SharePoint site was created, which is not the same thing: "
+              "sites made outside Cloud Governance are converted afterwards.",
+         good="Either a date list, or explicit agreement that creation date stands in.",
+         fallback="Agreement to use creation date is a perfectly good answer, but we need "
+                  "you to say it, so the caption can say it too.",
+         unblocks="Go-live on every department screen, and onboarded since go-live."),
+    dict(id=5, tab=1, items=[39, 44, 45, 49],
+         title="What is a division, and what populates it?",
+         ask="Eight rows across two tabs ask for a per division breakdown. What is a "
+             "division at ADB, and which system records which division a site, a person "
+             "or a record belongs to?",
+         why="Nothing we can read carries it. Not SharePoint, not Cloud Governance, not "
+             "the EDRMS database.",
+         good="A field in a named system, or a mapping list.",
+         fallback="If division is not recorded anywhere, we take those eight rows out "
+                  "rather than carry them as pending forever.",
+         unblocks="Four columns on Bank-wide, four on Department Insights."),
+    dict(id=6, tab=1, items=[50],
+         title="What records a physical record being turned over to RAC?",
+         ask="EDRMS tells us a declared record has a paper counterpart. What tells us "
+             "that the paper actually reached RAC?",
+         why="Your completion rate needs both halves. We have the numerator source and "
+             "not the denominator event. It is also the same gap as records awaiting "
+             "transfer on the holdings dashboard.",
+         good="A system and a field, even a manual log.",
+         fallback="If nothing records it, that is itself the finding, and it belongs in "
+                  "the report as a gap rather than as a blank.",
+         unblocks="The counterpart completion rate, and the transfer figure on tab 6."),
+    dict(id=7, tab=1, items=[55, 56, 57, 58, 59, 60, 61],
+         title="The disposal fields: approver, status, disposed month on month",
+         ask="Slides 43 and 60 ask for a disposal approver, an approved, declined and "
+             "extended status, and records disposed month on month. None of that is "
+             "recorded in EDRMS today. Should it be, and who changes the application?",
+         why="This is a change request to the EDRMS application, not a reporting gap. "
+             "We can report it the day it is captured, and not a day before.",
+         good="A yes or no on whether the application will capture it, and by when.",
+         fallback="If it is not going to be captured, we remove eleven rows across two "
+                  "tabs today.",
+         unblocks="Seven rows on Bank-wide, six on Department Insights, one on tab 5."),
+    dict(id=8, tab=1, items=[37, 38],
+         title="Month on month figures: do you want them, and how far back?",
+         ask="Several slides ask for a month on month indicator. Microsoft 365 usage "
+             "reports only reach back 180 days. Is a rolling 180 days enough, or do you "
+             "need history from go-live?",
+         why="If you need history, we have to start snapshotting now, because the window "
+             "closes behind us every day.",
+         good="A number of months, and a decision on whether we start snapshotting.",
+         fallback="If undecided, we start snapshotting anyway. It costs little and the "
+                  "data cannot be recovered later.",
+         unblocks="Every month on month indicator in the report."),
+    dict(id=9, tab=2, items=[41, 42, 43, 44],
+         title="Visitors: internal, external, and access requests",
+         ask="Slide 56 asks for visitors split internal and external, and for access "
+             "requests granted and denied. Which report should we read for that split, "
+             "and where do access requests live?",
+         why="The usage report gives us page views and visited pages per site. It does "
+             "not label a visitor internal or external, and it says nothing about access "
+             "requests.",
+         good="A named report or a named system.",
+         fallback="If neither exists, we take the four rows off slide 56.",
+         unblocks="Four rows on Department Insights."),
+    dict(id=10, tab=2, items=[83, 84, 85],
+         title="Departmental libraries: the picker, and users per library",
+         ask="Slides 61 to 66 give each file plan category its own screen. Do you want a "
+             "picker across the six categories, and do you need the number of users per "
+             "library?",
+         why="The picker is a build decision we can make today. Users per library needs "
+             "a per library permission read that nothing currently produces.",
+         good="Yes or no on the picker. For users per library, an acknowledgement that "
+              "it needs a new source.",
+         fallback="Picker yes, users per library parked.",
+         unblocks="Three rows on Department Insights."),
+    dict(id=11, tab=5, items=[1, 2, 3, 4, 5, 6],
+         title="Which retention labels are permanent and which are temporary?",
+         ask="The whole of tab 5 splits on permanent against temporary. Which of your "
+             "Purview retention labels fall on each side?",
+         why="We can read the labels. We cannot infer which are permanent, and guessing "
+             "puts records on the wrong side of a disposal decision.",
+         good="A list of label names against the two categories.",
+         fallback="If the labels are still being designed, tell us when they settle.",
+         unblocks="The split behind every figure on tab 5."),
+    dict(id=12, tab=4, items=[1, 2, 3, 4, 5, 6, 7],
+         title="Where does the Institutional File Plan live, and who maintains it?",
+         ask="Tab 4 is built from the term store. Is the term store the file plan of "
+             "record, and who is allowed to change it?",
+         why="If the authoritative file plan is a document somewhere and the term store "
+             "is a copy, then this dashboard reports the copy.",
+         good="A named system and a named owner.",
+         fallback="If it is a document, we need it, and a cycle for refreshing it.",
+         unblocks="The authority of every figure on tab 4."),
+    dict(id=13, tab=4, items=[14, 15, 16, 17, 18, 19],
+         title="How do we know which library or document uses which term?",
+         ask="Every per term figure needs a link from the term to the library or the "
+             "document. Is the term applied as a managed metadata column, and is it "
+             "mandatory?",
+         why="If it is optional, the per term counts under-report by exactly as much as "
+             "people skip it, and the report has to say so.",
+         good="Mandatory, optional, or applied at library level only.",
+         fallback="Whatever the answer, we caption it. An optional field reported as "
+                  "complete is the worst outcome.",
+         unblocks="Six rows on tab 4, and the honesty of the rest."),
+    dict(id=14, tab=4, items=[21, 22, 23, 24],
+         title="New library and new term requests: are they tracked?",
+         ask="Slides 48 to 52 ask for requests for new libraries and new terms. Are those "
+             "requests raised in a system, or by email?",
+         why="If they are raised in Cloud Governance we can count them tomorrow. If they "
+             "are email, nobody can count them.",
+         good="A system name.",
+         fallback="If email, we say so on the screen rather than showing a zero.",
+         unblocks="Four rows on tab 4."),
+    dict(id=15, tab=6, items=[1],
+         title="Is eServe the retrieval system of record, and who owns it?",
+         ask="Your slide 67 says retrieval is processed from eServe. eServe has never "
+             "been connected to this project. Is it the system of record for storage and "
+             "retrieval requests, and who owns it?",
+         why="Every figure on tab 6 is currently an illustration built from the totals "
+             "you printed on slide 67. eServe is what would make them real.",
+         good="Yes or no, plus an owner and whether an extract is possible.",
+         fallback="If eServe cannot be reached, ask whether RAC keeps its own register, "
+                  "in any form, even a spreadsheet.",
+         unblocks="Most of tab 6."),
+    dict(id=16, tab=6, items=[1],
+         title="Can room capacity be included, and does retrieval free it up?",
+         ask="Your slide 68 asks us whether room capacity and percentage available "
+             "storage can be included. Your slide 69 asks whether retrieval frees it up "
+             "again. Both are questions you put to us. We are putting them back: is "
+             "capacity per location recorded anywhere, and what counts as full?",
+         why="We drew a capacity chart once, with invented percentages, and took it out "
+             "on the 24th precisely because it answered your question with a guess.",
+         good="A capacity figure per location and a definition of full.",
+         fallback="If capacity is not recorded, we drop both, and you have your answer.",
+         unblocks="Two open questions on tab 6, and a chart that can then be drawn."),
+    dict(id=17, tab=6, items=[1],
+         title="What should the Records and Archive Holdings dashboard actually be?",
+         ask="Tab 6 is built to the shape of your slides 67, 68 and 69, with your own "
+             "published totals. Is that the dashboard you want, or is it a screenshot of "
+             "a system you want us to replace?",
+         why="This is the one dashboard where we are not sure whether we are building a "
+             "report or duplicating an existing one.",
+         good="A clear statement of what this screen is for, and who reads it.",
+         fallback="If it is a duplicate, say so and we will scope it down to the one "
+                  "figure that is genuinely ours.",
+         unblocks="The purpose of tab 6."),
+]
+
+for q in QUESTIONS:
+    q["rows"] = rows_for(q["tab"], q["items"])
+    q["tabname"] = BY_TAB[q["tab"]]["name"]
+
+FIVE = [
+    ("The user register", "Who is staff, contractor or consultant, and who was trained",
+     "9 rows", "Q3"),
+    ("The project register", "Which SharePoint sites belong to which project",
+     "20 rows", "Q2"),
+    ("Division", "What a division is and what records it", "8 rows", "Q5"),
+    ("Go-live date", "When each site became EDRMS compliant", "2 rows", "Q4"),
+    ("The physical sources", "eServe for requests, RAC for the holdings register",
+     "tab 6 entire", "Q6, Q15"),
+]
+
+AGENDA = [
+    ("Slides", 5, "How to read the file, and where the time goes"),
+    ("Tab 1, Bank-wide Oversight", 18, "The user register, division, the disposal fields"),
+    ("Tab 2, Department Insights", 20, "Go-live, visitors, the library categories"),
+    ("Tab 3, Project Insights", 10, "One question, twenty rows"),
+    ("Tab 4, Institutional File Plan", 8, "Where the file plan lives, and how terms attach"),
+    ("Tab 5, Retention and Disposal", 10, "Permanent against temporary"),
+    ("Tab 6, Records and Archive Holdings", 12, "eServe, capacity, and what this screen is for"),
+    ("Close", 7, "Owners and dates against the five sources"),
+]
+
+out = dict(tabs=TABS, questions=QUESTIONS, five=FIVE, agenda=AGENDA,
+           tot=W["tot"], sheets=[{k: s[k] for k in
+                                  ("tab", "name", "yes", "no", "tot", "first_row", "last_row")}
+                                 for s in W["sheets"]])
+json.dump(out, open(os.path.join(D, "workshop_content.json"), "w"), indent=1)
+print("questions", len(QUESTIONS), "tabs", len(TABS),
+      "minutes", sum(a[1] for a in AGENDA))
+for q in QUESTIONS:
+    print(f'  Q{q["id"]:2} tab {q["tab"]}  rows {q["rows"]:20} {q["title"][:56]}')
