@@ -4,7 +4,8 @@
    Run: node generate_workshop_slides.js */
 
 const PptxGenJS = require("pptxgenjs");
-const { TOTALS, DEPENDENCIES, GAP_SPLIT, SLIDES } = require("./deck_content.js");
+const { TOTALS, DEPENDENCIES, GAP_SPLIT, SLIDES,
+        COLOUR_KEY, FILE_IS, YOUR_ACTIONS } = require("./deck_content.js");
 
 const prs = new PptxGenJS();
 prs.defineLayout({ name: "W16x9", width: 13.333, height: 7.5 });
@@ -240,56 +241,91 @@ function addBuiltNotes(s, notes, x, y, w) {
   return ry;
 }
 
-/* ---------------- SLIDE 1: How to read the gap checker ---------------- */
+/* ---------------- SLIDE 1: The Gap Checker ---------------- */
 {
   const s = newSlide("Introduction", 0);
-  let y = addHeader(s, "How to Read the Gap Checker",
-    "One workbook, six tabs, 250 requirements — and the columns that matter");
+  let y = addHeader(s, "The Gap Checker: Your Requirements File",
+    "Everything proposed for the Utilization Report, with the mockups beside it");
 
-  y = addStats(s, [
-    { v: TOTALS.reqs,  l: "requirements" },
-    { v: TOTALS.built, l: "in the prototype", c: C.teal },
-    { v: TOTALS.gaps,  l: "not built", c: C.orange },
-    { v: 6,            l: "things block most of it", c: C.burgundy }
-  ], M, y) + 0.15;
-
-  const cols = [
-    { h: "In the prototype?", d: "Yes or No. This is the honest state of the build today, not a plan." },
-    { h: "Why it is not there", d: "The reason a requirement was removed or relabelled. Read this before assuming anything is missing by accident." },
-    { h: "What it needs before it can be built", d: "The data or decision that would unblock it. This column is the agenda for today." },
-    { h: "Slide", d: "Where the requirement appears in the prototype, so you can see it working." }
-  ];
-  s.addText("THE FOUR COLUMNS TO READ", {
-    x: M, y: y, w: CONTENT_W, h: 0.26,
-    fontSize: 10, bold: true, color: C.blue, fontFace: "Calibri", charSpacing: 1.4
-  });
-  let cy = y + 0.36;
-  cols.forEach(c => {
+  /* Band 1 — what this file is */
+  const bw = (CONTENT_W - 2 * 0.3) / 3;
+  FILE_IS.forEach((f, i) => {
+    const bx = M + i * (bw + 0.3);
     s.addShape(prs.ShapeType.rect, {
-      x: M, y: cy, w: 0.055, h: 0.52, fill: { color: C.teal }, line: { type: "none" }
+      x: bx, y: y, w: bw, h: 0.05,
+      fill: { color: C.teal }, line: { type: "none" }
     });
-    s.addText(c.h, {
-      x: M + 0.2, y: cy - 0.02, w: 3.6, h: 0.28,
-      fontSize: 11.5, bold: true, color: C.blue, fontFace: "Calibri"
+    s.addText(f.h, {
+      x: bx, y: y + 0.16, w: bw, h: 0.3,
+      fontSize: 13, bold: true, color: C.blue, fontFace: "Calibri"
     });
-    s.addText(c.d, {
-      x: M + 3.9, y: cy - 0.02, w: CONTENT_W - 4.0, h: 0.5,
+    s.addText(f.d, {
+      x: bx, y: y + 0.5, w: bw, h: 0.72,
       fontSize: 10, color: C.ink, fontFace: "Calibri", valign: "top"
     });
-    cy += 0.62;
   });
 
+  /* Band 2 — the colour key */
+  y += 1.36;
   s.addShape(prs.ShapeType.rect, {
-    x: M, y: cy + 0.12, w: CONTENT_W, h: 0.62,
+    x: M, y: y, w: CONTENT_W, h: 2.66,
     fill: { color: C.panel }, line: { color: "D8DEE1", width: 1 }
   });
-  s.addText("A note on relabelling", {
-    x: M + 0.22, y: cy + 0.2, w: 2.4, h: 0.24,
-    fontSize: 10.5, bold: true, color: C.blue, fontFace: "Calibri"
+  s.addText("WHAT THE COLOURS MEAN", {
+    x: M + 0.28, y: y + 0.14, w: 5, h: 0.26,
+    fontSize: 10, bold: true, color: C.blue, fontFace: "Calibri", charSpacing: 1.4
   });
-  s.addText("Many requirements are built but renamed — \"total EDRMS users\" is live as \"users with recorded activity, last 180 days\". Those count as built. We will flag the renames as we go.", {
-    x: M + 2.8, y: cy + 0.2, w: CONTENT_W - 3.0, h: 0.42,
-    fontSize: 10, color: C.ink, fontFace: "Calibri", valign: "top"
+  s.addText("The workbook carries no legend — this is the key.", {
+    x: W - M - 5.3, y: y + 0.14, w: 5, h: 0.26,
+    fontSize: 9.5, italic: true, color: C.mute, fontFace: "Calibri", align: "right"
+  });
+
+  let ky = y + 0.5;
+  COLOUR_KEY.forEach(k => {
+    s.addShape(prs.ShapeType.rect, {
+      x: M + 0.3, y: ky, w: 0.66, h: 0.36,
+      fill: { color: k.hex }, line: { color: k.border, width: 1 }
+    });
+    s.addText(k.label, {
+      x: M + 1.08, y: ky + 0.02, w: 0.95, h: 0.3,
+      fontSize: 11, bold: true, color: C.blue, fontFace: "Calibri"
+    });
+    s.addText(k.meaning, {
+      x: M + 2.1, y: ky + 0.02, w: 4.5, h: 0.3,
+      fontSize: 11, color: C.ink, fontFace: "Calibri"
+    });
+    s.addText(k.detail, {
+      x: M + 6.75, y: ky + 0.03, w: CONTENT_W - 7.0, h: 0.32,
+      fontSize: 9.5, italic: true, color: C.mute, fontFace: "Calibri", valign: "top"
+    });
+    ky += 0.52;
+  });
+
+  /* Band 3 — what we need you to do */
+  y += 2.82;
+  s.addText("WHAT WE NEED YOU TO DO WITH IT", {
+    x: M, y: y, w: CONTENT_W, h: 0.26,
+    fontSize: 10, bold: true, color: C.teal, fontFace: "Calibri", charSpacing: 1.4
+  });
+  const aw = (CONTENT_W - 2 * 0.3) / 3;
+  YOUR_ACTIONS.forEach((a, i) => {
+    const ax = M + i * (aw + 0.3);
+    s.addShape(prs.ShapeType.ellipse, {
+      x: ax, y: y + 0.36, w: 0.28, h: 0.28,
+      fill: { color: C.teal }, line: { type: "none" }
+    });
+    s.addText(String(i + 1), {
+      x: ax, y: y + 0.38, w: 0.28, h: 0.24,
+      fontSize: 11, bold: true, color: C.white, fontFace: "Calibri", align: "center"
+    });
+    s.addText(a.n, {
+      x: ax + 0.38, y: y + 0.34, w: aw - 0.4, h: 0.3,
+      fontSize: 13, bold: true, color: C.blue, fontFace: "Calibri"
+    });
+    s.addText(a.d, {
+      x: ax + 0.38, y: y + 0.66, w: aw - 0.42, h: 0.6,
+      fontSize: 10, color: C.ink, fontFace: "Calibri", valign: "top"
+    });
   });
 }
 
