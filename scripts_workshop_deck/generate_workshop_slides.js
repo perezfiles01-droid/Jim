@@ -27,23 +27,100 @@ const CONTENT_W = W - 2 * M;
 
 let slideNo = 0;
 
-function newSlide(section) {
+/* The seven agenda items, for the footer progress marker. */
+const AGENDA = [
+  "Introduction and the asks",
+  "Bank-wide Oversight",
+  "Department Insights",
+  "Project Insights",
+  "Institutional File Plan",
+  "Retention and Disposal",
+  "Records and Archive Holdings"
+];
+
+/* Restrained corner motif, drawn rather than imported: three nested arcs
+   in the bottom-right. No ADB brand asset exists in either reference deck
+   (all media there is dashboard screenshots), so this is an equivalent,
+   not the real wave. */
+function addCornerMotif(s) {
+  const cxp = W - 0.35, cyp = H - 0.30;
+  [2.6, 1.95, 1.3].forEach((r, i) => {
+    s.addShape(prs.ShapeType.ellipse, {
+      x: cxp - r, y: cyp - r, w: r * 2, h: r * 2,
+      fill: { type: "none" },
+      line: { color: C.teal, width: i === 0 ? 1.25 : 0.75,
+              transparency: i === 0 ? 88 : 93 }
+    });
+  });
+}
+
+function addProgress(s, sectionIdx) {
+  if (sectionIdx == null) return;
+  const dotR = 0.075, gap = 0.185;
+  const startX = W - M - (AGENDA.length - 1) * gap - dotR * 2 - 0.42;
+  for (let i = 0; i < AGENDA.length; i++) {
+    const on = i === sectionIdx;
+    s.addShape(prs.ShapeType.ellipse, {
+      x: startX + i * gap, y: H - 0.40, w: dotR * 2, h: dotR * 2,
+      fill: { color: on ? C.teal : "D8DEE1" }, line: { type: "none" }
+    });
+  }
+}
+
+function newSlide(section, sectionIdx) {
   slideNo++;
   const s = prs.addSlide();
   s.background = { color: C.white };
-  // footer rule
+  addCornerMotif(s);
   s.addShape(prs.ShapeType.line, {
     x: M, y: H - 0.55, w: CONTENT_W, h: 0,
     line: { color: "D8DEE1", width: 1 }
   });
   s.addText(section || "EDRMS Utilization Report Requirements Workshop", {
-    x: M, y: H - 0.48, w: 8, h: 0.3,
+    x: M, y: H - 0.48, w: 7.5, h: 0.3,
     fontSize: 9, color: C.mute, fontFace: "Calibri", charSpacing: 1
   });
+  addProgress(s, sectionIdx);
   s.addText(String(slideNo), {
-    x: W - M - 1, y: H - 0.48, w: 1, h: 0.3,
+    x: W - M - 0.4, y: H - 0.48, w: 0.4, h: 0.3,
     fontSize: 9, color: C.mute, fontFace: "Calibri", align: "right"
   });
+  return s;
+}
+
+/* Block divider. Labels a group of agenda items, not a single one — only
+   three of the seven sections warrant a divider, so numbering them
+   "item N of 7" would imply four missing dividers. */
+function addDivider(label, covers, kicker) {
+  slideNo++;
+  const s = prs.addSlide();
+  s.background = { color: C.blue };
+  const cxp = -0.6, cyp = H + 0.4;
+  [4.2, 3.3, 2.4].forEach((r, i) => {
+    s.addShape(prs.ShapeType.ellipse, {
+      x: cxp - r + 2.2, y: cyp - r, w: r * 2, h: r * 2,
+      fill: { type: "none" },
+      line: { color: C.teal, width: i === 0 ? 1.5 : 1, transparency: 72 }
+    });
+  });
+  s.addText(covers, {
+    x: M + 0.4, y: 2.75, w: 9, h: 0.3,
+    fontSize: 11, bold: true, color: C.teal, fontFace: "Calibri", charSpacing: 2
+  });
+  s.addText(label, {
+    x: M + 0.4, y: 3.15, w: 10, h: 0.8,
+    fontSize: 40, bold: true, color: C.white, fontFace: "Cambria"
+  });
+  s.addShape(prs.ShapeType.line, {
+    x: M + 0.4, y: 4.05, w: 1.8, h: 0,
+    line: { color: C.teal, width: 3 }
+  });
+  if (kicker) {
+    s.addText(kicker, {
+      x: M + 0.4, y: 4.25, w: 9.5, h: 0.5,
+      fontSize: 13, color: "AFC3CE", fontFace: "Calibri", valign: "top"
+    });
+  }
   return s;
 }
 
@@ -165,7 +242,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 
 /* ---------------- SLIDE 1: How to read the gap checker ---------------- */
 {
-  const s = newSlide("Introduction");
+  const s = newSlide("Introduction", 0);
   let y = addHeader(s, "How to Read the Gap Checker",
     "One workbook, six tabs, 250 requirements — and the columns that matter");
 
@@ -218,7 +295,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 
 /* ---------------- SLIDE 2: Six things we need ---------------- */
 {
-  const s = newSlide("The whole workshop in one view");
+  const s = newSlide("The whole workshop in one view", 0);
   let y = addHeader(s, "Six Things We Need From You",
     "55 requirements are unbuilt. Six data dependencies account for nearly all of them.");
 
@@ -301,7 +378,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 
 /* ---------------- SLIDE 3: The 37 unexplained gaps ---------------- */
 {
-  const s = newSlide("The second ask");
+  const s = newSlide("The second ask", 0);
   let y = addHeader(s, "The 37 Gaps With No Recorded Reason",
     "Marked only \"Removed.\" in the workbook — no dependency, no rationale");
 
@@ -365,10 +442,13 @@ function addBuiltNotes(s, notes, x, y, w) {
   ], M, ry + 0.04, CONTENT_W, { title: "WHAT WE NEED FROM YOU", rowH: 0.66 });
 }
 
+addDivider("The Two Big Tabs", "AGENDA ITEMS 2 AND 3",
+  "Bank-wide Oversight and Department Insights: 151 of the 250 requirements, and 46 of the 55 gaps.");
+
 /* ---------------- SLIDE 4: Bank-wide Oversight ---------------- */
 {
   const d = SLIDES.bankwide;
-  const s = newSlide("1 · Bank-wide Oversight");
+  const s = newSlide("Bank-wide Oversight", 1);
   let y = addHeader(s, d.title, d.purpose);
   addStats(s, [
     { v: d.reqs,  l: "requirements" },
@@ -383,7 +463,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 /* ---------------- SLIDE 3: Bank-wide questions ---------------- */
 {
   const d = SLIDES.bankwide;
-  const s = newSlide("1 · Bank-wide Oversight");
+  const s = newSlide("Bank-wide Oversight", 1);
   let y = addHeader(s, "Bank-wide Oversight: The Asks",
     `21 gaps. Five questions close most of them.`);
   addQuestionPanel(s, d.questions, M, y, CONTENT_W, { rowH: 0.72 });
@@ -392,7 +472,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 /* ---------------- SLIDE 4: Department Insights ---------------- */
 {
   const d = SLIDES.department;
-  const s = newSlide("2 · Department Insights");
+  const s = newSlide("Department Insights", 2);
   let y = addHeader(s, d.title, d.purpose);
   addStats(s, [
     { v: d.reqs,  l: "requirements" },
@@ -406,16 +486,19 @@ function addBuiltNotes(s, notes, x, y, w) {
 /* ---------------- SLIDE 5: Department questions ---------------- */
 {
   const d = SLIDES.department;
-  const s = newSlide("2 · Department Insights");
+  const s = newSlide("Department Insights", 2);
   let y = addHeader(s, "Department Insights: The Asks",
     "25 gaps — but 8 of them are the same two questions asked on Bank-wide");
   addQuestionPanel(s, d.questions, M, y, CONTENT_W, { rowH: 0.72 });
 }
 
+addDivider("The Decision", "AGENDA ITEM 4",
+  "Project Insights: all 20 requirements are built. None has a confirmed data source.");
+
 /* ---------------- SLIDE 6: Project Insights ---------------- */
 {
   const d = SLIDES.project;
-  const s = newSlide("3 · Project Insights");
+  const s = newSlide("Project Insights", 3);
   let y = addHeader(s, d.title, d.purpose);
 
   s.addShape(prs.ShapeType.rect, {
@@ -444,10 +527,13 @@ function addBuiltNotes(s, notes, x, y, w) {
   addQuestionPanel(s, d.questions, M, y + 1.1, CONTENT_W, { rowH: 0.66 });
 }
 
+addDivider("Operations and Archive", "AGENDA ITEMS 5, 6 AND 7",
+  "File Plan, Retention and Disposal, Archive Holdings: two are complete, one needs your steer.");
+
 /* ---------------- SLIDE 7: Institutional File Plan ---------------- */
 {
   const d = SLIDES.filePlan;
-  const s = newSlide("4 · Institutional File Plan");
+  const s = newSlide("Institutional File Plan", 4);
   let y = addHeader(s, d.title, d.purpose);
 
   s.addShape(prs.ShapeType.rect, {
@@ -477,7 +563,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 /* ---------------- SLIDE 8: Retention and Disposal ---------------- */
 {
   const d = SLIDES.retention;
-  const s = newSlide("5 · Retention and Disposal");
+  const s = newSlide("Retention and Disposal", 5);
   let y = addHeader(s, d.title, d.purpose);
   addStats(s, [
     { v: d.reqs,  l: "requirements" },
@@ -519,7 +605,7 @@ function addBuiltNotes(s, notes, x, y, w) {
 /* ---------------- SLIDE 9: Records and Archive Holdings ---------------- */
 {
   const d = SLIDES.archive;
-  const s = newSlide("6 · Records and Archive Holdings");
+  const s = newSlide("Records and Archive Holdings", 6);
   let y = addHeader(s, d.title, d.purpose);
 
   s.addShape(prs.ShapeType.rect, {
