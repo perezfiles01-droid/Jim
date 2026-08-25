@@ -4,7 +4,7 @@
    Run: node generate_workshop_slides.js */
 
 const PptxGenJS = require("pptxgenjs");
-const { TOTALS, DEPENDENCIES, SLIDES } = require("./deck_content.js");
+const { TOTALS, DEPENDENCIES, GAP_SPLIT, SLIDES } = require("./deck_content.js");
 
 const prs = new PptxGenJS();
 prs.defineLayout({ name: "W16x9", width: 13.333, height: 7.5 });
@@ -299,7 +299,73 @@ function addBuiltNotes(s, notes, x, y, w) {
   });
 }
 
-/* ---------------- SLIDE 3: Bank-wide Oversight ---------------- */
+/* ---------------- SLIDE 3: The 37 unexplained gaps ---------------- */
+{
+  const s = newSlide("The second ask");
+  let y = addHeader(s, "The 37 Gaps With No Recorded Reason",
+    "Marked only \"Removed.\" in the workbook — no dependency, no rationale");
+
+  // three-part breakdown bar
+  const barY = y, barH = 0.52;
+  const segs = [
+    { n: GAP_SPLIT.withDependency, c: C.teal,     l: "have a stated dependency" },
+    { n: GAP_SPLIT.unexplained,    c: C.burgundy, l: "no recorded reason" }
+  ];
+  let bx = M;
+  segs.forEach(sg => {
+    const w = (sg.n / 55) * CONTENT_W;
+    s.addShape(prs.ShapeType.rect, {
+      x: bx, y: barY, w: w, h: barH,
+      fill: { color: sg.c }, line: { type: "none" }
+    });
+    s.addText(`${sg.n}  ${sg.l}`, {
+      x: bx + 0.12, y: barY + 0.13, w: w - 0.24, h: 0.28,
+      fontSize: 11, bold: true, color: C.white, fontFace: "Calibri"
+    });
+    bx += w;
+  });
+  s.addText("All 55 unbuilt requirements", {
+    x: M, y: barY + barH + 0.06, w: CONTENT_W, h: 0.24,
+    fontSize: 9, color: C.mute, fontFace: "Calibri"
+  });
+
+  y = barY + barH + 0.34;
+  s.addText("WHERE THE 37 SIT", {
+    x: M, y: y, w: CONTENT_W, h: 0.26,
+    fontSize: 10, bold: true, color: C.burgundy, fontFace: "Calibri", charSpacing: 1.4
+  });
+  let ry = y + 0.36;
+  GAP_SPLIT.unexplainedByTab.forEach(t => {
+    s.addShape(prs.ShapeType.rect, {
+      x: M, y: ry, w: 0.055, h: 0.54,
+      fill: { color: C.burgundy }, line: { type: "none" }
+    });
+    s.addText(String(t.n), {
+      x: M + 0.2, y: ry + 0.02, w: 0.6, h: 0.4,
+      fontSize: 20, bold: true, color: C.burgundy, fontFace: "Cambria"
+    });
+    s.addText(t.tab, {
+      x: M + 0.95, y: ry, w: 3.0, h: 0.28,
+      fontSize: 11.5, bold: true, color: C.blue, fontFace: "Calibri"
+    });
+    s.addText(t.what, {
+      x: M + 4.0, y: ry - 0.02, w: CONTENT_W - 4.1, h: 0.6,
+      fontSize: 9.5, color: C.ink, fontFace: "Calibri", valign: "top"
+    });
+    ry += 0.60;
+  });
+
+  addQuestionPanel(s, [
+    { q: "Were these descoped deliberately, or are they simply undocumented?",
+      unblocks: "All 37", fallback: "We cannot plan the backlog without knowing" },
+    { q: "The disposal workflow accounts for 14 of the 37, across two tabs. Is disposal approval out of scope for this phase?",
+      unblocks: "14 requirements", fallback: "Treat as descoped and record the decision" },
+    { q: "Several Retention and Disposal items duplicate measures already on Bank-wide. Was that the reason for removal?",
+      unblocks: "Clarifies 9", fallback: "Likely intentional de-duplication — confirm" }
+  ], M, ry + 0.04, CONTENT_W, { title: "WHAT WE NEED FROM YOU", rowH: 0.66 });
+}
+
+/* ---------------- SLIDE 4: Bank-wide Oversight ---------------- */
 {
   const d = SLIDES.bankwide;
   const s = newSlide("1 · Bank-wide Oversight");

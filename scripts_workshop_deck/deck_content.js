@@ -73,6 +73,22 @@ const DEPENDENCIES = [
   }
 ];
 
+/* Verified split of the 55 gaps, counted from the workbook:
+   18 carry a stated dependency, 37 carry no recorded reason. */
+const GAP_SPLIT = {
+  withDependency: 18,
+  unexplained: 37,
+  builtUnsourced: 21,
+  unexplainedByTab: [
+    { tab: "Bank-wide Oversight", n: 11,
+      what: "Disposal workflow — approver, status Approved / Declined / Extended, month-on-month disposed, completion rate, overdue actions" },
+    { tab: "Department Insights", n: 17,
+      what: "Disposal workflow again, plus access requests granted and denied, per-library user counts, site convention compliance" },
+    { tab: "Retention and Disposal", n: 9,
+      what: "Provisioning and volume counts, and the top-level retention Term rows" }
+  ]
+};
+
 const SLIDES = {
   bankwide: {
     title: "Bank-wide Oversight",
@@ -221,4 +237,4 @@ const SLIDES = {
   }
 };
 
-module.exports = { TOTALS, DEPENDENCIES, SLIDES };
+module.exports = { TOTALS, DEPENDENCIES, GAP_SPLIT, SLIDES };
