@@ -5058,9 +5058,37 @@ DASHBOARDS.ra=(function(){
       `<div class="tile"><div class="tl">${l}</div><div class="tv">${F(v)}</div></div>`).join("")}</div>`;
   }
   /* s69, retrieval. Note their status vocabulary: Loan, Return to owner, For Disposal. */
-  const RETR_COLS=["Location","No. of requests","Total number of requestors (departments and RMs)",
-                   "Total number of boxes retrieved","Total number of folders retrieved",
-                   "Status","Remarks"];
+  /* s69, retrieval. The client writes this one as a SINGLE combined column,
+     "requestors (departments/ RMS)", where s68 splits departments and RMs into
+     two. That difference is theirs and is followed rather than tidied. */
+  const RETR_COLS=["Location","No. of requests",
+                   "Total number of requestors (departments / RMs) (year, month)",
+                   "Total number of boxes retrieved (year, month)",
+                   "Total number of folders retrieved (year, month)",
+                   "Status (Loan, Return to owner, For Disposal)","Remarks"];
+
+  /* s69 draws the same five cell summary band as s68 above its table. Its
+     LAST TWO HEADINGS ON THE SLIDE READ "boxes stored" AND "folders stored",
+     on a slide titled Retrieval, above a table whose own columns read
+     "retrieved". That is a copy paste in the client's deck, confirmed word for
+     word in evidence_deck_text_2026-08-17.txt at lines 772 and 773.
+
+     The table wins here, so the band says retrieved. Silently correcting a
+     client is what produced the "Share with counterpart" problem on 17 August,
+     where a rename would have printed a percentage under a label promising a
+     count, so the discrepancy is raised on the screen instead of being fixed
+     without telling anyone. */
+  const RETR_SUMMARY=[
+    ["Total Requests (year, month)",DATA.RA_RETR_REQUESTS],
+    ["Total number of requestors (departments) (year, month)",DATA.RA_REQUESTORS_DEPTS],
+    ["Total number of requestors (RMs) (year, month)",DATA.RA_REQUESTORS_RMS],
+    ["Total number of boxes retrieved (year, month)",DATA.RA_BOXES_RETRIEVED],
+    ["Total number of folders retrieved (year, month)",DATA.RA_FOLDERS_RETRIEVED]
+  ];
+  function drawRetrievalSummary(){
+    return `<div class="tiles">${RETR_SUMMARY.map(([l,v])=>
+      `<div class="tile"><div class="tl">${l}</div><div class="tv">${F(v)}</div></div>`).join("")}</div>`;
+  }
 
   /* Render Storage table (Slide 68): Location | Requests | Requestors (depts) |
      Requestors (RMs) | Boxes | Folders | Remarks. All data is illustrative. */
@@ -5364,8 +5392,9 @@ DASHBOARDS.ra=(function(){
     </div>
     <div class="panel">
       <div class="ptitle">Records and archives holdings, retrieval</div>
-      <div class="psub">Requests, requestors, boxes and folders taken out of the holdings (Slide 69).
-        Status is one of loan, return to owner, or for disposal.</div>
+      <div class="psub">Requests, requestors, boxes and folders taken out of each location.
+        Status carries the mix of loan, return to owner and for disposal.</div>
+      ${drawRetrievalSummary()}
       ${drawRetrievalTable()}
     </div>
 
@@ -5385,6 +5414,24 @@ DASHBOARDS.ra=(function(){
       <div class="ptitle">Boxes and folders disposed</div>
       <div class="psub">Material retrieved for disposal and removed from the holdings.</div>
       ${drawDisposalPanel()}
+      <div class="asks">
+        <div class="ah">Also asked for on this screen, and not built</div>
+        <ul>
+          <li><b>The LIST behind the outstanding requests count</b>, as on the
+            storage screen. A count needs a status; a list needs a request
+            record with a requester, a date and an item on it.</li>
+          <li><b>"Can room activities here update the capacity and % available
+            storage capacity (freed up storage)?"</b> The client's own question,
+            put to us on s69, and left as a question. It cannot be answered
+            before the capacity question on s68 is, because there is no
+            capacity figure for a disposal to free up.</li>
+          <li><b>The summary band on s69 reads "boxes stored" and "folders
+            stored"</b> above a table whose own columns read "retrieved", on a
+            slide titled Retrieval. Read as a copy paste in the deck and drawn
+            as "retrieved" to match the table. Worth one line of confirmation
+            from the client.</li>
+        </ul>
+      </div>
     </div>
   </section>`;
 
