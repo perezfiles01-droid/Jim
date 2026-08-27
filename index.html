@@ -2798,13 +2798,19 @@ DASHBOARDS.dp=(function(){
   /* ===== state ===== */
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
   let openKpi="sites";         /* tile 1 on s53 */
-  let sitePage=1, sortSite="rec", dirSite="desc";
+  /* First column, ascending, as on every other table. SITECOLS[0].k is "name". */
+  let sitePage=1, sortSite="name", dirSite="asc";
   let visitorPage=1, sortVisitor="name", dirVisitor="asc";
   let docsPage=1, sortDocs="name", dirDocs="asc";
   let recPage=1, sortRec="name", dirRec="asc";
   let physPage=1, sortPhys="name", dirPhys="asc";
   let disposalPage=1, sortDisp="name", dirDisp="asc";
-  let libsPage=1, sortLibs="name", dirLibs="asc";
+  /* "lib", not "name": this table's SORT_KEYS are lib, site, docs, rec, phys,
+     and it has no "name" column at all. Set to "name" the comparator fell
+     through every branch and returned 0, so the table opened unsorted with no
+     header highlighted, which looks identical to a table that is simply sorted
+     the way you left it. */
+  let libsPage=1, sortLibs="lib", dirLibs="asc";
   let libCat=CATS[0];
   let visitorFilter="7days";   /* Default to last 7 days */
   let visitorFilterType="window"; /* window, month, or year */
