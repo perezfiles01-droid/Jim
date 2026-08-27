@@ -1683,12 +1683,18 @@ DASHBOARDS.bw=(function(){
 
   /* ===== state ===== */
   let openKpi="sites";          /* which drill table is showing, tile 1 on s34 */
-  let sortDept="rec", dirDept="desc";
-  let sortUsers="users", dirUsers="desc";
-  let sortDocs="docs", dirDocs="desc";
-  let sortRec="rec", dirRec="desc";
-  let sortPhys="phys", dirPhys="desc";
-  let sortDisp="due", dirDisp="desc";
+  /* Every drill opens sorted on its first column, the unit name, ascending.
+     All six carry "code" as SORT_KEYS[0]. This is not a preference: a table
+     that opens with the blue marker on a measure column reads as though that
+     measure is the point of the table, and the six drills disagreed with each
+     other about which measure that was. Ascending matches what a click on a
+     text column already does, see the toggle handlers below. */
+  let sortDept="code", dirDept="asc";
+  let sortUsers="code", dirUsers="asc";
+  let sortDocs="code", dirDocs="asc";
+  let sortRec="code", dirRec="asc";
+  let sortPhys="code", dirPhys="asc";
+  let sortDisp="code", dirDisp="asc";
   let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1, bwDispPage=1;
   let cmpMode="docsrec";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
