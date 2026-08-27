@@ -2240,7 +2240,7 @@ DASHBOARDS.bw=(function(){
            `<div class="hd${i?" num":""}${sortDept===KEYS[i]?" on":""}" data-s="${KEYS[i]}">${c}${
              sortDept===KEYS[i]?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(x=>`<div class="drow">
-           <div class="dn"><span>${x.code}</span><small>${x.name}</small></div>
+           <div class="dn">${x.code}</div>
            <div class="num">${F(x.sites)}</div><div class="num">${F(x.docs)}</div>
            <div class="num">${F(x.rec)}</div><div class="num">${F(x.phys)}</div></div>`).join("")}
        </div></div>
