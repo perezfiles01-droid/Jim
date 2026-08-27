@@ -1804,10 +1804,18 @@ DASHBOARDS.bw=(function(){
   const DRILL={
     /* s35. This is the same table the outline draws at s16, so it appears once,
        here, as the drill behind the sites tile rather than as a second panel
-       further down the page. Every name opens that unit's own dashboard. */
+       further down the page.
+
+       No caption. It read "Click a name to open its own dashboard. Click a
+       column heading to re-sort." and came off on 27 Aug 2026 at the client's
+       instruction. Half of it was untrue: the column headings do re-sort, but
+       the department rows carry no .go class and no data-dept, so wireGo()
+       never binds them and clicking a name does nothing. s35 does ask for the
+       names to be clickable, so the requirement stands and is recorded in the
+       checker workbook; what is gone is the page telling a reader it already
+       works. */
     sites:{
       title:"Number of active EDRMS SharePoint sites for Department, RM, office",
-      sub:"Click a name to open its own dashboard. Click a column heading to re-sort.",
       sortable:true,
       cols:["Department / office / RM","Number of EDRMS SharePoint sites",
             "Total number of documents","Total number of records declared",
@@ -2232,7 +2240,7 @@ DASHBOARDS.bw=(function(){
     const t=f=>DEPTS.reduce((a,x)=>a+x[f],0);
     document.getElementById("bw-drill").innerHTML=
       `<div class="ptitle">${d.title}</div>
-       <div class="psub">${d.sub}</div>
+       ${d.sub?`<div class="psub">${d.sub}</div>`:""}
        <div class="tiles">${d.tiles().map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
        <div class="scrollx"><div class="dtab wide" id="bw-sites">
