@@ -56,33 +56,22 @@ const DASHBOARDS = [
   { key: 'ra', label: 'Records & Archive Holdings' }
 ];
 
-const today = new Date().toISOString().slice(0, 10);
-
 const COVER = `
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:"Segoe UI",system-ui,sans-serif;background:#F4F7FA;color:#16324F;
-       width:${WIDTH}px;padding:110px 120px}
-  .eyebrow{font-size:22px;font-weight:700;letter-spacing:.14em;color:#4A79A8;margin-bottom:22px}
-  h1{font-size:76px;line-height:1.06;font-weight:700;color:#16324F;margin-bottom:26px}
-  .rule{height:7px;width:220px;background:#16324F;margin-bottom:40px}
-  .lede{font-size:26px;line-height:1.5;color:#3A5A78;max-width:1080px;margin-bottom:64px}
+       width:${WIDTH}px;padding:120px 120px 130px}
+  .eyebrow{font-size:22px;font-weight:700;letter-spacing:.14em;color:#4A79A8;margin-bottom:56px}
   ol{list-style:none;counter-reset:d}
   li{counter-increment:d;display:flex;align-items:center;gap:26px;
      background:#fff;border:1px solid #DCE6F0;border-left:7px solid #16324F;border-radius:12px;
-     padding:24px 32px;margin-bottom:16px}
+     padding:26px 32px;margin-bottom:18px}
   li .n{font-size:30px;font-weight:700;color:#8AA6C2;min-width:52px}
-  li .t{font-size:31px;font-weight:600}
+  li .t{font-size:32px;font-weight:600}
   li .n::before{content:counter(d)}
-  footer{margin-top:70px;font-size:21px;color:#6B87A6;border-top:1px solid #DCE6F0;padding-top:26px}
 </style>
 <div class="eyebrow">EDRMS UTILIZATION REPORT</div>
-<h1>Reporting Suite Prototype</h1>
-<div class="rule"></div>
-<div class="lede">The six key views, captured from the prototype exactly as it renders in the
-browser. One page per dashboard, each sized to its full height so nothing is cut.</div>
 <ol>${DASHBOARDS.map(d => `<li><span class="n"></span><span class="t">${d.label}</span></li>`).join('')}</ol>
-<footer>Captured ${today} from index.html &nbsp;·&nbsp; Asian Development Bank</footer>
 `;
 
 (async () => {
@@ -107,7 +96,13 @@ browser. One page per dashboard, each sized to its full height so nothing is cut
   const cover = await browser.newPage({ viewport: { width: WIDTH, height: 1200 } });
   await cover.setContent(COVER, { waitUntil: 'load' });
   await cover.emulateMedia({ media: 'screen' });
-  const coverH = await cover.evaluate(() => document.body.scrollHeight);
+  /* Same viewport-clamping trap as the dashboards below: with content shorter
+     than the window, body.scrollHeight returns the viewport height, which would
+     leave a slab of dead space under the list. Measure the real content extent. */
+  const coverH = await cover.evaluate(() => {
+    const pad = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    return Math.ceil(document.body.lastElementChild.getBoundingClientRect().bottom + pad);
+  });
   pdfs.push(await cover.pdf({
     width: `${WIDTH}px`, height: `${coverH + PAD}px`,
     printBackground: true, pageRanges: '1', margin: { top: 0, right: 0, bottom: 0, left: 0 }
