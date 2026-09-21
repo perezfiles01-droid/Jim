@@ -167,6 +167,18 @@ check('The users drill sort keys match its columns, so no sort runs on a removed
 check('Per-department inactivity still nests inside the user count',
   /d\.idle180<=d\.users/.test(bw));
 
+/* ---- Phase 7. The comparison panel, items 60, 61 and 62 ---- */
+check('Documents against records declared is gone from the comparison (item 60, Not Required)',
+  !/docsrec/.test(bwCode) && !/Documents against records declared/.test(bwCode));
+check('The comparison offers exactly the two ratios RAC kept',
+  (bwCode.match(/<option value="/g) || []).length === 2);
+check('Neither ratio says "Active users" without saying which users (items 61 and 62)',
+  !/"Active users"/.test(bwCode));
+check('Both ratios name their denominator as the measured window',
+  (bwCode.match(/Users with recorded activity/g) || []).length >= 3);
+check('The panel says the rounded headcount RAC asked for is not captured yet',
+  /rounded headcount RAC asked for is not captured yet/.test(bw));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

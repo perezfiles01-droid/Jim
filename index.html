@@ -1726,7 +1726,7 @@ DASHBOARDS.bw=(function(){
   let sortPhys="code", dirPhys="asc";
   let sortDisp="code", dirDisp="asc";
   let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1, bwDispPage=1;
-  let cmpMode="docsrec";
+  let cmpMode="userdoc";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
 
   /* RAC, 21 September 2026. Every grouping on this dashboard is Department /
@@ -2292,18 +2292,28 @@ DASHBOARDS.bw=(function(){
     });
   }
 
-  /* ===== comparison, PPT s6 and s17 ===== */
+  /* ===== comparison, PPT s6 and s17 =====
+     Two ratios, not three. RAC item 60, documents against records declared,
+     is Not Required: it is the declaration rate, which is already a tile on
+     the records drill, and the same figure twice invites a reader to check
+     one against the other.
+
+     Items 61 and 62 asked what an active user is. Two different measures
+     were being read as one: the people who actually used EDRMS in the window,
+     which is produced from the activity report, and the unit's headcount for
+     context, which RAC wants rounded and which nobody has supplied. Each
+     label now names its own denominator so the two can never be read as the
+     same comparison. The headcount version cannot be drawn until RAC
+     supplies the list, and is not implied by these. */
   const CMP={
-    userdoc:{a:"users",b:"docs",la:"Active users",lb:"Documents",ca:"var(--teal)",cb:"var(--blue)",
-             note:""},
-    userrec:{a:"users",b:"rec",la:"Active users",lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
-             note:""},
-    docsrec:{a:"docs",b:"rec",la:"Documents",lb:"Records declared",ca:"var(--orange)",cb:"var(--green)",
-             /* Note removed 17 Aug 2026 at the client's instruction. It also
-                broke the caption rule twice over: it carried a slide reference,
-                which is provenance, and it named the declaration rate, whose
-                denominator does not exist until the weekly scan is built. */
-             note:""}
+    userdoc:{a:"users",b:"docs",
+             la:"Users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
+             lb:"Documents",ca:"var(--teal)",cb:"var(--blue)",
+             note:"Compared against the people who used EDRMS in the window, not against the size of the unit. The rounded headcount RAC asked for is not captured yet."},
+    userrec:{a:"users",b:"rec",
+             la:"Users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
+             lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
+             note:"Compared against the people who used EDRMS in the window, not against the size of the unit. The rounded headcount RAC asked for is not captured yet."}
   };
   function drawCmp(){
     const c=CMP[cmpMode];
@@ -2430,9 +2440,8 @@ DASHBOARDS.bw=(function(){
       <div class="toolbar">
         <span class="lbl">Compare</span>
         <select id="bw-cmp-sel">
-          <option value="docsrec">Documents against records declared</option>
-          <option value="userdoc">Active users against documents</option>
-          <option value="userrec">Active users against records declared</option>
+          <option value="userdoc">Users with recorded activity against documents</option>
+          <option value="userrec">Users with recorded activity against records declared</option>
         </select>
       </div>
       <div class="legend" id="bw-cmp-legend"></div>
