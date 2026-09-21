@@ -179,6 +179,35 @@ check('Both ratios name their denominator as the measured window',
 check('The panel says the rounded headcount RAC asked for is not captured yet',
   /rounded headcount RAC asked for is not captured yet/.test(bw));
 
+/* ---- Phase 8. Trend and physical counterparts, items 65, 44, 45, 46 ---- */
+check('The monthly average tile is gone (item 65: "this is a report, not average")',
+  !/Monthly average in range/.test(bwCode));
+check('Records declared per month is drawn alongside the cumulative trend (item 65)',
+  /bw-trend-months/.test(bwCode) && /CHART\.columns\(perMonth/.test(bwCode));
+check('The months are asserted to sum to the total the cumulative trend ends at',
+  /perMonth\.reduce\([\s\S]{0,60}===\s*total/.test(bwCode));
+check('Records declared in range keeps its tile (item 64, Agreed)',
+  /Records declared in range/.test(bwCode));
+check('The physical counterpart content RAC agreed is a panel of its own, not a drill behind the deferred tile',
+  /id="bw-phys-panel"/.test(bwCode) && /function drawPhysPanel/.test(bwCode));
+check('No route still points at the removed physical counterparts drill',
+  !/drawPhysDrill/.test(bwCode));
+/* Scoped to the function body, not the module: a non-greedy match over the
+   whole module would run past the end of drawPhysPanel and find the drill
+   builders that legitimately write to #bw-drill. */
+const physBody = (() => {
+  const i = bwCode.indexOf('function drawPhysPanel()');
+  if (i < 0) return '';
+  const j = bwCode.indexOf('\n  function ', i + 10);
+  return bwCode.slice(i, j < 0 ? bwCode.length : j);
+})();
+check('The physical panel renders into its own container, so sorting it cannot overwrite the drill',
+  physBody.includes('getElementById("bw-phys-panel")') && !physBody.includes('getElementById("bw-drill")'),
+  physBody ? 'drawPhysPanel still writes to #bw-drill' : 'drawPhysPanel not found');
+check('The share of records with a counterpart is a tile carrying both bases (item 46)',
+  /Share of records with a counterpart",PCT\(TOTAL_PHYS,TOTAL_REC\)/.test(bwCode.replace(/\s+/g, '')) ||
+  /Total number of physical records declared[\s\S]{0,400}Share of records with a counterpart/.test(bwCode));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

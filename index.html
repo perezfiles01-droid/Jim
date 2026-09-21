@@ -2169,7 +2169,16 @@ DASHBOARDS.bw=(function(){
     });
   }
 
-  function drawPhysDrill(){
+  /* The physical counterpart panel, RAC items 44, 45 and 46, all Agreed or
+     answered. It was the drill behind the Physical counterparts tile until
+     21 September 2026, when RAC deferred that TILE, item 5, while agreeing
+     its contents. So it stops being a drill and becomes a panel of its own:
+     the measures RAC kept, reachable without the tile RAC removed.
+
+     Item 46 asked whether the share should be a chart or a tile. A single
+     ratio does not need a visual, and a percentage shown without its bases
+     cannot be checked, so it is a tile with both counts beside it. */
+  function drawPhysPanel(){
     const d=DRILL.phys;
     const tiles=d.tiles();
 
@@ -2190,7 +2199,7 @@ DASHBOARDS.bw=(function(){
     if(bwPhysPage>pages)bwPhysPage=pages;
     const page=rows.slice((bwPhysPage-1)*10,bwPhysPage*10);
 
-    document.getElementById("bw-drill").innerHTML=
+    document.getElementById("bw-phys-panel").innerHTML=
       `<div class="ptitle">${d.title}</div>
        <div class="psub">${d.sub}</div>
        <div class="tiles">${tiles.map(([l,v])=>
@@ -2204,17 +2213,17 @@ DASHBOARDS.bw=(function(){
        </div></div>
        <div id="bw-phys-pager">${pager(rows.length,bwPhysPage,pages,"departments")}</div>`;
 
-    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
+    document.querySelectorAll("#bw-phys-panel .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortPhys===k)dirPhys=dirPhys==="asc"?"desc":"asc";
       else{sortPhys=k;dirPhys=(k==="code"?"asc":"desc");}
       bwPhysPage=1;
-      drawDrill();
+      drawPhysPanel();
     });
 
     wirePager("#bw-phys-pager",go=>{
       bwPhysPage=go==="prev"?Math.max(1,bwPhysPage-1):go==="next"?Math.min(pages,bwPhysPage+1):+go;
-      drawDrill();
+      drawPhysPanel();
     });
   }
 
@@ -2230,7 +2239,6 @@ DASHBOARDS.bw=(function(){
     if(openKpi==="users") return drawUsersDrill();
     if(openKpi==="docs") return drawDocsDrill();
     if(openKpi==="rec") return drawRecsDrill();
-    if(openKpi==="phys") return drawPhysDrill();
 
   }
 
@@ -2367,6 +2375,7 @@ DASHBOARDS.bw=(function(){
         The series runs from ${DATA.MONTH_FULL[0]} to ${DATA.MONTH_FULL[DATA.MONTH_FULL.length-1]}.</div>`;
       sum.textContent="Nothing to show for the selected range.";
       document.getElementById("bw-trend-tiles").innerHTML="";
+      document.getElementById("bw-trend-months").innerHTML="";
       return;
     }
 
@@ -2389,9 +2398,27 @@ DASHBOARDS.bw=(function(){
        this tile was its only home, so it now has none anywhere on the page.
        Recorded in STATUS.md rather than lost silently. */
     const total=run;
+    /* RAC item 65, Agreed with Changes, 21 September 2026: "This is a report.
+       Not average. Show the number of records declared per month for the
+       selected period, alongside the trend so peak periods and year on year
+       patterns can be reviewed."
+
+       So the monthly average tile is gone and the months themselves are
+       drawn. The cumulative trend stays exactly as it is, that being the
+       16 August decision and not reopened: a cumulative series ENDS at the
+       total rather than summing to it, which is why the two charts carry
+       different shapes of the same data and why the assert below tests that
+       the months sum to the range total. Item 64, records declared in range,
+       is Agreed and keeps its tile. */
+    const perMonth=inRange.map(m=>({label:DATA.MONTH_LABELS_WITH_YEAR[m.i],
+                                    value:DATA.MONTH_VALUES[m.i]}));
+    console.assert(perMonth.reduce((a,m)=>a+m.value,0)===total,
+      "Records declared per month must sum to the range total the trend ends at");
+    document.getElementById("bw-trend-months").innerHTML=
+      CHART.columns(perMonth,{height:170,color:"var(--green)"});
     document.getElementById("bw-trend-tiles").innerHTML=[
       ["Records declared in range",F(total)],
-      ["Monthly average in range",F(Math.round(total/inRange.length))],
+      ["Months in range",F(inRange.length)],
     ].map(([l,v])=>`<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("");
   }
 
@@ -2429,6 +2456,12 @@ DASHBOARDS.bw=(function(){
 
     <div id="bw-kpis"></div>
     <div class="panel" id="bw-drill"></div>
+
+    <div class="band">
+      <h2>Physical counterparts</h2>
+      <div class="bd">Declared records that also exist on paper, and the share of the holding they represent.</div>
+    </div>
+    <div class="panel" id="bw-phys-panel"></div>
 
     <div class="band">
       <h2>Comparison</h2>
@@ -2475,6 +2508,8 @@ DASHBOARDS.bw=(function(){
       </div>
       <div class="tiles" id="bw-trend-tiles"></div>
       <div id="bw-trend"></div>
+      <div class="psub" style="margin-top:14px">Records declared per month across the same range.</div>
+      <div id="bw-trend-months"></div>
       <div class="psub" style="margin-top:12px" id="bw-trend-sum"></div>
     </div>
 
@@ -2484,6 +2519,7 @@ DASHBOARDS.bw=(function(){
     drawTiles();
     wireTiles();
     drawDrill();
+    drawPhysPanel();
     drawCmp();
     document.getElementById("bw-cmp-sel").onchange=e=>{cmpMode=e.target.value;drawCmp();};
 
