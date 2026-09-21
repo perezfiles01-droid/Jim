@@ -1075,7 +1075,22 @@ const DATA=(function(){
 
   /* ===== people and sites ===== */
   const MONTHLY_ACTIVE_USERS=9420;
-  const SITES_CREATED=1057;
+  /* 1,032 is MEASURED, not assumed. It is the number of rows in the Cloud
+     Governance Workspace report carrying a value in EDRMS Site Type, which is
+     the business register of EDRMS compliant sites. `derive_bankwide.py` reads
+     that file and prints the count, so this line can be checked rather than
+     trusted. It replaces 1,057, a placeholder inherited from an earlier
+     prototype that nobody could ever justify. Project sites are excluded from
+     this count, RAC decision item 1. */
+  const SITES_CREATED=1032;
+  /* 240 of the 1,030 EDRMS sites that carry a Department carry SEVERAL,
+     semicolon separated. RAC decided on 21 September 2026 that the first
+     listed is primary, so every site counts exactly once and the department
+     rows total the bank-wide figure. The cost is that a shared site does not
+     appear in its secondary owners' rows, which the site panel says on screen
+     rather than leaving to be discovered. */
+  const SITES_MULTI_DEPARTMENT=240;
+  const SITES_WITH_DEPARTMENT=1030;
   const IDLE_DAYS=90;             /* a site is inactive after this long */
   const LIB_IDLE=90, LIB_DORMANT=180;
   const SITES_INACTIVE=189;       /* of the 1,057, no activity for IDLE_DAYS */
@@ -1363,6 +1378,7 @@ const DATA=(function(){
     RA_PENDING_STORE,RA_PENDING_RETR,RA_AWAITING_TRANSFER,
     MONTH_LABELS,MONTH_LABELS_WITH_YEAR,MONTH_VALUES,MONTH_KEYS,MONTH_FULL,RANGE_FROM,RANGE_TO,
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
+    SITES_MULTI_DEPARTMENT,SITES_WITH_DEPARTMENT,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
     USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,ACTIVITY_WINDOW,
     VISITORS,PAGE_VIEWS,STORAGE_GB,RECORD_GB,DUE_WITH_PHYS,PERM_PHYSICAL,
