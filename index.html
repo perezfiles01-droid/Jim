@@ -2695,9 +2695,11 @@ DASHBOARDS.dp=(function(){
            one edit rather than a reload. */
         idle:((i*13+code.length*5)%210)+1,
         gb:+(gb[i]/10).toFixed(1),
-        /* M365 usage metrics from SharePoint Site Usage Report */
-        pageViewCount:Math.max(0,Math.round(views[i]*1.3+Math.random()*50)),
-        visitedPageCount:Math.max(1,Math.round(views[i]*0.6+Math.random()*20)),
+        /* pageViewCount and visitedPageCount came off on 21 September 2026:
+           items 33, 34, 36 and 37, all Not Required. They were also the only
+           two figures on this dashboard drawn with Math.random(), so they
+           changed on every redraw and no two readers ever saw the same
+           number. */
         /* EDRMS Site Type from Cloud Governance */
         ermsType:["EDRMS Project Site","EDRMS Traditional Site"][i%2],
         /* Disposal urgency buckets - derived from due records count */
@@ -2808,27 +2810,10 @@ DASHBOARDS.dp=(function(){
      - monthly:  SUM(T2.SiteVisits30) for snapshot date matching that month
      - yearly:   SUM(T2.UniqueViewersAllTime) for all activity through end of year
   */
-  const VISITORS_WINDOWS={
-    "7days":2100,       /* ~12% of current: very active users this week */
-    "30days":7540,      /* ~44% of current: active last month */
-    "90days":13100,     /* ~76% of current: active last quarter */
-    "180days":15800     /* ~92% of current: active in past 6 months */
-  };
 
   /* Monthly visitor snapshots (one snapshot per month, rolling 12 months) */
-  const VISITORS_BY_MONTH={
-    "2025-08":1850,  "2025-09":2100,  "2025-10":1920,  "2025-11":2340,  "2025-12":2560,
-    "2026-01":2780,  "2026-02":3120,  "2026-03":3450,  "2026-04":3890,  "2026-05":4560,
-    "2026-06":5120,  "2026-07":7540   /* Jul 2026 is current month */
-  };
 
   /* Yearly visitor snapshots (YTD through end of each year) */
-  const VISITORS_BY_YEAR={
-    "2023":3200,   /* Full year 2023 */
-    "2024":7840,   /* Full year 2024 */
-    "2025":14200,  /* Full year 2025 */
-    "2026":7540    /* 2026 YTD (Jan-Jul) */
-  };
 
   /* ===== state ===== */
   let dept=DEPTS[0].code;      /* the largest, so the panels open populated */
@@ -2847,40 +2832,8 @@ DASHBOARDS.dp=(function(){
      the way you left it. */
   let libsPage=1, sortLibs="lib", dirLibs="asc";
   let libCat=CATS[0];
-  let visitorFilter="7days";   /* Default to last 7 days */
-  let visitorFilterType="window"; /* window, month, or year */
-  let visitorFilterMode="quick"; /* quick or custom - which UI mode is active */
-  let visitorMonth="2026-07";  /* Default to Jul 2026 */
-  let visitorYear="2026";      /* Default to 2026 */
 
-  /* Get the current visitor total based on active filter */
-  function getVisitorTotal(){
-    if(visitorFilterType==="window") return VISITORS_WINDOWS[visitorFilter];
-    if(visitorFilterType==="month") return VISITORS_BY_MONTH[visitorMonth];
-    if(visitorFilterType==="year") return VISITORS_BY_YEAR[visitorYear];
-    return VISITORS_WINDOWS["7days"];
-  }
 
-  /* Apply visitor date range filter to DEPTS by re-splitting the filtered total
-     across departments using the same weights as the original split. This keeps
-     the proportional distribution while changing the absolute numbers. Called
-     after visitorFilter changes to update all downstream visitor values. */
-  function applyVisitorFilter(){
-    const filteredTotal=getVisitorTotal();
-    const W=DEPTS.map(d=>d.rec);  /* same weight vector as original split */
-    const newVisSplit=split(filteredTotal,W);
-    DEPTS.forEach((d,i)=>{d.visitors=newVisSplit[i];});
-    /* Also update site-level cached data */
-    Object.keys(SITECACHE).forEach(code=>{
-      const sites=SITECACHE[code];
-      const deptData=DEPTS.find(d=>d.code===code);
-      if(deptData){
-        const siteWeights=sites.map(s=>s.rec);
-        const newSiteVis=split(deptData.visitors,siteWeights);
-        sites.forEach((s,i)=>{s.visitors=newSiteVis[i];});
-      }
-    });
-  }
 
   /* An "All departments, offices and RMs" option on the filter, added 17 Aug
      2026 at the client's instruction. Every one of the sixteen units was
@@ -2913,11 +2866,6 @@ DASHBOARDS.dp=(function(){
     };
   })();
 
-  /* Helper to rebuild ALL when DEPTS changes (e.g., after visitor filter applied) */
-  function rebuildALL(){
-    const sum=f=>DEPTS.reduce((a,d)=>a+d[f],0);
-    ALL.visitors=sum("visitors");
-  }
   console.assert(ALL.rec===DATA.DECLARED,
     "The All units option must total every declared record");
   console.assert(ALL.sites===DATA.SITES_CREATED,
@@ -3141,115 +3089,72 @@ DASHBOARDS.dp=(function(){
   }
 
   /* Calculate filter-aware metrics for interactive summary chart */
-  function getFilteredMetrics(d){
-    let pageViewMultiplier=1, visitedPageMultiplier=1;
-    if(visitorFilterType==="window"){
-      /* Vary metrics based on date window - wider windows = more total views */
-      switch(visitorFilter){
-        case "7days": pageViewMultiplier=1; visitedPageMultiplier=1; break;
-        case "30days": pageViewMultiplier=3.8; visitedPageMultiplier=3.5; break;
-        case "90days": pageViewMultiplier=8.5; visitedPageMultiplier=7.8; break;
-        case "180days": pageViewMultiplier=15.2; visitedPageMultiplier=14.1; break;
-      }
-    } else if(visitorFilterType==="month"){
-      /* Month-specific variations */
-      const monthNum=parseInt(visitorMonth.split("-")[1]);
-      pageViewMultiplier=0.8+(monthNum*0.15); /* Vary by month */
-      visitedPageMultiplier=0.7+(monthNum*0.12);
-    } else if(visitorFilterType==="year"){
-      /* Year-specific variations */
-      const year=parseInt(visitorYear);
-      const baseYear=2023;
-      pageViewMultiplier=1+(year-baseYear)*0.5; /* Growth over years */
-      visitedPageMultiplier=1+(year-baseYear)*0.45;
-    }
-    return {
-      pageViews:Math.round(d.views*pageViewMultiplier),
-      visitedPages:Math.round(d.views*0.6*visitedPageMultiplier)
-    };
-  }
+  /* getFilteredMetrics, getVisitorTotal, applyVisitorFilter and the three
+     visitor window tables came off on 21 September 2026 with the date filter
+     they served. Their only consumers were the Page View Count and Visited
+     Page Count measures, items 33, 34, 36 and 37, all Not Required, and no
+     item in the checker asks for a date range on this panel. Leaving them in
+     would leave four multiplier tables and a filter state machine wired to
+     nothing, which reads like a feature somebody forgot to finish. */
 
   function drawVisitors(d,sites){
-    /* Site-level visitor and page view data comes from the Site Activity Table (T2):
-       - s.visitors = T2.UniqueViewersAllTime (distinct people who ever accessed the site)
-         Source: Microsoft Graph Analytics /sites/{id}/analytics/allTime, actorCount field
-       - s.views = T2.SiteVisits7 (site visits in the most recent 7-day period)
-         Source: Microsoft 365 SharePoint usage reports, Page View Count column
+    /* RAC, 21 September 2026. This panel is now exactly the items, and
+       nothing else. What came off:
 
-       Until T2 is populated with real tenant data, these values are split from department
-       totals using weights. Site totals reconcile exactly to department totals by construction. */
+         item 31  Total number of visitors   Not Required, same as item 4
+         item 33  Page View Count            Not Required
+         item 34  Visited Page Count         Not Required
+         item 35  Name of sites, again       Not Required, same as item 32
+         item 36  Page View Count, again     Not Required
+         item 37  Visited Page Count, again  Not Required
+         item 42  Access requests denied     Not Required
 
-    /* Sort sites based on current sort state, then format rows */
-    const SORT_KEYS=["name","pageViewCount","visitedPageCount","ermsType"];
+       The date range control came off with them. No item in the checker asks
+       for one, and the only measures it drove were the page view counts RAC
+       struck out, so keeping it would mean keeping a filter over nothing.
+
+       What the items ask for and what is here: the site visits table by site,
+       item 32, Agreed; EDRMS Site Type, item 38, Agreed; the external and
+       internal visitor split, items 39 and 40, Agreed; and access requests
+       granted, item 41.
+
+       Three of those have no source in anything this report reads, so they
+       say so rather than printing a split nobody measured. The internal and
+       external split needs a way to tell an ADB account from a guest: the
+       Cloud Governance guest user report identifies guests and a UPN domain
+       test would identify the rest, but neither has been run per site. RAC's
+       own feasibility note says the same, "Need Source to identify if a user
+       is Internal / External". Access requests granted is narrower than it
+       looks: Cloud Governance holds a request report with a status and an
+       approval stage, so requests routed through it can be counted, but
+       native SharePoint access requests need audit log data, which was cut
+       from scope earlier as S/N 120. The label says which is meant. */
+    const SORT_KEYS=["name","visitors","ermsType"];
     const sortedSites=sortTable(sites,sortVisitor,dirVisitor);
-    const rows=sortedSites.map(s=>[s.name,F(s.pageViewCount),F(s.visitedPageCount),s.ermsType]);
+    const rows=sortedSites.map(s=>[s.name,F(s.visitors),s.ermsType]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(visitorPage>pages)visitorPage=pages;
     const page=rows.slice((visitorPage-1)*10,visitorPage*10);
 
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Site Visits</div>
-       <div class="psub">Site visits by date, and usage metrics.</div>
-       <div class="toolbar" style="margin-top:12px;">
-         <span class="lbl">Date range</span>
-         <!-- Filter mode selector: Quick windows vs Custom date -->
-         <div style="display:flex;gap:16px;align-items:center;margin-top:8px;margin-bottom:12px;">
-           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-             <input type="radio" name="visitor-filter-mode" value="quick" ${visitorFilterMode==="quick"?"checked":""} style="cursor:pointer;">
-             <span>Quick windows</span>
-           </label>
-           <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
-             <input type="radio" name="visitor-filter-mode" value="custom" ${visitorFilterMode==="custom"?"checked":""} style="cursor:pointer;">
-             <span>Filter by month/year</span>
-           </label>
-           <button id="dp-visitor-reset" class="vf-btn" style="background:#f5f7fa;border-color:#e0e6ec;color:#718096;margin-left:auto;">Reset to Last 7 days</button>
-         </div>
-         <div id="dp-visitor-filter" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-           <!-- Quick windows container (shown when mode=quick) -->
-           <div id="dp-visitor-quick-mode" style="display:${visitorFilterMode==="quick"?"flex":"none"};gap:8px;flex-wrap:wrap;">
-             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="7days"?"on":""}" data-filter="7days">Last 7 days</button>
-             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="30days"?"on":""}" data-filter="30days">Last 30 days</button>
-             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="90days"?"on":""}" data-filter="90days">Last 90 days</button>
-             <button class="vf-btn ${visitorFilterMode==="quick"&&visitorFilter==="180days"?"on":""}" data-filter="180days">Last 180 days</button>
-           </div>
-           <!-- Custom date container (shown when mode=custom) -->
-           <div id="dp-visitor-custom-mode" style="display:${visitorFilterMode==="custom"?"flex":"none"};gap:8px;align-items:center;">
-             <select id="dp-visitor-month" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;">
-               <option value="2025-08">Aug 2025</option>
-               <option value="2025-09">Sep 2025</option>
-               <option value="2025-10">Oct 2025</option>
-               <option value="2025-11">Nov 2025</option>
-               <option value="2025-12">Dec 2025</option>
-               <option value="2026-01">Jan 2026</option>
-               <option value="2026-02">Feb 2026</option>
-               <option value="2026-03">Mar 2026</option>
-               <option value="2026-04">Apr 2026</option>
-               <option value="2026-05">May 2026</option>
-               <option value="2026-06">Jun 2026</option>
-               <option value="2026-07" ${visitorMonth==="2026-07"?"selected":""}>Jul 2026</option>
-             </select>
-             <select id="dp-visitor-year" style="font:inherit;font-size:12px;padding:6px 10px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#33475F;cursor:pointer;">
-               <option value="2023">2023</option>
-               <option value="2024">2024</option>
-               <option value="2025">2025</option>
-               <option value="2026" ${visitorYear==="2026"?"selected":""}>2026</option>
-             </select>
-           </div>
-         </div>
+       <div class="psub">Unique people who accessed each EDRMS site.</div>
+       ${summaryChart([
+         {lab:"Total number of unique site visitors",v:d.visitors}])}
+       <div class="mstats" style="margin-top:14px">
+         <span>Total number of visitors, external <b>${NOSRC}</b></span>
+         <span>Total number of visitors, internal <b>${NOSRC}</b></span>
+         <span>Access requests granted, Cloud Governance <b>${NOSRC}</b></span>
        </div>
-       ${(()=>{const m=getFilteredMetrics(d);return summaryChart([
-         {lab:"Page View Count",v:m.pageViews},
-         {lab:"Visited Page Count",v:m.visitedPages}]);})()}
        <div class="scrollx"><div class="dtab wide" id="dp-visitors"
-            style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(150px,1fr) minmax(160px,1fr)">
+            style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) minmax(160px,1fr)">
          <div class="dhead">
            <div class="hd${sortVisitor==="name"?" on":""}" data-s="name">Name of sites${sortVisitor==="name"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
-           <div class="hd num${sortVisitor==="pageViewCount"?" on":""}" data-s="pageViewCount">Page View Count${sortVisitor==="pageViewCount"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
-           <div class="hd num${sortVisitor==="visitedPageCount"?" on":""}" data-s="visitedPageCount">Visited Page Count${sortVisitor==="visitedPageCount"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
+           <div class="hd num${sortVisitor==="visitors"?" on":""}" data-s="visitors">Unique visitors${sortVisitor==="visitors"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
            <div class="hd${sortVisitor==="ermsType"?" on":""}" data-s="ermsType">EDRMS Site Type${sortVisitor==="ermsType"?(dirVisitor==="asc"?" ↑":" ↓"):""}</div>
          </div>
          ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div>${r[3]}</div></div>`).join("")}
+           <div class="num">${r[1]}</div><div>${r[2]}</div></div>`).join("")}
        </div></div>
        <div id="dp-visitors-pager">${pager(rows.length,visitorPage,pages,"sites")}</div>`;
 
@@ -3265,84 +3170,6 @@ DASHBOARDS.dp=(function(){
       visitorPage=go==="prev"?Math.max(1,visitorPage-1):go==="next"?Math.min(pages,visitorPage+1):+go;
       drawDrill();
     });
-
-    /* Wire up filter mode radio buttons (Quick windows vs Custom date) */
-    document.querySelectorAll("input[name='visitor-filter-mode']").forEach(radio=>{
-      radio.onchange=e=>{
-        visitorFilterMode=e.target.value;
-        if(visitorFilterMode==="quick"){
-          /* Switch to quick window mode - reset to Last 7 days */
-          visitorFilter="7days";
-          visitorFilterType="window";
-        } else {
-          /* Switch to custom mode - set to month filter */
-          visitorFilterType="month";
-        }
-        applyVisitorFilter();
-        rebuildALL();
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    });
-
-    /* Wire up quick window buttons */
-    document.querySelectorAll("#dp-visitor-quick-mode button[data-filter]").forEach(btn=>{
-      btn.onclick=e=>{
-        const newFilter=e.target.dataset.filter;
-        if(newFilter!==visitorFilter){
-          visitorFilter=newFilter;
-          visitorFilterType="window";
-          /* Update all quick window button states */
-          document.querySelectorAll("#dp-visitor-quick-mode button[data-filter]").forEach(b=>
-            b.classList.toggle("on",b.dataset.filter===visitorFilter));
-          /* Apply the visitor filter and rebuild data */
-          applyVisitorFilter();
-          rebuildALL();
-          drawAll();
-          if(openKpi==="visitors") drawDrill();
-        }
-      };
-    });
-
-    /* Wire up month picker */
-    const monthSel=document.getElementById("dp-visitor-month");
-    if(monthSel){
-      monthSel.onchange=e=>{
-        visitorMonth=e.target.value;
-        visitorFilterType="month";
-        applyVisitorFilter();
-        rebuildALL();
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    }
-
-    /* Wire up year picker */
-    const yearSel=document.getElementById("dp-visitor-year");
-    if(yearSel){
-      yearSel.onchange=e=>{
-        visitorYear=e.target.value;
-        visitorFilterType="year";
-        applyVisitorFilter();
-        rebuildALL();
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    }
-
-    /* Wire up reset button */
-    const resetBtn=document.getElementById("dp-visitor-reset");
-    if(resetBtn){
-      resetBtn.onclick=e=>{
-        visitorFilter="7days";
-        visitorFilterType="window";
-        visitorFilterMode="quick";
-        applyVisitorFilter();
-        rebuildALL();
-        drawAll();
-        if(openKpi==="visitors") drawDrill();
-      };
-    }
   }
 
   function drawDocuments(d,sites){

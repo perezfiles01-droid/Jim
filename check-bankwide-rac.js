@@ -259,6 +259,31 @@ check('No Department Insights figure still reads a field Bank-wide removed',
   !/\bd\.never\b|\bd\.idle90\b|sum\("never"\)|sum\("idle90"\)/.test(dpCode),
   'a removed field is still read here, which prints NaN rather than throwing');
 
+/* ---- Phase 3. Site Visits, items 31 to 42 ---- */
+const DP_VISIT_REMOVED = [
+  ['Page View Count', 'items 33 and 36, Not Required'],
+  ['Visited Page Count', 'items 34 and 37, Not Required'],
+  ['Access requests denied', 'item 42, Not Required'],
+];
+DP_VISIT_REMOVED.forEach(([t, why]) => check('Site Visits no longer shows "' + t + '" (' + why + ')',
+  !dpCode.includes(t)));
+check('The date range filter is gone: no checker item asks for one on this panel',
+  !/visitorFilter|dp-visitor-quick-mode|dp-visitor-custom-mode|Quick windows/.test(dpCode));
+check('The machinery the filter drove is gone with it, not left wired to nothing',
+  !/getFilteredMetrics|applyVisitorFilter|getVisitorTotal|VISITORS_WINDOWS/.test(dpCode));
+check('No Department Insights figure is drawn with Math.random()',
+  !/Math\.random\(\)/.test(dpCode),
+  'a figure that changes on every redraw means no two readers see the same number');
+check('The site visits table by site is kept (item 32, Agreed)',
+  /<div class="ptitle">Site Visits<\/div>/.test(dpCode) && /id="dp-visitors"/.test(dpCode));
+check('EDRMS Site Type is kept (item 38, Agreed)', /EDRMS Site Type/.test(dpCode));
+check('The external and internal visitor split is present (items 39 and 40, Agreed)',
+  /Total number of visitors, external/.test(dpCode) && /Total number of visitors, internal/.test(dpCode));
+check('Access requests granted is present and scoped to Cloud Governance (item 41)',
+  /Access requests granted, Cloud Governance/.test(dpCode));
+check('The three measures with no per-site source say Not captured rather than printing a split',
+  (dpCode.match(/Total number of visitors, external <b>\$\{NOSRC\}/) || []).length === 1);
+
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
