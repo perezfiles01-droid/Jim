@@ -314,6 +314,21 @@ check('Its pagination and sort state went with it, not left as dead variables',
 check('Nothing on Department Insights reports disposal any more (items 8, 24, 30, 65 to 76)',
   !/due for disposal/i.test(dpCode));
 
+/* ---- Phase 6. The division rename and the library panel, items 47, 56, 57, 63, 77 to 82 ---- */
+check('No visible Department Insights label groups by division (items 56, 57, 63, 82)',
+  !/division/i.test((dpCode.match(/(?:lab|ptitle|psub|hd)[^\n]*/g) || []).join('\n')));
+check('The per-site document table names itself the breakdown of the total (item 47)',
+  /the breakdown of the total above, not a second count/.test(dpCode));
+check('Number of users per library is present (item 81, Agreed)',
+  /Number of users per library/.test(dpCode));
+check('Per-library usage is not claimed: the activity reports run per site (item 82)',
+  /activity reports run per site, never per library/.test(dpCode));
+check('The library panel states its grouping as Department \u002f Office \u002f RM \u002f RO (item 82)',
+  /Grouped by <b>Department \/ Office \/ RM \/ RO<\/b>/.test(dpCode));
+['Library name', 'Site name', 'Number of documents', 'Number of records declared',
+ 'Number of physical counterparts'].forEach(c =>
+  check('The library table keeps its "' + c + '" column (items 77 to 80)', dpCode.includes(c)));
+
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

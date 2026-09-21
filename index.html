@@ -3186,7 +3186,7 @@ DASHBOARDS.dp=(function(){
 
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Total number of documents in EDRMS</div>
-       <div class="psub">Documents created or uploaded, by site.</div>
+       <div class="psub">Documents created or uploaded, by site. The site rows are the breakdown of the total above, not a second count of the same documents.</div>
        ${summaryChart([
          {lab:"Total number of documents",v:d.docs},
          {lab:"EDRMS active sites",v:sites.length},
@@ -3221,6 +3221,16 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawRecords(d,sites){
+    /* RAC items 56 and 57, Agreed with Changes: replace division with
+       Department / Office / RM / RO, and count unique declarers for the
+       selected grouping. This table has been by site under the selected unit
+       since the division tier came off on 17 August, so the decision confirms
+       the shape rather than changing it. Item 63, the per division physical
+       columns, is Not Required and is likewise already absent.
+
+       Division cannot come back. The Cloud Governance export carries a
+       Division column and it is empty on all 1,032 EDRMS sites, all 286 users
+       and all 676 groups. */
     const SORT_KEYS=["name","rec","declaring"];
     const sorted=sites.slice().sort((a,b)=>{
       let cmp=0;
@@ -3465,6 +3475,11 @@ DASHBOARDS.dp=(function(){
          <div class="tile"><div class="tl">Total number of documents</div><div class="tv">${F(t("docs"))}</div></div>
          <div class="tile"><div class="tl">Total number of records declared</div><div class="tv">${F(t("rec"))}</div></div>
          <div class="tile"><div class="tl">Total number of physical counterparts</div><div class="tv">${F(t("phys"))}</div></div>
+         <div class="tile"><div class="tl">Number of users per library</div><div class="tv">${NOSRC}</div></div>
+       </div>
+       <div class="mstats" style="margin-top:10px">
+         <span>Grouped by <b>Department / Office / RM / RO</b></span>
+         <span>Library indicators are counts of documents, records and counterparts. Usage per library has no source: the activity reports run per site, never per library.</span>
        </div>
        <div class="scrollx"><div class="dtab wide" id="dp-libs-table" style="--dc:minmax(180px,1.2fr) minmax(150px,1.2fr) repeat(3,minmax(110px,1fr))">
          <div class="dhead"><div class="hd${sortLibs===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Library name${
