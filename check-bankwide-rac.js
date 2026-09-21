@@ -59,6 +59,23 @@ if (derived) {
 const bwStart = src.indexOf('DASHBOARDS.bw=(function(){');
 const bwEnd = src.indexOf('DASHBOARDS.dp=(function(){');
 const bw = bwStart >= 0 && bwEnd > bwStart ? src.slice(bwStart, bwEnd) : src;
+/* Searching what EXECUTES, not what is written about. This file's own
+   comments quote the wording of things that were removed, so a plain search
+   finds the removal notice and reports the fault it is recording. `bwCode` is
+   the Bank-wide module with block and line comments taken out. It is tested
+   against the real module below before anything leans on it, because a
+   stripper that eats too much makes every check pass and reads exactly like
+   protection. */
+const bwCode = bw
+  .replace(/\/\*[\s\S]*?\*\//g, ' ')
+  .split('\n').map(l => l.replace(/(^|[^:])\/\/.*$/, '$1')).join('\n');
+check('The comment stripper leaves the code it is meant to search',
+  bwCode.includes('const TILES=[') && bwCode.includes('function drawUsersDrill()') &&
+  bwCode.includes('DASHBOARDS.bw'),
+  'the stripper removed live code, so every check built on it is blind');
+check('The comment stripper actually removes comments',
+  !bwCode.includes('RAC decisions of 21 September 2026'));
+
 const tilesBlock = (bw.match(/const TILES=\[[\s\S]*?\n  \];/) || [''])[0];
 const navBlock = (bw.match(/const NAVTILES=\[[\s\S]*?\n  \];/) || [''])[0];
 
@@ -112,7 +129,7 @@ const REMOVED_INDICATORS = [
   ['with zero declarations', 'item 40, Not Required, covered by items 38 and 39'],
 ];
 REMOVED_INDICATORS.forEach(([t, why]) => check('Bank-wide no longer shows "' + t + '" (' + why + ')',
-  !bw.includes('["' + t) && !bw.includes('"' + t + '"')));
+  !bwCode.includes('["' + t) && !bwCode.includes('"' + t + '"')));
 check('The shared-site limitation is stated on the sites drill, not left to be discovered',
   /Sites shared across departments, counted to the first/.test(bw));
 
@@ -127,7 +144,7 @@ const OLD_WORDINGS = [
   'Compare departments, offices and RMs',
 ];
 OLD_WORDINGS.forEach(w => check('Bank-wide no longer says "' + w + '" (item 11)',
-  !bw.includes(w)));
+  !bwCode.includes(w)));
 check('Bank-wide uses the agreed column heading Department / Office / RM / RO',
   bw.includes('Department / Office / RM / RO'));
 /* Division has no source: the Cloud Governance export's Division column is
@@ -137,6 +154,18 @@ check('Bank-wide uses the agreed column heading Department / Office / RM / RO',
 const visible = (bw.match(/(?:title|sub|lab|cols)\s*:\s*[^\n]*/g) || []).join('\n');
 check('No visible Bank-wide label groups by division (items 42 and 43)',
   !/\bdivision/i.test(visible), 'found: ' + (visible.match(/[^\n]*division[^\n]*/i) || [''])[0].slice(0, 80));
+
+/* ---- Phase 6. One inactivity window, items 25, 26 and 19 ---- */
+check('Bank-wide claims no "never accessed" measure (item 25: 180 days is the longest window any source serves)',
+  !/[Nn]ever accessed/.test(bwCode));
+check('USERS_NEVER is gone from DATA, not merely hidden behind a label',
+  !/const\s+USERS_NEVER\s*=/.test(src));
+check('The inactivity figure is driven by the window constant, never a second hardcoded threshold (item 26)',
+  !/No access in 90 days/.test(bwCode) && /No access in "\+DATA\.ACTIVITY_WINDOW\+" days/.test(bwCode));
+check('The users drill sort keys match its columns, so no sort runs on a removed field',
+  !/sortUsers==="never"|sortUsers==="idle90"/.test(bwCode));
+check('Per-department inactivity still nests inside the user count',
+  /d\.idle180<=d\.users/.test(bw));
 
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +

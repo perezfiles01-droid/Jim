@@ -1154,8 +1154,20 @@ const DATA=(function(){
 
   const USERS_DECLARING=3186;
   const USERS_CREATING=6690;
-  const USERS_NEVER=1032;         /* no recorded activity ever */
-  const USERS_IDLE90=1795;        /* last activity older than IDLE_DAYS */
+  /* One inactivity measure, not two. Until 21 September 2026 this was
+     USERS_NEVER, people with no recorded activity ever, plus USERS_IDLE90,
+     people whose last activity is older than 90 days. RAC item 25 removed the
+     first: the activity report serves 7, 30, 90 or 180 day windows and
+     nothing longer, so "ever" is not a window any source offers and somebody
+     last active 200 days ago cannot be told apart from somebody who never
+     arrived. Item 26 then fixed the threshold at the window itself.
+
+     USERS_IDLE180 is the union of the two figures it replaces, 1,032 plus
+     1,795, which is what "no activity inside the 180 day window" means once
+     the two groups stop being distinguishable. It is produced by counting
+     rows in the SharePoint activity user detail export whose Last Activity
+     Date is blank or older than the window. */
+  const USERS_IDLE180=2827;
 
   /* Visitors and page views. A visitor is a person, from site analytics
      actorCount. A page view is an event, from Page View Count in the usage
@@ -1301,8 +1313,8 @@ const DATA=(function(){
      independent, the nesting is a claim, so it is asserted. */
   console.assert(USERS_DECLARING<=USERS_CREATING&&USERS_CREATING<=MONTHLY_ACTIVE_USERS,
     "Users declaring records must be a subset of users creating documents, and both of all users");
-  console.assert(USERS_NEVER+USERS_IDLE90<=MONTHLY_ACTIVE_USERS,
-    "Users who never accessed EDRMS plus users idle 90 days cannot exceed all users");
+  console.assert(USERS_IDLE180<=MONTHLY_ACTIVE_USERS,
+    "Users with no access inside the window cannot exceed all users");
   console.assert(PAGE_VIEWS>=VISITORS,
     "There cannot be fewer page views than visitors: one visit is at least one view");
   console.assert(SITES_USED_7<=SITES_CREATED,
@@ -1380,7 +1392,7 @@ const DATA=(function(){
     MONTHLY_ACTIVE_USERS,SITES_CREATED,SITES_INACTIVE,SITES_CREATED_90,SITES_USED_7,IDLE_DAYS,
     SITES_MULTI_DEPARTMENT,SITES_WITH_DEPARTMENT,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
-    USERS_DECLARING,USERS_CREATING,USERS_NEVER,USERS_IDLE90,ACTIVITY_WINDOW,
+    USERS_DECLARING,USERS_CREATING,USERS_IDLE180,ACTIVITY_WINDOW,
     VISITORS,PAGE_VIEWS,STORAGE_GB,RECORD_GB,DUE_WITH_PHYS,PERM_PHYSICAL,
     FORMATS,TOTAL_FILES,TOTAL_GB,
     YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
@@ -1453,9 +1465,13 @@ DASHBOARDS.bw=(function(){
      never plus idle 90 inside users. */
   const createSplit=splitWithin(DATA.USERS_CREATING, userSplit,  weightsLike(userSplit,2));
   const declSplit  =splitWithin(DATA.USERS_DECLARING,createSplit, weightsLike(userSplit,1));
-  const neverSplit =splitWithin(DATA.USERS_NEVER,    userSplit.map(u=>Math.floor(u*0.6)),
-                                weightsLike(userSplit,3));
-  const idleSplit  =splitWithin(DATA.USERS_IDLE90,   userSplit.map((u,i)=>u-neverSplit[i]),
+  /* One inactivity measure, not two. USERS_NEVER came off on 21 September
+     2026 with the label it supported, RAC item 25: 180 days is the longest
+     window the activity report serves, so "never" cannot be sourced. The
+     department split now places the single 180 day figure, capped at the
+     department's own user count so no row can claim more idle users than it
+     has users. */
+  const idleSplit  =splitWithin(DATA.USERS_IDLE180,  userSplit,
                                 weightsLike(userSplit,4));
   const gbSplit   =split(DATA.STORAGE_GB*10,   weights(N,5));
   const recGbSplit=split(DATA.RECORD_GB*10,    weights(N,9));
@@ -1472,7 +1488,7 @@ DASHBOARDS.bw=(function(){
        created by more people than declare records, which is the point of the
        comparison panel on PPT s17. */
     declaring:declSplit[i], creating:createSplit[i],
-    never:neverSplit[i], idle90:idleSplit[i],
+    idle180:idleSplit[i],
     visitors:visSplit[i], views:viewSplit[i],
     duephys:duePhySplit[i],
     gb:+(gbSplit[i]/10).toFixed(1),
@@ -1485,14 +1501,12 @@ DASHBOARDS.bw=(function(){
      invisible until somebody opens that department. */
   console.assert(DEPTS.every(d=>d.declaring<=d.creating&&d.creating<=d.users),
     "Per department, people declaring must nest inside people creating, and both inside users");
-  console.assert(DEPTS.every(d=>d.never+d.idle90<=d.users),
-    "Per department, users who never accessed plus users idle 90 days cannot exceed all users");
+  console.assert(DEPTS.every(d=>d.idle180<=d.users),
+    "Per department, users with no access in the window cannot exceed all users");
   console.assert(DEPTS.reduce((a,d)=>a+d.declaring,0)===DATA.USERS_DECLARING,
     "Department people declaring must total the bank-wide figure");
-  console.assert(DEPTS.reduce((a,d)=>a+d.never,0)===DATA.USERS_NEVER,
-    "Department users who never accessed EDRMS must total the bank-wide figure");
-  console.assert(DEPTS.reduce((a,d)=>a+d.idle90,0)===DATA.USERS_IDLE90,
-    "Department users idle 90 days must total the bank-wide figure");
+  console.assert(DEPTS.reduce((a,d)=>a+d.idle180,0)===DATA.USERS_IDLE180,
+    "Department users with no access in the window must total the bank-wide figure");
   console.assert(DEPTS.reduce((a,d)=>a+d.visitors,0)===DATA.VISITORS,
     "Department visitors must total the bank-wide visitor count");
   console.assert(DEPTS.reduce((a,d)=>a+d.views,0)===DATA.PAGE_VIEWS,
@@ -1911,10 +1925,24 @@ DASHBOARDS.bw=(function(){
          instruction. Before the constants sweep earlier the same day it
          printed a literal 89 on every row; corrected, it was still a fourth
          column restating three that are already on the row. */
-      cols:["Department / Office / RM / RO","Users with activity","Never accessed",
-            "No access in 90 days"],
-      rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
-                             F(d.never), F(d.idle90)]),
+      /* RAC items 25 and 26, answered 21 September 2026.
+
+         "Never accessed" is gone, and not because RAC disliked it. The
+         Microsoft 365 SharePoint activity report is offered over 7, 30, 90 or
+         180 days and no longer: there is no all-time window and no custom
+         range. A person who last opened EDRMS 200 days ago is
+         indistinguishable from one who never opened it at all, so no source
+         can support the word never and printing it would be a claim the data
+         cannot carry.
+
+         What replaces it is the measure RAC already agreed at Department
+         Insights item 13: no access in the last 180 days. One threshold now
+         drives every inactivity figure on this dashboard, which also settles
+         the open 90 versus 300 day question, the deck saying one and the
+         metrics document the other. */
+      cols:["Department / Office / RM / RO","Users with activity",
+            "No access in "+DATA.ACTIVITY_WINDOW+" days"],
+      rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180)]),
       /* RAC items 2 and 23, answered 21 September 2026. They did not pick
          either candidate definition of an EDRMS user. What they asked for is
          a ROUNDED headcount per unit, to give the size of the department for
@@ -1931,8 +1959,7 @@ DASHBOARDS.bw=(function(){
          comparison panel needs to say which denominator it used. */
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
                  ["Total number of EDRMS users (indicative, per unit)",NOSRC],
-                 ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
-                 ["No access in 90 days",F(DATA.USERS_IDLE90)],
+                 ["No access in "+DATA.ACTIVITY_WINDOW+" days",F(DATA.USERS_IDLE180)],
                  ["Departments, Offices, RMs and ROs in the list",F(DEPTS.length)]]
     },
     docs:{
@@ -1999,17 +2026,19 @@ DASHBOARDS.bw=(function(){
     const tiles=d.tiles();
 
     /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","users","never","idle90"];
+    /* Three columns, not four: "Never accessed" came off with RAC item 25 on
+       21 September 2026, so the sort keys and the row builder lose it too. A
+       sort key list that outlives its column silently sorts on undefined. */
+    const SORT_KEYS=["code","users","idle180"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortUsers==="code") cmp=a.code.localeCompare(b.code);
       else if(sortUsers==="users") cmp=a.users-b.users;
-      else if(sortUsers==="never") cmp=a.never-b.never;
-      else if(sortUsers==="idle90") cmp=a.idle90-b.idle90;
+      else if(sortUsers==="idle180") cmp=a.idle180-b.idle180;
       return dirUsers==="asc"?cmp:-cmp;
     });
 
-    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.users), F(d.never), F(d.idle90)]);
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwUsersPage>pages)bwUsersPage=pages;
     const page=rows.slice((bwUsersPage-1)*10,bwUsersPage*10);
