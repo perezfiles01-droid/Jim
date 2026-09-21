@@ -131,6 +131,64 @@ const { chromium } = require('playwright');
     errors.push('Filter failed: ' + (filt.msg || filt.threw));
   }
 
+  // Bank-wide: every tile actually opens its drill, and every panel renders.
+  // The scripted click is the part static review cannot do: a drill whose row
+  // builder still reads a removed field renders NaN without throwing, and a
+  // panel that writes into another panel's container blanks it silently.
+  // Both happened on 21 September 2026 and both were caught here.
+  console.log('\nVerifying Bank-wide tiles open their drills (bw dashboard):');
+  const bwClicks = await page.evaluate(async () => {
+    switchTo('bw');
+    await new Promise(r => setTimeout(r, 100));
+    const out = [];
+    const tiles = [...document.querySelectorAll('#bw-kpis .kpigrp.act .kpi')];
+    for (const t of tiles) {
+      t.click();
+      await new Promise(r => setTimeout(r, 60));
+      const d = document.getElementById('bw-drill');
+      const cols = d.querySelectorAll('.hd').length;
+      const cells = [...d.querySelectorAll('.drow')].slice(0, 3)
+        .flatMap(r => [...r.children].map(c => c.textContent.trim()));
+      out.push({
+        key: t.dataset.k,
+        title: (d.querySelector('.ptitle') || {}).textContent || '',
+        rows: d.querySelectorAll('.drow').length,
+        cols,
+        ragged: [...d.querySelectorAll('.drow')].some(r => r.children.length !== cols),
+        nan: cells.some(c => c === 'NaN' || c === 'undefined' || c === 'null'),
+      });
+    }
+    const phys = document.getElementById('bw-phys-panel');
+    const drillBefore = (document.querySelector('#bw-drill .ptitle') || {}).textContent;
+    const sortable = phys && phys.querySelector('.hd');
+    if (sortable) { sortable.click(); await new Promise(r => setTimeout(r, 60)); }
+    return {
+      tiles: out,
+      physRows: phys ? phys.querySelectorAll('.drow').length : 0,
+      drillSurvivedPhysSort: (document.querySelector('#bw-drill .ptitle') || {}).textContent === drillBefore,
+      trendMonths: document.querySelectorAll('#bw-trend-months .ccol').length,
+      cmpOptions: document.querySelectorAll('#bw-cmp-sel option').length,
+    };
+  });
+
+  bwClicks.tiles.forEach(t => {
+    const bad = t.rows === 0 || t.cols === 0 || t.ragged || t.nan;
+    console.log(`  ${bad ? '❌' : '✅'} ${t.key.padEnd(8)} -> ${t.rows} rows, ${t.cols} cols` +
+                (t.nan ? '  HAS NaN/undefined CELLS' : '') + (t.ragged ? '  RAGGED ROWS' : ''));
+    if (bad) errors.push(`Bank-wide tile "${t.key}" drill is broken: ` +
+      JSON.stringify({ rows: t.rows, cols: t.cols, ragged: t.ragged, nan: t.nan }));
+  });
+  if (bwClicks.tiles.length === 0) errors.push('Bank-wide has no clickable tiles at all');
+  const say = (label, ok, detail) => {
+    console.log(`  ${ok ? '✅' : '❌'} ${label}${detail ? ' (' + detail + ')' : ''}`);
+    if (!ok) errors.push(label);
+  };
+  say('Physical counterparts panel renders its own rows', bwClicks.physRows > 0, bwClicks.physRows + ' rows');
+  say('Sorting the physical panel does not overwrite the drill', bwClicks.drillSurvivedPhysSort);
+  say('Records declared per month is drawn', bwClicks.trendMonths > 0, bwClicks.trendMonths + ' columns');
+  say('The comparison offers the two ratios RAC kept', bwClicks.cmpOptions === 2,
+      bwClicks.cmpOptions + ' options');
+
   // Summary
   console.log('\n' + '='.repeat(60));
   if (errors.length === 0) {

@@ -8,7 +8,10 @@ what is assumed, what is blocked, and what was got wrong along the way.
 the no em dashes rule) but was written on 4 August and predates all of this.
 **Where the two disagree, this file wins.**
 
-Last updated **17 August 2026**. The client's requirements deck arrived and is
+Last updated **21 September 2026**. See section 6b for the RAC decisions and
+the Bank-wide rebuild against them.
+
+Previously updated **17 August 2026**. The client's requirements deck arrived and is
 now in the repo. All six dashboards were rebuilt against it, and a serious
 arithmetic bug was found and fixed. See section 3 and section 8.
 
@@ -834,6 +837,80 @@ term store does not hold it either. **This is a question for the client.**
 | Physical records, section 6 | `PhysicalRecords` designed in the workbook, never built. No boxes, locations or facilities anywhere |
 | Disposal workflow (8.1.4 to 8.1.6, 8.3.3) | Needs `DisposalStatus`, an application change |
 | Conventions and programme dates (2.1.3, 2.1.4) | Not measurements. A reference list somebody maintains |
+
+---
+
+## 6b. THE RAC DECISIONS OF 21 SEPTEMBER 2026, BANK-WIDE
+
+`EDRMS_Utilization_Dashboard_Checker_7.xlsx` came back with a RAC Decision
+column on two sheets only: Bank-wide Oversight, 65 items, and Department
+Insights, 83. **The other four dashboards carry no decision at all**, so
+nothing on Project Insights, Institutional File Plan, Retention and Disposal
+or Records and Archive Holdings is finalized.
+
+`EDRMS_RAC_Decision_Summary_2026-09-21.xlsx` holds all 148 decisions grouped,
+with an answer and its evidence for each of the 22 Needs Clarification items.
+
+**Bank-wide has been rebuilt against those decisions.** Ten top tiles are
+four plus one navigation tile. What came off and why:
+
+| Off | Items | Reason |
+| --- | --- | --- |
+| Sovereign and nonsovereign project tiles and tables | 9, 10, 20, 21, 22 | Deferred until Project Insights and a site to project classification exist |
+| Records due for disposal tile and table | 6, 49 to 59 | Deferred. "Due for disposal" is itself undefined: today, or the next 30, 60, 90 days |
+| Retention and disposal navigation tile | 7 | Deferred, retained as a future link |
+| Physical counterparts **tile** | 5 | Deferred. Its **contents**, items 44 to 46, are Agreed, so they are now a panel of their own |
+| Sites created, deleted, archived, inactive 90 days | 16, 17, 18, 19 | Not Required, Deferred, Deferred, and moved to Department Insights |
+| Zero declarations indicator | 40 | Not Required, covered by items 38 and 39 |
+| Documents against records declared comparison | 60 | Not Required, it is the declaration rate already shown |
+| Never accessed EDRMS | 25 | **Unsourceable.** 180 days is the longest window the activity report serves |
+| Monthly average in range | 65 | "This is a report. Not average." Replaced by records declared per month |
+
+**Two answers worth keeping.** Item 2, what counts as an EDRMS user: RAC chose
+neither candidate definition. They want a **rounded headcount per unit for
+context**, not exact, not regularly refreshed. Nobody has supplied it and no
+source holds it, so it reads Not captured beside the measured figure. And
+division is dead everywhere: the Cloud Governance export carries a `Division`
+column **empty on all 1,032 rows**, so it is not a missing source, it is no
+source. Every grouping is Department / Office / RM / RO.
+
+### The two exports cannot be joined. Found 21 September 2026
+
+`evidence_SharePointSiteUsageDetail_2026-08-12.csv` was taken with **concealed
+names switched on**: `Site URL` is blank on all 2,575 rows and owners read
+`mihal-display-name-24`. It carries `Site Id`. The Cloud Governance workspace
+report carries `URL` and **no `Site Id` column at all**. There is no common
+key, so **documents, storage, visitors and page views per department cannot be
+produced from this pair.**
+
+The first join attempt looked like it worked: 1,032 matches, all of them the
+same blank-URL row for a deleted site, giving a document total of zero. That is
+the shape of a silent wrong answer and it is exactly what section 8 is about.
+
+**The fix is a setting, not code.** Microsoft 365 admin centre, Settings, Org
+settings, Reports, clear *Display concealed user, group, and site names in all
+reports*, then re-export.
+
+**What the Cloud Governance export does support today**, and now drives the
+prototype: 1,032 EDRMS sites, `Department` on 1,030 of them, `Last Active
+Time`, `Primary Business Owner` and `Status` on all 1,032. `derive_bankwide.py`
+prints every one of these, so a figure in `index.html` can be checked rather
+than trusted. **`SITES_CREATED` is 1,032 now, not the old 1,057 placeholder.**
+
+**240 of the 1,030 sites carry several departments**, semicolon separated. RAC
+decided on 21 September 2026 that the **first listed is primary**, so every
+site counts once and the department rows still total the bank-wide figure. The
+cost, that a shared site is absent from its secondary owners' rows, is stated
+on the sites panel rather than left to be discovered.
+
+**Two guards, both proven to fail before they were trusted.**
+`check-bankwide-rac.js` is 56 static checks over the Bank-wide module with
+comments stripped, because this repo's comments quote the wording of what was
+removed and a plain search reports the removal notice as the fault. The
+stripper is itself asserted against the real module. `check-dashboard.js` now
+clicks every Bank-wide tile and checks the drill it opens for ragged rows and
+NaN cells, and checks that sorting the physical panel does not blank the drill.
+Both of those were real faults during this work, and both are replayable.
 
 ---
 
