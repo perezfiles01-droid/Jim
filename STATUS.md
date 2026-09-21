@@ -874,6 +874,41 @@ division is dead everywhere: the Cloud Governance export carries a `Division`
 column **empty on all 1,032 rows**, so it is not a missing source, it is no
 source. Every grouping is Department / Office / RM / RO.
 
+### Department Insights rebuilt, 21 September 2026
+
+Seven tiles are six and seven drills are six. Applied under one rule the
+requester set: **only what a RAC item states.** Nothing kept because it already
+existed, nothing added because it looked useful.
+
+| Off | Items | Reason |
+| --- | --- | --- |
+| Records due for disposal tile, and the whole Retention drill | 8, 24, 30, 65 to 76 | Deferred until Records Disposition ships. Nothing on this dashboard reports disposal now |
+| No access in 180 days, Never accessed | 14, 15 | Not Required. RAC's own reason on 15: the window cannot support "never" |
+| Page View Count, Visited Page Count, both twice | 33, 34, 36, 37 | Not Required |
+| Total visitors, duplicate site name column, access requests denied | 31, 35, 42 | Not Required, all duplicates or unasked |
+| **The Site Visits date range filter** | none | **No item asks for one.** It drove only the page view counts above, so it went with them, along with getFilteredMetrics, applyVisitorFilter, getVisitorTotal and three window tables |
+| Per-division columns everywhere | 56, 57, 63, 82 | Division has no source. Department / Office / RM / RO throughout |
+
+**Added, because an item asks for it and the answer is Not captured:** training
+completion rate (19), the external and internal visitor split (39, 40), access
+requests granted scoped to Cloud Governance (41), users per library (81),
+Go-Live date (11) and the approved site convention (10). RAC's own comments
+answer the last two: manual input, and a link.
+
+**Item 4 answered:** the visitor tile counted visits. RAC asked for unique
+people. Graph returns that as `actorCount`, and one test site gave
+`actionCount 5,535` against `actorCount 12`, so the two are not one measure
+scaled and the label has to say which it is.
+
+**A live NaN was fixed here.** When Bank-wide dropped `USERS_NEVER` and
+`idle90` under item 25, Department Insights was still summing both, so "used
+EDRMS in the last 180 days" printed **NaN on the live site**. It does not
+throw, so the mount test passed it. Only clicking the drill shows it.
+
+**The two page-view fields were the only figures on the dashboard built with
+`Math.random()`**, so they changed on every redraw and no two readers ever saw
+the same number. A guard now asserts none remain.
+
 ### The two exports cannot be joined. Found 21 September 2026
 
 `evidence_SharePointSiteUsageDetail_2026-08-12.csv` was taken with **concealed
@@ -903,7 +938,8 @@ site counts once and the department rows still total the bank-wide figure. The
 cost, that a shared site is absent from its secondary owners' rows, is stated
 on the sites panel rather than left to be discovered.
 
-**Two guards, both proven to fail before they were trusted.**
+**Two guards, both proven to fail before they were trusted, and both wrong on
+a first attempt.**
 `check-bankwide-rac.js` is 56 static checks over the Bank-wide module with
 comments stripped, because this repo's comments quote the wording of what was
 removed and a plain search reports the removal notice as the fault. The
@@ -911,6 +947,17 @@ stripper is itself asserted against the real module. `check-dashboard.js` now
 clicks every Bank-wide tile and checks the drill it opens for ragged rows and
 NaN cells, and checks that sorting the physical panel does not blank the drill.
 Both of those were real faults during this work, and both are replayable.
+
+**Four faults were in the guards themselves, and every one of them was a check
+that could not fail.** A grid-template search matched the wrong table and
+passed against the unfixed file. A comment stripper handled JS comments but not
+the HTML comments inside template literals, so a check for removed wording
+matched the note recording the removal. The stripper's own self-test read a
+variable before it was declared, the temporal dead zone error this file's own
+CLAUDE.md documents, in the guard this time rather than the dashboard. And a
+NaN check used `\bNaN\b`, which finds no word boundary in `...sitesNaN`, so it
+passed against a file with NaN visibly on screen. **Running a guard against the
+unfixed code is the only thing that found any of them.**
 
 ---
 

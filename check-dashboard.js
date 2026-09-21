@@ -189,6 +189,68 @@ const { chromium } = require('playwright');
   say('The comparison offers the two ratios RAC kept', bwClicks.cmpOptions === 2,
       bwClicks.cmpOptions + ' options');
 
+  // Department Insights: same click-through as Bank-wide. The two faults it
+  // exists to catch both happened here on 21 September 2026: a summary figure
+  // reading a field another dashboard had removed, which printed NaN without
+  // throwing, and a grid track count left disagreeing with the column count.
+  console.log('\nVerifying Department Insights tiles open their drills (dp dashboard):');
+  const dpClicks = await page.evaluate(async () => {
+    switchTo('dp');
+    await new Promise(r => setTimeout(r, 120));
+    const out = [];
+    for (const t of [...document.querySelectorAll('#dp-kpis .kpi[data-k]')]) {
+      t.click();
+      await new Promise(r => setTimeout(r, 60));
+      const d = document.getElementById('dp-drill');
+      const cols = d.querySelectorAll('.hd').length;
+      const text = d.textContent;
+      out.push({
+        key: t.dataset.k,
+        rows: d.querySelectorAll('.drow').length,
+        cols,
+        ragged: [...d.querySelectorAll('.drow')].some(r => r.children.length !== cols),
+        // Plain includes, not a word-boundary regex. textContent runs labels
+        // together, so a NaN value renders as "...sitesNaN Used EDRMS..." and
+        // \bNaN\b finds no boundary to match. That mistake made this check
+        // pass against a file with a NaN visibly on screen.
+        nan: text.includes('NaN') || text.includes('undefined'),
+      });
+    }
+    // Sweeping the picker: a unit with no sites must not throw or print NaN.
+    const sel = document.getElementById('dp-sel');
+    const opts = [...sel.options].map(o => o.value);
+    let sweepNaN = null;
+    for (const v of opts) {
+      sel.value = v;
+      sel.dispatchEvent(new Event('change'));
+      await new Promise(r => setTimeout(r, 15));
+      if (document.querySelector('.dash-dp').textContent.includes('NaN')) { sweepNaN = v; break; }
+    }
+    return {
+      tiles: out,
+      options: opts.length,
+      sweepNaN,
+      libTiles: document.querySelectorAll('#dp-libs .tl').length,
+    };
+  });
+
+  dpClicks.tiles.forEach(t => {
+    const bad = t.ragged || t.nan || (t.cols > 0 && t.rows === 0);
+    console.log(`  ${bad ? '❌' : '✅'} ${t.key.padEnd(9)} -> ${t.rows} rows, ${t.cols} cols` +
+                (t.nan ? '  HAS NaN/undefined' : '') + (t.ragged ? '  RAGGED ROWS' : ''));
+    if (bad) errors.push(`Department Insights tile "${t.key}" drill is broken: ` +
+      JSON.stringify({ rows: t.rows, cols: t.cols, ragged: t.ragged, nan: t.nan }));
+  });
+  const sayDp = (label, ok, detail) => {
+    console.log(`  ${ok ? '✅' : '❌'} ${label}${detail ? ' (' + detail + ')' : ''}`);
+    if (!ok) errors.push(label);
+  };
+  sayDp('Department Insights has the six tiles RAC kept', dpClicks.tiles.length === 6,
+        dpClicks.tiles.length + ' tiles');
+  sayDp('Every unit on the picker renders without NaN', dpClicks.sweepNaN === null,
+        dpClicks.sweepNaN ? 'NaN on ' + dpClicks.sweepNaN : dpClicks.options + ' units swept');
+  sayDp('The library panel renders its tiles', dpClicks.libTiles > 0, dpClicks.libTiles + ' tiles');
+
   // Summary
   console.log('\n' + '='.repeat(60));
   if (errors.length === 0) {
