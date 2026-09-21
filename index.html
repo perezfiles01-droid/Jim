@@ -1722,33 +1722,49 @@ DASHBOARDS.bw=(function(){
      behind them do not: the banner marks the route in, not the ownership.
 
      Every tile label is the client's own wording from s34 and s15. */
+  /* RAC decisions of 21 September 2026, Bank-wide checker. The ten tiles the
+     client drew on s34 are five here, and every removal is a recorded
+     decision rather than a layout judgement:
+
+       item  5  Physical counterparts     Deferred, until Retention and
+                                          Disposal and its process are defined
+       item  6  Records due for disposal  Deferred, and "due for disposal" is
+                                          itself undefined: today, or the next
+                                          30, 60 or 90 days
+       item  7  Retention nav tile        Deferred, retained as a future link
+       item  9  Sovereign project sites   Deferred, out of scope until Project
+       item 10  Nonsovereign project      Insights and a site to project
+                sites                     classification exist
+
+     The figures behind them are untouched in DATA, exactly as the 16 August
+     removals were, so any of the five is one edit to restore. They are
+     unshown, not unsourced. check-bankwide-rac.js asserts each stays off. */
   const TILES=[
-    {k:"sites",lab:"Number of active EDRMS SharePoint sites for Department, RM, office",
+    /* Item 1, Agreed with Changes: Department / Office / RM / RO, regardless
+       of physical location rather than HQ, counted once per site, project
+       sites excluded. DEPT_SITES already excludes them. */
+    {k:"sites",lab:"Number of active EDRMS SharePoint sites for Department, Office, RM and RO",
      val:()=>F(DEPT_SITES)},
-    /* s34 tiles 2 and 3, drawn again in full on s36 and s37. Restored
-       21 August 2026. Layout only: no source classifies a site as a project
-       site, so the figures are the derived re-cut described above and the
-       drill says so on the screen. Question 2. */
-    {k:"sov",   lab:"Total number of active EDRMS SharePoint sites for Sovereign projects",
-     val:()=>F(PROJECTS[0].sites)},
-    {k:"nonsov",lab:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
-     val:()=>F(PROJECTS[1].sites)},
     /* s34 labels this "Total number of EDRMS users". That is the population
        who hold access, and no source we can reach knows it: the activity
        report lists every LICENSED user in the tenant, which in production is
        close to the whole Bank, and it carries no site dimension so it cannot
-       be narrowed to EDRMS. What IS produced is the count of people with
-       recorded EDRMS activity, so the tile names that instead. s39 asks for
-       "% of active users" as an indicator underneath, which only makes sense
-       if the headline is the population, so the two are not the same measure
-       and must not share a label. Audit question 3. */
+       be narrowed to EDRMS.
+
+       RAC answered this on 21 September 2026, items 2 and 23: what they want
+       is a ROUNDED headcount per unit for context, not exact and not
+       regularly refreshed. That is a maintained reference value, not a
+       measurement, and nobody has supplied it yet, so it appears in the users
+       drill reading "Not captured" rather than as a plausible number here.
+       This tile keeps the figure that can actually be produced, and says
+       which one it is. */
     {k:"users",lab:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
      val:()=>F(TOTAL_USERS)},
+    /* Items 3 and 4, both Agreed. Documents counts every document in an
+       EDRMS compliant site whether declared or not, once each, project sites
+       excluded. */
     {k:"docs", lab:"Total number of documents in EDRMS", val:()=>(TOTAL_DOCS/1e6).toFixed(2)+"M"},
     {k:"rec",  lab:"Total number of records declared in EDRMS", val:()=>F(TOTAL_REC)},
-    {k:"phys", lab:"Total number of physical counterparts identified", val:()=>F(TOTAL_PHYS)},
-    {k:"disp", lab:"Total number of records due for disposal within 12 months",
-     val:()=>F(TOTAL_DUE)},
   ];
   /* The two navigation tiles, s34. They carry no drill of their own because
      their whole content is another dashboard.
@@ -1759,8 +1775,10 @@ DASHBOARDS.bw=(function(){
      defined after this module, so the value is a function called at draw time,
      by which point every module exists. */
   const NAVTILES=[
-    {to:"rd", lab:"Records due for retention within 12 months",
-     val:()=>F(TOTAL_DUE), sub:"Retention and disposal insights: due windows, retention terms and status"},
+    /* The Retention and disposal navigation tile, item 7, is Deferred:
+       "retain as a future navigation link, but do not include it in the
+       current top panel". The Institutional File Plan tile, item 8, is
+       Agreed, so the route in exists while the disposal route does not. */
     /* Both navigation tiles were labelled "... insights", which named the
        destination but not the figure printed on them. A tile showing a number
        has to say what the number counts, so the label is the measure now and

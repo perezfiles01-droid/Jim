@@ -53,6 +53,36 @@ if (derived) {
   console.log('  (evidence CSVs not readable here, skipping the derived-figure checks)');
 }
 
+/* ---- Phase 2. The top panel carries only the tiles RAC kept ---- */
+/* The Bank-wide module only. Other dashboards legitimately keep measures that
+   came off THIS top panel, so the search is scoped to it rather than the file. */
+const bwStart = src.indexOf('DASHBOARDS.bw=(function(){');
+const bwEnd = src.indexOf('DASHBOARDS.dp=(function(){');
+const bw = bwStart >= 0 && bwEnd > bwStart ? src.slice(bwStart, bwEnd) : src;
+const tilesBlock = (bw.match(/const TILES=\[[\s\S]*?\n  \];/) || [''])[0];
+const navBlock = (bw.match(/const NAVTILES=\[[\s\S]*?\n  \];/) || [''])[0];
+
+const KEPT_TILES = ['sites', 'users', 'docs', 'rec'];
+const REMOVED_TILES = [
+  ['sov', 'item 9, Sovereign project sites, Deferred'],
+  ['nonsov', 'item 10, Nonsovereign project sites, Deferred'],
+  ['phys', 'item 5, Physical counterparts, Deferred'],
+  ['disp', 'item 6, Records due for disposal, Deferred'],
+];
+check('The top panel carries exactly the four tiles RAC kept',
+  (tilesBlock.match(/\{k:"/g) || []).length === KEPT_TILES.length,
+  'found ' + (tilesBlock.match(/\{k:"/g) || []).length + ' tiles');
+KEPT_TILES.forEach(k => check('Top panel still carries the ' + k + ' tile',
+  tilesBlock.includes('{k:"' + k + '"')));
+REMOVED_TILES.forEach(([k, why]) => check('Top panel does not carry the ' + k + ' tile (' + why + ')',
+  !tilesBlock.includes('{k:"' + k + '"')));
+check('The Retention and disposal navigation tile is off the top panel (item 7, Deferred)',
+  !navBlock.includes('to:"rd"'));
+check('The Institutional File Plan navigation tile is kept (item 8, Agreed)',
+  navBlock.includes('to:"fp"'));
+check('Tile 1 uses the wording RAC agreed: Department, Office, RM and RO',
+  /Number of active EDRMS SharePoint sites for Department, Office, RM and RO/.test(tilesBlock));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
