@@ -1,5 +1,8 @@
 /**
- * Bank-wide Oversight: the RAC decisions of 21 September 2026, asserted.
+ * The RAC decisions of 21 September 2026, asserted, for both dashboards that
+ * carry a decision column in Checker 7: Bank-wide Oversight and Department
+ * Insights. The other four dashboards carry no decision, so nothing here
+ * speaks for them.
  *
  * Static checks over index.html that fail if a later edit puts back something
  * RAC struck out, or drifts a figure away from the evidence it was read from.
@@ -78,6 +81,22 @@ check('The comment stripper actually removes comments',
 
 const tilesBlock = (bw.match(/const TILES=\[[\s\S]*?\n  \];/) || [''])[0];
 const navBlock = (bw.match(/const NAVTILES=\[[\s\S]*?\n  \];/) || [''])[0];
+
+/* The Department Insights module, sliced and comment-stripped the same way and
+   for the same reason: this repo's comments quote the wording of what was
+   removed. */
+const dpStart = src.indexOf('DASHBOARDS.dp=(function(){');
+const dpEnd = (() => {
+  const m = /\nDASHBOARDS\.(?!dp)\w+=\(function\(\)\{/.exec(src.slice(dpStart + 10));
+  return m ? dpStart + 10 + m.index : src.length;
+})();
+const dp = dpStart >= 0 ? src.slice(dpStart, dpEnd) : '';
+const dpCode = dp
+  .replace(/\/\*[\s\S]*?\*\//g, ' ')
+  .split('\n').map(l => l.replace(/(^|[^:])\/\/.*$/, '$1')).join('\n');
+check('The Department Insights module is found and its comment stripper leaves live code',
+  dpCode.includes('const TILES=[') && dpCode.includes('function drawDrill()'),
+  'dp module not sliced correctly, so every dp check below is blind');
 
 const KEPT_TILES = ['sites', 'users', 'docs', 'rec'];
 const REMOVED_TILES = [
@@ -208,12 +227,28 @@ check('The share of records with a counterpart is a tile carrying both bases (it
   /Share of records with a counterpart",PCT\(TOTAL_PHYS,TOTAL_REC\)/.test(bwCode.replace(/\s+/g, '')) ||
   /Total number of physical records declared[\s\S]{0,400}Share of records with a counterpart/.test(bwCode));
 
+/* ================= DEPARTMENT INSIGHTS ================= */
+/* ---- Phase 1. Top panel and picker, items 8, 4 and 1 ---- */
+const dpTiles = (dpCode.match(/const TILES=\[[\s\S]*?\n  \];/) || [''])[0];
+check('Department Insights carries the six tiles RAC kept',
+  (dpTiles.match(/\{k:"/g) || []).length === 6,
+  'found ' + (dpTiles.match(/\{k:"/g) || []).length);
+check('The records due for disposal tile is gone (item 8, Deferred)',
+  !dpTiles.includes('{k:"disp"'));
+['sites', 'users', 'visitors', 'docs', 'rec', 'phys'].forEach(k =>
+  check('Department Insights keeps the ' + k + ' tile', dpTiles.includes('{k:"' + k + '"')));
+check('The visitor tile counts people, not visits (item 4)',
+  /Total number of unique site visitors/.test(dpTiles) && !/Total number of site visits"/.test(dpTiles));
+check('The department picker is labelled Department / Office / RM / RO (item 1)',
+  /Department \/ Office \/ RM \/ RO<\/span>/.test(dpCode) &&
+  !/Department \/ office \/ RM<\/span>/.test(dpCode));
+
 /* ---------------------------------------------------------------- */
-console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
+console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
 if (fails.length) {
   console.error('\n❌ FAILED:');
   fails.forEach(f => console.error('  - ' + f));
   process.exit(1);
 }
-console.log('✅ All Bank-wide decision checks passed.');
+console.log('✅ All RAC decision checks passed.');

@@ -2930,14 +2930,25 @@ DASHBOARDS.dp=(function(){
      records when a site became EDRMS compliant, only when the SharePoint site
      was created, and for a converted site those are different dates. Audit
      question 4. */
+  /* RAC decisions of 21 September 2026, Department Insights checker. Seven
+     tiles are six. Item 8, Total number of records due for disposal, is
+     Deferred until the Records Disposition feature is released, along with
+     every row of the panel it opened, items 65 to 76. The figures stay in
+     DATA, unshown rather than unsourced, as with the 16 August removals.
+
+     Item 4 is answered too. The tile said "Total number of site visits",
+     which is a count of events. RAC asked for "a number of unique users who
+     accessed the site", which is a count of people, and Graph analytics
+     returns exactly that as actorCount. One site in the test tenant returned
+     actionCount 5,535 against actorCount 12, so the two are not the same
+     measure scaled and the label has to name which one it is. */
   const TILES=[
     {k:"sites", lab:"Total number of EDRMS compliant sites created",    val:d=>F(d.sites)},
     {k:"users", lab:"Total number of EDRMS users with recorded activity, last 180 days", val:d=>F(d.users)},
-    {k:"visitors",lab:"Total number of site visits",                   val:d=>F(d.visitors)},
+    {k:"visitors",lab:"Total number of unique site visitors",          val:d=>F(d.visitors)},
     {k:"docs",  lab:"Total number of documents in EDRMS",              val:d=>F(d.docs)},
     {k:"rec",   lab:"Total number of records declared in EDRMS",       val:d=>F(d.rec)},
     {k:"phys",  lab:"Total number of physical counterparts identified",val:d=>F(d.phys)},
-    {k:"disp",  lab:"Total number of records due for disposal within 12 months", val:d=>F(d.due)},
   ];
 
   function drawTiles(){
@@ -3688,11 +3699,11 @@ DASHBOARDS.dp=(function(){
     <div class="panel">
       <!-- The "Choose a department, office or resident mission" sub-caption
            was removed 17 Aug 2026 at the client's instruction. The picker
-           below is labelled "Department / office / RM" and is the only
+           below is labelled "Department / Office / RM / RO" and is the only
            control on the panel, so the instruction restated it. -->
       <div class="ptitle" id="dp-name"></div>
       <div class="toolbar">
-        <span class="lbl">Department / office / RM</span>
+        <span class="lbl">Department / Office / RM / RO</span>
         <select id="dp-sel"></select>
       </div>
       <div id="dp-kpis"></div>
@@ -3705,7 +3716,7 @@ DASHBOARDS.dp=(function(){
     <div class="panel">
       <div class="ptitle">Departmental library usage</div>
       <div class="toolbar">
-        <span class="lbl">Department / office / RM</span>
+        <span class="lbl">Department / Office / RM / RO</span>
         <select id="dp-libs-sel"></select>
       </div>
       <div id="dp-libs"></div>
