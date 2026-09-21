@@ -83,6 +83,17 @@ check('The Institutional File Plan navigation tile is kept (item 8, Agreed)',
 check('Tile 1 uses the wording RAC agreed: Department, Office, RM and RO',
   /Number of active EDRMS SharePoint sites for Department, Office, RM and RO/.test(tilesBlock));
 
+/* ---- Phase 3. The user definition RAC gave, items 2, 23 and 24 ---- */
+check('The indicative per-unit headcount is present in the users drill (items 2 and 23)',
+  /Total number of EDRMS users \(indicative, per unit\)/.test(bw));
+check('The indicative headcount prints Not captured, never a plausible number',
+  /Total number of EDRMS users \(indicative, per unit\)",NOSRC\]/.test(bw.replace(/\s+/g, ' ')) ||
+  /indicative, per unit\)"\s*,\s*NOSRC/.test(bw));
+check('The measured user tile still names its window rather than claiming the population',
+  /EDRMS users with recorded activity, last "\+DATA\.ACTIVITY_WINDOW\+" days/.test(bw));
+check('Units with no EDRMS site are stated as listed, not omitted (item 24)',
+  /Units with no EDRMS site are listed with zeros rather than omitted/.test(bw));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

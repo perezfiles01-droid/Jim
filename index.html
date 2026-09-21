@@ -1903,7 +1903,12 @@ DASHBOARDS.bw=(function(){
          What replaces them is what the activity report really supports:
          whether a person has used EDRMS, and how recently. */
       title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by department, office or RM",
-      sub:"Users who opened an EDRMS site in the window, and how recently.",
+      /* RAC item 24, answered: the list is driven by the organizational unit
+         register, not by the sites, so a unit with no EDRMS site appears with
+         zeros rather than being dropped. An empty row there is a compliance
+         finding worth reporting, and hiding it would hide exactly the units
+         that most need attention. RAC supplies the unit list. */
+      sub:"Users who opened an EDRMS site in the window, and how recently. Units with no EDRMS site are listed with zeros rather than omitted.",
       /* "Share of users active" removed 17 Aug 2026 at the client's
          instruction. Before the constants sweep earlier the same day it
          printed a literal 89 on every row; corrected, it was still a fourth
@@ -1912,7 +1917,22 @@ DASHBOARDS.bw=(function(){
             "No access in 90 days"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
                              F(d.never), F(d.idle90)]),
+      /* RAC items 2 and 23, answered 21 September 2026. They did not pick
+         either candidate definition of an EDRMS user. What they asked for is
+         a ROUNDED headcount per unit, to give the size of the department for
+         context: "the number does not need to be exact and therefore should
+         not need to be regularly updated. E.g. CSD approx. 400, SPSO approx
+         10." That is a maintained reference value, not a measurement.
+
+         Nobody has supplied that list, and no source holds it: the Cloud
+         Governance users and guest exports carry accounts, not workforce, and
+         the activity report is one row per LICENSED user. So it reads Not
+         captured, per the rule that an unsourceable cell never prints a
+         plausible number. It sits beside the measured figure rather than
+         replacing it, because they are two different measures and the
+         comparison panel needs to say which denominator it used. */
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
+                 ["Total number of EDRMS users (indicative, per unit)",NOSRC],
                  ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
                  ["No access in 90 days",F(DATA.USERS_IDLE90)],
                  ["Departments, offices and RMs in the list",F(DEPTS.length)]]
