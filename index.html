@@ -2900,7 +2900,12 @@ DASHBOARDS.dp=(function(){
     return {
       code:ALLCODE, name:"All departments, offices and RMs",
       sites:sum("sites"), users:sum("users"), docs:sum("docs"), rec:sum("rec"),
-      phys:sum("phys"), due:sum("due"), never:sum("never"), idle90:sum("idle90"),
+      /* idle180 replaces never and idle90, which Bank-wide removed on
+         21 September 2026 with RAC item 25. They were still summed here after
+         they had stopped existing, so every sum returned NaN and the "used
+         EDRMS in the last 180 days" figure printed NaN on this dashboard.
+         Caught by clicking the drill, which the mount test does not do. */
+      phys:sum("phys"), due:sum("due"), idle180:sum("idle180"),
       visitors:sum("visitors"), views:sum("views"), duephys:sum("duephys"),
       gb:+sum("gb").toFixed(1), recgb:+sum("recgb").toFixed(1),
       /* distinct counts, never summed */
@@ -3551,14 +3556,38 @@ DASHBOARDS.dp=(function(){
   }
 
   function drawUsers(d){
+    /* RAC, 21 September 2026. Two of the four measures came off:
+
+         item 14  No access in the last 180 days   Not Required, duplicative
+                                                   of the agreed item 13
+         item 15  Never accessed                   Not Required. RAC's own
+                                                   reason is the right one:
+                                                   the available reporting
+                                                   window cannot support the
+                                                   word never
+
+       Item 12, users with recorded activity, and item 13, used EDRMS in the
+       last 180 days, are both Agreed and stay.
+
+       Item 19, training completion rate, is Agreed with Changes: retain it
+       for RAC compliance monitoring by the selected grouping, using
+       authoritative sources where available and controlled manual updates
+       until an integration exists. No such source is wired, and Excellerate
+       is not a system this report reads, so it says so rather than printing a
+       rate nobody measured.
+
+       Items 16 to 18, staff, contractors and consultants, are Deferred to
+       align with Bank-wide items 27 to 29. No source we hold carries an
+       employment type for an internal user, so they are not drawn. */
     document.getElementById("dp-drill").innerHTML=
       `<div class="ptitle">Users and Activity</div>
        <div class="psub">Users with recorded activity, and how recently they were last active.</div>
        ${summaryChart([
          {lab:"Users with recorded activity in EDRMS compliant sites",v:d.users},
-         {lab:"Used EDRMS in the last 180 days",v:d.users-d.never-d.idle90},
-         {lab:"No access in EDRMS compliant sites, last 180 days",v:d.idle90},
-         {lab:"Never accessed EDRMS compliant sites",v:d.never}])}`;
+         {lab:"Used EDRMS in the last 180 days",v:d.users-d.idle180}])}
+       <div class="mstats" style="margin-top:14px">
+         <span>Training completion rate <b>${NOSRC}</b></span>
+       </div>`;
   }
 
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",

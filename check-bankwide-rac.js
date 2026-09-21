@@ -243,6 +243,22 @@ check('The department picker is labelled Department / Office / RM / RO (item 1)'
   /Department \/ Office \/ RM \/ RO<\/span>/.test(dpCode) &&
   !/Department \/ office \/ RM<\/span>/.test(dpCode));
 
+/* ---- Phase 2. Users and Activity, items 12 to 19 ---- */
+check('No access in the last 180 days is gone from Department Insights (item 14, Not Required)',
+  !/No access in EDRMS compliant sites, last 180 days/.test(dpCode));
+check('Never accessed is gone from Department Insights (item 15, Not Required: the window cannot support "never")',
+  !/[Nn]ever accessed/.test(dpCode));
+check('Users with recorded activity and used in the last 180 days both stay (items 12 and 13)',
+  /Users with recorded activity in EDRMS compliant sites/.test(dpCode) &&
+  /Used EDRMS in the last 180 days/.test(dpCode));
+check('Training completion rate is present and says Not captured (item 19)',
+  /Training completion rate\s*<b>\$\{NOSRC\}/.test(dpCode));
+check('Staff, contractors and consultants are not drawn (items 16 to 18, Deferred)',
+  !/Total number of staff|Total number of contractors|Total number of consultants/.test(dpCode));
+check('No Department Insights figure still reads a field Bank-wide removed',
+  !/\bd\.never\b|\bd\.idle90\b|sum\("never"\)|sum\("idle90"\)/.test(dpCode),
+  'a removed field is still read here, which prints NaN rather than throwing');
+
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
