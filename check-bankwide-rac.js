@@ -284,6 +284,26 @@ check('Access requests granted is present and scoped to Cloud Governance (item 4
 check('The three measures with no per-site source say Not captured rather than printing a split',
   (dpCode.match(/Total number of visitors, external <b>\$\{NOSRC\}/) || []).length === 1);
 
+/* ---- Phase 4. Overview of EDRMS sites, items 20 to 30 ---- */
+const siteCols = (dpCode.match(/const SITECOLS=\[[\s\S]*?\];/) || [''])[0];
+check('The records due for disposal column is gone from the site table (item 30, Deferred)',
+  !/Number of records due for disposal/.test(siteCols));
+check('The site table carries the five columns RAC agreed (items 25 to 29)',
+  (siteCols.match(/\{k:"/g) || []).length === 5);
+check('Due within 12 months is gone from the site summary (item 24, Deferred)',
+  !/Total number of records due for disposal within 12 months",v:d\.due/.test(dpCode));
+/* Scoped to the site table's own style attribute. A bare search for the grid
+   template matched the library table instead and passed against the unfixed
+   file, which is a check that cannot fail: worse than no check at all. */
+const siteGrid = (dpCode.match(/id="dp-sites"[\s\S]{0,160}?--dc:([^"]*)"/) || [, ''])[1];
+const siteTracks = (() => {
+  const m = /repeat\((\d+),/.exec(siteGrid);
+  return (siteGrid.match(/minmax\(/g) || []).length - (m ? 1 : 0) + (m ? Number(m[1]) : 0);
+})();
+check('The site table grid declares one track per column',
+  siteTracks === (siteCols.match(/\{k:"/g) || []).length,
+  siteTracks + ' grid tracks against ' + (siteCols.match(/\{k:"/g) || []).length + ' columns');
+
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

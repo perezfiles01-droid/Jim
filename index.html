@@ -3042,10 +3042,14 @@ DASHBOARDS.dp=(function(){
     return chart+line;
   }
 
+  /* RAC, 21 September 2026. Items 25 to 29, the site name, owner, documents,
+     records and counterparts, are all Agreed and stay. Item 30, number of
+     records due for disposal, is Deferred to the Retention and Disposal
+     dashboard, so the column comes off. Item 24, due within 12 months, goes
+     with it from the summary above the table for the same reason. */
   const SITECOLS=[{k:"name",lab:"Name of sites"},{k:"owner",lab:"Site owners"},
                   {k:"docs",lab:"Number of documents",num:1},{k:"rec",lab:"Number of records",num:1},
-                  {k:"phys",lab:"Number of physical counterparts",num:1},
-                  {k:"due",lab:"Number of records due for disposal",num:1}];
+                  {k:"phys",lab:"Number of physical counterparts",num:1}];
 
   function drawSites(d,sites){
     /* Use shared sortTable() function for consistent sort behavior across dashboards */
@@ -3062,17 +3066,16 @@ DASHBOARDS.dp=(function(){
          {lab:"Total number of sites created",v:d.sites},
          {lab:"Total number of documents in EDRMS",v:d.docs},
          {lab:"Total number of records declared in EDRMS",v:d.rec},
-         {lab:"Total number of physical counterparts identified",v:d.phys},
-         {lab:"Total number of records due for disposal within 12 months",v:d.due}])}
+         {lab:"Total number of physical counterparts identified",v:d.phys}])}
        <div class="scrollx"><div class="dtab wide" id="dp-sites"
-            style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) repeat(4,minmax(110px,1fr))">
+            style="--dc:minmax(170px,1.4fr) minmax(150px,1fr) repeat(3,minmax(110px,1fr))">
          <div class="dhead">${SITECOLS.map(c=>
            `<div class="hd${c.num?" num":""}${sortSite===c.k?" on":""}" data-s="${c.k}">${c.lab}${
              sortSite===c.k?(dirSite==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
          ${page.map(s=>`<div class="drow"><div class="dn">${s.name}</div>
            <div class="dn" style="font-weight:400">${s.owner}</div>
            <div class="num">${F(s.docs)}</div><div class="num">${F(s.rec)}</div>
-           <div class="num">${F(s.phys)}</div><div class="num">${F(s.due)}</div></div>`).join("")}
+           <div class="num">${F(s.phys)}</div></div>`).join("")}
        </div></div>
        <div id="dp-sites-pager">${pager(rows.length,sitePage,pages,"sites")}</div>`;
 
