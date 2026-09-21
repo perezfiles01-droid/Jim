@@ -69,14 +69,20 @@ const bw = bwStart >= 0 && bwEnd > bwStart ? src.slice(bwStart, bwEnd) : src;
    against the real module below before anything leans on it, because a
    stripper that eats too much makes every check pass and reads exactly like
    protection. */
-const bwCode = bw
+const strip = t => t
+  /* HTML comments first: these modules are JS holding HTML templates, and a
+     <!-- --> inside a template literal is invisible to a JS comment stripper.
+     A check for removed wording then matches the note recording the removal,
+     which reports the fault it is there to record. */
+  .replace(/<!--[\s\S]*?-->/g, ' ')
   .replace(/\/\*[\s\S]*?\*\//g, ' ')
   .split('\n').map(l => l.replace(/(^|[^:])\/\/.*$/, '$1')).join('\n');
+const bwCode = strip(bw);
 check('The comment stripper leaves the code it is meant to search',
   bwCode.includes('const TILES=[') && bwCode.includes('function drawUsersDrill()') &&
   bwCode.includes('DASHBOARDS.bw'),
   'the stripper removed live code, so every check built on it is blind');
-check('The comment stripper actually removes comments',
+check('The comment stripper actually removes JS comments',
   !bwCode.includes('RAC decisions of 21 September 2026'));
 
 const tilesBlock = (bw.match(/const TILES=\[[\s\S]*?\n  \];/) || [''])[0];
@@ -91,9 +97,10 @@ const dpEnd = (() => {
   return m ? dpStart + 10 + m.index : src.length;
 })();
 const dp = dpStart >= 0 ? src.slice(dpStart, dpEnd) : '';
-const dpCode = dp
-  .replace(/\/\*[\s\S]*?\*\//g, ' ')
-  .split('\n').map(l => l.replace(/(^|[^:])\/\/.*$/, '$1')).join('\n');
+const dpCode = strip(dp);
+check('The comment stripper also removes HTML comments inside templates',
+  !dpCode.includes('can this be for manual input') && dpCode.includes('id="dp-profile-ref"'),
+  'an HTML comment survived, so checks for removed wording will match the removal notes');
 check('The Department Insights module is found and its comment stripper leaves live code',
   dpCode.includes('const TILES=[') && dpCode.includes('function drawDrill()'),
   'dp module not sliced correctly, so every dp check below is blind');
@@ -328,6 +335,14 @@ check('The library panel states its grouping as Department \u002f Office \u002f 
 ['Library name', 'Site name', 'Number of documents', 'Number of records declared',
  'Number of physical counterparts'].forEach(c =>
   check('The library table keeps its "' + c + '" column (items 77 to 80)', dpCode.includes(c)));
+
+/* ---- Phase 7. Go-Live date and the approved convention, items 10 and 11 ---- */
+check('The Go-Live date is on the profile panel and says Not captured (item 11)',
+  /Go-Live date <b>\$\{NOSRC\}/.test(dpCode));
+check('The approved site, library and folder convention is present and says Not captured (item 10)',
+  /Approved SharePoint site, library and folder convention <b>\$\{NOSRC\}/.test(dpCode));
+check('Site creation time is never labelled as the EDRMS go-live date',
+  !/Created Time[^\n]*[Gg]o-?[Ll]ive|[Gg]o-?[Ll]ive[^\n]*Created Time/.test(dpCode.replace(/\s+/g, ' ')));
 
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +

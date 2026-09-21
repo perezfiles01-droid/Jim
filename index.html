@@ -3531,6 +3531,27 @@ DASHBOARDS.dp=(function(){
         <span class="lbl">Department / Office / RM / RO</span>
         <select id="dp-sel"></select>
       </div>
+      <!-- RAC items 10 and 11, both Needs Clarification, and RAC's own
+           comments carry the answer. Item 11: "can this be for manual input
+           to record when a site was provisioned to a department". Item 10:
+           "can this be just a link to the department's approved site
+           convention". Yes to both, and neither can be anything else.
+
+           Go-Live date has no automated source. Cloud Governance Created
+           Time records when the SharePoint site was created, not when it
+           became EDRMS compliant, and for a converted site those are
+           different dates: every date column in the 93-column export was
+           checked and none records the conversion. The likely home is the
+           Job monitor, whose Site manual import and Apply profile for site
+           jobs are timestamped, but that is unproven.
+
+           The approved site, library and folder convention is not data at
+           all. No source holds it, so modelling it would mean inventing it.
+           A maintained link per unit is the honest shape. -->
+      <div class="mstats" id="dp-profile-ref" style="margin-top:4px">
+        <span>Go-Live date <b>${NOSRC}</b></span>
+        <span>Approved SharePoint site, library and folder convention <b>${NOSRC}</b></span>
+      </div>
       <div id="dp-kpis"></div>
     </div>
     <div class="panel" id="dp-drill"></div>
