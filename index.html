@@ -1860,38 +1860,28 @@ DASHBOARDS.bw=(function(){
          but showing both readings side by side on one strip asked the reader
          to resolve an ambiguity that is ours to resolve with the client.
          The question survives as audit question 16; the tile does not. */
-      tiles:()=>[["Sites created",F(SITES_CREATED_90)],
-                 ["Sites deleted",F(12)],
-                 ["Sites archived",F(31)],
-                 ["Inactive over "+IDLE_DAYS+" days",F(SITES_INACTIVE)]]
+      /* RAC, 21 September 2026. All four indicators that stood here are gone:
+           item 16  Sites created    Not Required, a duplicate of tile 1
+           item 17  Sites deleted    Deferred, a possible future lifecycle
+                                     metric, and Department Insights if kept
+           item 18  Sites archived   Deferred, until EDRMS sites start moving
+                                     to inactive or archived status
+           item 19  Inactive 90 days Agreed with Changes, but as a DEPARTMENT
+                                     INSIGHTS metric, not a bank-wide tile
+         What replaces them is the count itself, and the one thing a reader
+         has to know to read the table: 240 of the 1,030 EDRMS sites that
+         carry a department carry more than one, and each is counted to the
+         first listed. Their secondary owners' rows do not include them. */
+      tiles:()=>[["EDRMS compliant sites",F(DEPT_SITES)],
+                 ["Sites counted to a single department",F(DATA.SITES_WITH_DEPARTMENT-DATA.SITES_MULTI_DEPARTMENT)],
+                 ["Sites shared across departments, counted to the first",F(DATA.SITES_MULTI_DEPARTMENT)]]
     },
-    /* s36 and s37. Both carry the Bank-wide banner in the deck, so the project
-       lists belong here, and each row opens Project Insights, which is s38 and
-       is one project's profile. Column names are the client's own, including
-       the first heading, which on their table is the facility type itself.
-
-       Both slides end their list with "Etc.", so the named projects are only
-       part of the facility. The total row is the facility, not the sum of the
-       rows above it, and it is labelled to say so: a tile reading 116 over a
-       table totalling 10 was a real defect on this screen once. */
-    sov:{
-      title:"Total number of active EDRMS SharePoint sites for Sovereign projects",
-      facility:"Sovereign",
-      projects:true,
-      cols:["Sovereign projects","Number of EDRMS SharePoint sites",
-            "Total number of documents","Total number of records declared",
-            "Total number of physical counterparts"],
-      sub:"Click a project to open Project Insights. Figures are illustrative: no source yet says which site belongs to which project."
-    },
-    nonsov:{
-      title:"Total number of active EDRMS SharePoint sites for Nonsovereign projects",
-      facility:"Nonsovereign",
-      projects:true,
-      cols:["Nonsovereign projects","Number of EDRMS SharePoint sites",
-            "Total number of documents","Total number of records declared",
-            "Total number of physical counterparts"],
-      sub:"Click a project to open Project Insights. Figures are illustrative: no source yet says which site belongs to which project."
-    },
+    /* The Sovereign and Nonsovereign project site tables, s36 and s37, came
+       off on 21 September 2026: RAC items 20, 21 and 22, all Deferred until
+       sovereign and nonsovereign project sites, the Project Insights
+       dashboard and a reliable site to project classification exist. Item 22
+       is the drill-through behaviour, deferred with them. PROJECTS and NAMED
+       are untouched above, so the tables are one edit to restore. */
     users:{
       /* s39 asks for staff, contractor, consultant, training completion and
          onboarded since go-live. Microsoft 365 knows who signed in and when.
@@ -1960,7 +1950,6 @@ DASHBOARDS.bw=(function(){
                              PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
                  ["Share of documents declared as records",DECL_RATE.toFixed(2)+"%"],
-                 ["Departments, offices and RMs with zero declarations",F(DEPTS.filter(d=>d.rec===0).length)],
                  ["People who declared a record",F(DEPTS.reduce((a,d)=>a+d.declaring,0))]]
     },
     phys:{
@@ -1986,21 +1975,11 @@ DASHBOARDS.bw=(function(){
                  ["Records declared",F(TOTAL_REC)],
                  ["Share of records with a counterpart",PCT(TOTAL_PHYS,TOTAL_REC).toFixed(1)+"%"]]
     },
-    disp:{
-      title:"Total number of records due for disposal within 12 months, by department, office or RM",
-      sub:"Records due for retention by department, office or RM, with the next due date.",
-      /* s43 draws eight columns. Three are producible from EDRMSDueDateForDisposal
-         and HasPhysical. The disposal approver and the three status columns,
-         Approved, Declined and Extended, need fields the EDRMS application does
-         not have, so they say so. Audit question 7 specifies the change request. */
-      cols:["Department / office / RM","Records due within 30 days","Records due within 90 days","Records due within 12 months","Next due date","With counterpart"],
-      rows:()=>DEPTS.map((d,i)=>[d.code+" - "+d.name, F(d.due30), F(d.due90), F(d.due),
-                                 DUE_DATES[i%DUE_DATES.length],
-                                 F(d.duephys)]),
-      tiles:()=>[["Due within 30 days",F(DATA.DUE_30)],
-                 ["Due within 90 days",F(DATA.DUE_90)],
-                 ["Due within 12 months",F(TOTAL_DUE)]]
-    }
+    /* The records due for disposal table, s43, came off on 21 September 2026.
+       RAC deferred every one of its rows, items 49 to 59, until the Retention
+       and Disposal dashboard exists and "due for disposal" is defined: today,
+       or the next 30, 60 or 90 days. Their own feasibility note asks that
+       question of itself. The figures stay in DATA. */
   };
   const DUE_DATES=["12 Sep 2026","28 Sep 2026","04 Oct 2026","19 Oct 2026","02 Nov 2026","23 Nov 2026",
                    "07 Dec 2026","21 Dec 2026","11 Jan 2027","25 Jan 2027","08 Feb 2027","22 Feb 2027",
@@ -2202,82 +2181,19 @@ DASHBOARDS.bw=(function(){
     });
   }
 
-  function drawDispDrill(){
-    const d=DRILL.disp;
-    const tiles=d.tiles();
-
-    /* Map departments to their original indices for due date cycling */
-    const origIndex={};
-    DEPTS.forEach((dept,i)=>{origIndex[dept.code]=i;});
-
-    /* Sort DEPTS based on current sort state, then format rows */
-    const SORT_KEYS=["code","due30","due90","due","duedate","duephys"];
-    const sortedDepts=DEPTS.slice().sort((a,b)=>{
-      let cmp=0;
-      if(sortDisp==="code") cmp=a.code.localeCompare(b.code);
-      else if(sortDisp==="due30") cmp=a.due30-b.due30;
-      else if(sortDisp==="due90") cmp=a.due90-b.due90;
-      else if(sortDisp==="due") cmp=a.due-b.due;
-      else if(sortDisp==="duedate") {
-        const ai=origIndex[a.code]%DUE_DATES.length;
-        const bi=origIndex[b.code]%DUE_DATES.length;
-        cmp=ai-bi;
-      }
-      else if(sortDisp==="duephys") cmp=a.duephys-b.duephys;
-      return dirDisp==="asc"?cmp:-cmp;
-    });
-
-    const rows=sortedDepts.map((d,i)=>[d.code+" - "+d.name, F(d.due30), F(d.due90), F(d.due),
-                                       DUE_DATES[i%DUE_DATES.length],
-                                       F(d.duephys)]);
-    const pages=Math.max(1,Math.ceil(rows.length/10));
-    if(bwDispPage>pages)bwDispPage=pages;
-    const page=rows.slice((bwDispPage-1)*10,bwDispPage*10);
-
-    document.getElementById("bw-drill").innerHTML=
-      `<div class="ptitle">${d.title}</div>
-       <div class="psub">${d.sub}</div>
-       <div class="tiles">${tiles.map(([l,v])=>
-         `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
-       <div class="scrollx"><div class="dtab" id="bw-disp" style="--dc:230px repeat(${d.cols.length-1},1fr)">
-         <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="hd${i?" num":""}${sortDisp===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
-             sortDisp===SORT_KEYS[i]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
-         ${page.map(r=>`<div class="drow">${r.map((c,j)=>
-           j?`<div class="num">${c}</div>`:`<div class="dn">${c}</div>`).join("")}</div>`).join("")}
-       </div></div>
-       <div id="bw-disp-pager">${pager(rows.length,bwDispPage,pages,"departments")}</div>`;
-
-    document.querySelectorAll("#bw-drill .hd").forEach(el=>el.onclick=()=>{
-      const k=el.dataset.s;
-      if(sortDisp===k)dirDisp=dirDisp==="asc"?"desc":"asc";
-      else{sortDisp=k;dirDisp=k==="code"?"asc":"desc";}
-      bwDispPage=1;
-      drawDrill();
-    });
-
-    wirePager("#bw-disp-pager",go=>{
-      bwDispPage=go==="prev"?Math.max(1,bwDispPage-1):go==="next"?Math.min(pages,bwDispPage+1):+go;
-      drawDrill();
-    });
-  }
 
   function drawDrill(){
     const d=DRILL[openKpi];
 
-    /* Three of the ten drills are not the department shape. The sites table is
+    /* One of the four drills is not the department shape. The sites table is
        sortable and its names navigate, so it has its own small builder and
        shares the panel chrome. */
     if(d.sortable)  return drawSitesDrill(d);
-    /* s36 and s37, the two project lists. One builder, two facility types. */
-    if(d.projects) return drawProjectsDrill(d);
-
     /* Route to specific drill functions for pagination support */
     if(openKpi==="users") return drawUsersDrill();
     if(openKpi==="docs") return drawDocsDrill();
     if(openKpi==="rec") return drawRecsDrill();
     if(openKpi==="phys") return drawPhysDrill();
-    if(openKpi==="disp") return drawDispDrill();
 
   }
 
@@ -2326,31 +2242,6 @@ DASHBOARDS.bw=(function(){
      project on Project Insights, which is their clickable note word for word:
      "The Nonsovereign projects / sovereign projects should also be clickable,
      taking the user to Project insights." */
-  function drawProjectsDrill(d){
-    const fac=PROJECTS.find(p=>p.fac===d.facility);
-    const rows=PROJECT_ROWS.filter(r=>r.facility===d.facility)
-                           .sort((a,b)=>b.rec-a.rec);
-    const named=f=>rows.reduce((a,r)=>a+r[f],0);
-    document.getElementById("bw-drill").innerHTML=
-      `<div class="ptitle">${d.title}</div>
-       <div class="psub">${d.sub}</div>
-       <div class="tiles">
-         <div class="tile hi"><div class="tl">EDRMS sites, all ${d.facility.toLowerCase()} projects</div>
-           <div class="tv">${F(fac.sites)}</div></div>
-         <div class="tile"><div class="tl">Documents</div><div class="tv">${F(fac.docs)}</div></div>
-         <div class="tile"><div class="tl">Records declared</div><div class="tv">${F(fac.rec)}</div></div>
-         <div class="tile"><div class="tl">Physical counterparts</div><div class="tv">${F(fac.phys)}</div></div>
-       </div>
-       <div class="scrollx"><div class="dtab wide" id="bw-projects">
-         <div class="dhead">${d.cols.map((c,i)=>
-           `<div class="${i?"num":"hd"}">${c}</div>`).join("")}</div>
-         ${rows.map(r=>`<div class="drow go" role="link" tabindex="0" data-proj="${r.no}">
-           <div class="dn"><span class="lk">${r.no}</span><small>${r.name}</small></div>
-           <div class="num">${F(r.sites)}</div><div class="num">${F(r.docs)}</div>
-           <div class="num">${F(r.rec)}</div><div class="num">${F(r.phys)}</div></div>`).join("")}
-       </div></div>`;
-    wireGo();
-  }
 
   function wireGo(){
     document.querySelectorAll("#bw-drill .drow.go").forEach(el=>{

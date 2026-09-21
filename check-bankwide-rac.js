@@ -94,6 +94,28 @@ check('The measured user tile still names its window rather than claiming the po
 check('Units with no EDRMS site are stated as listed, not omitted (item 24)',
   /Units with no EDRMS site are listed with zeros rather than omitted/.test(bw));
 
+/* ---- Phase 4. The drills and indicators RAC struck out ---- */
+const REMOVED_DRILLS = [
+  ['sov', 'items 20 and 22, the Sovereign project list and its drill-through, Deferred'],
+  ['nonsov', 'item 21, the Nonsovereign project list, Deferred'],
+  ['disp', 'items 49 to 59, the records due for disposal table, Deferred'],
+];
+REMOVED_DRILLS.forEach(([k, why]) => check('The ' + k + ' drill is gone (' + why + ')',
+  !new RegExp('^\\s{4}' + k + ':\\{', 'm').test(bw)));
+check('No dead route is left pointing at a removed drill',
+  !/drawDispDrill|drawProjectsDrill/.test(bw));
+const REMOVED_INDICATORS = [
+  ['Sites created', 'item 16, Not Required, duplicate of tile 1'],
+  ['Sites deleted', 'item 17, Deferred'],
+  ['Sites archived', 'item 18, Deferred'],
+  ['Inactive over', 'item 19, Agreed with Changes, belongs to Department Insights'],
+  ['with zero declarations', 'item 40, Not Required, covered by items 38 and 39'],
+];
+REMOVED_INDICATORS.forEach(([t, why]) => check('Bank-wide no longer shows "' + t + '" (' + why + ')',
+  !bw.includes('["' + t) && !bw.includes('"' + t + '"')));
+check('The shared-site limitation is stated on the sites drill, not left to be discovered',
+  /Sites shared across departments, counted to the first/.test(bw));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
