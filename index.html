@@ -1724,8 +1724,7 @@ DASHBOARDS.bw=(function(){
   let sortDocs="code", dirDocs="asc";
   let sortRec="code", dirRec="asc";
   let sortPhys="code", dirPhys="asc";
-  let sortDisp="code", dirDisp="asc";
-  let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1, bwDispPage=1;
+  let bwSitesPage=1, bwUsersPage=1, bwDocsPage=1, bwRecPage=1, bwPhysPage=1;
   let cmpMode="userdoc";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
 
@@ -2824,7 +2823,6 @@ DASHBOARDS.dp=(function(){
   let docsPage=1, sortDocs="name", dirDocs="asc";
   let recPage=1, sortRec="name", dirRec="asc";
   let physPage=1, sortPhys="name", dirPhys="asc";
-  let disposalPage=1, sortDisp="name", dirDisp="asc";
   /* "lib", not "name": this table's SORT_KEYS are lib, site, docs, rec, phys,
      and it has no "name" column at all. Set to "name" the comparator fell
      through every branch and returned 0, so the table opened unsorted with no
@@ -2922,7 +2920,7 @@ DASHBOARDS.dp=(function(){
       card.onclick=()=>{
         openKpi=card.dataset.k;
         /* Reset pagination when changing KPIs for better UX */
-        sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=1;
+        sitePage=visitorPage=docsPage=recPage=physPage=1;
         document.querySelectorAll("#dp-kpis .kpi[data-k]").forEach(el=>
           el.classList.toggle("on",el.dataset.k===openKpi));
         drawDrill();
@@ -2998,12 +2996,9 @@ DASHBOARDS.dp=(function(){
       return drawPhysical(d,sites);
     }
 
-    else {
-      /* s60. Three of the eight columns are producible. The approver and the
-         three status columns need fields the EDRMS application does not have.
-         Audit question 7 specifies the change request. */
-      return drawDisposal(d);
-    }
+    /* No else branch: every tile above returns, and the disposal tile that
+       used to fall through here is gone with its panel. A trailing else
+       would now be unreachable code pointing at a removed function. */
 
   }
 
@@ -3329,61 +3324,17 @@ DASHBOARDS.dp=(function(){
     });
   }
 
-  function drawDisposal(d){
-    const sites=sitesFor(dept);
-    const due6=Math.round(d.due*0.5);
-    const due3=Math.round(d.due*0.33);
-    const SORT_KEYS=["name","due3","due6","due12"];
-    const sorted=sites.slice().sort((a,b)=>{
-      let cmp=0;
-      if(sortDisp==="name") cmp=a.name.localeCompare(b.name);
-      else if(sortDisp==="due3") cmp=a.dueIn3Months-b.dueIn3Months;
-      else if(sortDisp==="due6") cmp=a.dueIn6Months-b.dueIn6Months;
-      else if(sortDisp==="due12") cmp=a.dueIn12Months-b.dueIn12Months;
-      return dirDisp==="asc"?cmp:-cmp;
-    });
-    const rows=sorted.map(s=>[s.name,F(s.dueIn3Months),F(s.dueIn6Months),F(s.dueIn12Months)]);
-    const pages=Math.max(1,Math.ceil(rows.length/10));
-    if(disposalPage>pages)disposalPage=pages;
-    const page=rows.slice((disposalPage-1)*10,disposalPage*10);
+  /* The Retention drill came off on 21 September 2026. Every row of it is
+     Deferred until the Records Disposition feature is released: items 65, 66
+     and 67, the three due windows; item 68, records due for disposal; item
+     69, the next due date; item 70, with physical counterpart; item 71, the
+     disposal approver; items 72 to 74, the Approved, Declined and Extended
+     statuses; and items 75 and 76, records disposed and disposed size. With
+     items 8, 24 and 30 gone for the same reason, nothing on this dashboard
+     reports disposal any more.
 
-    document.getElementById("dp-drill").innerHTML=
-      `<div class="ptitle">Retention</div>
-       <div class="psub">Records due for retention, by site.</div>
-       ${summaryChart([
-         {lab:"Records due for retention within 3 months",v:due3},
-         {lab:"Records due for retention within 6 months",v:due6},
-         {lab:"Records due for retention within 12 months",v:d.due}])}
-       <div class="scrollx"><div class="dtab wide" id="dp-disposal"
-            style="--dc:minmax(170px,1.4fr) minmax(140px,1fr) minmax(140px,1fr) minmax(140px,1fr)">
-         <div class="dhead">
-           <div class="hd${sortDisp===SORT_KEYS[0]?" on":""}" data-s="${SORT_KEYS[0]}">Name of sites${
-             sortDisp===SORT_KEYS[0]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
-           <div class="hd num${sortDisp===SORT_KEYS[1]?" on":""}" data-s="${SORT_KEYS[1]}">Due within 3 months${
-             sortDisp===SORT_KEYS[1]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
-           <div class="hd num${sortDisp===SORT_KEYS[2]?" on":""}" data-s="${SORT_KEYS[2]}">Due within 6 months${
-             sortDisp===SORT_KEYS[2]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
-           <div class="hd num${sortDisp===SORT_KEYS[3]?" on":""}" data-s="${SORT_KEYS[3]}">Due within 12 months${
-             sortDisp===SORT_KEYS[3]?(dirDisp==="asc"?" ↑":" ↓"):""}</div>
-         </div>
-         ${page.map(r=>`<div class="drow"><div class="dn">${r[0]}</div>
-           <div class="num">${r[1]}</div><div class="num">${r[2]}</div><div class="num">${r[3]}</div></div>`).join("")}
-       </div></div>
-       <div id="dp-disposal-pager">${pager(rows.length,disposalPage,pages,"sites")}</div>`;
-
-    document.querySelectorAll("#dp-disposal .hd").forEach(el=>el.onclick=()=>{
-      const k=el.dataset.s;
-      if(sortDisp===k) dirDisp=dirDisp==="asc"?"desc":"asc";
-      else{sortDisp=k;dirDisp=(k==="name"?"asc":"desc");}
-      disposalPage=1;
-      drawDrill();
-    });
-
-    wirePager("#dp-disposal-pager",go=>{
-      disposalPage=go==="prev"?Math.max(1,disposalPage-1):go==="next"?Math.min(pages,disposalPage+1):+go;
-      drawDrill();
-    });
-  }
+     The figures stay in DATA, unshown rather than unsourced, so the panel is
+     one edit to restore when the feature ships. */
 
   function drawUsers(d){
     /* RAC, 21 September 2026. Two of the four measures came off:
@@ -3589,7 +3540,7 @@ DASHBOARDS.dp=(function(){
       `<option value="${ALLCODE}" ${dept===ALLCODE?"selected":""}>${ALL.name}</option>`+
       DEPTS.map(d=>
       `<option value="${d.code}" ${d.code===dept?"selected":""}>${d.code} - ${d.name}</option>`).join("");
-    sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=disposalPage=libsPage=1;drawAll();};
+    sel.onchange=e=>{dept=e.target.value;sitePage=visitorPage=docsPage=recPage=physPage=libsPage=1;drawAll();};
 
     /* Wire library section department filter */
     const libsSel=document.getElementById("dp-libs-sel");

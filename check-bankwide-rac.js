@@ -304,6 +304,16 @@ check('The site table grid declares one track per column',
   siteTracks === (siteCols.match(/\{k:"/g) || []).length,
   siteTracks + ' grid tracks against ' + (siteCols.match(/\{k:"/g) || []).length + ' columns');
 
+/* ---- Phase 5. The Retention drill, items 65 to 76 ---- */
+check('The Retention drill is gone from Department Insights (items 65 to 76, all Deferred)',
+  !/function drawDisposal\b/.test(dpCode) && !/<div class="ptitle">Retention<\/div>/.test(dpCode));
+check('No route still points at the removed Retention drill',
+  !/drawDisposal\(/.test(dpCode));
+check('Its pagination and sort state went with it, not left as dead variables',
+  !/disposalPage|sortDisp|dirDisp/.test(dpCode));
+check('Nothing on Department Insights reports disposal any more (items 8, 24, 30, 65 to 76)',
+  !/due for disposal/i.test(dpCode));
+
 /* ---------------------------------------------------------------- */
 console.log('\nRAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');
