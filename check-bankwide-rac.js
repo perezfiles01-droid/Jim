@@ -116,6 +116,28 @@ REMOVED_INDICATORS.forEach(([t, why]) => check('Bank-wide no longer shows "' + t
 check('The shared-site limitation is stated on the sites drill, not left to be discovered',
   /Sites shared across departments, counted to the first/.test(bw));
 
+/* ---- Phase 5. Department / Office / RM / RO, items 11, 42 and 43 ---- */
+/* The old wordings, each of which RAC replaced. Searched over the Bank-wide
+   module's own text, not the whole file: other dashboards are out of this
+   decision's scope until RAC rules on them. */
+const OLD_WORDINGS = [
+  'Department / office / RM',
+  'Department, RM, office',
+  'by department, office or RM',
+  'Compare departments, offices and RMs',
+];
+OLD_WORDINGS.forEach(w => check('Bank-wide no longer says "' + w + '" (item 11)',
+  !bw.includes(w)));
+check('Bank-wide uses the agreed column heading Department / Office / RM / RO',
+  bw.includes('Department / Office / RM / RO'));
+/* Division has no source: the Cloud Governance export's Division column is
+   empty on all 1,032 EDRMS sites. It must not return as a visible grouping.
+   Only rendered text is searched, since divisionsFor() is exported to
+   Department Insights and is not shown here. */
+const visible = (bw.match(/(?:title|sub|lab|cols)\s*:\s*[^\n]*/g) || []).join('\n');
+check('No visible Bank-wide label groups by division (items 42 and 43)',
+  !/\bdivision/i.test(visible), 'found: ' + (visible.match(/[^\n]*division[^\n]*/i) || [''])[0].slice(0, 80));
+
 /* ---------------------------------------------------------------- */
 console.log('\nBank-wide RAC decision checks: ' + checks.length + ' run, ' +
             (checks.length - fails.length) + ' passed, ' + fails.length + ' failed.');

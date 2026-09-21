@@ -1715,6 +1715,14 @@ DASHBOARDS.bw=(function(){
   let cmpMode="docsrec";
   let trendFrom=DATA.RANGE_FROM, trendTo=DATA.RANGE_TO;
 
+  /* RAC, 21 September 2026. Every grouping on this dashboard is Department /
+     Office / RM / RO, item 11, Agreed with Changes: "regardless of physical
+     location (not just HQ)". The same decision answers items 42 and 43, and
+     it is not a preference. The Cloud Governance export carries a Division
+     column and it is EMPTY on all 1,032 EDRMS sites, so division is not a
+     missing source, it is no source, and nothing on this screen can be cut by
+     it. check-bankwide-rac.js asserts the wording holds and that division
+     does not come back. */
   /* ===== top panel, PPT s15 and s34 ===== */
   /* The client's top panel, PPT s34, has TEN tiles, not eight. Eight open a
      table on this dashboard; two navigate to another dashboard entirely. Those
@@ -1849,9 +1857,9 @@ DASHBOARDS.bw=(function(){
        checker workbook; what is gone is the page telling a reader it already
        works. */
     sites:{
-      title:"Number of active EDRMS SharePoint sites for Department, RM, office",
+      title:"Number of active EDRMS SharePoint sites for Department, Office, RM and RO",
       sortable:true,
-      cols:["Department / office / RM","Number of EDRMS SharePoint sites",
+      cols:["Department / Office / RM / RO","Number of EDRMS SharePoint sites",
             "Total number of documents","Total number of records declared",
             "Total number of physical counterparts"],
       /* "Used in the last 7 days" was removed 17 Aug 2026 at the client's
@@ -1892,7 +1900,7 @@ DASHBOARDS.bw=(function(){
 
          What replaces them is what the activity report really supports:
          whether a person has used EDRMS, and how recently. */
-      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by department, office or RM",
+      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by Department, Office, RM or RO",
       /* RAC item 24, answered: the list is driven by the organizational unit
          register, not by the sites, so a unit with no EDRMS site appears with
          zeros rather than being dropped. An empty row there is a compliance
@@ -1903,7 +1911,7 @@ DASHBOARDS.bw=(function(){
          instruction. Before the constants sweep earlier the same day it
          printed a literal 89 on every row; corrected, it was still a fourth
          column restating three that are already on the row. */
-      cols:["Department / office / RM","Users with activity","Never accessed",
+      cols:["Department / Office / RM / RO","Users with activity","Never accessed",
             "No access in 90 days"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users),
                              F(d.never), F(d.idle90)]),
@@ -1925,27 +1933,27 @@ DASHBOARDS.bw=(function(){
                  ["Total number of EDRMS users (indicative, per unit)",NOSRC],
                  ["Never accessed EDRMS",F(DATA.USERS_NEVER)],
                  ["No access in 90 days",F(DATA.USERS_IDLE90)],
-                 ["Departments, offices and RMs in the list",F(DEPTS.length)]]
+                 ["Departments, Offices, RMs and ROs in the list",F(DEPTS.length)]]
     },
     docs:{
-      title:"Total number of documents in EDRMS, by department, office or RM",
-      sub:"Documents and storage by department, office or RM.",
-      cols:["Department / office / RM","Documents","Storage","Share of documents"],
+      title:"Total number of documents in EDRMS, by Department, Office, RM or RO",
+      sub:"Documents and storage by Department, Office, RM or RO.",
+      cols:["Department / Office / RM / RO","Documents","Storage","Share of documents"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.docs), GB(d.gb),
                              PCT(d.docs,TOTAL_DOCS).toFixed(1)+"%"]),
       tiles:()=>[["Documents held",(TOTAL_DOCS/1e6).toFixed(2)+"M"],
                  ["Storage consumed",GB(DEPTS.reduce((a,d)=>a+d.gb,0))]]
     },
     rec:{
-      title:"Total number of records declared in EDRMS, by department, office or RM",
-      sub:"Records declared and the people declaring them, by department, office or RM.",
+      title:"Total number of records declared in EDRMS, by Department, Office, RM or RO",
+      sub:"Records declared and the people declaring them, by Department, Office, RM or RO.",
       /* "Documents declared" removed 17 Aug 2026 at the client's instruction. It
          was the declaration rate, records over documents held, and its
          denominator does not exist in any system yet: the Records table holds
          no row for an undeclared document, so the column was waiting on the
          weekly scan. The rate survives as a single bank-wide tile, "Share of
          documents declared as records". */
-      cols:["Department / office / RM","Records declared","People who declared a record","Share of records"],
+      cols:["Department / Office / RM / RO","Records declared","People who declared a record","Share of records"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.rec), F(d.declaring),
                              PCT(d.rec,TOTAL_REC).toFixed(1)+"%"]),
       tiles:()=>[["Records declared",F(TOTAL_REC)],
@@ -1953,8 +1961,8 @@ DASHBOARDS.bw=(function(){
                  ["People who declared a record",F(DEPTS.reduce((a,d)=>a+d.declaring,0))]]
     },
     phys:{
-      title:"Total number of physical counterparts identified, by department, office or RM",
-      sub:"Physical counterparts against declared records, by department, office or RM.",
+      title:"Total number of physical counterparts identified, by Department, Office, RM or RO",
+      sub:"Physical counterparts against declared records, by Department, Office, RM or RO.",
       /* s42 asks for a physical counterpart completion rate, defined on the
          slide as records turned over for RAC storage against records declared
          with a counterpart. We can produce the denominator. The numerator is a
@@ -1967,7 +1975,7 @@ DASHBOARDS.bw=(function(){
          rather than the record. The count now names the record, and the rate
          names its denominator, per the rule that any label ending in a share
          or a rate must say what it is divided by. */
-      cols:["Department / office / RM","Records with a counterpart","Records declared",
+      cols:["Department / Office / RM / RO","Records with a counterpart","Records declared",
             "Share of records with a counterpart"],
       rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                              PCT(d.phys,d.rec).toFixed(1)+"%"]),
@@ -2388,7 +2396,7 @@ DASHBOARDS.bw=(function(){
       <div class="bd">Users, documents and records declared, set against each other unit by unit.</div>
     </div>
     <div class="panel">
-      <div class="ptitle">Compare departments, offices and RMs</div>
+      <div class="ptitle">Compare Departments, Offices, RMs and ROs</div>
       <div class="psub" id="bw-cmp-note"></div>
       <div class="toolbar">
         <span class="lbl">Compare</span>
