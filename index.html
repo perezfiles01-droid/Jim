@@ -1807,19 +1807,30 @@ DASHBOARDS.bw=(function(){
        close to the whole Bank, and it carries no site dimension so it cannot
        be narrowed to EDRMS.
 
-       RAC answered this on 21 September 2026, items 2 and 23: what they want
-       is a ROUNDED headcount per unit for context, not exact and not
-       regularly refreshed. That is a maintained reference value, not a
-       measurement, and it now sits on DATA as the supplied unit size, per
-       unit, carried into the users drill as its own column and summed on the
-       drill tile.
+       RAC answered this in Checker 8, items 2 and 23, in identical words on
+       both: "Show rounded number of people per department / office / RM. The
+       number should indicate the size of the department / office / RM for
+       context. The number does not need to be exact and therefore should not
+       need to be regularly updated. E.g. CSD approx. 400 / SPSO approx 10."
 
-       This tile still keeps the figure that can actually be produced, and
-       still says which one it is. The two are deliberately not merged: one is
-       measured weekly, the other is typed once, and a reader has to be able
-       to tell which is which. */
-    {k:"users",lab:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
-     val:()=>F(TOTAL_USERS)},
+       So this card carries the rounded headcount, under RAC's own card name.
+       It is a maintained reference value, not a measurement, and it is the
+       one figure here that no query produces.
+
+       The measured figure, users with recorded activity in the window, is NOT
+       deleted. It moves to the breakdown this card opens, which is RAC's own
+       section, Slide 39 Users, and it stands on its own at Department
+       Insights items 12 and 13, both Agreed with no comment. What it stops
+       being is the headline, because item 2 names this card "Total number of
+       EDRMS users" and defines it as the unit size.
+
+       Read the derived decision workbook with care here. Its summary columns
+       say to "publish both and label each with its denominator" and that the
+       measured figure "stays separate". RAC's own comments say the opposite
+       at items 61 and 62: "Replace active users with the available contextual
+       workforce count". Checker 8, column RAC Comments, is the source. */
+    {k:"users",lab:"Total number of EDRMS users",
+     val:()=>"approx. "+F(DATA.UNIT_HEADCOUNT)},
     /* Items 3 and 4, both Agreed. Documents counts every document in an
        EDRMS compliant site whether declared or not, once each, project sites
        excluded. */
@@ -1952,7 +1963,7 @@ DASHBOARDS.bw=(function(){
 
          What replaces them is what the activity report really supports:
          whether a person has used EDRMS, and how recently. */
-      title:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days, by Department, Office, RM or RO",
+      title:"Total number of EDRMS users, by Department, Office, RM or RO",
       /* RAC item 24, answered: the list is driven by the organizational unit
          register, not by the sites, so a unit with no EDRMS site appears with
          zeros rather than being dropped. An empty row there is a compliance
@@ -2005,9 +2016,19 @@ DASHBOARDS.bw=(function(){
          It sits beside the measured figure rather than replacing it, because
          they are two different measures and the comparison panel needs to say
          which denominator it used. */
-      tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
-                 ["Total number of EDRMS users (indicative, per unit)",
-                  "approx. "+F(DATA.UNIT_HEADCOUNT)],
+      /* RAC items 27, 28 and 29, all Needs Clarification, all one sentence:
+         "From Active Directory; is it possible to extract this information
+         (see item #23)." That is RAC asking a question, not RAC dropping the
+         measure, so the three sit here reading Not captured rather than being
+         left off the page. Microsoft 365 knows who signed in; it does not
+         know what kind of person somebody is, so the split cannot come from
+         the activity report and Active Directory has not been extracted.
+         Answering that question is what fills them. */
+      tiles:()=>[["Total number of users, count","approx. "+F(DATA.UNIT_HEADCOUNT)],
+                 ["Total number of users (staff)",NOSRC],
+                 ["Total number of users (contractors)",NOSRC],
+                 ["Total number of users (consultants)",NOSRC],
+                 ["Users with recorded activity",F(TOTAL_USERS)],
                  ["No access in "+DATA.ACTIVITY_WINDOW+" days",F(DATA.USERS_IDLE180)],
                  ["Departments, Offices, RMs and ROs in the list",F(DEPTS.length)]]
     },
@@ -2360,22 +2381,29 @@ DASHBOARDS.bw=(function(){
      the records drill, and the same figure twice invites a reader to check
      one against the other.
 
-     Items 61 and 62 asked what an active user is. Two different measures
-     were being read as one: the people who actually used EDRMS in the window,
-     which is produced from the activity report, and the unit's headcount for
-     context, which RAC wants rounded and which nobody has supplied. Each
-     label now names its own denominator so the two can never be read as the
-     same comparison. The headcount version cannot be drawn until RAC
-     supplies the list, and is not implied by these. */
+     Items 61 and 62 asked what an active user is, and RAC answered by
+     replacing it. Item 61: "Replace active users with the available
+     contextual workforce count by Department / Office / RM / RO, if sourced
+     authoritatively, and compare it with document totals." Item 62 says the
+     same against declared records.
+
+     So the denominator on both is the rounded unit size, not the measured
+     activity count. This is a REPLACEMENT and not an added option: offering
+     both would be the blend RAC's wording rules out, and would leave a reader
+     choosing which denominator a headline ratio used.
+
+     RAC's condition, "if sourced authoritatively", is not met yet: the list
+     in DATA is a placeholder until RAC supplies theirs. That is a question
+     back to RAC rather than something this file can settle. */
   const CMP={
-    userdoc:{a:"users",b:"docs",
-             la:"Users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
+    userdoc:{a:"head",b:"docs",
+             la:"Size of unit, rounded",
              lb:"Documents",ca:"var(--teal)",cb:"var(--blue)",
-             note:"Compared against the people who used EDRMS in the window, not against the size of the unit. The rounded headcount RAC asked for is not captured yet."},
-    userrec:{a:"users",b:"rec",
-             la:"Users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
+             note:"Compared against the size of the unit, which is the contextual workforce count."},
+    userrec:{a:"head",b:"rec",
+             la:"Size of unit, rounded",
              lb:"Records declared",ca:"var(--teal)",cb:"var(--green)",
-             note:"Compared against the people who used EDRMS in the window, not against the size of the unit. The rounded headcount RAC asked for is not captured yet."}
+             note:"Compared against the size of the unit, which is the contextual workforce count."}
   };
   function drawCmp(){
     const c=CMP[cmpMode];
@@ -2519,7 +2547,7 @@ DASHBOARDS.bw=(function(){
 
     <div class="band">
       <h2>Comparison</h2>
-      <div class="bd">Users, documents and records declared, set against each other unit by unit.</div>
+      <div class="bd">Size of unit, documents and records declared, set against each other unit by unit.</div>
     </div>
     <div class="panel">
       <div class="ptitle">Compare Departments, Offices, RMs and ROs</div>
@@ -2527,8 +2555,8 @@ DASHBOARDS.bw=(function(){
       <div class="toolbar">
         <span class="lbl">Compare</span>
         <select id="bw-cmp-sel">
-          <option value="userdoc">Users with recorded activity against documents</option>
-          <option value="userrec">Users with recorded activity against records declared</option>
+          <option value="userdoc">Size of unit against documents</option>
+          <option value="userrec">Size of unit against records declared</option>
         </select>
       </div>
       <div class="legend" id="bw-cmp-legend"></div>

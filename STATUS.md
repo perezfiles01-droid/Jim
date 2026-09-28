@@ -874,6 +874,61 @@ division is dead everywhere: the Cloud Governance export carries a `Division`
 column **empty on all 1,032 rows**, so it is not a missing source, it is no
 source. Every grouping is Department / Office / RM / RO.
 
+### 28 September 2026, later: Checker 8 overrules the decision workbook
+
+**Read Checker 8, column RAC Comments, before the decision workbook.** The
+derived workbook, EDRMS_RAC_Decisions_Complete, carries two summary columns,
+"Clarifications? In simple terms" and "Feasible?". Neither is RAC's text. On
+the two items where it matters they say the opposite of the source:
+
+| | Decision workbook | Checker 8, RAC Comments |
+| --- | --- | --- |
+| Item 61 | "publish both and label each with its denominator... Do not blend them" | "**Replace** active users with the available contextual workforce count" |
+| Item 62 | same | "Compare **the contextual workforce count**... with declared records" |
+| Dept Insights 3 | "The measured users-with-activity figure stays separate" | not present at all |
+
+The earlier entry above was built on that summary and had the top card keeping
+the measured figure. That is wrong. What follows is built on RAC's own words.
+
+**The top card is item 2, and item 2 is the unit size.** It now reads "Total
+number of EDRMS users", RAC's own card name, over the rounded headcount. The
+measured 9,420 is NOT deleted: it moves into the breakdown that card opens,
+which is RAC's own section, Slide 39 Users, and it stands on its own at
+Department Insights items 12 and 13, both Agreed with no comment. What it
+stops being is the headline.
+
+**The comparison denominator is replaced, not supplemented.** Items 61 and 62
+both now read against the unit size. Offering both would be the blend RAC's
+wording rules out and would leave a reader guessing which denominator a
+headline ratio used. RAC's condition, "if sourced authoritatively", is not met
+while the list is a placeholder, and that is a question back to RAC.
+
+**Items 27, 28 and 29 are on the page reading Not captured.** All three say
+"From Active Directory; is it possible to extract this information (see item
+#23)." That is RAC asking a question, not dropping the measure, so the three
+sit in the users drill rather than being left off. Microsoft 365 knows who
+signed in, not what kind of person somebody is, so the split cannot come from
+the activity report.
+
+**Item 34 needed no work, and must not be over-applied.** RAC says "Remove" for
+Bank-wide "Number of users creating documents", and there is no visible
+Bank-wide label for it: only assert text and comments. `USERS_CREATING` stays
+in DATA because Department Insights item 49 is Agreed. Removing the constant
+would break an Agreed item to satisfy one already satisfied.
+
+**Nine checks in check-bankwide-rac.js were rewritten rather than removed**, and
+all nine fail against the previous file. The four that encoded the old
+behaviour now assert the new: RAC's card wording on the top tile, the headcount
+as its value, item 23 under its own name, items 27 to 29 present as Not
+captured, the unit size as both comparison denominators, and the obsolete
+"headcount not captured yet" note gone. 115 of 115 pass.
+
+**Still RAC's to answer:** whether Active Directory can give the staff,
+contractor and consultant split (27, 28, 29); the authoritative unit list (24);
+which inactivity threshold (26, which points at item 19's "available
+site-activity window"); and whether a typed list counts as "sourced
+authoritatively" for 61 and 62.
+
 ### 28 September 2026: the unit size denominator goes on, items 2 and 23
 
 RAC's answer to item 2 is a **reference value, not a measurement**, and that is

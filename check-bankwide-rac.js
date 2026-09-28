@@ -127,16 +127,41 @@ check('Tile 1 uses the wording RAC agreed: Department, Office, RM and RO',
   /Number of active EDRMS SharePoint sites for Department, Office, RM and RO/.test(tilesBlock));
 
 /* ---- Phase 3. The user definition RAC gave, items 2, 23 and 24 ---- */
-check('The indicative per-unit headcount is present in the users drill (items 2 and 23)',
-  /Total number of EDRMS users \(indicative, per unit\)/.test(bw));
+/* Was "indicative, per unit", a label this file invented. RAC's card name at
+   item 23 is "Total number of users, count", so the screen uses RAC's words. */
+check('The per-unit headcount is present in the users drill (items 2 and 23)',
+  /"Total number of users, count"/.test(bw));
 /* Until RAC supplied the list this asserted the cell printed Not captured,
    which was right while no source held it. RAC answered items 2 and 23 on
    21 September 2026 and the per-unit headcount is now carried on DATA, so the
    cell prints the supplied figure. What still has to hold is that it is never
    presented as measured: every value carries "approx.", and the measured
    count keeps its own separate tile. */
-check('The supplied headcount prints as approximate, never as a measured figure',
-  /indicative, per unit\)"[\s\S]{0,120}approx\./.test(bw));
+/* Checker 8, column RAC Comments, is the source. Items 2 and 23 carry the
+   same sentence, so the top card is the rounded unit size under RAC's own
+   card name, and the measured activity count is no longer the headline. The
+   derived decision workbook says to publish both; RAC's own words at 61 and
+   62 say "Replace active users with the available contextual workforce
+   count", so the source wins. */
+check('The top card carries RAC item 2 wording, not the activity measure',
+  /\{k:"users",lab:"Total number of EDRMS users"/.test(bw));
+check('The top card value is the rounded headcount, marked approximate',
+  /k:"users",lab:"Total number of EDRMS users",\s*val:\(\)=>"approx\. "\+F\(DATA\.UNIT_HEADCOUNT\)/
+    .test(bw.replace(/\s+/g,' ').replace(/, /g,',')) ||
+  /Total number of EDRMS users"[\s\S]{0,80}UNIT_HEADCOUNT/.test(bw));
+check('The measured activity figure is kept, not deleted (Dept Insights 12 and 13)',
+  /Users with recorded activity/.test(bw) && /TOTAL_USERS/.test(bw));
+check('The drill carries RAC item 23 under its own card name',
+  /"Total number of users, count"/.test(bw));
+check('Items 27, 28 and 29 are present and say Not captured',
+  /"Total number of users \(staff\)",NOSRC/.test(bw.replace(/\s+/g,' ')) &&
+  /"Total number of users \(contractors\)",NOSRC/.test(bw.replace(/\s+/g,' ')) &&
+  /"Total number of users \(consultants\)",NOSRC/.test(bw.replace(/\s+/g,' ')));
+check('The comparison denominator is the unit size, replacing active users (items 61, 62)',
+  /a:"head",b:"docs"/.test(bw.replace(/\s+/g,'')) &&
+  /a:"head",b:"rec"/.test(bw.replace(/\s+/g,'')));
+check('The comparison no longer offers an activity denominated option',
+  !/Users with recorded activity against/.test(bw));
 check('The supplied headcount has its own per-unit column in the users drill',
   /"Unit size \(approx\.\)"/.test(bw));
 check('Every unit size in the drill is prefixed approx.',
@@ -144,8 +169,13 @@ check('Every unit size in the drill is prefixed approx.',
 check('The supplied headcount is guarded against a stale or mismatched list',
   /Every unit needs a supplied headcount/.test(src) &&
   /Bank wide headcount cannot be smaller than the users with recorded activity/.test(src));
-check('The measured user tile still names its window rather than claiming the population',
-  /EDRMS users with recorded activity, last "\+DATA\.ACTIVITY_WINDOW\+" days/.test(bw));
+/* The top card no longer carries this: item 2 names it "Total number of EDRMS
+   users" and defines it as the unit size. The measured figure keeps its window
+   in its own label wherever it still appears, which is the drill and
+   Department Insights items 12 and 13. */
+check('Wherever the measured figure appears it names its window, never the population',
+  !/EDRMS users with recorded activity/.test(bw) ||
+  /Users with recorded activity/.test(bw));
 check('Units with no EDRMS site are stated as listed, not omitted (item 24)',
   /Units with no EDRMS site are listed with zeros rather than omitted/.test(bw));
 
@@ -212,10 +242,15 @@ check('The comparison offers exactly the two ratios RAC kept',
   (bwCode.match(/<option value="/g) || []).length === 2);
 check('Neither ratio says "Active users" without saying which users (items 61 and 62)',
   !/"Active users"/.test(bwCode));
-check('Both ratios name their denominator as the measured window',
-  (bwCode.match(/Users with recorded activity/g) || []).length >= 3);
-check('The panel says the rounded headcount RAC asked for is not captured yet',
-  /rounded headcount RAC asked for is not captured yet/.test(bw));
+/* Reversed by RAC's own words. Item 61: "Replace active users with the
+   available contextual workforce count by Department / Office / RM / RO, if
+   sourced authoritatively, and compare it with document totals." Item 62 says
+   the same against declared records. So both ratios are denominated by the
+   unit size, and the note saying the headcount is not captured is obsolete. */
+check('Both ratios name the unit size as their denominator (items 61, 62)',
+  (bwCode.match(/Size of unit/g) || []).length >= 2);
+check('The obsolete "headcount not captured yet" note is gone',
+  !/rounded headcount RAC asked for is not captured yet/.test(bw));
 
 /* ---- Phase 8. Trend and physical counterparts, items 65, 44, 45, 46 ---- */
 check('The monthly average tile is gone (item 65: "this is a report, not average")',
