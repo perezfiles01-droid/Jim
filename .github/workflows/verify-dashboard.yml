@@ -24,7 +24,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          # Playwright requires Node 20 or higher. Pinned at 18 this job failed
+          # at "npx playwright install", before index.html was ever loaded, so
+          # runs 133 to 136 were red for a week without checking anything.
+          node-version: '20'
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
