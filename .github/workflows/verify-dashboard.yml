@@ -7,10 +7,14 @@ on:
     paths:
       - 'index.html'
       - '.github/workflows/verify-dashboard.yml'
+      # The checker itself. Without this, a change to check-dashboard.js never
+      # re-runs the check it defines, so a broken or weakened gate lands green.
+      - 'check-dashboard.js'
   pull_request:
     branches: ['main']
     paths:
       - 'index.html'
+      - 'check-dashboard.js'
 
 jobs:
   verify:
