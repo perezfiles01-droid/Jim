@@ -20,10 +20,22 @@
  */
 
 const { chromium } = require('playwright');
+const fs = require('fs');
+
+/* Use a Chromium the image already ships, or fall back to the one Playwright
+   downloads. The fallback was described here from the start but never written:
+   the hardcoded path is this dev container's, so on a GitHub runner, where
+   Playwright installs under ~/.cache/ms-playwright, launch failed with
+   "executable doesn't exist" before a single check ran. Passing undefined lets
+   Playwright resolve its own browser, which is what CI needs. */
+const BROWSERS = [
+  '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  '/opt/pw-browsers/chromium/chrome-linux/chrome',
+  '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell',
+];
 
 (async () => {
-  // Use pre-installed Chromium in the environment, or fall back to downloaded
-  const executablePath = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+  const executablePath = BROWSERS.find(p => fs.existsSync(p)) || undefined;
   const browser = await chromium.launch({ executablePath });
   const page = await browser.newPage();
   const errors = [];
