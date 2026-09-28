@@ -129,9 +129,21 @@ check('Tile 1 uses the wording RAC agreed: Department, Office, RM and RO',
 /* ---- Phase 3. The user definition RAC gave, items 2, 23 and 24 ---- */
 check('The indicative per-unit headcount is present in the users drill (items 2 and 23)',
   /Total number of EDRMS users \(indicative, per unit\)/.test(bw));
-check('The indicative headcount prints Not captured, never a plausible number',
-  /Total number of EDRMS users \(indicative, per unit\)",NOSRC\]/.test(bw.replace(/\s+/g, ' ')) ||
-  /indicative, per unit\)"\s*,\s*NOSRC/.test(bw));
+/* Until RAC supplied the list this asserted the cell printed Not captured,
+   which was right while no source held it. RAC answered items 2 and 23 on
+   21 September 2026 and the per-unit headcount is now carried on DATA, so the
+   cell prints the supplied figure. What still has to hold is that it is never
+   presented as measured: every value carries "approx.", and the measured
+   count keeps its own separate tile. */
+check('The supplied headcount prints as approximate, never as a measured figure',
+  /indicative, per unit\)"[\s\S]{0,120}approx\./.test(bw));
+check('The supplied headcount has its own per-unit column in the users drill',
+  /"Unit size \(approx\.\)"/.test(bw));
+check('Every unit size in the drill is prefixed approx.',
+  /"approx\. "\+F\(d\.head\)/.test(bw));
+check('The supplied headcount is guarded against a stale or mismatched list',
+  /Every unit needs a supplied headcount/.test(src) &&
+  /Bank wide headcount cannot be smaller than the users with recorded activity/.test(src));
 check('The measured user tile still names its window rather than claiming the population',
   /EDRMS users with recorded activity, last "\+DATA\.ACTIVITY_WINDOW\+" days/.test(bw));
 check('Units with no EDRMS site are stated as listed, not omitted (item 24)',

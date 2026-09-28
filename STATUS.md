@@ -868,11 +868,56 @@ four plus one navigation tile. What came off and why:
 
 **Two answers worth keeping.** Item 2, what counts as an EDRMS user: RAC chose
 neither candidate definition. They want a **rounded headcount per unit for
-context**, not exact, not regularly refreshed. Nobody has supplied it and no
-source holds it, so it reads Not captured beside the measured figure. And
+context**, not exact, not regularly refreshed. It is now carried on `DATA`
+per unit as `head` and rendered, see the entry below. And
 division is dead everywhere: the Cloud Governance export carries a `Division`
 column **empty on all 1,032 rows**, so it is not a missing source, it is no
 source. Every grouping is Department / Office / RM / RO.
+
+### 28 September 2026: the unit size denominator goes on, items 2 and 23
+
+RAC's answer to item 2 is a **reference value, not a measurement**, and that is
+the whole reason it was stuck. A rounded headcount per unit, "not exact and
+therefore not regularly updated", is something a person types once. No query
+produces it, and the two exports that look like they might do not: Cloud
+Governance carries accounts rather than workforce, and the activity report is
+one row per LICENSED user with no site dimension, so it cannot be narrowed to
+EDRMS.
+
+So it is supplied, and it now lives on `DATA` beside every other base figure,
+carried per unit on `BASE` as `head`. It renders in two places, both on
+Bank-wide: as its own column, **Unit size (approx.)**, in the users drill, and
+summed on the drill tile that previously read Not captured.
+
+**The values in place are PLACEHOLDERS.** They are plausible and they satisfy
+the asserts, nothing more. Replacing them with RAC's real list is one edit per
+row on `BASE` and touches no logic.
+
+**Why it was worth doing.** Users with recorded activity alone says nothing. A
+reader cannot tell whether 9,420 is most of the Bank or a fraction of it. Next
+to the size of the unit it becomes adoption, which is the comparison the panel
+exists to support. The two figures stay separate and separately labelled,
+because one is measured weekly and the other is typed once, and a reader has to
+be able to tell which is which. Every supplied value is prefixed `approx.` for
+the same reason: a bare number would read as measured.
+
+**Two guards, in `DATA`.** Every unit must carry a headcount, and the bank wide
+headcount can never fall below the measured user count. Either breach means the
+list has gone stale or a unit has been renamed, and both would otherwise render
+silently as an adoption rate above 100 percent rather than as an error.
+
+**One check changed rather than removed.** `check-bankwide-rac.js` asserted the
+cell printed Not captured, which was correct while no source held it. It now
+asserts the opposite half of the same rule: the figure prints, and it prints as
+approximate, never as measured. The per-unit column and both `DATA` guards are
+asserted too.
+
+**A latent bug surfaced while doing it.** `drawUsersDrill()` keeps its own row
+builder for sorting, separate from `DRILL.users.rows`, and its positional
+`SORT_KEYS` list must stay the same length as `cols`. Adding a column to one
+and not the other produced ragged rows and a header whose `data-s` read
+`undefined`, which is the same class of fault the comment there already warned
+about for the opposite case. `check-dashboard.js` caught it. Both are updated.
 
 ### Department Insights rebuilt, 21 September 2026
 

@@ -1012,26 +1012,27 @@ const DATA=(function(){
 
   /* ===== departments ===== */
   const DEPTS=[
-   {code:"ITD", name:"Information Technology",       rec:2611,phys:470,docs:640000},
-   {code:"SARD",name:"South Asia Regional",          rec:2240,phys:360,docs:520000},
-   {code:"OSFG",name:"Sovereign Operations",         rec:2168,phys:300,docs:410000},
-   {code:"FIN", name:"Finance",                      rec:2150,phys:520,docs:300000},
-   {code:"PARD",name:"Procurement and Admin",        rec:1892,phys:410,docs:290000},
-   {code:"HRD", name:"Human Resources",              rec:1462,phys:240,docs:205000},
-   {code:"SERD",name:"Southeast Asia",               rec:1320,phys:180,docs:150000},
-   {code:"EARD",name:"East Asia Regional",           rec:1180,phys:150,docs:120000},
-   {code:"CWRD",name:"Central and West Asia",        rec:1150,phys:210,docs:180000},
-   {code:"OGC", name:"General Counsel",              rec:1074,phys:210,docs:100000},
-   {code:"PSOD",name:"Private Sector Operations",    rec:980, phys:260,docs:140000},
-   {code:"BRM", name:"Budget and Mgmt Services",     rec:809, phys:90, docs:70000},
-   {code:"SPD", name:"Strategy and Policy",          rec:760, phys:120,docs:95000},
-   {code:"SDCC",name:"Sustainable Dev and Climate",  rec:690, phys:110,docs:88000},
-   {code:"OAS", name:"Administrative Services",      rec:620, phys:130,docs:105000},
-   {code:"ERCD",name:"Economic Research",            rec:540, phys:70, docs:60000},
+   {code:"ITD", name:"Information Technology",       rec:2611,phys:470,docs:640000,head:1400},
+   {code:"SARD",name:"South Asia Regional",          rec:2240,phys:360,docs:520000,head:1200},
+   {code:"OSFG",name:"Sovereign Operations",         rec:2168,phys:300,docs:410000,head:1200},
+   {code:"FIN", name:"Finance",                      rec:2150,phys:520,docs:300000,head:1100},
+   {code:"PARD",name:"Procurement and Admin",        rec:1892,phys:410,docs:290000,head:1000},
+   {code:"HRD", name:"Human Resources",              rec:1462,phys:240,docs:205000,head:800},
+   {code:"SERD",name:"Southeast Asia",               rec:1320,phys:180,docs:150000,head:700},
+   {code:"EARD",name:"East Asia Regional",           rec:1180,phys:150,docs:120000,head:650},
+   {code:"CWRD",name:"Central and West Asia",        rec:1150,phys:210,docs:180000,head:650},
+   {code:"OGC", name:"General Counsel",              rec:1074,phys:210,docs:100000,head:600},
+   {code:"PSOD",name:"Private Sector Operations",    rec:980, phys:260,docs:140000,head:550},
+   {code:"BRM", name:"Budget and Mgmt Services",     rec:809, phys:90, docs:70000,head:450},
+   {code:"SPD", name:"Strategy and Policy",          rec:760, phys:120,docs:95000,head:400},
+   {code:"SDCC",name:"Sustainable Dev and Climate",  rec:690, phys:110,docs:88000,head:400},
+   {code:"OAS", name:"Administrative Services",      rec:620, phys:130,docs:105000,head:350},
+   {code:"ERCD",name:"Economic Research",            rec:540, phys:70, docs:60000,head:300},
   ];
   const DECLARED=DEPTS.reduce((a,d)=>a+d.rec,0);
   const DOCUMENTS=DEPTS.reduce((a,d)=>a+d.docs,0);
   const WITH_PHYSICAL=DEPTS.reduce((a,d)=>a+d.phys,0);
+  const UNIT_HEADCOUNT=DEPTS.reduce((a,d)=>a+d.head,0);
 
   /* ===== declaration over time =====
      A rolling twelve months ending at the latest closed month, not a calendar
@@ -1168,6 +1169,27 @@ const DATA=(function(){
      rows in the SharePoint activity user detail export whose Last Activity
      Date is blank or older than the window. */
   const USERS_IDLE180=2827;
+
+  /* ===== unit size, the denominator =====
+     RAC items 2 and 23, answered 21 September 2026. They did not pick either
+     candidate definition of an EDRMS user. What they asked for is a ROUNDED
+     headcount per unit, to give the size of the department for context: "the
+     number does not need to be exact and therefore should not need to be
+     regularly updated. E.g. CSD approx. 400, SPSO approx 10."
+
+     So this is a maintained reference value, not a measurement, and it is the
+     one figure on this page that no query produces. It is carried per unit on
+     BASE above as `head`, because every unit needs its own, and summed here
+     rather than typed twice.
+
+     The numbers currently in BASE are PLACEHOLDERS, pending the real list.
+     They are shaped to be plausible and to satisfy the nesting assert below,
+     nothing more. Replacing them is one edit per row and touches no logic.
+
+     It exists to be a denominator. Users with recorded activity alone says
+     nothing; beside the size of the unit it becomes adoption, which is the
+     comparison RAC asked the panel to support. */
+  const UNIT_HEADCOUNT_ASOF="September 2026";
 
   /* Visitors and page views. A visitor is a person, from site analytics
      actorCount. A page view is an event, from Page View Count in the usage
@@ -1315,6 +1337,14 @@ const DATA=(function(){
     "Users declaring records must be a subset of users creating documents, and both of all users");
   console.assert(USERS_IDLE180<=MONTHLY_ACTIVE_USERS,
     "Users with no access inside the window cannot exceed all users");
+  /* The supplied headcount is the denominator, so a unit can never hold more
+     active users than people. A breach means the list is stale or the unit
+     codes no longer match, and both are silent faults that would otherwise
+     render as an adoption rate above 100 percent. */
+  console.assert(DEPTS.every(d=>typeof d.head==="number"&&d.head>0),
+    "Every unit needs a supplied headcount, or its context figure cannot render");
+  console.assert(UNIT_HEADCOUNT>=MONTHLY_ACTIVE_USERS,
+    "Bank wide headcount cannot be smaller than the users with recorded activity");
   console.assert(PAGE_VIEWS>=VISITORS,
     "There cannot be fewer page views than visitors: one visit is at least one view");
   console.assert(SITES_USED_7<=SITES_CREATED,
@@ -1393,6 +1423,7 @@ const DATA=(function(){
     SITES_MULTI_DEPARTMENT,SITES_WITH_DEPARTMENT,
     LIB_IDLE,LIB_DORMANT,SITE_LIBRARIES,LIBS_WITH_RECORDS,LIBS_NO_RECORDS,LIBS_ACTIVE,
     USERS_DECLARING,USERS_CREATING,USERS_IDLE180,ACTIVITY_WINDOW,
+    UNIT_HEADCOUNT,UNIT_HEADCOUNT_ASOF,
     VISITORS,PAGE_VIEWS,STORAGE_GB,RECORD_GB,DUE_WITH_PHYS,PERM_PHYSICAL,
     FORMATS,TOTAL_FILES,TOTAL_GB,
     YEARS,DECLARED_THIS_MONTH,MONTH_AVERAGE,
@@ -1482,6 +1513,10 @@ DASHBOARDS.bw=(function(){
   const DEPTS=BASE.map((d,i)=>({
     code:d.code, name:d.name,
     sites:siteSplit[i], users:userSplit[i],
+    /* The supplied unit size, carried straight through. It is a reference
+       value, so unlike every other figure on this row it is not split or
+       derived from a bank wide total. */
+    head:d.head,
     docs:d.docs, rec:d.rec, phys:d.phys, due:dueSplit[i],
     due30:due30Split[i], due90:due90Split[i],
     /* Users declaring records is a subset of active users. Documents are
@@ -1775,10 +1810,14 @@ DASHBOARDS.bw=(function(){
        RAC answered this on 21 September 2026, items 2 and 23: what they want
        is a ROUNDED headcount per unit for context, not exact and not
        regularly refreshed. That is a maintained reference value, not a
-       measurement, and nobody has supplied it yet, so it appears in the users
-       drill reading "Not captured" rather than as a plausible number here.
-       This tile keeps the figure that can actually be produced, and says
-       which one it is. */
+       measurement, and it now sits on DATA as the supplied unit size, per
+       unit, carried into the users drill as its own column and summed on the
+       drill tile.
+
+       This tile still keeps the figure that can actually be produced, and
+       still says which one it is. The two are deliberately not merged: one is
+       measured weekly, the other is typed once, and a reader has to be able
+       to tell which is which. */
     {k:"users",lab:"EDRMS users with recorded activity, last "+DATA.ACTIVITY_WINDOW+" days",
      val:()=>F(TOTAL_USERS)},
     /* Items 3 and 4, both Agreed. Documents counts every document in an
@@ -1940,8 +1979,9 @@ DASHBOARDS.bw=(function(){
          the open 90 versus 300 day question, the deck saying one and the
          metrics document the other. */
       cols:["Department / Office / RM / RO","Users with activity",
-            "No access in "+DATA.ACTIVITY_WINDOW+" days"],
-      rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180)]),
+            "No access in "+DATA.ACTIVITY_WINDOW+" days","Unit size (approx.)"],
+      rows:()=>DEPTS.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180),
+                             "approx. "+F(d.head)]),
       /* RAC items 2 and 23, answered 21 September 2026. They did not pick
          either candidate definition of an EDRMS user. What they asked for is
          a ROUNDED headcount per unit, to give the size of the department for
@@ -1949,15 +1989,25 @@ DASHBOARDS.bw=(function(){
          not need to be regularly updated. E.g. CSD approx. 400, SPSO approx
          10." That is a maintained reference value, not a measurement.
 
-         Nobody has supplied that list, and no source holds it: the Cloud
-         Governance users and guest exports carry accounts, not workforce, and
-         the activity report is one row per LICENSED user. So it reads Not
-         captured, per the rule that an unsourceable cell never prints a
-         plausible number. It sits beside the measured figure rather than
-         replacing it, because they are two different measures and the
-         comparison panel needs to say which denominator it used. */
+         No source holds it and none will: the Cloud Governance users and
+         guest exports carry accounts, not workforce, and the activity report
+         is one row per LICENSED user. It is supplied, so it is carried on
+         DATA per unit rather than queried, and every value is prefixed
+         "approx." because RAC asked for a rounded figure and a bare number
+         would read as measured.
+
+         The values in place are PLACEHOLDERS pending the real list. The
+         assert in the data block refuses a unit with no headcount, and
+         refuses a bank wide headcount below the measured user count, so a
+         stale list or a renamed unit fails loudly instead of rendering an
+         adoption rate above 100 percent.
+
+         It sits beside the measured figure rather than replacing it, because
+         they are two different measures and the comparison panel needs to say
+         which denominator it used. */
       tiles:()=>[["Users with recorded activity",F(TOTAL_USERS)],
-                 ["Total number of EDRMS users (indicative, per unit)",NOSRC],
+                 ["Total number of EDRMS users (indicative, per unit)",
+                  "approx. "+F(DATA.UNIT_HEADCOUNT)],
                  ["No access in "+DATA.ACTIVITY_WINDOW+" days",F(DATA.USERS_IDLE180)],
                  ["Departments, Offices, RMs and ROs in the list",F(DEPTS.length)]]
     },
@@ -2025,19 +2075,24 @@ DASHBOARDS.bw=(function(){
     const tiles=d.tiles();
 
     /* Sort DEPTS based on current sort state, then format rows */
-    /* Three columns, not four: "Never accessed" came off with RAC item 25 on
-       21 September 2026, so the sort keys and the row builder lose it too. A
-       sort key list that outlives its column silently sorts on undefined. */
-    const SORT_KEYS=["code","users","idle180"];
+    /* SORT_KEYS is positional: the header cell at index i takes SORT_KEYS[i]
+       as its sort key, so this list and DRILL.users.cols must stay the same
+       length. A key that outlives its column sorts on undefined; a column
+       with no key renders data-s="undefined" and does the same on click.
+       "Never accessed" came off with RAC item 25 on 21 September 2026 and
+       the unit size went on with items 2 and 23, so it is four again. */
+    const SORT_KEYS=["code","users","idle180","head"];
     const sortedDepts=DEPTS.slice().sort((a,b)=>{
       let cmp=0;
       if(sortUsers==="code") cmp=a.code.localeCompare(b.code);
       else if(sortUsers==="users") cmp=a.users-b.users;
       else if(sortUsers==="idle180") cmp=a.idle180-b.idle180;
+      else if(sortUsers==="head") cmp=a.head-b.head;
       return dirUsers==="asc"?cmp:-cmp;
     });
 
-    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180)]);
+    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.users), F(d.idle180),
+                                   "approx. "+F(d.head)]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwUsersPage>pages)bwUsersPage=pages;
     const page=rows.slice((bwUsersPage-1)*10,bwUsersPage*10);
