@@ -178,7 +178,7 @@ const BROWSERS = [
       tiles: out,
       physRows: phys ? phys.querySelectorAll('.drow').length : 0,
       drillSurvivedPhysSort: (document.querySelector('#bw-drill .ptitle') || {}).textContent === drillBefore,
-      trendMonths: document.querySelectorAll('#bw-trend-months .ccol').length,
+      trendMonths: document.querySelectorAll('#bw-trend svg rect').length,
       cmpOptions: document.querySelectorAll('#bw-cmp-sel option').length,
     };
   });
@@ -197,7 +197,7 @@ const BROWSERS = [
   };
   say('Physical counterparts panel renders its own rows', bwClicks.physRows > 0, bwClicks.physRows + ' rows');
   say('Sorting the physical panel does not overwrite the drill', bwClicks.drillSurvivedPhysSort);
-  say('Records declared per month is drawn', bwClicks.trendMonths > 0, bwClicks.trendMonths + ' columns');
+  say('Records declared per month is drawn', bwClicks.trendMonths > 0, bwClicks.trendMonths + ' bars');
   say('The comparison offers the two ratios RAC kept', bwClicks.cmpOptions === 2,
       bwClicks.cmpOptions + ' options');
 
