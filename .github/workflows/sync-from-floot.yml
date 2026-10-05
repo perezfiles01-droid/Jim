@@ -29,6 +29,18 @@ jobs:
       - name: Take the report from the live Floot app
         run: node sync-from-floot.js index.html
 
+      - name: Keep the synced copy on the floot-sync branch for review
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          cp index.html /tmp/synced.html
+          git switch -C floot-sync
+          git add index.html
+          git commit -m "Synced copy of the Floot app (not yet verified)" || true
+          git push -f origin floot-sync
+          git switch main
+          cp /tmp/synced.html index.html
+
       - name: Run dashboard verification
         run: node check-dashboard.js $(pwd)/index.html
 
@@ -38,8 +50,6 @@ jobs:
             echo "index.html already matches the Floot app. Nothing to publish."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git commit -m "Sync index.html with the Floot app"
           git push origin main
