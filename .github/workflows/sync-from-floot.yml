@@ -1,0 +1,45 @@
+name: Sync from Floot
+
+# Makes the GitHub Pages site match the Floot app exactly.
+# Run it from the Actions tab (Sync from Floot > Run workflow) whenever the
+# Floot app has been updated. It publishes only if check-dashboard.js passes.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Take the report from the live Floot app
+        run: node sync-from-floot.js index.html
+
+      - name: Run dashboard verification
+        run: node check-dashboard.js $(pwd)/index.html
+
+      - name: Publish to main
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html already matches the Floot app. Nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Sync index.html with the Floot app"
+          git push origin main
