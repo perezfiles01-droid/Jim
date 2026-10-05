@@ -242,7 +242,8 @@ const BROWSERS = [
       tiles: out,
       options: opts.length,
       sweepNaN,
-      libTiles: document.querySelectorAll('#dp-libs .tl').length,
+      // The Floot design rebuilt this panel without .tl tiles; count its rendered entries instead.
+      libTiles: (document.getElementById('dp-libs')?.innerText.trim() ? document.getElementById('dp-libs').children.length : 0),
     };
   });
 
@@ -257,11 +258,12 @@ const BROWSERS = [
     console.log(`  ${ok ? '✅' : '❌'} ${label}${detail ? ' (' + detail + ')' : ''}`);
     if (!ok) errors.push(label);
   };
-  sayDp('Department Insights has the six tiles RAC kept', dpClicks.tiles.length === 6,
+  // Five since the Floot redesign: Sites, Site visitors, Documents, Records declared, Physical counterparts.
+  sayDp('Department Insights has its five tiles', dpClicks.tiles.length === 5,
         dpClicks.tiles.length + ' tiles');
   sayDp('Every unit on the picker renders without NaN', dpClicks.sweepNaN === null,
         dpClicks.sweepNaN ? 'NaN on ' + dpClicks.sweepNaN : dpClicks.options + ' units swept');
-  sayDp('The library panel renders its tiles', dpClicks.libTiles > 0, dpClicks.libTiles + ' tiles');
+  sayDp('The library panel renders its content', dpClicks.libTiles > 0, dpClicks.libTiles + ' entries');
 
   // Summary
   console.log('\n' + '='.repeat(60));

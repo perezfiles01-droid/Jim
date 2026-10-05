@@ -34,22 +34,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           cp index.html /tmp/synced.html
+          rm -rf /tmp/synced-assets; if [ -d floot-assets ]; then cp -r floot-assets /tmp/synced-assets; fi
           git switch -C floot-sync
-          git add index.html
+          git add index.html; if [ -d floot-assets ]; then git add floot-assets; fi
           git commit -m "Synced copy of the Floot app (not yet verified)" || true
           git push -f origin floot-sync
           git switch main
           cp /tmp/synced.html index.html
+          if [ -d /tmp/synced-assets ]; then rm -rf floot-assets; cp -r /tmp/synced-assets floot-assets; fi
 
       - name: Run dashboard verification
         run: node check-dashboard.js $(pwd)/index.html
 
       - name: Publish to main
         run: |
-          if git diff --quiet -- index.html; then
+          if [ -d floot-assets ]; then git add -N floot-assets; fi; if git diff --quiet -- index.html floot-assets; then
             echo "index.html already matches the Floot app. Nothing to publish."
             exit 0
           fi
-          git add index.html
+          git add index.html; if [ -d floot-assets ]; then git add floot-assets; fi
           git commit -m "Sync index.html with the Floot app"
           git push origin main
