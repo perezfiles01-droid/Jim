@@ -11,7 +11,7 @@
    extractor, rebuild, run the plugin again.
    ========================================================================== */
 
-const PAGE_DESIGN = 'EDRMS Report, dashboards';
+const PAGE_DESIGN = 'EDRMS Report, Release 1';
 const PAGE_SYSTEM = 'EDRMS Report, design system';
 const GAP = 160;                 /* space between dashboard frames */
 const PAD = 0;
@@ -127,6 +127,24 @@ function nameFor(n) {
 }
 
 function drawNode(n, parent, ox, oy) {
+  if (n.kind === 'img') {
+    /* The ADB logo and any other picture: a rectangle with an image fill, the
+       way Figma itself holds images. No bytes means a file the page could not
+       load, so a labelled placeholder stands in rather than a silent gap. */
+    const r = figma.createRectangle();
+    r.name = n.alt || 'image';
+    r.x = n.x - ox; r.y = n.y - oy;
+    r.resize(Math.max(1, n.w), Math.max(1, n.h));
+    if (n.b64) {
+      const img = figma.createImage(figma.base64Decode(n.b64));
+      r.fills = [{ type: 'IMAGE', imageHash: img.hash, scaleMode: 'FIT' }];
+    } else {
+      r.fills = solid({ r: 0.9, g: 0.92, b: 0.95, a: 1 });
+    }
+    parent.appendChild(r);
+    COUNT.images = (COUNT.images || 0) + 1;
+    return r;
+  }
   if (n.kind === 'svg') {
     let node;
     try { node = figma.createNodeFromSvg(n.svg); }
@@ -342,29 +360,68 @@ async function run() {
 
   await figma.setCurrentPageAsync(dp);
 
-  let x = 0;
-  DESIGN.screens.forEach((s, i) => {
-    const total = DESIGN.nav.w + s.w;
+  /* Same order as EDRMS_Utilization_Report_Release1_Prototype_2026-10-05.pdf:
+     a title, then for each dashboard a divider followed by one frame per card
+     with that card's breakdown open. Frames run left to right. */
+  let x = 0, n = 0;
+  const C = DESIGN.tokens.colors;
+  const sheet = (name, lines) => {
+    const f = figma.createFrame();
+    f.name = (++n) + '. ' + name;
+    f.x = x; f.y = 0;
+    f.resize(DESIGN.width, 1080);
+    f.fills = solid(hexAlpha(C.nav));
+    dp.appendChild(f);
+    let y = 380;
+    lines.forEach(([text, size, serif, color]) => {
+      const t = figma.createText();
+      t.fontName = faceFor(serif, serif ? 400 : 600);
+      t.characters = text;
+      t.fontSize = size;
+      t.fills = solid(hexAlpha(color));
+      t.x = 140; t.y = y;
+      t.resize(DESIGN.width - 280, size * 1.4);
+      f.appendChild(t);
+      COUNT.texts += 1;
+      y += size * 1.4 + 18;
+    });
+    x += DESIGN.width + GAP;
+  };
+  sheet('Title', [
+    ['ASIAN DEVELOPMENT BANK', 18, false, '#7FA8CC'],
+    ['EDRMS Utilization Report', 72, true, '#FFFFFF'],
+    ['Release 1 prototype: Bank-wide Oversight and Department Insights', 30, false, '#C7D3E0'],
+    ['Drawn from the live render of the Floot app, ' + DESIGN.generated, 20, false, '#7FA8CC'],
+  ]);
+
+  let lastKey = null;
+  DESIGN.screens.forEach(s => {
+    if (s.key !== lastKey) {
+      const count = DESIGN.screens.filter(o => o.key === s.key).length;
+      sheet(s.title, [
+        [s.title, 64, true, '#FFFFFF'],
+        [count + ' cards, each shown with its breakdown open', 26, false, '#C7D3E0'],
+      ]);
+      lastKey = s.key;
+    }
     const frame = figma.createFrame();
-    frame.name = (i + 1) + '. ' + s.title;
+    frame.name = (++n) + '. ' + s.title + ', ' + s.card;
     frame.x = x; frame.y = 0;
-    frame.resize(total, s.h + PAD);
-    frame.fills = solid(hexAlpha(DESIGN.tokens.colors.bg));
+    frame.resize(s.w, s.h + PAD);
+    frame.fills = solid(hexAlpha(C.bg));
     frame.clipsContent = true;
     dp.appendChild(frame);
 
-    drawNav(frame, s.h + PAD, s.key);
+    /* The menu is sticky in the browser, so it only renders one window tall.
+       In a full length frame it runs the whole height. */
+    const rail = figma.createRectangle();
+    rail.name = 'nav background';
+    rail.x = 0; rail.y = 0; rail.resize(s.sideW, s.h + PAD);
+    rail.fills = solid(hexAlpha(C.nav));
+    frame.appendChild(rail);
 
-    const body = figma.createFrame();
-    body.name = 'view';
-    body.x = DESIGN.nav.w; body.y = 0;
-    body.resize(s.w, s.h + PAD);
-    body.fills = solid(hexAlpha(DESIGN.tokens.colors.bg));
-    body.clipsContent = false;
-    frame.appendChild(body);
-    (s.tree.children || []).forEach(c => drawNode(c, body, 0, 0));
-
-    x += total + GAP;
+    (s.tree.children || []).forEach(c => drawNode(c, frame, 0, 0));
+    x += s.w + GAP;
   });
 
   await figma.setCurrentPageAsync(sp);
@@ -375,9 +432,9 @@ async function run() {
   const note = figma.createText();
   note.fontName = faceFor(false, 400);
   note.characters =
-    'ADB EDRMS Utilization Report, generated from the prototype on ' + DESIGN.generated + '.\n' +
-    'Source: index.html at perezfiles01-droid.github.io/Jim. Do not hand edit as a source of ' +
-    'truth: re-run the plugin after the prototype changes.\n\n' +
+    'ADB EDRMS Utilization Report, Release 1, generated from the Floot app design on ' + DESIGN.generated + '.\n' +
+    'Source: index.html at perezfiles01-droid.github.io/Jim, synced from edrms-reporting-suite.floot.app. ' +
+    'Do not hand edit as a source of truth: re-run the plugin after the design changes.\n\n' +
     'Colour styles: ADB/…   Text styles: ADB/Sans and ADB/Serif   Components: ' +
     (made.length ? made.join(', ') : 'none found') + '\n' +
     'Charts are real vectors, imported from the prototype\'s own SVG.';
@@ -387,10 +444,10 @@ async function run() {
   sp.appendChild(note);
 
   await figma.setCurrentPageAsync(dp);
-  figma.notify('EDRMS report drawn: ' + DESIGN.screens.length + ' dashboards, ' +
+  figma.notify('EDRMS report drawn: ' + DESIGN.screens.length + ' card views, ' +
     COUNT.frames + ' frames, ' + COUNT.texts + ' text, ' + COUNT.svgs + ' charts');
   figma.closePlugin(
-    'Done. ' + DESIGN.screens.length + ' dashboards on "' + PAGE_DESIGN + '", ' +
+    'Done. ' + n + ' frames on "' + PAGE_DESIGN + '", ' +
     Object.keys(PAINT).length + ' colour styles, ' + styles.length + ' text styles, ' +
     made.length + ' components on "' + PAGE_SYSTEM + '".' +
     (COUNT.skipped ? ' ' + COUNT.skipped + ' chart(s) could not be parsed.' : ''));

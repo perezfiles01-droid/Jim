@@ -30,17 +30,21 @@ You get two pages:
 
 | Page | What is on it |
 | --- | --- |
-| **EDRMS Report, dashboards** | The six dashboards, left to right in the client's own nav order, each with the navigation rail and the correct row highlighted |
-| **EDRMS Report, design system** | 15 colour styles, 17 text styles, 6 components, and a note saying where it all came from |
+| **EDRMS Report, Release 1** | 12 frames, left to right, in the same order as `EDRMS_Utilization_Report_Release1_Prototype_2026-10-05.pdf`: a title, a Bank-wide Oversight divider, Bank-wide Oversight with each of its 4 cards open, a Department Insights divider, then Department Insights with each of its 5 cards open. Each frame is the full 1920px page: menu, header with the ADB logo, and dashboard |
+| **EDRMS Report, design system** | 15 colour styles, the text styles, 6 components, and a note saying where it all came from |
 
 Running it a second time **replaces** those two pages rather than drawing a
 second copy beside the first.
 
+The design is read from `index.html`, which is synced from the Floot app
+(edrms-reporting-suite.floot.app) by the **Sync from Floot** workflow, at the
+Floot design width of 1920px.
+
 ## What is faithful, and what is not
 
 **Faithful.** Every box, fill, border, corner radius, shadow, text string, font
-size, weight, colour and position is read off the live render at 1440 wide, not
-transcribed by hand. The charts that are SVG in the prototype come through as
+size, weight, colour and position is read off the live render at 1920 wide, not
+transcribed by hand. The ADB logo comes through as a real image fill. The charts that are SVG in the prototype come through as
 **real Figma vectors**, not images, because the plugin hands their markup to
 `figma.createNodeFromSvg`.
 

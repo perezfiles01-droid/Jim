@@ -13,6 +13,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 let loaded = new Set();
 const counts = { frame:0, text:0, rect:0, comp:0, svg:0, paintStyle:0, textStyle:0, page:0 };
 const problems = [];
+const imageHashes = new Set();
 
 class Node {
   constructor(type) {
@@ -29,6 +30,12 @@ class Node {
     if (!(w > 0) || !(h > 0)) { problems.push(`resize(${w},${h}) on ${this.type} "${this.name}"`); throw new Error('bad resize'); }
     this.width = w; this.height = h;
   }
+  set fills(v) {
+    (v || []).forEach(f => { if (f.type === 'IMAGE' && !imageHashes.has(f.imageHash))
+      problems.push('IMAGE fill with a hash createImage never returned on "' + this.name + '"'); });
+    this._fills = v;
+  }
+  get fills() { return this._fills; }
   remove() { this.removed = true; if (this.parent) this.parent.children = this.parent.children.filter(k => k !== this); }
 }
 class TextNode extends Node {
@@ -70,6 +77,20 @@ const figma = {
     if (typeof svg !== 'string' || svg.indexOf('<svg') !== 0)
       { problems.push('createNodeFromSvg got something that is not svg markup'); throw new Error('bad svg'); }
     counts.svg++; return new Node('FRAME');
+  },
+  /* Real Figma rejects bytes that are not PNG, JPEG or GIF, and an IMAGE
+     paint must carry a hash that createImage handed out. */
+  base64Decode(b64) {
+    if (typeof b64 !== 'string' || !b64.length) { problems.push('base64Decode got no data'); return new Uint8Array(0); }
+    return new Uint8Array(Buffer.from(b64, 'base64'));
+  },
+  createImage(bytes) {
+    const png = bytes[0] === 0x89 && bytes[1] === 0x50, jpg = bytes[0] === 0xff && bytes[1] === 0xd8,
+          gif = bytes[0] === 0x47 && bytes[1] === 0x49;
+    if (!(bytes instanceof Uint8Array) || !(png || jpg || gif))
+      { problems.push('createImage got bytes that are not an image'); throw new Error('Image type is unsupported'); }
+    counts.image = (counts.image || 0) + 1;
+    const hash = 'h' + counts.image; imageHashes.add(hash); return { hash };
   },
   createPage() { counts.page++; const p = new PageNode(); figma.root.children.push(p); return p; },
   createPaintStyle() { counts.paintStyle++; const s = { paints: [] }; paintStyles.push(s); return s; },

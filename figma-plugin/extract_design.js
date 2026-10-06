@@ -16,18 +16,18 @@
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 
+/* Release 1 only, the same scope and order as
+   EDRMS_Utilization_Report_Release1_Prototype_2026-10-05.pdf: each dashboard
+   once per card, with that card's breakdown open. The four future-release
+   dashboards are left out, as they are in the PDF. */
 const KEYS = [
-  ['bw', 'Bank-wide Oversight'],
-  ['dp', 'Department Insights'],
-  ['pj', 'Project Insights'],
-  ['fp', 'Institutional File Plan'],
-  ['rd', 'Retention and Disposal'],
-  ['ra', 'Records and Archive Holdings'],
+  ['bw', 'Bank-wide Oversight', '#bw-kpis .kpi[data-k]'],
+  ['dp', 'Department Insights', '#dp-kpis .kpi[data-k]'],
 ];
-const WIDTH = 1440;
+const WIDTH = 1920; // the Floot design canvas; index.html scales from 1920, so any other width shrinks the geometry
 
 (async () => {
-  const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const b = await chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined });
   const p = await b.newPage({ viewport: { width: WIDTH, height: 1200 } });
   const errs = [];
   p.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
@@ -44,12 +44,26 @@ const WIDTH = 1440;
   });
 
   const screens = [];
-  for (const [key, title] of KEYS) {
-    await p.evaluate(k => switchTo(k), key);
-    await p.waitForTimeout(350);
+  for (const [key, title, cardSel] of KEYS) {
+   await p.evaluate(k => switchTo(k), key);
+   await p.waitForTimeout(350);
+   const cards = await p.evaluate(sel => [...document.querySelectorAll(sel)]
+     .filter(c => c.offsetParent !== null)
+     .map(c => ({ k: c.dataset.k, lab: (c.querySelector('.lab') || c).textContent.replace(/\s+/g, ' ').trim() })), cardSel);
+   for (const card of cards) {
+    await p.evaluate(([k, sel]) => {
+      const c = [...document.querySelectorAll(sel)].find(x => x.dataset.k === k);
+      c.click();
+      document.getElementById('main').scrollTop = 0; window.scrollTo(0, 0);
+    }, [card.k, cardSel]);
+    await p.waitForTimeout(500);
     const tree = await p.evaluate(() => {
-      const root = document.querySelector('#view > section');
+      /* The whole page, not #view: the Floot design puts a header (ADB logo and
+         report badge) above the dashboard and groups the menu, and both
+         belong in the frame exactly as rendered. */
+      const root = document.body;
       const base = root.getBoundingClientRect();
+      const main = document.getElementById('main');
       const px = v => Math.round(parseFloat(v) || 0);
       /* rgb() and rgba() out of getComputedStyle, into the {r,g,b,a} 0..1 that
          the Figma plugin API wants. Anything fully transparent returns null so
@@ -72,15 +86,47 @@ const WIDTH = 1440;
         const r = el.getBoundingClientRect();
         if (r.width < 0.5 || r.height < 0.5) return null;
 
+        if (el.tagName === 'IMG') {
+          return { kind: 'img', x: r.left - base.left, y: r.top - base.top,
+                   w: r.width, h: r.height, src: el.getAttribute('src') || '', alt: el.alt || '' };
+        }
         if (el.tagName === 'svg') {
           return { kind: 'svg', x: r.left - base.left, y: r.top - base.top,
-                   w: r.width, h: r.height, svg: el.outerHTML };
+                   w: r.width, h: r.height,
+                   /* Outside the page currentColor has nothing to inherit and
+                      Figma paints it black, so bake in the colour it resolved to. */
+                   svg: el.outerHTML.replace(/currentColor/g, s.color) };
         }
 
         const kids = [...el.children].map(c => walk(c, depth + 1)).filter(Boolean);
         /* Leaf text only. A node with element children never carries text of
            its own here, even when textContent says it does. */
-        const ownText = kids.length === 0 ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+        let ownText = kids.length === 0 ? el.textContent.replace(/\s+/g, ' ').trim() : '';
+        /* Form fields show their value or placeholder, which is not textContent. */
+        if (el.tagName === 'INPUT' && !['checkbox', 'radio', 'hidden'].includes(el.type))
+          ownText = (el.value || el.placeholder || (el.type === 'date' ? 'mm/dd/yyyy' : '')).trim();
+        /* Mixed content: an element with an icon child AND its own words (the
+           menu links, the header badge, the group headings). Leaf-only would
+           drop the words, so each direct text run becomes its own text node,
+           placed where the browser actually laid it out. */
+        if (kids.length) {
+          [...el.childNodes].forEach(tn => {
+            if (tn.nodeType !== 3 || !tn.textContent.trim()) return;
+            const rg = document.createRange(); rg.selectNodeContents(tn);
+            const tr = rg.getBoundingClientRect();
+            if (tr.width < 0.5 || tr.height < 0.5) return;
+            kids.push({ kind: 'text', tag: 'span', cls: 'text-run',
+              x: tr.left - base.left, y: tr.top - base.top, w: tr.width + 2, h: tr.height,
+              fill: null, radius: 0, children: [],
+              text: tn.textContent.replace(/\s+/g, ' ').trim(),
+              font: { size: parseFloat(s.fontSize), weight: parseInt(s.fontWeight, 10) || 400,
+                      color: col(s.color), align: 'left',
+                      serif: /Georgia|serif/i.test(s.fontFamily),
+                      upper: s.textTransform === 'uppercase',
+                      tracking: parseFloat(s.letterSpacing) || 0,
+                      lh: parseFloat(s.lineHeight) || 0 } });
+          });
+        }
 
         const node = {
           kind: ownText ? 'text' : 'box',
@@ -110,12 +156,31 @@ const WIDTH = 1440;
         return node;
       }
       const t = walk(root, 0);
-      return { w: base.width, h: root.scrollHeight || base.height, tree: t };
+      return { w: base.width, h: Math.max(main.scrollHeight, document.documentElement.scrollHeight, base.height),
+               sideW: document.getElementById('side').getBoundingClientRect().width, tree: t };
     });
-    screens.push({ key, title, ...tree });
-    console.log(key.padEnd(3), Math.round(tree.w) + 'x' + Math.round(tree.h),
-      'nodes', JSON.stringify(tree.tree).length);
+    screens.push({ key, title, card: card.lab, cardKey: card.k, ...tree });
+    console.log(key.padEnd(3), card.k.padEnd(9), Math.round(tree.w) + 'x' + Math.round(tree.h),
+      'bytes', JSON.stringify(tree.tree).length);
+   }
   }
+
+  /* Images become bytes here, in Node, because a file:// page cannot read its
+     own images back out of a canvas. The plugin turns them into image fills. */
+  const imgCache = {};
+  const embed = n => {
+    if (!n) return;
+    if (n.kind === 'img') {
+      const file = path.join(__dirname, '..', n.src);
+      if (n.src && !/^(data:|https?:)/.test(n.src) && fs.existsSync(file)) {
+        imgCache[n.src] = imgCache[n.src] || fs.readFileSync(file).toString('base64');
+        n.b64 = imgCache[n.src];
+      } else if (n.src.startsWith('data:image/')) n.b64 = n.src.split(',')[1];
+      delete n.src;
+    }
+    (n.children || []).forEach(embed);
+  };
+  screens.forEach(sc => embed(sc.tree));
 
   /* The left navigation is part of the design and is not inside #view, so it is
      captured once and drawn on every screen by the plugin. */
@@ -128,7 +193,7 @@ const WIDTH = 1440;
       key: a.dataset.d || '',
     }));
     const brand = [...el.querySelectorAll('.brand > *')].map(x => x.textContent.trim());
-    const groups = [...el.querySelectorAll('.grp')].map(x => x.textContent.trim());
+    const groups = [...el.querySelectorAll('.grp')].map(x => [...x.childNodes].filter(c => c.nodeType === 3).map(c => c.textContent).join('').trim());
     return { w: r.width, brand, items, groups };
   });
 
