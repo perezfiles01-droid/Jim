@@ -35,7 +35,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.16';
+const VERSION: string = '1.0.17';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -112,6 +112,20 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
       url.searchParams.set('Mode', 'Edit');
       btn.href = url.toString();
       btn.textContent = '\u270E Edit page';
+      // 1.0.17: SharePoint's page router swallows a plain link to the same
+      // page (1.0.16's button did nothing). Press SharePoint's own Edit
+      // button, which still works while hidden; failing that, load the page
+      // in edit mode directly, which the router cannot intercept.
+      btn.addEventListener('click', (ev: MouseEvent): void => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const native: HTMLElement | null = document.querySelector(
+          '[data-automation-id="pageCommandBarEditButton"],[data-automationid="pageCommandBarEditButton"],' +
+          '#spCommandBar button[name="Edit"],#spCommandBar button[aria-label="Edit"],' +
+          'div[class*="commandBarWrapper"] button[name="Edit"],div[class*="commandBarWrapper"] button[aria-label="Edit"]');
+        if (native) { native.click(); return; }
+        window.location.assign(url.toString());
+      }, true);
       document.body.appendChild(btn);
     }
   }
