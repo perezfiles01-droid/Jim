@@ -6517,7 +6517,268 @@ switchTo("bw");
             logo.decoding = "async";
             header.insertBefore(logo, header.firstChild);
           })();
-        </script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
+        </script><style>
+.xp-bar{display:flex;justify-content:flex-end;margin:0 0 4px}
+.xp-row{display:flex!important;align-items:center;justify-content:space-between;gap:12px}
+.xp-row>.xp-btn{flex:0 0 auto;margin-left:auto}
+.xp-btn{display:inline-flex;box-sizing:border-box;white-space:nowrap;align-items:center;gap:6px;height:28px;padding:0 12px;border:1px solid #cfd8e3;border-radius:7px;background:#fff;color:#0b4f82;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.xp-btn:hover{background:#e8f3fb;border-color:#9fc3e2}
+.xp-btn[disabled]{opacity:.6;cursor:progress}
+.xp-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  // Export table: every row of the table (all pages), with the current sort
+  // and filters, as an Excel sheet. Mirrors Power BI "Export data" on a visual.
+  var ICON='<svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
+  function clean(t){return String(t||"").replace(/[↑↓↕]/g,"").replace(/\s+/g," ").trim();}
+  function tableFor(pg){
+    var n=pg.previousElementSibling;
+    while(n){ if(n.matches&&(n.matches(".dtab,table")))return n; var t=n.querySelector&&n.querySelector(".dtab,table"); if(t)return t; n=n.previousElementSibling; }
+    return null;
+  }
+  function cellText(c){
+    var parts=[].filter.call(c.childNodes,function(k){
+      if(k.nodeType===3)return k.textContent.trim()!=="";
+      return k.nodeType===1&&!k.matches("i,svg,.so-av")&&clean(k.textContent)!=="";
+    });
+    if(parts.length===1&&parts[0].nodeType===1)return cellText(parts[0]);
+    if(parts.length>=2)return parts.map(function(k){return k.nodeType===3?clean(k.textContent):cellText(k);}).filter(Boolean).join(" - ");
+    return clean(c.textContent);
+  }
+  function readPage(tab){
+    var head=[],rows=[],tot=null;
+    if(tab.tagName==="TABLE"){
+      tab.querySelectorAll("thead th").forEach(function(h){head.push(clean(h.textContent));});
+      tab.querySelectorAll("tbody tr").forEach(function(tr){var r=[];tr.querySelectorAll("td").forEach(function(td){r.push(cellText(td));});if(!(r.length>1||(r.length===1&&head.length===1)))return;if(tr.classList.contains("tot"))tot=r;else rows.push(r);});
+    }else{
+      var dh=tab.querySelector(".dhead"); if(dh)[].forEach.call(dh.children,function(h){head.push(clean(h.textContent));});
+      tab.querySelectorAll(".drow").forEach(function(dr){var r=[];[].forEach.call(dr.children,function(c){r.push(cellText(c));});rows.push(r);});
+    }
+    return {head:head,rows:rows,tot:tot};
+  }
+  function cell(v){
+    var s=String(v).trim(), m;
+    if(/^-?[\d,]+(\.\d+)?$/.test(s)&&/\d/.test(s)){var n=+s.replace(/,/g,"");var d=(s.split(".")[1]||"").length;return {t:"n",v:n,z:d?"#,##0."+"0".repeat(d):"#,##0"};}
+    if((m=s.match(/^(-?[\d,]+(?:\.(\d+))?)%$/))){return {t:"n",v:+m[1].replace(/,/g,"")/100,z:m[2]?"0."+"0".repeat(m[2].length)+"%":"0%"};}
+    return {t:"s",v:s};
+  }
+  function pagerState(pg){
+    var on=pg.querySelector(".pager button.on"), nx=pg.querySelector('.pager button[data-pg="next"]');
+    return {page:on?+on.dataset.pg:1, hasNext:!!(nx&&!nx.disabled)};
+  }
+  function click(pg,v){var b=pg.querySelector('.pager button[data-pg="'+v+'"]');if(b&&!b.disabled){b.click();return true;}return false;}
+  function titleFor(pg){
+    // the nearest heading above the table, in reading order
+    var T=".ptitle,.dh-title,.so2-t", n=pg;
+    while(n&&n!==document.body){
+      var s=n.previousElementSibling;
+      while(s){ if(s.matches(T))return clean(s.textContent).replace(/\.+$/,""); var q=s.querySelectorAll(T); if(q.length)return clean(q[q.length-1].textContent).replace(/\.+$/,""); s=s.previousElementSibling; }
+      n=n.parentElement;
+    }
+    return "EDRMS table";
+  }
+  function doExport(id,btn){
+    var pg=document.getElementById(id); if(!pg)return;
+    var start=pagerState(pg).page, head=null, all=[], seen=0, tot=null;
+    if(start!==1){click(pg,"1");pg=document.getElementById(id);}
+    while(pg&&seen<500){
+      var tab=tableFor(pg); if(!tab)break;
+      var d=readPage(tab); head=head||d.head; all=all.concat(d.rows); if(d.tot)tot=d.tot; seen++;
+      var st=pagerState(pg); if(!st.hasNext)break;
+      click(pg,"next"); pg=document.getElementById(id);
+    }
+    // put the reader back on the page they were looking at
+    if(tot)all.push(tot);
+    pg=document.getElementById(id); if(pg&&pagerState(pg).page!==1)click(pg,"1");
+    for(var i=1;i<start;i++){pg=document.getElementById(id);if(!click(pg,"next"))break;}
+    var title=titleFor(document.getElementById(id)||pg);
+    var file=title.replace(/[\\\/:*?"<>|]+/g," ").replace(/\s+/g," ").trim().slice(0,80)+".xlsx";
+    if(window.XLSX){
+      var aoa=[head.map(function(h){return {t:"s",v:h};})].concat(all.map(function(r){return r.map(cell);}));
+      var ws=XLSX.utils.aoa_to_sheet([[""]]);
+      aoa.forEach(function(r,ri){r.forEach(function(c,ci){ws[XLSX.utils.encode_cell({r:ri,c:ci})]=c;});});
+      ws["!ref"]=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:aoa.length-1,c:head.length-1}});
+      ws["!cols"]=head.map(function(h,ci){var w=h.length;all.forEach(function(r){w=Math.max(w,String(r[ci]||"").length);});return {wch:Math.min(60,w+2)};});
+      var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,title.replace(/[\\\/?*\[\]:]/g,"").slice(0,31)||"Sheet1");
+      XLSX.writeFile(wb,file);
+    }else{
+      var csv=[head].concat(all).map(function(r){return r.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(",");}).join("\r\n");
+      var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));a.download=file.replace(/\.xlsx$/,".csv");document.body.appendChild(a);a.click();a.remove();
+    }
+    window.__xpLast={id:id,file:file,head:head,rows:all};
+  }
+  function searchFor(tab,pg){
+    // a search box above this table, inside the panel that holds this table
+    // and its pager, but no other table
+    var box=tab.parentElement; while(box&&!box.contains(pg))box=box.parentElement;
+    for(var lvl=0;box&&lvl<4;lvl++){
+      var ins=[].filter.call(box.querySelectorAll('input[type="text"],input[type="search"],input:not([type])'),function(i){
+        return (i.compareDocumentPosition(tab)&Node.DOCUMENT_POSITION_FOLLOWING)&&!i.closest(".xp-bar");});
+      if(ins.length){
+        var w=ins[ins.length-1]; while(w.parentElement&&w.parentElement!==box&&!w.parentElement.contains(tab)&&!w.parentElement.classList.contains("so2-hd"))w=w.parentElement;
+        return w.parentElement&&w.parentElement.classList.contains("so2-hd")?w.parentElement:w;
+      }
+      var up=box.parentElement; if(!up||up.querySelectorAll('[id$="-pager"]').length>1)break; box=up;
+    }
+    return null;
+  }
+  function makeBtn(id){
+    var b=document.createElement("button");b.type="button";b.className="xp-btn";b.dataset.for=id;
+    b.title="Exports every row of this table, with the current sort and filters, to Excel";
+    b.innerHTML=ICON+"Export table";
+    b.onclick=function(e){e.stopPropagation();doExport(id,b);};
+    return b;
+  }
+  function scan(){
+    // one button per table: beside the table's search box when it has one,
+    // otherwise at the top right of the table. Any stray copy is removed.
+    document.querySelectorAll('[id$="-pager"]').forEach(function(pg){
+      var tab=tableFor(pg); if(!tab)return;
+      var id=pg.id, host=tab.closest(".scrollx")||tab, row=searchFor(tab,pg);
+      var cur=document.querySelectorAll('.xp-btn[data-for="'+id+'"]'), ok=null;
+      [].forEach.call(cur,function(b){
+        var good=row?(b.parentElement===row):(b.parentElement.classList.contains("xp-bar")&&b.parentElement.nextElementSibling===host);
+        if(good&&!ok)ok=b; else {var p=b.parentElement; b.remove(); if(p.classList.contains("xp-bar"))p.remove();}
+      });
+      if(ok)return;
+      var btn=makeBtn(id);
+      if(row){
+        row.classList.add("xp-row");
+        var field=row.firstElementChild; if(field&&row.children.length===1&&field.getBoundingClientRect().width>=row.getBoundingClientRect().width-4)field.style.flex="1 1 auto";
+        var inp=row.querySelector("input"); if(inp&&inp.offsetHeight)btn.style.height=inp.offsetHeight+"px";
+        row.appendChild(btn);
+      }else{
+        var bar=document.createElement("div");bar.className="xp-bar";bar.appendChild(btn);
+        host.parentNode.insertBefore(bar,host);
+      }
+    });
+  }
+  new MutationObserver(function(){scan();}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",scan);else scan();
+  window.__xpExport=doExport;
+})();
+</script><style>
+.dx-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:5;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border:1px solid #bcd7ee;border-radius:10px;background:rgba(255,255,255,.92);box-shadow:0 4px 14px rgba(17,58,98,.10);color:#0b4f82;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.dx-btn:hover{background:#e8f3fb}
+.dx-btn[disabled]{opacity:.65;cursor:progress}
+.dx-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  // Export dashboard: the dashboard on screen, as it looks (including any
+  // breakdown that is open), to one PDF page. Mirrors Power BI's own
+  // Export > PDF, which lives in the toolbar above every report.
+  var ICON='<svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
+  function place(){
+    var h=document.querySelector("header"); if(!h)return;
+    var b=h.querySelector(".dx-btn");
+    if(!b){
+      b=document.createElement("button");b.type="button";b.className="dx-btn";
+      b.title="Exports this dashboard as it looks on screen, including any open breakdown, to PDF";
+      b.innerHTML=ICON+"<span>Export to PDF</span>";
+      b.onclick=function(e){e.stopPropagation();run(b);};
+      if(getComputedStyle(h).position==="static")h.style.position="relative";
+      h.appendChild(b);
+    }
+    var c=h.querySelector(".crumb"), hr=h.getBoundingClientRect();
+    var right=c?(hr.right-c.getBoundingClientRect().left+14):24;
+    b.style.right=Math.round(right)+"px";
+  }
+  function dashName(){
+    var a=document.querySelector("#nav a.on,#nav a[aria-current=page]");
+    var t=a?a.textContent.replace(/[^A-Za-z0-9&()\- ]+/g," ").replace(/\s+/g," ").trim():"";
+    var v=document.getElementById("view"), h=v&&v.querySelector(".band h2");
+    return t||(h?h.textContent.trim():"Dashboard");
+  }
+  // html2canvas cannot paint conic-gradient (the donut) or a date box's
+  // placeholder, so hand it a picture of each instead
+  function conicToImage(el){
+    var cs=getComputedStyle(el), bg=cs.backgroundImage, r=el.getBoundingClientRect();
+    var m=bg.match(/conic-gradient\((.*)\)\s*$/); if(!m||!r.width||!r.height)return null;
+    var parts=[],depth=0,cur="";
+    for(var i=0;i<m[1].length;i++){var ch=m[1][i];if(ch==="(")depth++;if(ch===")")depth--;if(ch===","&&depth===0){parts.push(cur.trim());cur="";}else cur+=ch;}
+    parts.push(cur.trim());
+    var from=0; if(/^from\s/.test(parts[0])){var a=parseFloat(parts[0].slice(5));from=isNaN(a)?0:a;parts.shift();}
+    var stops=parts.map(function(p){var mm=p.match(/^(.*?)(?:\s+(-?[\d.]+)(%|deg|px)?)?$/);var pos=null;if(mm[2]!=null){pos=mm[3]==="deg"?+mm[2]/360:mm[3]==="%"?+mm[2]/100:0;}return {c:mm[1],p:pos};});
+    var last=0; stops.forEach(function(s,i){if(s.p==null)s.p=i===0?0:(i===stops.length-1?1:last);if(s.p<last)s.p=last;last=s.p;});
+    var k=2, cv=document.createElement("canvas"); cv.width=Math.round(r.width*k); cv.height=Math.round(r.height*k);
+    var g=cv.getContext("2d"), cx=cv.width/2, cy=cv.height/2, R=Math.hypot(cx,cy)+2, base=(from-90)*Math.PI/180;
+    // each colour fills from the previous stop to its own stop; the last one runs to the end
+    for(var j=0;j<stops.length;j++){
+      var a0=j===0?0:stops[j-1].p, a1=j===stops.length-1?1:stops[j].p;
+      if(a1<=a0)continue;
+      g.beginPath();g.moveTo(cx,cy);g.arc(cx,cy,R,base+a0*2*Math.PI,base+a1*2*Math.PI);g.closePath();g.fillStyle=stops[j].c;g.fill();
+    }
+    return cv.toDataURL("image/png");
+  }
+  function datePattern(){var t=new Date(2000,10,22).toLocaleDateString();return t.replace("2000","yyyy").replace("11","mm").replace("22","dd");}
+  function prepare(view){
+    var n=0, map={};
+    view.querySelectorAll("*").forEach(function(el){
+      var bg=getComputedStyle(el).backgroundImage;
+      if(bg&&bg.indexOf("conic-gradient")>=0){var u=conicToImage(el);if(u){el.setAttribute("data-dx",++n);map[n]={img:u};}}
+      else if(el.tagName==="INPUT"&&el.type==="date"){el.setAttribute("data-dx",++n);var v=el.value;map[n]={date:v?new Date(v+"T00:00:00").toLocaleDateString():datePattern(),empty:!v};}
+    });
+    return map;
+  }
+  function onclone(map){
+    return function(doc){
+      Object.keys(map).forEach(function(k){
+        var el=doc.querySelector('[data-dx="'+k+'"]'); if(!el)return; var it=map[k];
+        if(it.img){el.style.backgroundImage="url("+it.img+")";el.style.backgroundSize="100% 100%";el.style.backgroundRepeat="no-repeat";}
+        else{var sp=doc.createElement("div");var cs=getComputedStyle(document.querySelector('[data-dx="'+k+'"]'));
+          ["width","height","boxSizing","border","borderRadius","padding","background","font","fontSize","fontFamily","lineHeight"].forEach(function(p){sp.style[p]=cs[p];});
+          sp.style.display="inline-flex";sp.style.alignItems="center";sp.style.color=it.empty?"#757575":cs.color;sp.textContent=it.date;el.parentNode.replaceChild(sp,el);}
+      });
+    };
+  }
+  function cleanup(view){view.querySelectorAll("[data-dx]").forEach(function(el){el.removeAttribute("data-dx");});}
+  function run(btn){
+    if(!window.html2canvas||!window.jspdf){alert("The PDF export could not load its tools (cdnjs.cloudflare.com may be blocked on this network).");return;}
+    var view=document.getElementById("view"), main=document.getElementById("main")||view.parentElement;
+    if(!view)return;
+    var label=btn.querySelector("span"), old=label.textContent;
+    btn.disabled=true; label.textContent="Preparing PDF...";
+    // #main scrolls on its own, so open it up for the capture and put it back after
+    var saved={h:main.style.height,mh:main.style.maxHeight,o:main.style.overflow,st:main.scrollTop};
+    main.style.height="auto";main.style.maxHeight="none";main.style.overflow="visible";
+    var name=dashName(), d=new Date();
+    var stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    setTimeout(function(){
+      var map=prepare(view);
+      html2canvas(view,{onclone:onclone(map),scale:1.5,useCORS:true,backgroundColor:"#F4F6F9",windowWidth:document.documentElement.scrollWidth,ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("csel-list"));}})
+      .then(function(canvas){
+        var J=window.jspdf.jsPDF, W=1200, MAXH=14000;
+        var fullH=W*canvas.height/canvas.width;
+        var pdf=null, sliceH=Math.min(canvas.height,Math.floor(canvas.width*MAXH/W));
+        for(var y=0;y<canvas.height;y+=sliceH){
+          var h=Math.min(sliceH,canvas.height-y);
+          var part=document.createElement("canvas");part.width=canvas.width;part.height=h;
+          part.getContext("2d").drawImage(canvas,0,y,canvas.width,h,0,0,canvas.width,h);
+          var ph=W*h/canvas.width;
+          if(!pdf)pdf=new J({unit:"pt",format:[W,ph],orientation:ph>W?"portrait":"landscape"});
+          else pdf.addPage([W,ph],ph>W?"portrait":"landscape");
+          pdf.addImage(part.toDataURL("image/jpeg",0.92),"JPEG",0,0,W,ph);
+        }
+        pdf.setProperties({title:"EDRMS Utilization Report - "+name,subject:"Exported "+stamp,creator:"EDRMS Reporting Suite"});
+        var file="EDRMS "+name.replace(/[\\\/:*?"<>|&]+/g," ").replace(/\s+/g," ").trim()+" "+stamp+".pdf";
+        var a=document.createElement("a");a.href=URL.createObjectURL(pdf.output("blob"));a.download=file;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);
+        window.__dxLast={file:file,w:canvas.width,h:canvas.height,pages:pdf.getNumberOfPages(),ptH:fullH};
+      })
+      .catch(function(e){console.error("[EDRMS export]",e);alert("The PDF could not be created: "+e);})
+      .then(function(){cleanup(view);main.style.height=saved.h;main.style.maxHeight=saved.mh;main.style.overflow=saved.o;main.scrollTop=saved.st;btn.disabled=false;label.textContent=old;});
+    },60);
+  }
+  place();
+  window.addEventListener("resize",place);
+  new MutationObserver(function(){if(!document.querySelector("header .dx-btn"))place();}).observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(place,500);setTimeout(place,1500);
+})();
+</script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
      and scaled to the window, and a one time password gate (client side
      only, it keeps casual visitors out, it is not real security). -->
 <script>
