@@ -6517,7 +6517,113 @@ switchTo("bw");
             logo.decoding = "async";
             header.insertBefore(logo, header.firstChild);
           })();
-        </script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
+        </script><style>
+.xp-bar{display:flex;justify-content:flex-end;margin:0 0 8px}
+.xp-btn{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border:1px solid #cfd8e3;border-radius:7px;background:#fff;color:#0b4f82;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.xp-btn:hover{background:#e8f3fb;border-color:#9fc3e2}
+.xp-btn[disabled]{opacity:.6;cursor:progress}
+.xp-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+  // Export table: every row of the table (all pages), with the current sort
+  // and filters, as an Excel sheet. Mirrors Power BI "Export data" on a visual.
+  var ICON='<svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
+  function clean(t){return String(t||"").replace(/[↑↓↕]/g,"").replace(/\s+/g," ").trim();}
+  function tableFor(pg){
+    var n=pg.previousElementSibling;
+    while(n){ if(n.matches&&(n.matches(".dtab,table")))return n; var t=n.querySelector&&n.querySelector(".dtab,table"); if(t)return t; n=n.previousElementSibling; }
+    return null;
+  }
+  function cellText(c){
+    var parts=[].filter.call(c.childNodes,function(k){
+      if(k.nodeType===3)return k.textContent.trim()!=="";
+      return k.nodeType===1&&!k.matches("i,svg,.so-av")&&clean(k.textContent)!=="";
+    });
+    if(parts.length===1&&parts[0].nodeType===1)return cellText(parts[0]);
+    if(parts.length>=2)return parts.map(function(k){return k.nodeType===3?clean(k.textContent):cellText(k);}).filter(Boolean).join(" - ");
+    return clean(c.textContent);
+  }
+  function readPage(tab){
+    var head=[],rows=[],tot=null;
+    if(tab.tagName==="TABLE"){
+      tab.querySelectorAll("thead th").forEach(function(h){head.push(clean(h.textContent));});
+      tab.querySelectorAll("tbody tr").forEach(function(tr){var r=[];tr.querySelectorAll("td").forEach(function(td){r.push(cellText(td));});if(!(r.length>1||(r.length===1&&head.length===1)))return;if(tr.classList.contains("tot"))tot=r;else rows.push(r);});
+    }else{
+      var dh=tab.querySelector(".dhead"); if(dh)[].forEach.call(dh.children,function(h){head.push(clean(h.textContent));});
+      tab.querySelectorAll(".drow").forEach(function(dr){var r=[];[].forEach.call(dr.children,function(c){r.push(cellText(c));});rows.push(r);});
+    }
+    return {head:head,rows:rows,tot:tot};
+  }
+  function cell(v){
+    var s=String(v).trim(), m;
+    if(/^-?[\d,]+(\.\d+)?$/.test(s)&&/\d/.test(s)){var n=+s.replace(/,/g,"");var d=(s.split(".")[1]||"").length;return {t:"n",v:n,z:d?"#,##0."+"0".repeat(d):"#,##0"};}
+    if((m=s.match(/^(-?[\d,]+(?:\.(\d+))?)%$/))){return {t:"n",v:+m[1].replace(/,/g,"")/100,z:m[2]?"0."+"0".repeat(m[2].length)+"%":"0%"};}
+    return {t:"s",v:s};
+  }
+  function pagerState(pg){
+    var on=pg.querySelector(".pager button.on"), nx=pg.querySelector('.pager button[data-pg="next"]');
+    return {page:on?+on.dataset.pg:1, hasNext:!!(nx&&!nx.disabled)};
+  }
+  function click(pg,v){var b=pg.querySelector('.pager button[data-pg="'+v+'"]');if(b&&!b.disabled){b.click();return true;}return false;}
+  function titleFor(pg){
+    // the nearest heading above the table, in reading order
+    var T=".ptitle,.dh-title,.so2-t", n=pg;
+    while(n&&n!==document.body){
+      var s=n.previousElementSibling;
+      while(s){ if(s.matches(T))return clean(s.textContent).replace(/\.+$/,""); var q=s.querySelectorAll(T); if(q.length)return clean(q[q.length-1].textContent).replace(/\.+$/,""); s=s.previousElementSibling; }
+      n=n.parentElement;
+    }
+    return "EDRMS table";
+  }
+  function doExport(id,btn){
+    var pg=document.getElementById(id); if(!pg)return;
+    var start=pagerState(pg).page, head=null, all=[], seen=0, tot=null;
+    if(start!==1){click(pg,"1");pg=document.getElementById(id);}
+    while(pg&&seen<500){
+      var tab=tableFor(pg); if(!tab)break;
+      var d=readPage(tab); head=head||d.head; all=all.concat(d.rows); if(d.tot)tot=d.tot; seen++;
+      var st=pagerState(pg); if(!st.hasNext)break;
+      click(pg,"next"); pg=document.getElementById(id);
+    }
+    // put the reader back on the page they were looking at
+    if(tot)all.push(tot);
+    pg=document.getElementById(id); if(pg&&pagerState(pg).page!==1)click(pg,"1");
+    for(var i=1;i<start;i++){pg=document.getElementById(id);if(!click(pg,"next"))break;}
+    var title=titleFor(document.getElementById(id)||pg);
+    var file=title.replace(/[\\\/:*?"<>|]+/g," ").replace(/\s+/g," ").trim().slice(0,80)+".xlsx";
+    if(window.XLSX){
+      var aoa=[head.map(function(h){return {t:"s",v:h};})].concat(all.map(function(r){return r.map(cell);}));
+      var ws=XLSX.utils.aoa_to_sheet([[""]]);
+      aoa.forEach(function(r,ri){r.forEach(function(c,ci){ws[XLSX.utils.encode_cell({r:ri,c:ci})]=c;});});
+      ws["!ref"]=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:aoa.length-1,c:head.length-1}});
+      ws["!cols"]=head.map(function(h,ci){var w=h.length;all.forEach(function(r){w=Math.max(w,String(r[ci]||"").length);});return {wch:Math.min(60,w+2)};});
+      var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,title.replace(/[\\\/?*\[\]:]/g,"").slice(0,31)||"Sheet1");
+      XLSX.writeFile(wb,file);
+    }else{
+      var csv=[head].concat(all).map(function(r){return r.map(function(v){v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(",");}).join("\r\n");
+      var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"}));a.download=file.replace(/\.xlsx$/,".csv");document.body.appendChild(a);a.click();a.remove();
+    }
+    window.__xpLast={id:id,file:file,head:head,rows:all};
+  }
+  function scan(){
+    document.querySelectorAll('[id$="-pager"]').forEach(function(pg){
+      var tab=tableFor(pg); if(!tab)return;
+      var host=tab.closest(".scrollx")||tab;
+      var prev=host.previousElementSibling;
+      if(prev&&prev.classList.contains("xp-bar")&&prev.dataset.for===pg.id)return;
+      var bar=document.createElement("div");bar.className="xp-bar";bar.dataset.for=pg.id;
+      bar.innerHTML='<button type="button" class="xp-btn" title="Exports every row of this table, with the current sort and filters, to Excel">'+ICON+'Export table</button>';
+      host.parentNode.insertBefore(bar,host);
+      bar.firstChild.onclick=function(e){e.stopPropagation();doExport(pg.id,bar.firstChild);};
+    });
+  }
+  new MutationObserver(function(){scan();}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",scan);else scan();
+  window.__xpExport=doExport;
+})();
+</script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
      and scaled to the window, and a one time password gate (client side
      only, it keeps casual visitors out, it is not real security). -->
 <script>
