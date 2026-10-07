@@ -245,6 +245,8 @@ export class ReportHost {
     // column showed only after scrolling sideways), and the libraries table
     // gives Library and Site the room the number columns were taking.
     css += '#bw-phys{min-width:0!important;--dc:minmax(0,1.5fr) repeat(3,minmax(0,1fr))!important}#bw-phys .hd{white-space:normal!important;line-height:1.25!important}#dp-libs-tab th:nth-child(2){width:26%!important}#dp-libs-tab th:nth-child(3){width:92px!important}#dp-libs-tab th:nth-child(4){width:76px!important}#dp-libs-tab th:nth-child(5){width:122px!important}#dp-libs-tab th:nth-child(6){width:72px!important}#dp-libs-tab th:nth-child(n+5){white-space:normal!important;line-height:1.2!important;word-break:normal!important;overflow-wrap:normal!important}';
+    // 1.0.15: library names wrap rather than being cut short.
+    css += '#dp-libs-tab th:nth-child(2){width:22%!important}#dp-libs-tab th:nth-child(3){width:86px!important}#dp-libs-tab th:nth-child(4){width:70px!important}#dp-libs-tab td.so-name{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.25!important;padding-top:6px!important;padding-bottom:6px!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
