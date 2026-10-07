@@ -4,8 +4,14 @@
 <script>
 (() => {
   const DESIGN_WIDTH = 1920;
+  // Same as the Floot app: the screen's scaling when the report opens is
+  // treated as 100%, so every screen opens on the same full-width layout, and
+  // browser zoom (Ctrl + / Ctrl -) then enlarges or shrinks it like any page.
+  // Zoom is read as the change in devicePixelRatio since the report opened.
+  const BASE_DPR = window.devicePixelRatio || 1;
   const fit = () => {
-    const z = window.innerWidth / DESIGN_WIDTH;
+    const zoom = (window.devicePixelRatio || 1) / BASE_DPR;
+    const z = (window.innerWidth * zoom) / DESIGN_WIDTH;
     document.documentElement.style.zoom = String(z);
     // Zoom shrinks the sidebar's 100vh, so let it run the full page height instead.
     const side = document.getElementById("side");
