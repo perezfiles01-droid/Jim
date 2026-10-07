@@ -36,7 +36,7 @@ const files = {
   'template.js': 'window.REPORT_HTML=' + html + ';window.REPORT_SCRIPTS=' + scripts + ';',
   'reporthost.js': '(function(){var exports={};var module={exports:exports};\n' + host + '\n;window.ReportHost=exports.ReportHost;})();',
   'start.js': "(function(){var o=new URLSearchParams(location.search);window.__host=new ReportHost(document.getElementById('wp'),location.origin+'/assets/'," +
-    "window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:o.get('sb')==='1',sizing:o.get('sz')||'content',height:900},'test','box','frame','EDRMS');" +
+    "window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:o.get('sb')!=='0',sizing:o.get('sz')||'content',height:900,textSize:o.get('ts')||'large'},'test','box','frame','EDRMS');" +
     "setTimeout(function(){var wp=document.getElementById('wp');var n=document.createElement('div');wp.parentNode.appendChild(n);n.appendChild(wp);},300);})();"
 };
 
@@ -81,7 +81,9 @@ function findChromium() {
     ['Bank-wide, 1280x720', 'd=bw', 1280, 720],
     ['Bank-wide, zoom 200% after load', 'd=bw', 1920, 1080, 2],
     ['Department Insights page', 'd=dp', 1920, 1080],
-    ['Report sidebar shown', 'd=bw&sb=1', 1920, 1080],
+    ['Report sidebar off', 'd=bw&sb=0', 1920, 1080],
+    ['Text size standard', 'd=bw&ts=standard', 1920, 1080],
+    ['Text size extra large', 'd=bw&ts=xlarge', 1920, 1080],
     ['Fill the window', 'd=bw&sz=window', 1920, 1080]
   ];
   for (const [label, q, w, h, zoom] of cases) {
@@ -102,7 +104,9 @@ function findChromium() {
       dashboard: ((document.querySelector('#nav a.on') || {}).textContent || '').replace(/[^A-Za-z -]/g, '').trim(),
       sidebar: getComputedStyle(document.getElementById('side')).display !== 'none',
       reportH: Math.ceil(document.body.getBoundingClientRect().height),
-      frameH: innerHeight
+      frameH: innerHeight,
+      canvas: innerWidth,
+      menu: !!document.querySelector('.edrms-menu')
     }));
     const outer = await page.evaluate(() => {
       const wp = document.getElementById('wp'), box = wp.firstChild, r = box.firstChild.getBoundingClientRect();
@@ -112,7 +116,26 @@ function findChromium() {
     const problems = [];
     if (!inner.kpis) problems.push('dashboard did not draw');
     if (inner.dashboard !== wantDash) problems.push('shows ' + inner.dashboard + ', expected ' + wantDash);
-    if (inner.sidebar !== q.includes('sb=1')) problems.push('sidebar ' + (inner.sidebar ? 'shown' : 'hidden'));
+    const wantSidebar = !q.includes('sb=0');
+    if (inner.sidebar !== wantSidebar) problems.push('sidebar ' + (inner.sidebar ? 'shown' : 'hidden'));
+    if (inner.menu !== wantSidebar) problems.push('menu button ' + (inner.menu ? 'present' : 'missing'));
+    const wantCanvas = q.includes('ts=standard') ? 1920 : q.includes('ts=xlarge') ? 1280 : 1536;
+    if (inner.canvas !== wantCanvas) problems.push('laid out at ' + inner.canvas + 'px, expected ' + wantCanvas);
+    if (wantSidebar && !zoom) {
+      // The menu button closes the sidebar, keeps it closed after a reload,
+      // and opens it again.
+      await frame.click('.edrms-menu');
+      await page.waitForTimeout(300);
+      const closed = await frame.evaluate(() => getComputedStyle(document.getElementById('side')).display === 'none');
+      await page.reload(); await page.waitForTimeout(4500);
+      const f2 = page.frames().find(f => f !== page.mainFrame());
+      const stillClosed = await f2.evaluate(() => getComputedStyle(document.getElementById('side')).display === 'none');
+      await f2.click('.edrms-menu'); await page.waitForTimeout(300);
+      const reopened = await f2.evaluate(() => getComputedStyle(document.getElementById('side')).display !== 'none');
+      if (!closed) problems.push('menu button did not close the sidebar');
+      if (!stillClosed) problems.push('closed sidebar did not stay closed after reload');
+      if (!reopened) problems.push('menu button did not reopen the sidebar');
+    }
     if (blocked.length) problems.push(blocked.length + ' blocked by the security policy');
     if (Math.abs(outer.reportWidth - outer.width) > 1) problems.push('report ' + outer.reportWidth + 'px wide in a ' + outer.width + 'px web part');
     if (Math.abs(outer.boxH - outer.reportVisualH) > 2) problems.push('web part ' + outer.boxH + 'px tall, report ' + outer.reportVisualH + 'px');

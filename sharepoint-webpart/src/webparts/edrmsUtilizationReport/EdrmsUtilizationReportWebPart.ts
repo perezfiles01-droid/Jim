@@ -11,15 +11,17 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import styles from './EdrmsUtilizationReportWebPart.module.scss';
 import * as strings from 'EdrmsUtilizationReportWebPartStrings';
 import { REPORT_HTML, REPORT_SCRIPTS } from './reportTemplate';
-import { ReportHost, type Dashboard, type IReportOptions, type Sizing } from './ReportHost';
+import { ReportHost, type Dashboard, type IReportOptions, type Sizing, type TextSize } from './ReportHost';
 
 export interface IEdrmsUtilizationReportWebPartProps {
   // Which dashboard this page shows. One SharePoint page per dashboard, so
   // the site's own navigation moves between them.
   dashboard?: Dashboard;
-  // The report's own dark sidebar. Off by default: inside a SharePoint site
-  // the site's navigation does that job.
+  // The report's own dark sidebar, with a menu button that opens and closes
+  // it. On by default (1.0.4 had it off, which readers missed).
   showSidebar?: boolean;
+  // 'large' by default: readers include people who need bigger text.
+  textSize?: TextSize;
   // 'content' (default): the report is as tall as it is and scrolls with the
   // page. 'window': fills the window and scrolls inside. 'fixed': height below.
   sizing?: Sizing;
@@ -29,7 +31,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.4';
+const VERSION: string = '1.0.5';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -39,7 +41,8 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
     const p: IEdrmsUtilizationReportWebPartProps = this.properties;
     return {
       dashboard: p.dashboard === 'dp' ? 'dp' : 'bw',
-      showSidebar: p.showSidebar === true,
+      showSidebar: p.showSidebar !== false,
+      textSize: p.textSize || 'large',
       sizing: p.sizing || (p.fitWindow === false ? 'fixed' : 'content'),
       height: p.height || 900
     };
@@ -97,6 +100,14 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
             {
               groupName: strings.LayoutGroupName,
               groupFields: [
+                PropertyPaneChoiceGroup('textSize', {
+                  label: strings.TextSizeLabel,
+                  options: [
+                    { key: 'standard', text: strings.TextSizeStandard, checked: o.textSize === 'standard' },
+                    { key: 'large', text: strings.TextSizeLarge, checked: o.textSize === 'large' },
+                    { key: 'xlarge', text: strings.TextSizeXLarge, checked: o.textSize === 'xlarge' }
+                  ]
+                }),
                 PropertyPaneChoiceGroup('sizing', {
                   label: strings.SizingLabel,
                   options: [

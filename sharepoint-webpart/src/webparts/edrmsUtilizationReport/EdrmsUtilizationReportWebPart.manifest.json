@@ -24,7 +24,8 @@
     "officeFabricIconFontName": "Page",
     "properties": {
       "dashboard": "bw",
-      "showSidebar": false,
+      "showSidebar": true,
+      "textSize": "large",
       "sizing": "content",
       "height": 900
     }

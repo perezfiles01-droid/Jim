@@ -4,17 +4,23 @@
 
 export type Dashboard = 'bw' | 'dp';
 export type Sizing = 'content' | 'window' | 'fixed';
+export type TextSize = 'standard' | 'large' | 'xlarge';
 
 export interface IReportOptions {
   dashboard: Dashboard;
   showSidebar: boolean;
   sizing: Sizing;
   height: number;
+  textSize: TextSize;
 }
 
-// The report is laid out on a fixed 1920px canvas, the approved monitor view,
-// and scaled to the width it is given, exactly as the Floot app does it.
-const DESIGN_WIDTH: number = 1920;
+// The report is laid out on a fixed canvas and scaled to the width it is
+// given, as the Floot app does it. 1920px is the approved monitor view; a
+// narrower canvas makes everything larger once scaled, for readers who need
+// bigger text. The layout was checked at all three widths.
+const CANVAS: { [k in TextSize]: number } = { standard: 1920, large: 1536, xlarge: 1280 };
+// Remembered per browser: whether the reader last closed the sidebar.
+const SIDEBAR_KEY: string = 'edrms-sidebar-closed';
 
 export class ReportHost {
   private readonly _box: HTMLDivElement;
@@ -63,6 +69,7 @@ export class ReportHost {
     this._options = options;
     this._applyStyle();
     this._showDashboard();
+    this._addMenuButton();
     this.fit();
   }
 
@@ -115,7 +122,7 @@ export class ReportHost {
     const wait: number = window.setInterval(() => {
       tries++;
       if (this._frame.contentDocument !== doc) { window.clearInterval(wait); return; }
-      if (doc.querySelector('#view .kpi')) { window.clearInterval(wait); this._showDashboard(); this.fit(); return; }
+      if (doc.querySelector('#view .kpi')) { window.clearInterval(wait); this._showDashboard(); this._addMenuButton(); this.fit(); return; }
       if (tries === 40) {
         window.clearInterval(wait);
         const note: HTMLDivElement = doc.createElement('div');
@@ -140,7 +147,11 @@ export class ReportHost {
       style.id = 'edrms-sharepoint';
       doc.head.appendChild(style);
     }
-    let css: string = '';
+    let css: string = '.edrms-menu{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:44px;height:44px;' +
+      'margin-right:14px;border:1px solid #cfd8e3;border-radius:10px;background:#fff;color:#0b2545;cursor:pointer}' +
+      '.edrms-menu:hover{background:#e8f3fb;border-color:#9fc3e2}' +
+      '.edrms-menu svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}' +
+      'html.edrms-side-closed #side{display:none!important}';
     if (!this._options.showSidebar) {
       // SharePoint's own navigation takes over from the report's sidebar.
       css += '#side{display:none!important}';
@@ -154,6 +165,49 @@ export class ReportHost {
         'header{position:relative!important}';
     }
     style.textContent = css;
+  }
+
+  // The menu (hamburger) button at the left of the report's header opens and
+  // closes the report's sidebar. Added by this code rather than the report,
+  // so it exists only inside SharePoint.
+  private _addMenuButton(): void {
+    const doc: Document | null = this._doc();
+    if (!doc) return;
+    const header: HTMLElement | null = doc.querySelector('header');
+    let btn: HTMLButtonElement | null = doc.querySelector('.edrms-menu');
+    if (!this._options.showSidebar) {
+      if (btn) btn.remove();
+      doc.documentElement.classList.remove('edrms-side-closed');
+      return;
+    }
+    if (!header || btn) { this._syncMenu(); return; }
+    btn = doc.createElement('button');
+    btn.type = 'button';
+    btn.className = 'edrms-menu';
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+    btn.addEventListener('click', () => {
+      const closed: boolean = !doc.documentElement.classList.contains('edrms-side-closed');
+      try { window.localStorage.setItem(SIDEBAR_KEY, closed ? '1' : '0'); } catch { /* storage blocked: this visit only */ }
+      this._syncMenu(closed);
+    });
+    header.insertBefore(btn, header.firstChild);
+    this._syncMenu();
+  }
+
+  private _syncMenu(closed?: boolean): void {
+    const doc: Document | null = this._doc();
+    if (!doc) return;
+    if (closed === undefined) {
+      try { closed = window.localStorage.getItem(SIDEBAR_KEY) === '1'; } catch { closed = false; }
+    }
+    doc.documentElement.classList.toggle('edrms-side-closed', closed);
+    const btn: HTMLElement | null = doc.querySelector('.edrms-menu');
+    if (btn) {
+      btn.title = closed ? 'Show the menu' : 'Hide the menu';
+      btn.setAttribute('aria-label', btn.title);
+      btn.setAttribute('aria-expanded', closed ? 'false' : 'true');
+    }
+    this.fit();
   }
 
   private _showDashboard(): void {
@@ -171,8 +225,9 @@ export class ReportHost {
     // also enlarges the report with browser zoom; inside SharePoint the page
     // already narrows the web part when zooming, so doing both made the
     // report overflow to the right in 1.0.3.)
-    const width: number = this._container.clientWidth || DESIGN_WIDTH;
-    const scale: number = width / DESIGN_WIDTH;
+    const design: number = CANVAS[this._options.textSize] || CANVAS.large;
+    const width: number = this._container.clientWidth || design;
+    const scale: number = width / design;
     let inner: number;
     if (this._options.sizing === 'content') {
       const doc: Document | null = this._doc();
@@ -184,7 +239,7 @@ export class ReportHost {
         : this._windowHeight();
       inner = outer / scale;
     }
-    this._frame.style.width = DESIGN_WIDTH + 'px';
+    this._frame.style.width = design + 'px';
     this._frame.style.height = inner + 'px';
     this._frame.style.transform = 'scale(' + scale + ')';
     this._box.style.height = Math.ceil(inner * scale) + 'px';

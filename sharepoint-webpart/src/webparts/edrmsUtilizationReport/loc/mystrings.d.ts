@@ -8,6 +8,10 @@ declare interface IEdrmsUtilizationReportWebPartStrings {
   ShowSidebarOn: string;
   ShowSidebarOff: string;
   LayoutGroupName: string;
+  TextSizeLabel: string;
+  TextSizeStandard: string;
+  TextSizeLarge: string;
+  TextSizeXLarge: string;
   SizingLabel: string;
   SizingContent: string;
   SizingWindow: string;

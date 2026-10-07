@@ -36,8 +36,13 @@ repo root.
    - **Dashboard on this page:** Bank-wide Oversight or Department Insights.
      Make one SharePoint page per dashboard and link them from the site's
      navigation.
-   - **Show the report's own sidebar:** off by default, so the site's
-     navigation does that job and the page looks like the rest of the site.
+   - **Show the report's own sidebar:** on by default, with a menu (☰)
+     button at the left of the report's header that opens and closes it. The
+     browser remembers whether the reader last closed it.
+   - **Text size:** *Large* by default (the report laid out at 1536px, so
+     text is 25% larger than the 1920px design); *Extra large* lays it out at
+     1280px (50% larger); *Standard* is the design as approved. The layout
+     was checked at all three widths.
    - **Height:** *Grow with the report* (default) makes the web part exactly
      as tall as the report, so the page scrolls as usual with one scroll bar.
      *Fill the window* and *Fixed height* keep the report scrolling inside the
@@ -57,7 +62,7 @@ npm run build
 
 The package is written to `sharepoint/solution/edrms-utilization-report.sppkg`.
 Bump `version` in `config/package-solution.json` before uploading a new
-build over an old one (currently 1.0.4.0). To build from a different copy of the report, set
+build over an old one (currently 1.0.5.0). To build from a different copy of the report, set
 `REPORT_SOURCE=/path/to/index.html`.
 
 Then check it under the conditions SharePoint imposes (a strict-dynamic
