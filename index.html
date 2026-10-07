@@ -6684,8 +6684,16 @@ switchTo("bw");
       if(getComputedStyle(h).position==="static")h.style.position="relative";
       h.appendChild(b);
     }
-    var c=h.querySelector(".crumb"), hr=h.getBoundingClientRect();
-    var right=c?(hr.right-c.getBoundingClientRect().left+14):24;
+    // Measure in the header's own CSS pixels. Screen rectangles are scaled by
+    // any page zoom (GitHub Pages fits the canvas with CSS zoom), so divide
+    // that scale back out; otherwise the button lands in the wrong place.
+    var c=h.querySelector(".crumb"), right=24;
+    if(c){
+      var hr=h.getBoundingClientRect(), cr=c.getBoundingClientRect();
+      var k=h.offsetWidth?hr.width/h.offsetWidth:1; if(!k||!isFinite(k))k=1;
+      right=(hr.right-cr.left)/k+14;
+      if(!b._ro&&window.ResizeObserver){b._ro=new ResizeObserver(function(){place();});b._ro.observe(c);b._ro.observe(h);}
+    }
     b.style.right=Math.round(right)+"px";
   }
   function dashName(){
@@ -6777,6 +6785,8 @@ switchTo("bw");
   window.addEventListener("resize",place);
   new MutationObserver(function(){if(!document.querySelector("header .dx-btn"))place();}).observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(place,500);setTimeout(place,1500);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(place);
+  window.addEventListener("load",place);
 })();
 </script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
      and scaled to the window, and a one time password gate (client side
