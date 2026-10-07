@@ -34,7 +34,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.13';
+const VERSION: string = '1.0.14';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
