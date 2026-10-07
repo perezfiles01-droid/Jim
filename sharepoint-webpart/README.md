@@ -31,10 +31,19 @@ repo root.
    gear icon, **Add an app**, choose **EDRMS Utilization Report**.
 3. **Put it on a page:** edit the page, add a **Full-width section**, click
    **+**, search for **EDRMS Utilization Report**, add it, then **Republish**.
-4. **Size:** by default the report fills the window from where it starts to
-   the bottom of the screen, on any screen. To fix a height instead, edit the
-   web part (the sliders icon in its toolbar), switch **Fill the window** off
-   and set **Height**. The report scrolls inside the web part either way.
+4. **Settings** (edit the page, click the web part, then the sliders icon in
+   its toolbar):
+   - **Dashboard on this page:** Bank-wide Oversight or Department Insights.
+     Make one SharePoint page per dashboard and link them from the site's
+     navigation.
+   - **Show the report's own sidebar:** off by default, so the site's
+     navigation does that job and the page looks like the rest of the site.
+   - **Height:** *Grow with the report* (default) makes the web part exactly
+     as tall as the report, so the page scrolls as usual with one scroll bar.
+     *Fill the window* and *Fixed height* keep the report scrolling inside the
+     web part instead.
+
+   The report always fits the web part's width exactly, at any browser zoom.
 
 ## Rebuild it after the report changes
 
@@ -48,8 +57,15 @@ npm run build
 
 The package is written to `sharepoint/solution/edrms-utilization-report.sppkg`.
 Bump `version` in `config/package-solution.json` before uploading a new
-build over an old one (currently 1.0.3.0). To build from a different copy of the report, set
+build over an old one (currently 1.0.4.0). To build from a different copy of the report, set
 `REPORT_SOURCE=/path/to/index.html`.
+
+Then check it under the conditions SharePoint imposes (a strict-dynamic
+security policy, the web part being moved after it renders, browser zoom):
+
+```
+node test/host-test.js
+```
 
 `build-report.js` refuses to build if any inline script, cdnjs reference or
 `floot-assets/` path survives, and it writes every file as plain ASCII so the

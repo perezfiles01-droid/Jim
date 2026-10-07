@@ -1,10 +1,18 @@
 declare interface IEdrmsUtilizationReportWebPartStrings {
   PropertyPaneDescription: string;
+  ContentGroupName: string;
+  DashboardLabel: string;
+  DashboardBankWide: string;
+  DashboardDepartment: string;
+  ShowSidebarLabel: string;
+  ShowSidebarOn: string;
+  ShowSidebarOff: string;
   LayoutGroupName: string;
+  SizingLabel: string;
+  SizingContent: string;
+  SizingWindow: string;
+  SizingFixed: string;
   HeightFieldLabel: string;
-  FitWindowLabel: string;
-  FitWindowOn: string;
-  FitWindowOff: string;
   FrameTitle: string;
 }
 
