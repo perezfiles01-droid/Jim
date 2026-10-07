@@ -81,6 +81,7 @@ export class ReportHost {
     this._applyStyle();
     this._showDashboard();
     this._addMenuButton();
+    this._relayout();
     this.fit();
   }
 
@@ -136,7 +137,21 @@ export class ReportHost {
     const wait: number = window.setInterval(() => {
       tries++;
       if (this._frame.contentDocument !== doc) { window.clearInterval(wait); return; }
-      if (doc.querySelector('#view .kpi')) { window.clearInterval(wait); this._showDashboard(); this._addMenuButton(); this.fit(); return; }
+      if (doc.querySelector('#view .kpi')) {
+        window.clearInterval(wait);
+        this._showDashboard(); this._addMenuButton(); this._relayout();
+        // Opening a dashboard redraws the title band, so put the moved
+        // controls back whenever the view changes.
+        const view: HTMLElement | null = doc.getElementById('view');
+        const win2: (Window & typeof globalThis) | null = this._frame.contentWindow as (Window & typeof globalThis) | null;
+        if (view && win2) new win2.MutationObserver(() => this._relayout()).observe(view, { childList: true });
+        // The report adds its Export button to the header shortly after it
+        // starts; pick it up when it appears.
+        window.setTimeout(() => this._relayout(), 600);
+        window.setTimeout(() => this._relayout(), 1600);
+        this.fit();
+        return;
+      }
       if (tries === 40) {
         window.clearInterval(wait);
         const note: HTMLDivElement = doc.createElement('div');
@@ -166,6 +181,25 @@ export class ReportHost {
       '.edrms-menu:hover{background:#e8f3fb;border-color:#9fc3e2}' +
       '.edrms-menu svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}' +
       'html.edrms-side-closed #side{display:none!important}';
+    // No top header strip: its Export to PDF and "EDRMS Reporting Suite"
+    // card sit on the right of the dashboard's title band instead, and the
+    // menu button on its left (see _relayout).
+    css += 'header{display:none!important}' +
+      '#view .band.edrms-top{position:relative;min-height:84px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-right:560px!important}' +
+      '#view .band.edrms-top.edrms-has-menu{padding-left:84px!important}' +
+      '.edrms-top>.edrms-menu{position:absolute;left:18px;top:50%;transform:translateY(-50%);margin:0}' +
+      '.edrms-tools{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:14px}' +
+      '.edrms-tools .dx-btn{position:static!important;transform:none!important;right:auto!important}' +
+      '.edrms-tools .crumb{position:relative!important;top:auto!important;right:auto!important;left:auto!important;transform:none!important;margin:0!important;' +
+      'max-width:none!important;min-width:0!important;width:auto!important;white-space:nowrap!important;flex:0 0 auto}' +
+      '.edrms-tools .crumb *{white-space:nowrap!important}';
+    // A more readable sidebar: white menu text a size up, light labels, and
+    // the future-release items still dimmed but legible.
+    css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
+      '#nav .grp,#nav .future-release-group{color:#DCE8F6!important;font-size:12px!important;opacity:1!important}' +
+      '#nav a{color:#FFFFFF!important;font-size:15.5px!important}' +
+      '#nav .future-release-group a{color:#E8F0FA!important;opacity:.72!important;font-size:14.5px!important}' +
+      '#nav a.on{background:rgba(255,255,255,.18)!important}';
     if (this._options.adbBlue) {
       css += ':root{--nav:' + ADB_BLUE + '!important;--nav-hi:' + ADB_BLUE_HI + '!important}' +
         '#side{background:' + ADB_BLUE + '!important}';
@@ -208,9 +242,48 @@ export class ReportHost {
       document.head.appendChild(style);
     }
     const h: string = '#spSiteHeader,[data-automationid="SiteHeader"]';
+    // Hide SharePoint's site footer on this page, so the report runs to the
+    // bottom of the page instead of stopping above a coloured bar.
     style.textContent =
+      'footer,[data-automationid="SiteFooter"],[data-automation-id="SiteFooter"],#spSiteFooter{display:none!important}' +
       h.split(',').map((x: string) => x + ',' + x + ' div').join(',') + '{background-color:' + ADB_BLUE + '!important;border-color:' + ADB_BLUE_HI + '!important}' +
       h.split(',').map((x: string) => x + ' a,' + x + ' span,' + x + ' button,' + x + ' i').join(',') + '{color:#fff!important}';
+  }
+
+  private _tools: HTMLElement | undefined;
+  private _menu: HTMLButtonElement | undefined;
+  private _toolsDoc: Document | undefined;
+
+  // Move the header's Export to PDF button and "EDRMS Reporting Suite" card
+  // onto the right of the dashboard's title band, and the menu button onto
+  // its left. The elements are kept and moved, not copied, so they keep
+  // their behaviour; when the band is redrawn they are put on the new one.
+  private _relayout(): void {
+    const doc: Document | null = this._doc();
+    if (!doc) return;
+    const band: HTMLElement | null = doc.querySelector('#view .band');
+    if (!band) return;
+    if (this._toolsDoc !== doc) { this._tools = undefined; this._menu = undefined; this._toolsDoc = doc; }
+    if (!this._tools) {
+      this._tools = doc.createElement('div');
+      this._tools.className = 'edrms-tools';
+    }
+    const tools: HTMLElement = this._tools;
+    const dx: HTMLElement | null = tools.querySelector('.dx-btn') || doc.querySelector('header .dx-btn');
+    const crumb: HTMLElement | null = tools.querySelector('.crumb') || doc.querySelector('.crumb');
+    if (dx && dx.parentElement !== tools) tools.insertBefore(dx, tools.firstChild);
+    if (crumb && crumb.parentElement !== tools) tools.appendChild(crumb);
+    band.classList.add('edrms-top');
+    if (tools.parentElement !== band) band.appendChild(tools);
+    // Held by reference: when the band is redrawn the button goes with the old
+    // band, so it cannot be found in the page again.
+    const menu: HTMLButtonElement | undefined = this._menu;
+    if (menu && this._options.showSidebar) {
+      if (menu.parentElement !== band) band.insertBefore(menu, band.firstChild);
+      band.classList.add('edrms-has-menu');
+    } else {
+      band.classList.remove('edrms-has-menu');
+    }
   }
 
   // The menu (hamburger) button at the left of the report's header opens and
@@ -220,14 +293,17 @@ export class ReportHost {
     const doc: Document | null = this._doc();
     if (!doc) return;
     const header: HTMLElement | null = doc.querySelector('header');
-    let btn: HTMLButtonElement | null = doc.querySelector('.edrms-menu');
+    if (this._toolsDoc !== doc) { this._tools = undefined; this._menu = undefined; this._toolsDoc = doc; }
+    let btn: HTMLButtonElement | null = this._menu || doc.querySelector('.edrms-menu');
     if (!this._options.showSidebar) {
       if (btn) btn.remove();
+      this._menu = undefined;
       doc.documentElement.classList.remove('edrms-side-closed');
       return;
     }
-    if (!header || btn) { this._syncMenu(); return; }
+    if (btn) { this._syncMenu(); this._relayout(); return; }
     btn = doc.createElement('button');
+    this._menu = btn;
     btn.type = 'button';
     btn.className = 'edrms-menu';
     btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
@@ -236,8 +312,9 @@ export class ReportHost {
       try { window.localStorage.setItem(SIDEBAR_KEY, closed ? '1' : '0'); } catch { /* storage blocked: this visit only */ }
       this._syncMenu(closed);
     });
-    header.insertBefore(btn, header.firstChild);
+    (header || doc.body).insertBefore(btn, (header || doc.body).firstChild);
     this._syncMenu();
+    this._relayout();
   }
 
   private _syncMenu(closed?: boolean): void {
@@ -247,7 +324,7 @@ export class ReportHost {
       try { closed = window.localStorage.getItem(SIDEBAR_KEY) === '1'; } catch { closed = false; }
     }
     doc.documentElement.classList.toggle('edrms-side-closed', closed);
-    const btn: HTMLElement | null = doc.querySelector('.edrms-menu');
+    const btn: HTMLElement | null = this._menu || doc.querySelector('.edrms-menu');
     if (btn) {
       btn.title = closed ? 'Show the menu' : 'Hide the menu';
       btn.setAttribute('aria-label', btn.title);

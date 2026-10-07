@@ -121,6 +121,22 @@ function findChromium() {
     if (inner.menu !== wantSidebar) problems.push('menu button ' + (inner.menu ? 'present' : 'missing'));
     const wantCanvas = q.includes('ts=standard') ? 1920 : q.includes('ts=xlarge') ? 1280 : 1536;
     if (inner.canvas !== wantCanvas) problems.push('laid out at ' + inner.canvas + 'px, expected ' + wantCanvas);
+    // The header's controls live on the dashboard's title band, and must come
+    // back after the band is redrawn by switching dashboards.
+    for (const step of ['loaded', 'switched']) {
+      if (step === 'switched') { await frame.evaluate(d => switchTo(d === 'bw' ? 'dp' : 'bw'), q.includes('d=dp') ? 'dp' : 'bw'); await page.waitForTimeout(800); }
+      const c = await frame.evaluate(() => ({
+        pdf: !!document.querySelector('#view .band .edrms-tools .dx-btn'),
+        card: !!document.querySelector('#view .band .edrms-tools .crumb'),
+        menu: !!document.querySelector('#view .band > .edrms-menu'),
+        header: getComputedStyle(document.querySelector('header')).display
+      }));
+      if (!c.pdf || !c.card) problems.push('Export / Reporting Suite not on the title band (' + step + ')');
+      if (c.menu !== wantSidebar) problems.push('menu button ' + (c.menu ? 'shown' : 'missing') + ' on the title band (' + step + ')');
+      if (c.header !== 'none') problems.push('top header still shown');
+    }
+    if (q.includes('d=dp')) await frame.evaluate(() => switchTo('dp')); else await frame.evaluate(() => switchTo('bw'));
+    await page.waitForTimeout(500);
     if (wantSidebar && !zoom && !q.includes('sz=')) {
       // Scroll SharePoint's page to the middle and the bottom: the sidebar's
       // menu must stay on screen (1.0.5 left it at the top of the report).
