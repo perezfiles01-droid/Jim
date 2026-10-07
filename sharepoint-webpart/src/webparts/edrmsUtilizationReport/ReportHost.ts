@@ -241,6 +241,10 @@ export class ReportHost {
       '.kpi{display:flex!important;flex-direction:column!important}' +
       '.kpi .tap{position:static!important;margin:auto 0 0!important;padding-top:6px!important}' +
       '.kpi .lab{padding-right:0!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;display:block!important;word-break:normal!important}';
+    // 1.0.13: the physical counterparts table fits its panel (its share
+    // column showed only after scrolling sideways), and the libraries table
+    // gives Library and Site the room the number columns were taking.
+    css += '#bw-phys{min-width:0!important;--dc:minmax(0,1.5fr) repeat(3,minmax(0,1fr))!important}#bw-phys .hd{white-space:normal!important;line-height:1.25!important}#dp-libs-tab th:nth-child(2){width:26%!important}#dp-libs-tab th:nth-child(3){width:92px!important}#dp-libs-tab th:nth-child(4){width:76px!important}#dp-libs-tab th:nth-child(5){width:122px!important}#dp-libs-tab th:nth-child(6){width:72px!important}#dp-libs-tab th:nth-child(n+5){white-space:normal!important;line-height:1.2!important;word-break:normal!important;overflow-wrap:normal!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
