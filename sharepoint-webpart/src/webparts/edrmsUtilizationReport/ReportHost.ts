@@ -298,10 +298,12 @@ export class ReportHost {
       document.head.appendChild(style);
     }
     const h: string = '#spSiteHeader,[data-automationid="SiteHeader"]';
-    // Hide SharePoint's site footer on this page, so the report runs to the
+    // Hide SharePoint's site footer on this page (by its own ids only: 1.0.17
+    // hid every footer element, which took the Save button off SharePoint's
+    // Change the look panel), so the report runs to the
     // bottom of the page instead of stopping above a coloured bar.
     style.textContent =
-      'footer,[data-automationid="SiteFooter"],[data-automation-id="SiteFooter"],#spSiteFooter{display:none!important}' +
+      '[data-automationid="SiteFooter"],[data-automation-id="SiteFooter"],#spSiteFooter{display:none!important}' +
       h.split(',').map((x: string) => x + ',' + x + ' div').join(',') + '{background-color:' + ADB_BLUE + '!important;border-color:' + ADB_BLUE_HI + '!important}' +
       h.split(',').map((x: string) => x + ' a,' + x + ' span,' + x + ' button,' + x + ' i').join(',') + '{color:#fff!important}';
   }
