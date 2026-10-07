@@ -4,6 +4,9 @@ declare interface IEdrmsUtilizationReportWebPartStrings {
   DashboardLabel: string;
   DashboardBankWide: string;
   DashboardDepartment: string;
+  AdbBlueLabel: string;
+  AdbBlueOn: string;
+  AdbBlueOff: string;
   ShowSidebarLabel: string;
   ShowSidebarOn: string;
   ShowSidebarOff: string;

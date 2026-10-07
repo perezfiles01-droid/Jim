@@ -12,7 +12,14 @@ export interface IReportOptions {
   sizing: Sizing;
   height: number;
   textSize: TextSize;
+  // Colour the report's sidebar and SharePoint's site header in the BPMSD
+  // site's blue, without a tenant theme.
+  adbBlue: boolean;
 }
+
+// The blue of the BPMSD SharePoint site, sampled from it.
+const ADB_BLUE: string = '#194F8E';
+const ADB_BLUE_HI: string = '#2A62A3';
 
 // The report is laid out on a fixed canvas and scaled to the width it is
 // given, as the Floot app does it. 1920px is the approved monitor view; a
@@ -82,6 +89,8 @@ export class ReportHost {
     if (this._innerObserver) this._innerObserver.disconnect();
     window.removeEventListener('resize', this._onResize);
     document.removeEventListener('scroll', this._onScroll, true);
+    const headerStyle: HTMLElement | null = document.getElementById('edrms-site-header-blue');
+    if (headerStyle) headerStyle.remove();
   }
 
   private _doc(): Document | null {
@@ -157,6 +166,10 @@ export class ReportHost {
       '.edrms-menu:hover{background:#e8f3fb;border-color:#9fc3e2}' +
       '.edrms-menu svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}' +
       'html.edrms-side-closed #side{display:none!important}';
+    if (this._options.adbBlue) {
+      css += ':root{--nav:' + ADB_BLUE + '!important;--nav-hi:' + ADB_BLUE_HI + '!important}' +
+        '#side{background:' + ADB_BLUE + '!important}';
+    }
     if (!this._options.showSidebar) {
       // SharePoint's own navigation takes over from the report's sidebar.
       css += '#side{display:none!important}';
@@ -176,6 +189,28 @@ export class ReportHost {
         '#side>*{flex-grow:0!important;transform:translateY(var(--edrms-stick,0px));will-change:transform}';
     }
     style.textContent = css;
+    this._colourSiteHeader();
+  }
+
+  // SharePoint's own site header (site name and menu) in the same blue. Its
+  // colour normally comes from the site theme, which needs a tenant admin to
+  // add a custom one; this style lives only on pages carrying the web part.
+  private _colourSiteHeader(): void {
+    const id: string = 'edrms-site-header-blue';
+    let style: HTMLStyleElement | null = document.getElementById(id) as HTMLStyleElement | null;
+    if (!this._options.adbBlue) {
+      if (style) style.remove();
+      return;
+    }
+    if (!style) {
+      style = document.createElement('style');
+      style.id = id;
+      document.head.appendChild(style);
+    }
+    const h: string = '#spSiteHeader,[data-automationid="SiteHeader"]';
+    style.textContent =
+      h.split(',').map((x: string) => x + ',' + x + ' div').join(',') + '{background-color:' + ADB_BLUE + '!important;border-color:' + ADB_BLUE_HI + '!important}' +
+      h.split(',').map((x: string) => x + ' a,' + x + ' span,' + x + ' button,' + x + ' i').join(',') + '{color:#fff!important}';
   }
 
   // The menu (hamburger) button at the left of the report's header opens and

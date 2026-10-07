@@ -36,7 +36,7 @@ const files = {
   'template.js': 'window.REPORT_HTML=' + html + ';window.REPORT_SCRIPTS=' + scripts + ';',
   'reporthost.js': '(function(){var exports={};var module={exports:exports};\n' + host + '\n;window.ReportHost=exports.ReportHost;})();',
   'start.js': "(function(){var o=new URLSearchParams(location.search);window.__host=new ReportHost(document.getElementById('wp'),location.origin+'/assets/'," +
-    "window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:o.get('sb')!=='0',sizing:o.get('sz')||'content',height:900,textSize:o.get('ts')||'large'},'test','box','frame','EDRMS');" +
+    "window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:o.get('sb')!=='0',sizing:o.get('sz')||'content',height:900,textSize:o.get('ts')||'large',adbBlue:true},'test','box','frame','EDRMS');" +
     "setTimeout(function(){var wp=document.getElementById('wp');var n=document.createElement('div');wp.parentNode.appendChild(n);n.appendChild(wp);},300);})();"
 };
 

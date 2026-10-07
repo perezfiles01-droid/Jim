@@ -22,6 +22,9 @@ export interface IEdrmsUtilizationReportWebPartProps {
   showSidebar?: boolean;
   // 'large' by default: readers include people who need bigger text.
   textSize?: TextSize;
+  // The BPMSD site's blue for the report's sidebar and the site header. On
+  // unless switched off.
+  adbBlue?: boolean;
   // 'content' (default): the report is as tall as it is and scrolls with the
   // page. 'window': fills the window and scrolls inside. 'fixed': height below.
   sizing?: Sizing;
@@ -31,7 +34,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.6';
+const VERSION: string = '1.0.7';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -43,6 +46,7 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
       dashboard: p.dashboard === 'dp' ? 'dp' : 'bw',
       showSidebar: p.showSidebar !== false,
       textSize: p.textSize || 'large',
+      adbBlue: p.adbBlue !== false,
       sizing: p.sizing || (p.fitWindow === false ? 'fixed' : 'content'),
       height: p.height || 900
     };
@@ -88,6 +92,12 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
                     { key: 'dp', text: strings.DashboardDepartment }
                   ],
                   selectedKey: o.dashboard
+                }),
+                PropertyPaneToggle('adbBlue', {
+                  label: strings.AdbBlueLabel,
+                  onText: strings.AdbBlueOn,
+                  offText: strings.AdbBlueOff,
+                  checked: o.adbBlue
                 }),
                 PropertyPaneToggle('showSidebar', {
                   label: strings.ShowSidebarLabel,

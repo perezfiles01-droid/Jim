@@ -26,6 +26,7 @@
       "dashboard": "bw",
       "showSidebar": true,
       "textSize": "large",
+      "adbBlue": true,
       "sizing": "content",
       "height": 900
     }
