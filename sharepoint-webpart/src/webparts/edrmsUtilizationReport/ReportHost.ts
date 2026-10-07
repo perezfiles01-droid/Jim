@@ -37,7 +37,7 @@ export class ReportHost {
   private _innerObserver: ResizeObserver | undefined;
   private _shown: Dashboard | undefined;
   private readonly _onResize = (): void => { this.fit(); };
-  private readonly _onScroll = (): void => { this._stickSidebar(); };
+  private readonly _onScroll = (): void => { /* sidebar stays put (1.0.11) */ };
 
   public constructor(
     private readonly _container: HTMLElement,
@@ -236,8 +236,11 @@ export class ReportHost {
       '.sites-split .sites-table .drow,.sites-split .sites-rank .hbar{height:34px!important}' +
       '.sites-split .sites-rank .ht{height:16px!important}' +
       '.kpi{position:relative!important}' +
-      '.kpi .tap{position:absolute!important;right:14px!important;top:10px!important;margin:0!important}' +
-      '.kpi .lab{padding-right:118px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;display:block!important}';
+      // 1.0.11: the label gets the card's full width so names show whole;
+      // "View breakdown" sits on its own line at the foot of the card.
+      '.kpi{display:flex!important;flex-direction:column!important}' +
+      '.kpi .tap{position:static!important;margin:auto 0 0!important;padding-top:6px!important}' +
+      '.kpi .lab{padding-right:0!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;display:block!important;word-break:normal!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
@@ -265,7 +268,9 @@ export class ReportHost {
         // instead (see _stickSidebar), so the menu stays in view.
         // The menu is set to stretch to the sidebar's full height; let it
         // keep its own height so there is room to move it.
-        '#side>*{flex-grow:0!important;transform:translateY(var(--edrms-stick,0px));will-change:transform}';
+        // 1.0.11: the sidebar no longer follows the scroll. Moving it by
+        // script always trailed the page by a frame and looked shaky.
+        '#side>*{flex-grow:0!important}';
     }
     style.textContent = css;
     this._colourSiteHeader();
@@ -447,7 +452,6 @@ export class ReportHost {
     this._frame.style.transform = 'scale(' + scale + ')';
     this._box.style.height = Math.ceil(inner * scale) + 'px';
     this._box.style.overflowX = 'hidden';
-    this._stickSidebar();
   }
 
   // From where the report starts on the page to the bottom of the window,

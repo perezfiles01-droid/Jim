@@ -138,21 +138,15 @@ function findChromium() {
     if (q.includes('d=dp')) await frame.evaluate(() => switchTo('dp')); else await frame.evaluate(() => switchTo('bw'));
     await page.waitForTimeout(500);
     if (wantSidebar && !zoom && !q.includes('sz=')) {
-      // Scroll SharePoint's page to the middle and the bottom: the sidebar's
-      // menu must stay on screen (1.0.5 left it at the top of the report).
-      for (const where of ['middle', 'bottom']) {
-        await page.evaluate(w => { const sc = document.getElementById('wp').closest('div[style*="overflow"]');
-          sc.scrollTop = w === 'bottom' ? sc.scrollHeight : sc.scrollHeight / 2; }, where);
-        await page.waitForTimeout(300);
-        const seen = await page.evaluate(() => {
-          const f = document.querySelector('#wp iframe'), sc = document.getElementById('wp').closest('div[style*="overflow"]');
-          const a = f.contentDocument.querySelector('#nav a'), fr = f.getBoundingClientRect(), s = sc.getBoundingClientRect();
-          const scale = fr.width / f.offsetWidth, r = a.getBoundingClientRect();
-          const top = fr.top + r.top * scale, bottom = fr.top + r.bottom * scale;
-          return top >= s.top - 1 && bottom <= s.bottom + 1;
-        });
-        if (!seen) problems.push('sidebar menu off screen when scrolled to the ' + where);
-      }
+      // 1.0.11: the sidebar stays put while SharePoint's page scrolls
+      // (following the scroll by script looked shaky). It must not move.
+      await page.evaluate(() => { const sc = document.getElementById('wp').closest('div[style*="overflow"]'); sc.scrollTop = sc.scrollHeight / 2; });
+      await page.waitForTimeout(300);
+      const moved = await page.evaluate(() => {
+        const d = document.querySelector('#wp iframe').contentDocument, a = d.querySelector('#nav a');
+        return a.getBoundingClientRect().top - d.getElementById('side').getBoundingClientRect().top > 400;
+      });
+      if (moved) problems.push('sidebar moved with the scroll');
       await page.evaluate(() => { document.getElementById('wp').closest('div[style*="overflow"]').scrollTop = 0; });
     }
     if (wantSidebar && !zoom) {
