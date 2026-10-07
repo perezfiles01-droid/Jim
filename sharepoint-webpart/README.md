@@ -62,7 +62,7 @@ npm run build
 
 The package is written to `sharepoint/solution/edrms-utilization-report.sppkg`.
 Bump `version` in `config/package-solution.json` before uploading a new
-build over an old one (currently 1.0.5.0). To build from a different copy of the report, set
+build over an old one (currently 1.0.6.0). To build from a different copy of the report, set
 `REPORT_SOURCE=/path/to/index.html`.
 
 Then check it under the conditions SharePoint imposes (a strict-dynamic

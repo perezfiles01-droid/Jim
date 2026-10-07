@@ -30,6 +30,7 @@ export class ReportHost {
   private _innerObserver: ResizeObserver | undefined;
   private _shown: Dashboard | undefined;
   private readonly _onResize = (): void => { this.fit(); };
+  private readonly _onScroll = (): void => { this._stickSidebar(); };
 
   public constructor(
     private readonly _container: HTMLElement,
@@ -62,6 +63,9 @@ export class ReportHost {
       this._observer.observe(_container);
     }
     window.addEventListener('resize', this._onResize);
+    // SharePoint scrolls its page inside a div, so listen in the capture
+    // phase to hear scrolls of any element, not just the window.
+    document.addEventListener('scroll', this._onScroll, true);
     this.fit();
   }
 
@@ -77,6 +81,7 @@ export class ReportHost {
     if (this._observer) this._observer.disconnect();
     if (this._innerObserver) this._innerObserver.disconnect();
     window.removeEventListener('resize', this._onResize);
+    document.removeEventListener('scroll', this._onScroll, true);
   }
 
   private _doc(): Document | null {
@@ -162,7 +167,13 @@ export class ReportHost {
       // report could grow but never shrink back.
       css += 'html,body{height:auto!important;min-height:0!important;overflow:hidden!important}' +
         '#side{height:auto!important;position:relative!important;top:auto!important}' +
-        'header{position:relative!important}';
+        'header{position:relative!important}' +
+        // The page, not the report, scrolls, so the sidebar's own sticky
+        // positioning cannot work. Its contents are moved down by script
+        // instead (see _stickSidebar), so the menu stays in view.
+        // The menu is set to stretch to the sidebar's full height; let it
+        // keep its own height so there is room to move it.
+        '#side>*{flex-grow:0!important;transform:translateY(var(--edrms-stick,0px));will-change:transform}';
     }
     style.textContent = css;
   }
@@ -220,6 +231,40 @@ export class ReportHost {
     this._shown = this._options.dashboard;
   }
 
+  // Keep the sidebar's menu in view while SharePoint's page scrolls past the
+  // report: shift it down by however much of the report has scrolled out of
+  // sight at the top, but never past the bottom of the report.
+  private _stickSidebar(): void {
+    const doc: Document | null = this._doc();
+    if (!doc) return;
+    const root: HTMLElement = doc.documentElement;
+    const side: HTMLElement | null = doc.getElementById('side');
+    if (this._options.sizing !== 'content' || !side || !this._options.showSidebar || root.classList.contains('edrms-side-closed')) {
+      root.style.removeProperty('--edrms-stick');
+      return;
+    }
+    const scale: number = this._scale || 1;
+    const box: DOMRect = this._box.getBoundingClientRect();
+    // Top of the visible area: the top of SharePoint's scrolling region.
+    let scroller: HTMLElement | null = this._container.parentElement;
+    while (scroller && scroller !== document.body) {
+      const oy: string = getComputedStyle(scroller).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && scroller.scrollHeight > scroller.clientHeight) break;
+      scroller = scroller.parentElement;
+    }
+    const visibleTop: number = scroller && scroller !== document.body ? Math.max(0, scroller.getBoundingClientRect().top) : 0;
+    let natural: number = 0;
+    for (let i: number = 0; i < side.children.length; i++) {
+      const c: HTMLElement = side.children[i] as HTMLElement;
+      natural = Math.max(natural, c.offsetTop + c.offsetHeight);
+    }
+    const room: number = Math.max(0, side.offsetHeight - natural);
+    const offset: number = Math.min(room, Math.max(0, (visibleTop - box.top) / scale));
+    root.style.setProperty('--edrms-stick', Math.round(offset) + 'px');
+  }
+
+  private _scale: number = 1;
+
   public fit(): void {
     // Always exactly the width SharePoint gives the web part. (The Floot app
     // also enlarges the report with browser zoom; inside SharePoint the page
@@ -228,6 +273,7 @@ export class ReportHost {
     const design: number = CANVAS[this._options.textSize] || CANVAS.large;
     const width: number = this._container.clientWidth || design;
     const scale: number = width / design;
+    this._scale = scale;
     let inner: number;
     if (this._options.sizing === 'content') {
       const doc: Document | null = this._doc();
@@ -244,6 +290,7 @@ export class ReportHost {
     this._frame.style.transform = 'scale(' + scale + ')';
     this._box.style.height = Math.ceil(inner * scale) + 'px';
     this._box.style.overflowX = 'hidden';
+    this._stickSidebar();
   }
 
   // From where the report starts on the page to the bottom of the window,

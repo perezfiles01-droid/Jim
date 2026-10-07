@@ -121,6 +121,24 @@ function findChromium() {
     if (inner.menu !== wantSidebar) problems.push('menu button ' + (inner.menu ? 'present' : 'missing'));
     const wantCanvas = q.includes('ts=standard') ? 1920 : q.includes('ts=xlarge') ? 1280 : 1536;
     if (inner.canvas !== wantCanvas) problems.push('laid out at ' + inner.canvas + 'px, expected ' + wantCanvas);
+    if (wantSidebar && !zoom && !q.includes('sz=')) {
+      // Scroll SharePoint's page to the middle and the bottom: the sidebar's
+      // menu must stay on screen (1.0.5 left it at the top of the report).
+      for (const where of ['middle', 'bottom']) {
+        await page.evaluate(w => { const sc = document.getElementById('wp').closest('div[style*="overflow"]');
+          sc.scrollTop = w === 'bottom' ? sc.scrollHeight : sc.scrollHeight / 2; }, where);
+        await page.waitForTimeout(300);
+        const seen = await page.evaluate(() => {
+          const f = document.querySelector('#wp iframe'), sc = document.getElementById('wp').closest('div[style*="overflow"]');
+          const a = f.contentDocument.querySelector('#nav a'), fr = f.getBoundingClientRect(), s = sc.getBoundingClientRect();
+          const scale = fr.width / f.offsetWidth, r = a.getBoundingClientRect();
+          const top = fr.top + r.top * scale, bottom = fr.top + r.bottom * scale;
+          return top >= s.top - 1 && bottom <= s.bottom + 1;
+        });
+        if (!seen) problems.push('sidebar menu off screen when scrolled to the ' + where);
+      }
+      await page.evaluate(() => { document.getElementById('wp').closest('div[style*="overflow"]').scrollTop = 0; });
+    }
     if (wantSidebar && !zoom) {
       // The menu button closes the sidebar, keeps it closed after a reload,
       // and opens it again.
