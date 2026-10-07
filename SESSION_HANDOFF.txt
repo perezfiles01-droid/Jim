@@ -1,0 +1,200 @@
+EDRMS UTILIZATION REPORT: SESSION HANDOFF
+Written 7 October 2026. Paste this whole file into a new Claude Code session
+(repo perezfiles01-droid/Jim) to carry on exactly where we stopped.
+
+======================================================================
+0. INSTRUCTIONS TO CLAUDE (READ FIRST)
+======================================================================
+You are continuing work on the ADB EDRMS Utilization Report for the user
+(perezfiles01@gmail.com). Before doing anything:
+
+  1. Read CLAUDE.md, then STATUS.md, then BACKGROUND.md in the repo root.
+     If STATUS.md and BACKGROUND.md disagree, STATUS.md is right.
+  2. Read this file to the end.
+  3. Do not ask the user to re-explain anything covered here.
+     Act on their next request using the rules in section 2.
+
+There are three copies of the report. Keep them straight:
+  A. FLOOT APP: the user's test bed. Changes go here first.
+       Project id : d7e7628e-eaf3-4858-8a43-8341612737b4 ("EDRMS Reporting Suite")
+       Live       : https://edrms-reporting-suite.floot.app (password: adb)
+       Main file  : pages/_index.tsx. It holds the report HTML plus
+                    string patches added before </body>: EXPORT_TABLE_PATCH,
+                    EXPORT_DASHBOARD_PATCH and MENU_PATCH. MENU_PATCH holds
+                    the menu, ADB blue, no-header and compact CSS.
+       Tools      : the mcp__Floot__* tools (load them with ToolSearch).
+                    Publish with publish_app(projectId,
+                    domain:"edrms-reporting-suite"), then poll get_job_status.
+  B. GITHUB PAGES: the final version. https://perezfiles01-droid.github.io/Jim/
+       This is index.html in the repo, served from main.
+       It is synced FROM Floot by the GitHub Action "Sync from Floot"
+       (.github/workflows/sync-from-floot.yml, sync-from-floot.js).
+       floot-wrapper.html holds the zoom and password logic.
+  C. SHAREPOINT SPFx WEB PART, in the folder sharepoint-webpart/
+       Test tenant 7rkd12. Account JimTest@7rkd12.onmicrosoft.com.
+       Site       : https://7rkd12.sharepoint.com/sites/EDRMSUtilsample
+                    ("EDRMS Util sample")
+       App Catalog: https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
+       Delivered package (keep THIS filename so the user can Replace):
+                    EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg
+                    (repo root). Current version: 1.0.10.0.
+
+======================================================================
+1. STANDING RULES FROM THE USER (ALWAYS FOLLOW)
+======================================================================
+- PUBLISH FLOOT AUTOMATICALLY after every Floot change. Don't ask.
+- DON'T UPDATE GITHUB PAGES WHEN FLOOT CHANGES. "Floot app will serve as a
+  test for me before going into the final which is the github." Sync
+  index.html only when the user asks. Use the GitHub Action "Sync from
+  Floot", or fetch Floot's HTML and run the same sync.
+- KEEP SHAREPOINT AND FLOOT IN SYNC. Every change to the SharePoint web part
+  also goes into the Floot app, which is then published, and the reverse.
+- REPO: every change is merged to main and pushed in the same turn
+  (CLAUDE.md rule). Work on the branch claude/nice-ride-0cbkem, then:
+    git checkout main && git merge --no-edit <branch> && git push origin main
+    git checkout <branch>
+  End commit messages with the attribution lines the session gives you.
+- ADB COLOUR: BPMSD blue #194F8E, built in directly. No PowerShell scripts.
+- READERS ARE OFTEN OLDER: keep text large and readable. The default text
+  size is 'large'.
+- AFTER EACH SHAREPOINT BUILD: send the .sppkg file (SendUserFile, attach)
+  and tell the user to upload it in the App Catalog and choose Replace,
+  then hard reload with Ctrl+Shift+R.
+- RELEASE 1 MOCKUP PDF: update
+  EDRMS_Utilization_Report_Release1_Prototype_2026-10-07.pdf only when a
+  change affects the mockup's content. Tell the user whether it changed.
+- BE HONEST: say what was verified and what was not. Never claim a fit or a
+  fix you didn't measure.
+
+======================================================================
+2. HOW TO MAKE A CHANGE (STEP BY STEP)
+======================================================================
+Visual or CSS change (menu, cards, spacing, colours):
+  1. Prototype in a local harness with Playwright, using the Chromium at
+     /opt/pw-browsers. Measure element bottoms (band, KPI row, first table
+     panel) at a 1536 px canvas. Take screenshots and look at them.
+  2. SharePoint: put the CSS in
+     sharepoint-webpart/src/webparts/edrmsUtilizationReport/ReportHost.ts,
+     in the _applyStyle() css string.
+  3. Floot: put the SAME CSS in MENU_PATCH in pages/_index.tsx with
+     mcp__Floot__edit_file, then publish.
+Report text or content change:
+  - Floot: edit the replacement chain in pages/_index.tsx. Use
+    split().join() to replace every occurrence; .replace() only changes the
+    first. That was the "Click to open" bug.
+  - SharePoint: the template is built from the repo's index.html. Because
+    GitHub must not change until the user asks, build from a temporary copy
+    holding the same text change:
+        sed '<change>' index.html > sp-src.tmp.html   (in the repo root, so
+                                                       floot-assets/ resolves)
+        cd sharepoint-webpart && REPORT_SOURCE=/home/user/Jim/sp-src.tmp.html npm run build
+        rm ../sp-src.tmp.html
+    WARNING: a later normal build reads index.html and would drop these
+    text fixes. Until GitHub is synced, rebuild every time with a temporary
+    copy carrying ALL pending text fixes (currently: '&#9662; Click to open'
+    becomes 'View breakdown <span aria-hidden="true">›</span>', every one).
+Building and shipping SharePoint:
+  1. Bump the version in sharepoint-webpart/config/package-solution.json
+     (x.y.z.0) and VERSION in EdrmsUtilizationReportWebPart.ts.
+  2. cd sharepoint-webpart && npm run build      (Node 22, SPFx 1.23.2, heft)
+  3. NODE_PATH=/home/user/Jim/node_modules node test/host-test.js
+     All 8 cases must PASS.
+  4. cp sharepoint/solution/edrms-utilization-report.sppkg \
+       ../EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg
+  5. Commit, merge to main, push. Send the .sppkg to the user.
+Changing index.html itself (only when GitHub is to change): run the
+Playwright dashboard check that CLAUDE.md requires (the TDZ safeguard)
+before committing.
+
+======================================================================
+3. TECHNICAL FACTS LEARNED THE HARD WAY (DON'T REDO THESE MISTAKES)
+======================================================================
+- SharePoint's script policy uses a nonce plus 'strict-dynamic'. A
+  <script src> written in markup is blocked. ReportHost adds every script
+  with doc.createElement('script'), async=false, into a srcdoc iframe.
+- internalModuleBaseUrls[0] has NO trailing slash in this tenant. The code
+  adds one; without it every script returned 404.
+- SharePoint moves the web part, which reloads the iframe. Scripts are
+  reinjected on every load, marked with data-edrms-loaded.
+- Assets are ASCII only: \u escapes in JS, entities and CSS escapes in the
+  markup, and a BOM on the vendor libraries. Anything else turned into
+  mojibake.
+- Scaling: the report is laid out on a fixed canvas (standard 1920 / large
+  1536, the default / xlarge 1280) and scaled to the container width. No
+  browser-zoom factor in SharePoint; it caused overflow.
+- Sizing modes: 'content' (the default, iframe as tall as the report, one
+  page scroll), 'window' and 'fixed'.
+- The sticky sidebar is emulated with --edrms-stick translateY. The #side
+  children need flex-grow:0.
+- Header strip hidden (header{display:none}). The Export to PDF button
+  (.dx-btn) and the "EDRMS Reporting Suite" card (.crumb) move into
+  .edrms-tools on the first #view .band (class edrms-top). The menu button
+  sits at the band's left. switchTo() redraws #view, so all three are held
+  by reference and put back by a MutationObserver.
+- Menu button: toggles html.edrms-side-closed, remembered in localStorage
+  key 'edrms-sidebar-closed'. The icon is a sidebar-panel SVG: the left
+  pane is shaded and the arrow points left when open; the arrow flips when
+  closed.
+- Exports: html2canvas 1.4.1, jsPDF 2.5.1 and SheetJS 0.18.5 (from cdnjs in
+  Floot, bundled in SPFx). The PDF clone sets zoom to 1 and width to
+  1920px, draws the conic-gradient donut as an image, and swaps date inputs
+  for text.
+- Row heights: .sites-split rows had a fixed height of 56px; now 34px with
+  the code and name on one line.
+- SharePoint "Site access" panel: on this tenant it sometimes draws no Add
+  button. Use the classic page instead:
+  /sites/EDRMSUtilsample/_layouts/15/user.aspx, then Grant Permissions.
+
+======================================================================
+4. WHAT HAS BEEN DONE (CHRONOLOGICAL)
+======================================================================
+- Feasibility review of the Floot app, starting with Bank-wide Oversight.
+- Floot changes:
+    removed the training footnote under the EDRMS users table
+    added a Documents column and tile to the records declared table
+    added an Export table (xlsx) button on every table
+    added Export to PDF for the whole dashboard
+    fixed the duplicate export buttons in physical counterparts
+    fixed the missing donut in the PDF
+    fixed GitHub zoom glitches and the garbled PDF under zoom
+- Declaration rate: discussed whether it should be the department's
+  records over its documents, or over the bank-wide total of records.
+- GitHub was synced on request so it matches Floot (export features
+  included).
+- Release 1 mockup PDF updated:
+  EDRMS_Utilization_Report_Release1_Prototype_2026-10-07.pdf
+- SharePoint rebuild as a custom SPFx web part, 1.0.0 to 1.0.10:
+    1.0.1   scripts added from trusted code (CSP)
+    1.0.2   asset base slash fix
+    1.0.3-4 removed zoom overflow, content sizing
+    later   sidebar menu, larger readable text, sticky sidebar,
+            ADB blue #194F8E (site header recoloured, footer hidden),
+            no header strip (controls on the title band)
+    1.0.9   compact layout: smaller Export to PDF button and suite card,
+            36px sidebar-panel icon, about 30% shorter KPI cards
+            ("View breakdown" in the top-right corner), table rows 34px
+            with code and name on one line. On Bank-wide Oversight the full
+            first table (Top 10 and Sites by department, 10 rows plus
+            pager) now fits on the first screen.
+    1.0.10  every card says "View breakdown ›". Department Insights used
+            to say "▾ Click to open".
+  Every change went into Floot too, and Floot was published each time.
+- Helped the user give Leah Test access to the site (classic Grant
+  Permissions page, Visitors [Read], not Full control).
+
+======================================================================
+5. OPEN ITEMS / WHERE WE STOPPED
+======================================================================
+- Department Insights still can't show its whole first table (EDRMS sites)
+  on the first screen. The department profile and the year filter take up
+  too much room above it. Offered options, with no answer yet:
+  (a) 5 rows per page, (b) fold the go-live and site-convention boxes into
+  a single line. Wait for the user to choose.
+- GitHub Pages is behind Floot. It lacks the compact layout, the new icon
+  and "View breakdown" on Department Insights. Sync only when the user asks.
+  After a sync, normal SharePoint builds from index.html carry the text
+  fixes again; the temporary-copy step is no longer needed.
+- The user is checking 1.0.10 in SharePoint, and testing as Leah Test with
+  Read access.
+- Next step: wait for the user's next request and handle it with the rules
+  in sections 1 and 2.
