@@ -1,4 +1,5 @@
-import { Version } from '@microsoft/sp-core-library';
+import { DisplayMode, Version } from '@microsoft/sp-core-library';
+import { SPPermission } from '@microsoft/sp-page-context';
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneChoiceGroup,
@@ -34,7 +35,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.15';
+const VERSION: string = '1.0.16';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -64,9 +65,62 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
     } else {
       this._host.update(this._options());
     }
+    this._chrome();
+  }
+
+  protected onDisplayModeChanged(oldDisplayMode: DisplayMode): void {
+    this._chrome();
+  }
+
+  // 1.0.16: SharePoint's site bar (site name and its menu) and page command
+  // bar (New, Page details, Preview, Analytics, Edit) are hidden while the
+  // page is read, so the report starts at the top. People who can edit the
+  // page get a small Edit page button instead; in edit mode both bars come
+  // back so the page can be saved and published.
+  private _chrome(): void {
+    const id: string = 'edrms-hide-chrome';
+    const btnId: string = 'edrms-edit-page';
+    let style: HTMLStyleElement | null = document.getElementById(id) as HTMLStyleElement | null;
+    let btn: HTMLAnchorElement | null = document.getElementById(btnId) as HTMLAnchorElement | null;
+    if (this.displayMode === DisplayMode.Edit) {
+      if (style) style.remove();
+      if (btn) btn.remove();
+      return;
+    }
+    if (!style) {
+      style = document.createElement('style');
+      style.id = id;
+      style.textContent =
+        '#spSiteHeader,[data-automationid="SiteHeader"],[data-automation-id="SiteHeader"],' +
+        '#spCommandBar,[data-automation-id="pageCommandBar"],[data-automationid="pageCommandBar"],' +
+        'div[class^="commandBarWrapper"],div[class*=" commandBarWrapper"]{display:none!important}' +
+        '#' + btnId + '{position:fixed;right:20px;bottom:20px;z-index:1000;display:inline-flex;align-items:center;gap:6px;' +
+        'padding:8px 14px;border-radius:8px;background:#194F8E;color:#fff!important;font:600 14px/1.2 "Segoe UI",Arial,sans-serif;' +
+        'text-decoration:none!important;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:.85}' +
+        '#' + btnId + ':hover{opacity:1}';
+      document.head.appendChild(style);
+    }
+    let canEdit: boolean = false;
+    try {
+      canEdit = this.context.pageContext.web.permissions.hasPermission(SPPermission.addAndCustomizePages) ||
+        this.context.pageContext.web.permissions.hasPermission(SPPermission.editListItems);
+    } catch { canEdit = false; }
+    if (canEdit && !btn) {
+      btn = document.createElement('a');
+      btn.id = btnId;
+      const url: URL = new URL(window.location.href);
+      url.searchParams.set('Mode', 'Edit');
+      btn.href = url.toString();
+      btn.textContent = '\u270E Edit page';
+      document.body.appendChild(btn);
+    }
   }
 
   protected onDispose(): void {
+    const style: HTMLElement | null = document.getElementById('edrms-hide-chrome');
+    if (style) style.remove();
+    const btn: HTMLElement | null = document.getElementById('edrms-edit-page');
+    if (btn) btn.remove();
     if (this._host) this._host.dispose();
     super.onDispose();
   }
