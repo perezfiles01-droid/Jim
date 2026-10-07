@@ -2,6 +2,9 @@ declare interface IEdrmsUtilizationReportWebPartStrings {
   PropertyPaneDescription: string;
   LayoutGroupName: string;
   HeightFieldLabel: string;
+  FitWindowLabel: string;
+  FitWindowOn: string;
+  FitWindowOff: string;
   FrameTitle: string;
 }
 

@@ -1,7 +1,8 @@
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneSlider
+  PropertyPaneSlider,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
@@ -11,6 +12,9 @@ import { REPORT_HTML, REPORT_SCRIPTS } from './reportTemplate';
 
 export interface IEdrmsUtilizationReportWebPartProps {
   height: number;
+  // Fill the browser window below the report's top edge. On unless switched
+  // off; a page saved before 1.0.3 has no value here and is treated as on.
+  fitWindow?: boolean;
 }
 
 // The report is laid out on a fixed 1920px canvas, the approved monitor view,
@@ -18,7 +22,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 // A laptop and a monitor show the same layout, only larger or smaller.
 const DESIGN_WIDTH: number = 1920;
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.2';
+const VERSION: string = '1.0.3';
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -115,12 +119,28 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
     const width: number = this.domElement.clientWidth || DESIGN_WIDTH;
     const zoom: number = (window.devicePixelRatio || 1) / this._baseDpr;
     const scale: number = (width * zoom) / DESIGN_WIDTH;
-    const height: number = Math.max(400, this.properties.height || 900);
+    const height: number = this.properties.fitWindow === false
+      ? Math.max(400, this.properties.height || 900)
+      : this._windowHeight();
     this._box.style.height = height + 'px';
     this._box.style.overflowX = scale * DESIGN_WIDTH > width + 1 ? 'auto' : 'hidden';
     this._frame.style.width = DESIGN_WIDTH + 'px';
     this._frame.style.height = (height / scale) + 'px';
     this._frame.style.transform = 'scale(' + scale + ')';
+  }
+
+  // The height that takes the report from where it starts on the page to the
+  // bottom of the window, measured as if the page were scrolled to the top.
+  private _windowHeight(): number {
+    let scroller: HTMLElement | null = this.domElement.parentElement;
+    while (scroller && scroller !== document.body) {
+      const oy: string = getComputedStyle(scroller).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && scroller.scrollHeight > scroller.clientHeight) break;
+      scroller = scroller.parentElement;
+    }
+    const scrolled: number = scroller && scroller !== document.body ? scroller.scrollTop : window.scrollY;
+    const top: number = this.domElement.getBoundingClientRect().top + scrolled;
+    return Math.max(500, Math.round(window.innerHeight - top - 16));
   }
 
   protected onDispose(): void {
@@ -142,7 +162,14 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
             {
               groupName: strings.LayoutGroupName,
               groupFields: [
+                PropertyPaneToggle('fitWindow', {
+                  label: strings.FitWindowLabel,
+                  onText: strings.FitWindowOn,
+                  offText: strings.FitWindowOff,
+                  checked: this.properties.fitWindow !== false
+                }),
                 PropertyPaneSlider('height', {
+                  disabled: this.properties.fitWindow !== false,
                   label: strings.HeightFieldLabel,
                   min: 500,
                   max: 2400,

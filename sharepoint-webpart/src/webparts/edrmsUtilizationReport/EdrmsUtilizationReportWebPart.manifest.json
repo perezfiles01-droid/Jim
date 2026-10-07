@@ -23,7 +23,8 @@
     "description": { "default": "ADB EDRMS Utilization Report: Bank-wide Oversight and Department Insights" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "height": 900
+      "height": 900,
+      "fitWindow": true
     }
   }]
 }

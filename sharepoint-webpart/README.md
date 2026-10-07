@@ -31,8 +31,10 @@ repo root.
    gear icon, **Add an app**, choose **EDRMS Utilization Report**.
 3. **Put it on a page:** edit the page, add a **Full-width section**, click
    **+**, search for **EDRMS Utilization Report**, add it, then **Republish**.
-4. **Height:** edit the web part (pencil icon) and use the slider to set how
-   tall it is on the page. Default 900 pixels; the report scrolls inside it.
+4. **Size:** by default the report fills the window from where it starts to
+   the bottom of the screen, on any screen. To fix a height instead, edit the
+   web part (the sliders icon in its toolbar), switch **Fill the window** off
+   and set **Height**. The report scrolls inside the web part either way.
 
 ## Rebuild it after the report changes
 
@@ -46,7 +48,7 @@ npm run build
 
 The package is written to `sharepoint/solution/edrms-utilization-report.sppkg`.
 Bump `version` in `config/package-solution.json` before uploading a new
-build over an old one (currently 1.0.2.0). To build from a different copy of the report, set
+build over an old one (currently 1.0.3.0). To build from a different copy of the report, set
 `REPORT_SOURCE=/path/to/index.html`.
 
 `build-report.js` refuses to build if any inline script, cdnjs reference or
