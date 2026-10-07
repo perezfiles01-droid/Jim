@@ -6,7 +6,21 @@
 #   2. Change the admin address below if your tenant is not 7rkd12
 #   3. .\Add-AdbBlueTheme.ps1
 
-Connect-SPOService -Url "https://7rkd12-admin.sharepoint.com"
+$ErrorActionPreference = "Stop"
+$adminUrl = "https://7rkd12-admin.sharepoint.com"
+
+# Sign in through the web browser. The newer SharePoint module otherwise uses
+# a Windows sign-in component (msalruntime) that is missing on some PCs and
+# fails with "No valid OAuth 2.0 authentication session exists".
+try {
+    Connect-SPOService -Url $adminUrl -UseSystemBrowser $true
+} catch {
+    Write-Host ""
+    Write-Host "Could not sign in to $adminUrl" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host "Nothing was changed. Sign in as a SharePoint administrator of this tenant." -ForegroundColor Red
+    return
+}
 
 $palette = @{
     "themePrimary" = "#194f8e";
@@ -33,5 +47,17 @@ $palette = @{
     "white" = "#ffffff";
 }
 
-Add-SPOTheme -Identity "ADB Blue" -Palette $palette -IsInverted $false -Overwrite
-Write-Host "Added the ADB Blue theme. On the site: gear icon > Change the look > Theme > From your organization > ADB Blue > Save."
+try {
+    Add-SPOTheme -Identity "ADB Blue" -Palette $palette -IsInverted $false -Overwrite
+} catch {
+    Write-Host ""
+    Write-Host "Signed in, but could not add the theme:" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    return
+}
+
+# Only reached when the theme really was added.
+Get-SPOTheme -Name "ADB Blue" | Out-Null
+Write-Host ""
+Write-Host "Done: the ADB Blue theme is in the tenant." -ForegroundColor Green
+Write-Host "On the site: gear icon > Change the look > Theme > From your organization > ADB Blue > Save."
