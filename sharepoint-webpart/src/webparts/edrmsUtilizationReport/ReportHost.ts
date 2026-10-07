@@ -176,23 +176,68 @@ export class ReportHost {
       style.id = 'edrms-sharepoint';
       doc.head.appendChild(style);
     }
-    let css: string = '.edrms-menu{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:44px;height:44px;' +
-      'margin-right:14px;border:1px solid #cfd8e3;border-radius:10px;background:#fff;color:#0b2545;cursor:pointer}' +
+    let css: string = '.edrms-menu{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;' +
+      'margin-right:12px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#0b2545;cursor:pointer}' +
       '.edrms-menu:hover{background:#e8f3fb;border-color:#9fc3e2}' +
-      '.edrms-menu svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}' +
+      '.edrms-menu svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}' +
+      '.edrms-menu .pane{fill:currentColor;opacity:.18;stroke:none}' +
+      '.edrms-menu .chev{transform-box:fill-box;transform-origin:center}' +
+      'html.edrms-side-closed .edrms-menu .chev{transform:scaleX(-1)}' +
+      'html.edrms-side-closed .edrms-menu .pane{opacity:0}' +
       'html.edrms-side-closed #side{display:none!important}';
     // No top header strip: its Export to PDF and "EDRMS Reporting Suite"
     // card sit on the right of the dashboard's title band instead, and the
     // menu button on its left (see _relayout).
     css += 'header{display:none!important}' +
-      '#view .band.edrms-top{position:relative;min-height:84px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-right:560px!important}' +
-      '#view .band.edrms-top.edrms-has-menu{padding-left:84px!important}' +
-      '.edrms-top>.edrms-menu{position:absolute;left:18px;top:50%;transform:translateY(-50%);margin:0}' +
-      '.edrms-tools{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:14px}' +
+      '#view .band.edrms-top{position:relative;min-height:60px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-right:440px!important}' +
+      '#view .band.edrms-top.edrms-has-menu{padding-left:66px!important}' +
+      '.edrms-top>.edrms-menu{position:absolute;left:16px;top:50%;transform:translateY(-50%);margin:0}' +
+      '.edrms-tools{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:10px}' +
       '.edrms-tools .dx-btn{position:static!important;transform:none!important;right:auto!important}' +
       '.edrms-tools .crumb{position:relative!important;top:auto!important;right:auto!important;left:auto!important;transform:none!important;margin:0!important;' +
       'max-width:none!important;min-width:0!important;width:auto!important;white-space:nowrap!important;flex:0 0 auto}' +
       '.edrms-tools .crumb *{white-space:nowrap!important}';
+    // Compact layout (1.0.9): a smaller Export button and suite card, shorter
+    // cards and table rows, so the first table shows in full on first view.
+    css += '#view .band.edrms-top{padding-top:8px!important;padding-bottom:8px!important;margin-bottom:12px!important}' +
+      '#view .band.edrms-top h2{font-size:17px!important}' +
+      '#view .band.edrms-top .bd{font-size:12.5px!important;margin-top:2px!important}' +
+      '.edrms-tools .dx-btn{height:32px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:8px!important;gap:6px!important}' +
+      '.edrms-tools .dx-btn svg{width:14px!important;height:14px!important}' +
+      '.edrms-tools .crumb{padding:6px 12px 6px 38px!important;font-size:12.5px!important;min-height:0!important}' +
+      '.edrms-tools .crumb .snapshot-date{font-size:11px!important;margin-top:1px!important}' +
+      '.kpi{padding:10px 14px!important;min-height:0!important}' +
+      '.kpi .lab{font-size:12.5px!important;margin:0!important;line-height:1.3!important}' +
+      '.kpi .val{font-size:26px!important;line-height:1.15!important;margin:3px 0 0!important}' +
+      '.kpi .kpi-helper,.kpi .kpi-sub{font-size:11.5px!important;min-height:0!important;margin-top:2px!important;line-height:1.3!important}' +
+      '.kpi .tap{margin-top:5px!important;font-size:12px!important}' +
+      '.dash-bw .kpis,.dash-dp .kpis{margin-bottom:12px!important}' +
+      '.dash-bw .drow,.dash-dp .drow{padding-top:5px!important;padding-bottom:5px!important;min-height:0!important}' +
+      '.dash-bw .hbar{margin:4px 0!important}' +
+      '.kpi .lab{min-height:0!important}' +
+      '.kpi .tap{padding-top:0!important;margin-top:4px!important}' +
+      '.kpi .val{font-size:24px!important}' +
+      '.dash-bw .drow,.dash-dp .drow{row-gap:2px!important}' +
+      '.dash-bw .dn .dcx,.dash-dp .dn .dcx{padding:0!important;line-height:1.25!important}' +
+      '.dash-bw .hbar,.dash-dp .hbar{row-gap:3px!important}' +
+      '.dash-bw .hbar .hl,.dash-dp .hbar .hl{line-height:1.25!important}' +
+      '.sites-split .sites-table .drow,.sites-split .sites-rank .hbar{height:42px!important}' +
+      '.sites-split .sites-rank .ht{height:18px!important}' +
+      '#view .panel{margin-bottom:14px!important}' +
+      '.dash-dp .dp-strip{margin:0 0 10px!important}' +
+      '.dash-dp .dp-chip{padding:7px 14px!important}' +
+      '.dash-dp .dp-ic{width:30px!important;height:30px!important}' +
+      '.dash-dp .kpigrp{margin-bottom:4px!important}' +
+      '.dash-dp .kpigrp .gh{margin-bottom:6px!important}' +
+      '.dash-dp .toolbar{margin-bottom:10px!important}' +
+      '.so3-bar{padding:8px 14px!important;margin-top:8px!important}' +
+      '.dash-dp .ptitle+.psub{margin-bottom:8px!important}' +
+      '.sites-rank .psub,.sites-rank p{margin-bottom:6px!important}.dash-bw .drow .dcx,.dash-dp .drow .dcx,.sites-rank .dcx{flex-direction:row!important;align-items:baseline!important;justify-content:flex-start!important;gap:8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}' +
+      '.sites-split .sites-table .drow,.sites-split .sites-rank .hbar{height:34px!important}' +
+      '.sites-split .sites-rank .ht{height:16px!important}' +
+      '.kpi{position:relative!important}' +
+      '.kpi .tap{position:absolute!important;right:14px!important;top:10px!important;margin:0!important}' +
+      '.kpi .lab{padding-right:118px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;display:block!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
@@ -306,7 +351,7 @@ export class ReportHost {
     this._menu = btn;
     btn.type = 'button';
     btn.className = 'edrms-menu';
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="pane" x="3" y="4" width="6" height="16" rx="2"/><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/><path class="chev" d="M16 9.5L13.5 12L16 14.5"/></svg>';
     btn.addEventListener('click', () => {
       const closed: boolean = !doc.documentElement.classList.contains('edrms-side-closed');
       try { window.localStorage.setItem(SIDEBAR_KEY, closed ? '1' : '0'); } catch { /* storage blocked: this visit only */ }
