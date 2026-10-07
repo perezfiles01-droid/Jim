@@ -35,7 +35,10 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.18';
+const VERSION: string = '1.0.19';
+
+// Hide SharePoint's site bar and page command bar (1.0.16 to 1.0.18). Off.
+const HIDE_CHROME: boolean = false;
 
 export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart<IEdrmsUtilizationReportWebPartProps> {
 
@@ -82,7 +85,10 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
     const btnId: string = 'edrms-edit-page';
     let style: HTMLStyleElement | null = document.getElementById(id) as HTMLStyleElement | null;
     let btn: HTMLAnchorElement | null = document.getElementById(btnId) as HTMLAnchorElement | null;
-    if (this.displayMode === DisplayMode.Edit) {
+    // 1.0.19: the requester chose to keep SharePoint's bars showing, so the
+    // page does not jump from SharePoint's frame to the report on load. Both
+    // stay, and SharePoint's own Edit button is used; nothing is hidden.
+    if (HIDE_CHROME === false || this.displayMode === DisplayMode.Edit) {
       if (style) style.remove();
       if (btn) btn.remove();
       return;
