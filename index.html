@@ -6756,9 +6756,13 @@ switchTo("bw");
     main.style.height="auto";main.style.maxHeight="none";main.style.overflow="visible";
     var name=dashName(), d=new Date();
     var stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    // html2canvas cannot handle CSS zoom (GitHub Pages fits the 1920px canvas
+    // to the window with it), so capture at 100% and put the zoom back after
+    var root=document.documentElement, savedZoom=root.style.zoom, savedW=root.style.width;
+    root.style.zoom="1"; root.style.width="1920px";
     setTimeout(function(){
       var map=prepare(view);
-      html2canvas(view,{onclone:onclone(map),scale:1.5,useCORS:true,backgroundColor:"#F4F6F9",windowWidth:document.documentElement.scrollWidth,ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("csel-list"));}})
+      html2canvas(view,{onclone:onclone(map),scale:1.5,useCORS:true,backgroundColor:"#F4F6F9",windowWidth:1920,ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("csel-list"));}})
       .then(function(canvas){
         var J=window.jspdf.jsPDF, W=1200, MAXH=14000;
         var fullH=W*canvas.height/canvas.width;
@@ -6778,7 +6782,7 @@ switchTo("bw");
         window.__dxLast={file:file,w:canvas.width,h:canvas.height,pages:pdf.getNumberOfPages(),ptH:fullH};
       })
       .catch(function(e){console.error("[EDRMS export]",e);alert("The PDF could not be created: "+e);})
-      .then(function(){cleanup(view);main.style.height=saved.h;main.style.maxHeight=saved.mh;main.style.overflow=saved.o;main.scrollTop=saved.st;btn.disabled=false;label.textContent=old;});
+      .then(function(){cleanup(view);root.style.zoom=savedZoom;root.style.width=savedW;main.style.height=saved.h;main.style.maxHeight=saved.mh;main.style.overflow=saved.o;main.scrollTop=saved.st;btn.disabled=false;label.textContent=old;});
     },60);
   }
   place();
