@@ -7,7 +7,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import styles from './EdrmsUtilizationReportWebPart.module.scss';
 import * as strings from 'EdrmsUtilizationReportWebPartStrings';
-import { REPORT_HTML } from './reportTemplate';
+import { REPORT_HTML, REPORT_SCRIPTS } from './reportTemplate';
 
 export interface IEdrmsUtilizationReportWebPartProps {
   height: number;
@@ -41,6 +41,23 @@ export default class EdrmsUtilizationReportWebPart extends BaseClientSideWebPart
       const frame: HTMLIFrameElement = document.createElement('iframe');
       frame.className = styles.frame;
       frame.title = strings.FrameTitle;
+      // SharePoint's policy carries 'strict-dynamic': a <script src> in the
+      // markup is refused, but a script element added by this (trusted) code
+      // runs. So the page arrives without scripts and they are added here,
+      // in page order, once its markup has loaded. async=false keeps them
+      // executing in the order they are appended.
+      let started: boolean = false;
+      frame.addEventListener('load', () => {
+        const doc: Document | null = frame.contentDocument;
+        if (started || !doc || !doc.body) return;
+        started = true;
+        REPORT_SCRIPTS.forEach((file: string) => {
+          const s: HTMLScriptElement = doc.createElement('script');
+          s.src = base + file;
+          s.async = false;
+          doc.body.appendChild(s);
+        });
+      });
       frame.srcdoc = html;
       box.appendChild(frame);
       this.domElement.appendChild(box);
