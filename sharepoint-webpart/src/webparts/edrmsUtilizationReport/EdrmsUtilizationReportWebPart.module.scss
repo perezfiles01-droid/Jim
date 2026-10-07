@@ -1,0 +1,13 @@
+// The report draws its own background, so the web part adds nothing around it.
+.edrmsUtilizationReport {
+  position: relative;
+  width: 100%;
+  overflow-y: hidden;
+  background: #F4F6F9;
+}
+
+.frame {
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}

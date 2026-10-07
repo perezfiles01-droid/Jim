@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "EDRMS Utilization Report",
+    "id": "d5e2f0e0-ffae-4e8f-96d3-0c4669f9ac64",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.23.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "ADB EDRMS Utilization Report web part"
+      },
+      "longDescription": {
+        "default": "ADB EDRMS Utilization Report web part"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "EDRMS Utilization Report",
+        "description": "Adds the EDRMS Utilization Report web part.",
+        "id": "362cdbf3-408e-4b74-bff5-2fc98a51302d",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/edrms-utilization-report.sppkg"
+  }
+}

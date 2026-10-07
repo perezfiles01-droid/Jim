@@ -1,0 +1,22 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "edrms-utilization-report",
+    "environment": "spo",
+    "useGulp": false,
+    "componentType": "webpart",
+    "template": "none",
+    "componentName": "EDRMS Utilization Report",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.0",
+    "sdksVersions": {},
+    "version": "1.23.2",
+    "libraryName": "edrms-utilization-report",
+    "libraryId": "d5e2f0e0-ffae-4e8f-96d3-0c4669f9ac64",
+    "packageManager": "npm",
+    "solutionShortDescription": "edrms-utilization-report description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}
