@@ -258,6 +258,9 @@ export class ReportHost {
     // 1.0.21: Data as of beside Export to PDF, which keeps its white style
     // (mockups/header-cards-redesign.png, as chosen by the requester).
     css += '.edrms-tools{gap:16px!important}.edrms-tools .crumb{order:-1;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;font-family:inherit!important;line-height:1.2!important;align-items:center!important;gap:8px!important;height:28px!important;min-height:0!important;padding:0 16px 0 0!important;background:none!important;border:0!important;border-right:1px solid #dfe6ee!important;border-radius:0!important;box-shadow:none!important;font-size:13px!important;font-weight:400!important;color:#5b6b7d!important}.edrms-tools .crumb:before{content:none!important;display:none!important}.edrms-tools .crumb b{display:inline!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1.2!important;color:#0b2545!important;margin:0!important}.edrms-tools .edrms-dot{display:inline-block!important;position:static!important;width:8px;height:8px;border-radius:50%;background:#43a047;box-shadow:0 0 0 3px #e3f3e4;flex:0 0 auto}';
+    // 1.0.23: SharePoint's own font (Fluent's Segoe UI stack) everywhere,
+    // titles included, in place of the report's serif headings.
+    css += 'html,body,body *:not(.ic){font-family:\"Segoe UI Web (West European)\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif!important}#view h1,#view h2,#view h3,#view .ptitle,#side .t1,#view .so2-t,#view .dh-t{font-weight:600!important;letter-spacing:0!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
