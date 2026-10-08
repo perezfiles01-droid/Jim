@@ -37,4 +37,17 @@ PHYS = [
 for o, n in PHYS:
     assert s.count(o) == 1, o
     s = s.replace(o, n)
+# Libraries (Department Insights): a bar picks exactly that library, not every
+# library sharing its name and site; "+ N more" opens exactly those N.
+LIBS = [
+    ('var libs=generateSampleLibraries(dept).map(function(l){var o={};for(var k in l)o[k]=l[k];o.key=l.lib+"||"+l.site;var h=0,s=o.key;',
+     'var libs=generateSampleLibraries(dept).map(function(l,li){var o={};for(var k in l)o[k]=l[k];o.key=l.lib+"||"+l.site;var h=0,s=o.key;o.key+="||"+li;'),
+    ('(!libTie||String(l[libTie.m])===libTie.k)',
+     '(!libTie||(String(l[libTie.m])===libTie.k&&(libTie.x||[]).indexOf(l.key)<0))'),
+    ('libTie={m:met,k:m.getAttribute("data-k")};',
+     'libTie={m:met,k:m.getAttribute("data-k"),x:shown};'),
+]
+for o, n in LIBS:
+    assert s.count(o) == 1, o
+    s = s.replace(o, n)
 open(os.path.join(root, 'sp-src.tmp.html'), 'w', encoding='utf-8').write(s)
