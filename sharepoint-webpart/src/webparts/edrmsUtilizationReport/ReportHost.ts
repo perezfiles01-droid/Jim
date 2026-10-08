@@ -188,10 +188,10 @@ export class ReportHost {
       'html.edrms-side-closed .edrms-menu{margin:0 auto 8px!important}' +
       // 1.0.24: option A of mockups/sidebar-header-options.png, the button
       // beside the report's name; closed, the name hides and the button stays.
-      '#side .brand{display:grid!important;grid-template-columns:36px minmax(0,1fr);column-gap:10px;align-items:start}' +
-      '#side .brand>.edrms-menu{grid-row:1/3;grid-column:1;margin:0!important}' +
-      '#side .brand>.t1{grid-column:2;font-size:17px!important;line-height:1.25!important;padding-top:7px}' +
-      '#side .brand>.t2{grid-column:2;letter-spacing:.08em!important;white-space:nowrap}' +
+      '#side .brand{display:grid!important;grid-template-columns:32px minmax(0,1fr);column-gap:8px;align-items:start;padding-left:14px!important;padding-right:14px!important}' +
+      '#side .brand>.edrms-menu{grid-row:1/3;grid-column:1;margin:0!important;width:32px!important;height:32px!important}' +
+      '#side .brand>.t1{grid-column:2;font-size:16px!important;line-height:1.25!important;padding-top:5px}' +
+      '#side .brand>.t2{grid-column:2;font-size:10.5px!important;letter-spacing:.05em!important;white-space:normal!important;margin-top:5px!important}' +
       'html.edrms-side-closed #side .brand{display:flex!important;justify-content:center!important;padding-left:0!important;padding-right:0!important}' +
       'html.edrms-side-closed #side .brand>.t1,html.edrms-side-closed #side .brand>.t2{display:none!important}' +
       'html.edrms-side-closed #nav .grp{font-size:0!important;line-height:0!important;padding:0!important;margin:8px 10px 6px!important;border-top:1px solid rgba(255,255,255,.22)!important;height:0;overflow:visible}' +
