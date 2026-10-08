@@ -92,6 +92,7 @@ function findChromium() {
   if (process.env.BRAND) console.log(await page.evaluate(() => { const d = document.querySelector('#wp iframe').contentDocument; const b = d.querySelector('#side .brand'), cs = getComputedStyle(b);
     const m = e => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right), Math.round(r.height), e.scrollWidth, e.clientWidth]; };
     return JSON.stringify({ side: d.getElementById('side').offsetWidth, pad: cs.paddingLeft + '/' + cs.paddingRight, brand: m(b), t1: m(b.querySelector('.t1')), t2: m(b.querySelector('.t2')), font: getComputedStyle(b.querySelector('.t1')).fontFamily.slice(0, 40) }); }));
+  if (process.env.VALS) console.log(await page.evaluate(() => [...document.querySelector('#wp iframe').contentDocument.querySelectorAll('#view .dash-bw .kpi .val')].map(v => Math.round(v.getBoundingClientRect().top))));
   if (process.env.DUMP) console.log(await page.evaluate(() => { const doc = document.querySelector('#wp iframe').contentDocument;
     const out = []; const walk = (e, d) => { if (d > 6) return; const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
       if (r.height > 12) out.push('  '.repeat(d) + e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' y=' + Math.round(r.top) + ' h=' + Math.round(r.height) + ' pad=' + cs.paddingTop + '/' + cs.paddingBottom + ' mb=' + cs.marginBottom);
