@@ -1,0 +1,96 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Bank-wide first screen mockup</title>
+<style>
+:root{--adb:#194F8E;--ink:#0b2545;--mut:#5b6b7d;--line:#e3e9f0;--bg:#eef2f6;--bar:#2f7bd0;--bar2:#e6edf5}
+*{box-sizing:border-box;margin:0}
+body{width:1920px;height:1030px;overflow:hidden;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;color:var(--ink)}
+.suite{height:40px;background:#2b78d0;display:flex;align-items:center;padding:0 16px;color:#fff;font-size:14px;font-weight:600;gap:18px}
+.suite .s{margin:0 auto;width:360px;height:26px;background:#fff;border-radius:4px}
+.sp{margin:0 0 0 52px;border-radius:10px 10px 0 0;overflow:hidden}
+.hd{background:var(--adb);height:62px;display:flex;align-items:center;padding:0 22px;gap:18px;color:#fff;font-weight:600;font-size:17px}
+.logo{background:#fff;width:100px;height:40px;border-radius:2px;color:#2f63b6;font:800 19px/1 Arial;padding:4px 6px}
+.logo small{display:block;font:500 6.5px/1.2 Arial;color:#e08a00}
+.nav{background:var(--adb);border-top:1px solid #3a6aa5;height:30px;display:flex;align-items:center;padding:0 22px;gap:22px;color:#fff;font-size:12px}
+.nav b{border-bottom:2px solid #fff;padding-bottom:3px}
+.cmd{height:34px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 22px;gap:20px;font-size:12px;color:#333}
+.cmd .r{margin-left:auto}
+.app{display:flex;height:calc(1030px - 40px - 126px);margin-left:52px}
+.side{width:296px;background:var(--adb);color:#fff;padding:22px 22px}
+.side h1{font:600 23px/1.2 Georgia,serif}.side .o{font-size:11.5px;letter-spacing:.14em;color:#dce8f6;margin:6px 0 24px}
+.side .g{font-size:12px;letter-spacing:.16em;color:#dce8f6;margin:18px 0 8px}
+.side a{display:block;padding:9px 12px;margin:0 -22px;padding-left:22px;font-size:16px}
+.side a.on{background:rgba(255,255,255,.18);border-left:4px solid #7fbf3f;font-weight:600}
+.side a.f{opacity:.72;font-size:15px;padding-left:44px}
+main{flex:1;background:var(--bg);padding:12px 18px;display:flex;flex-direction:column;gap:10px}
+.band{background:#e8eff7;border:1px solid #dbe5f0;border-radius:12px;height:52px;display:flex;align-items:center;padding:0 14px;gap:14px}
+.mb{width:32px;height:32px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;display:grid;place-items:center}
+.band h2{font:700 19px Georgia,serif}.band .d{color:var(--mut);font-size:14px}
+.band .t{margin-left:auto;display:flex;gap:8px}
+.btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;height:30px;padding:0 12px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#1f5aa6}
+.crumb{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:3px 12px;font-size:12.5px;font-weight:700}.crumb span{display:block;font-weight:400;color:var(--mut);font-size:11px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.k{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px;display:grid;grid-template-columns:auto 1fr auto;column-gap:12px;align-items:baseline}
+.k.on{border:2px solid #4b8fd6;background:#eef5fd}
+.k .l{grid-column:1/3;font-size:13px;color:var(--mut)}.k .a{color:#1f5aa6;font-weight:600;font-size:12.5px;text-align:right;white-space:nowrap}
+.k .v{font-size:26px;font-weight:700}
+.k .h{grid-column:2/4;font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.split{flex:1;display:grid;grid-template-columns:1fr 1.15fr;gap:12px;min-height:0}
+.box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 18px;display:flex;flex-direction:column;min-height:0}
+.box h3{font:700 17px Georgia,serif}.box .s{font-size:12.5px;color:var(--mut);margin:2px 0 8px}
+.row{display:flex;align-items:center;height:40px;border-bottom:1px solid #eef2f6;font-size:14px}
+.row .c{font-weight:700;width:56px}.row .n{color:var(--mut);flex:1}
+.hb{display:flex;align-items:center;height:42px;font-size:13.5px}
+.hb .lab{width:250px}.hb .lab b{margin-right:8px}.hb .lab span{color:var(--mut)}
+.tr{flex:1;height:16px;background:var(--bar2);border-radius:4px;position:relative}
+.fl{position:absolute;inset:0 auto 0 0;background:var(--bar);border-radius:4px;color:#fff;font-size:11.5px;font-weight:700;text-align:right;padding-right:6px;line-height:16px}
+.tools{display:flex;gap:10px;margin-bottom:6px}
+.search{flex:1;border:1px solid #cfd8e3;border-radius:8px;height:32px;padding:0 12px;font-size:13px;color:#8a97a6;display:flex;align-items:center}
+.th{display:flex;font-size:11px;letter-spacing:.06em;font-weight:700;color:#1f6fbf;height:28px;align-items:center;border-bottom:1px solid #cfd8e3}
+.th span:last-child{margin-left:auto;color:var(--mut)}
+.row .v{font-weight:600}
+.pg{display:flex;align-items:center;justify-content:space-between;padding-top:10px;font-size:12.5px;color:var(--mut)}
+.pg i{font-style:normal;display:inline-grid;place-items:center;min-width:28px;height:26px;border:1px solid #cfd8e3;border-radius:6px;margin-left:4px;padding:0 6px;color:var(--ink)}
+.pg i.on{background:#1f6fbf;color:#fff;border-color:#1f6fbf}
+.note{position:absolute;background:#fff7d6;border:1.5px solid #e0b100;border-radius:8px;padding:6px 10px;font-size:12.5px;color:#5a4500;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:280px}
+.note b{display:block}
+.fold{position:absolute;left:52px;right:0;top:1028px;border-top:2px dashed #c62828}
+</style></head><body>
+<div class="suite">&#8942;&#8942; SharePoint<div class="s"></div></div>
+<div class="sp">
+ <div class="hd"><div class="logo">EDRMS<small>Electronic Document and Records Management System</small></div>EDRMS Util sample</div>
+ <div class="nav"><b>Utilization Report</b><span>Edit navigation</span><span style="margin-left:auto">&#9733; Added to favorites &nbsp;&nbsp; Site access</span></div>
+ <div class="cmd">+ New &nbsp; Page details &nbsp; Preview &nbsp; Analytics<span class="r">Published on 10/7/2026 &nbsp; Share &nbsp; &#9998; Edit</span></div>
+</div>
+<div class="app">
+ <aside class="side"><h1>EDRMS Utilization Report</h1><div class="o">ASIAN DEVELOPMENT BANK</div>
+  <div class="g">KEY VIEWS</div><a class="on">&#9673;&nbsp; Bank-wide Oversight</a><a>&#9638;&nbsp; Department Insights</a>
+  <div class="g">FOR FUTURE RELEASE</div><a class="f">Project Insights</a><a class="f">Institutional File Plan</a><a class="f">Retention &amp; Disposal</a><a class="f">Records &amp; Archive Holdings</a></aside>
+ <main>
+  <div class="band"><div class="mb">&#9664;</div><h2>Bank-wide oversight</h2><span class="d">EDRMS adoption across ADB: sites, users, documents and declared records</span>
+   <div class="t"><div class="btn">&#8681; Export to PDF</div><div class="crumb">EDRMS Reporting Suite<span>As of Sep 2026</span></div></div></div>
+  <div class="kpis">
+   <div class="k on"><div class="l">Active EDRMS sites</div><div class="a">View breakdown &#8250;</div><div class="v">1,032</div><div class="h">Compliant and active in Cloud Governance </div></div>
+   <div class="k"><div class="l">EDRMS users</div><div class="a">View breakdown &#8250;</div><div class="v">11,800</div><div class="h">Approximate workforce headcount </div></div>
+   <div class="k"><div class="l">Documents in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">3.47M</div><div class="h">All files on EDRMS sites </div></div>
+   <div class="k"><div class="l">Records declared in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">21,646</div><div class="h">Declared as records via EDRMS </div></div>
+  </div>
+  <div class="split">
+   <div class="box"><h3>Top 10 by number of sites</h3><div class="s">Highest site counts across departments, offices, RM and RO.</div>
+    <div id="bars"></div></div>
+   <div class="box"><div style="display:flex;align-items:baseline;justify-content:space-between"><h3>Sites by department / office / RM / RO</h3></div>
+    <div class="tools" style="margin-top:8px"><div class="search">&#128269;&nbsp; Search by department / office / RM / RO</div><div class="btn">&#8681; Export table</div></div>
+    <div class="th"><span>DEPARTMENT / OFFICE / RM / RO &#8593;</span><span>SITES</span></div>
+    <div id="rows"></div>
+    <div class="pg"><span>Showing 1 to 10 of 16 departments</span><span><i>&#8249; Prev</i><i class="on">1</i><i>2</i><i>Next &#8250;</i></span></div></div>
+  </div>
+ </main>
+</div>
+<script>
+const T=[["ITD","Information Technology",124],["SARD","South Asia Regional",107],["OSFG","Sovereign Operations",103],["FIN","Finance",102],["PARD","Procurement and Admin",90],["HRD","Human Resources",70],["SERD","Southeast Asia",63],["EARD","East Asia Regional",56],["CWRD","Central and West Asia",55],["OGC","General Counsel",51]];
+bars.innerHTML=T.map(([c,n,v])=>`<div class="hb"><div class="lab"><b>${c}</b><span>${n}</span></div><div class="tr"><div class="fl" style="width:${v/124*100}%">${v}</div></div></div>`).join("");
+const R=[["BRM","Budget and Mgmt Services",39],["CWRD","Central and West Asia",55],["EARD","East Asia Regional",56],["ERCD","Economic Research",26],["FIN","Finance",102],["HRD","Human Resources",70],["ITD","Information Technology",124],["OAS","Administrative Services",30],["OGC","General Counsel",51],["OSFG","Sovereign Operations",103]];
+rows.innerHTML=R.map(([c,n,v])=>`<div class="row"><span class="c">${c}</span><span class="n">${n}</span><span class="v">${v}</span></div>`).join("");
+</script>
+<div class="note" style="left:1300px;top:6px"><b>1. Title band: one line, 52px</b>Title and description side by side; Export and suite card shrunk to match.</div>
+<div class="note" style="left:400px;top:880px"><b>2. Cards: 70px instead of 140px</b>Description and View breakdown share one line.</div>
+<div class="note" style="left:1500px;top:880px"><b>3. Table rows 40px, no outer white panel</b>All 10 rows and the pager sit above the fold.</div>
+</body></html>
