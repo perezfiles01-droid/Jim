@@ -94,6 +94,8 @@ function findChromium() {
       if (r.height > 12) out.push('  '.repeat(d) + e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' y=' + Math.round(r.top) + ' h=' + Math.round(r.height) + ' pad=' + cs.paddingTop + '/' + cs.paddingBottom + ' mb=' + cs.marginBottom);
       if (!/drow|hbar|kpi$/.test(e.className)) [...e.children].forEach(c => walk(c, d + 1)); };
     walk(doc.getElementById('view'), 0); return out.slice(0, 70).join('\n'); }));
-  if (out) await page.screenshot({ path: out });
+  if (process.env.SEL) { const f = page.frames().find(x => x !== page.mainFrame()); if (process.env.TYPE) { await f.click(process.env.TYPE_SEL); await page.keyboard.type(process.env.TYPE, { delay: 120 }); await page.waitForTimeout(600); }
+    const el = await f.$(process.env.SEL); await el.screenshot({ path: out }); console.log(await f.evaluate(() => [document.activeElement && document.activeElement.id, (document.getElementById('bw-phys-search')||{}).value, document.querySelectorAll('#bw-phys .drow').length, !!document.querySelector('.phys-search-wrap .xp-btn'), document.querySelectorAll('#bw-phys-panel .xp-btn').length]));
+  } else if (out) await page.screenshot({ path: out });
   await browser.close(); server.close();
 })();

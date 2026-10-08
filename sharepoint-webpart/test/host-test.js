@@ -128,7 +128,7 @@ function findChromium() {
       const c = await frame.evaluate(() => ({
         pdf: !!document.querySelector('#view .band .edrms-tools .dx-btn'),
         card: !!document.querySelector('#view .band .edrms-tools .crumb'),
-        menu: !!document.querySelector('#side > .edrms-menu'),
+        menu: !!document.querySelector('#side .brand > .edrms-menu'),
         header: getComputedStyle(document.querySelector('header')).display
       }));
       if (!c.pdf || !c.card) problems.push('Export / Reporting Suite not on the title band (' + step + ')');
