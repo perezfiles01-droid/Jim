@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Sidebar header options</title>
+<style>
+:root{--adb:#194F8E;--ink:#0b2545;--mut:#5b6b7d;--line:#e3e9f0}
+*{box-sizing:border-box;margin:0}
+body{width:1500px;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;color:var(--ink);padding:24px 28px}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}.lead{color:var(--mut);font-size:13.5px;margin-bottom:18px}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.col h2{font-size:14.5px;font-weight:700;margin:8px 0 4px}.col p{font-size:12.5px;color:#33475b;line-height:1.5}
+.tag{display:inline-block;font:700 10.5px/1 "Segoe UI";letter-spacing:.1em;padding:4px 7px;border-radius:5px}
+.cur{background:#fff4c2;color:#8a6d00}.rec{background:#dff3e0;color:#1b5e20}.alt{background:#e8eef6;color:#33507a}
+.side{width:300px;height:330px;background:var(--adb);color:#fff;border-radius:8px;overflow:hidden;margin-top:10px;position:relative}
+.ham{width:36px;height:36px;border-radius:4px;display:grid;place-items:center;flex:0 0 auto}
+.ham.h{background:rgba(255,255,255,.16)}
+.ham svg,.btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.t1{font-size:19px;font-weight:600;line-height:1.2}.t2{font-size:11.5px;letter-spacing:.14em;color:#dce8f6;margin-top:4px}
+.grp{font-size:11.5px;letter-spacing:.14em;color:#dce8f6;padding:16px 20px 6px}
+.nav a{display:flex;gap:10px;align-items:center;font-size:14.5px;padding:8px 20px}
+.nav a.on{background:rgba(255,255,255,.18);border-left:3px solid #7fbf3f;padding-left:17px;font-weight:600}
+.div{border-top:1px solid rgba(255,255,255,.18)}
+.tip{position:absolute;background:#fff;color:#242424;font-size:11.5px;padding:5px 8px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.25);white-space:nowrap}
+.btn{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:7px 10px;border-radius:4px}
+</style></head><body>
+<h1>Sidebar header: making the menu button obvious</h1>
+<div class="lead">Same Fluent button, placed so it reads as part of the menu. Shown with the menu open.</div>
+<svg width="0" height="0" style="position:absolute"><defs>
+ <symbol id="ham" viewBox="0 0 20 20"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></symbol>
+ <symbol id="col" viewBox="0 0 20 20"><path d="M11 5l-5 5 5 5M16 5l-5 5 5 5"/></symbol>
+</defs></svg>
+<div class="row">
+ <div class="col"><span class="tag cur">CURRENT</span><h2>Button alone above the title</h2><p>Floats on its own line with empty space around it, so it looks like decoration rather than a control, and costs a row of height.</p>
+  <div class="side"><div style="padding:14px 14px 0"><div class="ham"><svg><use href="#ham"/></svg></div></div>
+   <div style="padding:22px 20px 16px"><div class="t1">EDRMS Utilization<br>Report</div><div class="t2">ASIAN DEVELOPMENT BANK</div></div><div class="div"></div>
+   <div class="grp">KEY VIEWS</div><div class="nav"><a class="on">&#9673; Bank-wide Oversight</a><a>&#9638; Department Insights</a></div></div></div>
+
+ <div class="col"><span class="tag rec">A &middot; RECOMMENDED</span><h2>Button beside the title</h2><p>"&#8801; EDRMS Utilization Report" on one line, the way Power BI, Teams and SharePoint's own app bar pair the button with the app name. It is clearly the menu's own control, and the header is a row shorter. Hovering shows "Close navigation".</p>
+  <div class="side"><div style="display:flex;gap:10px;align-items:flex-start;padding:16px 14px 14px"><div class="ham h"><svg><use href="#ham"/></svg></div>
+    <div style="padding-top:5px"><div class="t1" style="font-size:17px">EDRMS Utilization Report</div><div class="t2">ASIAN DEVELOPMENT BANK</div></div></div>
+   <div class="div"></div><div class="grp">KEY VIEWS</div><div class="nav"><a class="on">&#9673; Bank-wide Oversight</a><a>&#9638; Department Insights</a></div></div></div>
+
+ <div class="col"><span class="tag alt">B</span><h2>Labelled "Hide menu" link</h2><p>Title stays as it is; under it, a small button that says what it does in words: "&#171; Hide menu". Plainest for readers who do not know the &#8801; icon.</p>
+  <div class="side"><div style="padding:18px 20px 10px"><div class="t1">EDRMS Utilization<br>Report</div><div class="t2">ASIAN DEVELOPMENT BANK</div></div>
+   <div style="padding:0 10px 10px"><div class="btn" style="background:rgba(255,255,255,.12);display:inline-flex"><svg><use href="#col"/></svg>Hide menu</div></div>
+   <div class="div"></div><div class="grp">KEY VIEWS</div><div class="nav"><a class="on">&#9673; Bank-wide Oversight</a><a>&#9638; Department Insights</a></div></div></div>
+
+ <div class="col"><span class="tag alt">C</span><h2>Collapse chevron at the bottom</h2><p>The title block is left clean; "&#171; Collapse" sits at the foot of the menu, as in the Azure portal and Microsoft admin centres. Tidy, but further from where people look first.</p>
+  <div class="side"><div style="padding:18px 20px 16px"><div class="t1">EDRMS Utilization<br>Report</div><div class="t2">ASIAN DEVELOPMENT BANK</div></div>
+   <div class="div"></div><div class="grp">KEY VIEWS</div><div class="nav"><a class="on">&#9673; Bank-wide Oversight</a><a>&#9638; Department Insights</a></div>
+   <div style="position:absolute;left:0;right:0;bottom:0;border-top:1px solid rgba(255,255,255,.18);padding:6px 10px"><div class="btn"><svg><use href="#col"/></svg>Collapse</div></div></div></div>
+</div>
+</body></html>
