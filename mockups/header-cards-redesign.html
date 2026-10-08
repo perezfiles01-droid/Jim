@@ -1,0 +1,89 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Header and cards redesign</title>
+<style>
+:root{--adb:#194F8E;--ink:#0b2545;--mut:#5b6b7d;--line:#e3e9f0;--bg:#eef2f6;--link:#1f6fbf}
+*{box-sizing:border-box;margin:0}
+body{width:1600px;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;color:var(--ink);padding:28px}
+.tag{font:700 12px/1 "Segoe UI";letter-spacing:.12em;color:#8a6d00;background:#fff4c2;display:inline-block;padding:6px 10px;border-radius:6px;margin:0 0 10px}
+.tag.new{color:#1b5e20;background:#dff3e0}
+.frame{background:var(--bg);border-radius:14px;padding:16px 18px;margin-bottom:30px}
+/* current */
+.c-band{background:#e8eff7;border:1px solid #dbe5f0;border-radius:12px;display:flex;align-items:baseline;gap:14px;padding:8px 14px;min-height:46px;position:relative}
+.c-band .mb{width:32px;height:32px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;align-self:center}
+.c-band h2{font:700 17px Georgia,serif}.c-band .d{font-size:12.5px;color:var(--mut)}
+.c-tools{margin-left:auto;display:flex;gap:10px;align-self:center}
+.c-btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;height:32px;padding:0 12px;font-size:12.5px;font-weight:600;color:#1f5aa6;display:flex;align-items:center}
+.c-crumb{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:4px 12px 4px 12px;font-size:12.5px;font-weight:700}.c-crumb span{display:block;font-weight:400;font-size:11px;color:var(--mut)}
+.c-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.c-k{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px;display:grid;grid-template-columns:auto 1fr auto;column-gap:10px;align-items:baseline}
+.c-k.on{border:2px solid #4b8fd6;background:#eef5fd}
+.c-k .l{grid-column:1/3;font-size:12.5px;color:var(--mut)}.c-k .a{font-size:12px;font-weight:600;color:var(--link)}
+.c-k .v{font-size:24px;font-weight:700}.c-k .h{grid-column:2/4;font-size:11.5px;color:var(--mut)}
+/* proposed */
+.p-band{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;align-items:center;gap:16px;padding:9px 18px}
+.p-band .mb{width:36px;height:36px;border-radius:10px;background:#eef3f9;display:grid;place-items:center;color:var(--adb);flex:0 0 auto}
+.p-band .mb svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+.p-band h2{font:700 20px/1.2 Georgia,serif}.p-band .d{font-size:13.5px;color:var(--mut);margin-top:3px}
+.p-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.asof{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut)}
+.asof .dot{width:8px;height:8px;border-radius:50%;background:#43a047;box-shadow:0 0 0 3px #e3f3e4}
+.asof b{color:var(--ink);font-weight:600}
+.vr{width:1px;height:28px;background:var(--line)}
+.p-btn{background:var(--adb);color:#fff;border-radius:9px;height:36px;padding:0 16px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px}
+.p-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2}
+.p-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:10px}
+.p-k{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 16px 0;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 1px 2px rgba(11,37,69,.04)}
+.p-k::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent}
+.p-k.on{border-color:#b9d3ef;box-shadow:0 0 0 3px #e3eefa}.p-k.on::before{background:var(--link)}
+.p-k .top{display:flex;align-items:center;gap:10px}
+.ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto}
+.ic svg{width:16px;height:16px;fill:none;stroke-width:1.9}
+.p-k .l{font-size:13.5px;font-weight:600;color:#33475b}
+.p-k .v{font-size:28px;font-weight:700;letter-spacing:-.01em;margin:6px 0 1px;line-height:1.1}
+.p-k .h{font-size:12.5px;color:var(--mut);line-height:1.35;min-height:17px}
+.p-k .f{margin:9px -16px 0;padding:7px 16px;border-top:1px solid #eef2f6;font-size:12.5px;font-weight:600;color:var(--link);display:flex;justify-content:space-between;align-items:center}
+.p-k.on .f{background:#f3f8fe}
+.note{font-size:13px;color:#33475b;line-height:1.55;margin-top:6px}
+.note li{margin-left:18px}
+</style></head><body>
+
+<div class="tag">CURRENT</div>
+<div class="frame">
+ <div class="c-band"><div class="mb"></div><h2>Bank-wide oversight</h2><span class="d">EDRMS adoption across ADB: sites, users, documents and declared records</span>
+  <div class="c-tools"><div class="c-btn">&#8681; Export to PDF</div><div class="c-crumb">EDRMS Reporting Suite<span>As of Sep 2026</span></div></div></div>
+ <div class="c-kpis">
+  <div class="c-k on"><div class="l">Active EDRMS sites</div><div class="a">View breakdown &#8250;</div><div class="v">1,032</div><div class="h">Compliant and active in Cloud Governance</div></div>
+  <div class="c-k"><div class="l">EDRMS users</div><div class="a">View breakdown &#8250;</div><div class="v">11,800</div><div class="h">Approximate workforce headcount</div></div>
+  <div class="c-k"><div class="l">Documents in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">3.47M</div><div class="h">All files on EDRMS sites</div></div>
+  <div class="c-k"><div class="l">Records declared in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">21,646</div><div class="h">Declared as records via EDRMS</div></div>
+ </div>
+</div>
+
+<div class="tag new">PROPOSED</div>
+<div class="frame">
+ <div class="p-band">
+  <div class="mb"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg></div>
+  <div><h2>Bank-wide oversight</h2><div class="d">EDRMS adoption across ADB: sites, users, documents and declared records</div></div>
+  <div class="p-right">
+   <div class="asof"><span class="dot"></span>Data as of <b>Sep 2026</b></div>
+   <div class="vr"></div>
+   <div class="p-btn"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export to PDF</div>
+  </div>
+ </div>
+ <div class="p-kpis">
+  <div class="p-k on"><div class="top"><div class="ic" style="background:#e3eefa"><svg viewBox="0 0 24 24" stroke="#1f6fbf"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg></div><div class="l">Active EDRMS sites</div></div>
+   <div class="v">1,032</div><div class="h">Compliant and active in Cloud Governance</div><div class="f">Showing breakdown below<span>&#8964;</span></div></div>
+  <div class="p-k"><div class="top"><div class="ic" style="background:#e6f4ea"><svg viewBox="0 0 24 24" stroke="#2e7d32"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2 .7 3 2.8 3 6"/></svg></div><div class="l">EDRMS users</div></div>
+   <div class="v">11,800</div><div class="h">Approximate workforce headcount</div><div class="f">View breakdown<span>&#8250;</span></div></div>
+  <div class="p-k"><div class="top"><div class="ic" style="background:#fff1e0"><svg viewBox="0 0 24 24" stroke="#c46a00"><path d="M6 3h8l4 4v14H6z M14 3v4h4"/></svg></div><div class="l">Documents in EDRMS</div></div>
+   <div class="v">3.47M</div><div class="h">All files on EDRMS sites</div><div class="f">View breakdown<span>&#8250;</span></div></div>
+  <div class="p-k"><div class="top"><div class="ic" style="background:#f0e9fb"><svg viewBox="0 0 24 24" stroke="#6a3fb5"><path d="M6 3h12v18l-6-4-6 4z"/></svg></div><div class="l">Records declared in EDRMS</div></div>
+   <div class="v">21,646</div><div class="h">Declared as records via EDRMS</div><div class="f">View breakdown<span>&#8250;</span></div></div>
+ </div>
+ <ul class="note" style="margin-top:14px">
+  <li><b>Title band:</b> white, more breathing room; the "EDRMS Reporting Suite" box is replaced by a quiet "Data as of Sep 2026" with a green dot (the sidebar already names the report), and Export to PDF becomes the one solid ADB-blue button.</li>
+  <li><b>Cards:</b> a reading order of name, number, meaning. A small coloured icon tells the four apart at a glance; the number is larger; "View breakdown ›" moves to its own footer strip across the card, so it reads as the card's action and never crowds the name.</li>
+  <li><b>Selected card:</b> a blue edge on the left and a soft halo, and its footer says "Showing breakdown below" so it is clear which table is open.</li>
+  <li><b>The cost:</b> cards are 133px tall (now about 75px) and the band 63px (now 46px). To keep the whole first table on the first screen, its search box and Export table would move up onto the table's title row, which wins most of that space back.</li>
+ </ul>
+</div>
+</body></html>
