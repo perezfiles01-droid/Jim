@@ -282,6 +282,15 @@ export class ReportHost {
       '#view .dash-bw .kpi.edrms-has-i .lab{grid-column:1/4!important;grid-row:1}' +
       '#view .dash-bw .kpi.edrms-has-i .tap{grid-column:3!important;grid-row:2!important;align-self:center!important;justify-self:end}' +
       '#view .kpi:hover,#view .kpi:focus-within,#view .vs2-k:hover,#view .vs2-k:focus-within{position:relative;z-index:30!important}';
+    // 1.0.32: a small (i) in each card's top-right corner, and a compact dark
+    // tooltip like the browser's own, opening leftwards so it never runs off
+    // the screen at the right-hand card.
+    css += '#view .edrms-has-i{position:relative!important}' +
+      '#view .edrms-has-i .lab,#view .edrms-has-i>.l{padding-right:22px!important}' +
+      '#view .edrms-has-i .edrms-i{position:absolute!important;top:9px;right:10px;width:14px;height:14px;margin:0!important;border-width:1.2px;' +
+      'font:700 9px/11.5px "Segoe UI",sans-serif!important;color:#7a8a9c;border-color:#b5c3d2}' +
+      '#view .edrms-has-i .edrms-i:hover::after,#view .edrms-has-i .edrms-i:focus::after{left:auto;right:-2px;top:18px;max-width:240px;padding:4px 8px;' +
+      'border-radius:3px;background:#2b2b2b;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);font:400 12px/1.35 "Segoe UI",sans-serif}';
     css += '#view .edrms-has-i .kpi-helper,#view .edrms-has-i .kpi-sub,#view .edrms-has-i>.h{display:none!important}.edrms-i{position:relative;display:inline-block;width:16px;height:16px;margin-left:7px;vertical-align:-2px;border:1.5px solid #9fb2c6;border-radius:50%;color:#5b6b7d;font:700 10px/13px "Segoe UI",sans-serif!important;text-align:center;text-transform:none;letter-spacing:0;cursor:help;flex:0 0 auto}.edrms-i:hover,.edrms-i:focus{border-color:#1f6fbf;color:#1f6fbf;outline:none}.edrms-i:hover::after,.edrms-i:focus::after{content:attr(data-tip);position:absolute;left:-8px;top:22px;z-index:50;width:max-content;max-width:260px;padding:7px 10px;border-radius:6px;background:#fff;color:#242424;box-shadow:0 4px 14px rgba(0,0,0,.2);font:400 12.5px/1.4 "Segoe UI",sans-serif;white-space:normal;text-transform:none;letter-spacing:0;text-align:left}#view .kpi,#view .vs2-k,#view .kpis,#view .kpigrp{overflow:visible!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
