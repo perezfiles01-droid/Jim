@@ -190,7 +190,7 @@ export class ReportHost {
       // beside the report's name; closed, the name hides and the button stays.
       '#side .brand{display:grid!important;grid-template-columns:32px minmax(0,1fr);column-gap:8px;align-items:start;padding-left:14px!important;padding-right:14px!important}' +
       '#side .brand>.edrms-menu{grid-row:1/3;grid-column:1;margin:0!important;width:32px!important;height:32px!important}' +
-      '#side .brand>.t1{grid-column:2;font-size:16px!important;line-height:1.25!important;padding-top:5px}' +
+      '#side .brand>.t1{grid-column:2;font-size:var(--edrms-t1,16px)!important;line-height:1.25!important;padding-top:6px;white-space:nowrap}' +
       '#side .brand>.t2{grid-column:2;font-size:10.5px!important;letter-spacing:.05em!important;white-space:normal!important;margin-top:5px!important}' +
       'html.edrms-side-closed #side .brand{display:flex!important;justify-content:center!important;padding-left:0!important;padding-right:0!important}' +
       'html.edrms-side-closed #side .brand>.t1,html.edrms-side-closed #side .brand>.t2{display:none!important}' +
@@ -374,6 +374,18 @@ export class ReportHost {
     const brand: HTMLElement | null = side ? side.querySelector('.brand') : null;
     const home: HTMLElement | null = brand || side;
     if (menu && this._options.showSidebar && home && menu.parentElement !== home) home.insertBefore(menu, home.firstChild);
+    // 1.0.26: the report's name on one line. The font size is found on the
+    // reader's own screen, since Segoe UI and other fonts differ in width:
+    // from 16px down in half pixels until the name fits, never below 12px.
+    const t1: HTMLElement | null = brand ? brand.querySelector('.t1') : null;
+    if (t1 && t1.clientWidth) {
+      let size: number = 16;
+      t1.style.setProperty('--edrms-t1', size + 'px');
+      while (t1.scrollWidth > t1.clientWidth + 1 && size > 12) {
+        size -= 0.5;
+        t1.style.setProperty('--edrms-t1', size + 'px');
+      }
+    }
     // In the icon rail the names are hidden, so each link carries its name
     // as a tooltip.
     doc.querySelectorAll('#nav a').forEach((a: Element): void => {

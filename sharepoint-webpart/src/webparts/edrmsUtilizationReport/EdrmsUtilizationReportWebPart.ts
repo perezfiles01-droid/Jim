@@ -35,7 +35,7 @@ export interface IEdrmsUtilizationReportWebPartProps {
 }
 
 // Shown in the on-page error note, so a screenshot says which build it was.
-const VERSION: string = '1.0.25';
+const VERSION: string = '1.0.26';
 
 // Hide SharePoint's site bar and page command bar (1.0.16 to 1.0.18). Off.
 const HIDE_CHROME: boolean = false;
