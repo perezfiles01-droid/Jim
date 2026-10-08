@@ -176,22 +176,25 @@ export class ReportHost {
       style.id = 'edrms-sharepoint';
       doc.head.appendChild(style);
     }
-    let css: string = '.edrms-menu{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;' +
-      'margin-right:12px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#0b2545;cursor:pointer}' +
-      '.edrms-menu:hover{background:#e8f3fb;border-color:#9fc3e2}' +
-      '.edrms-menu svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none}' +
-      '.edrms-menu .pane{fill:currentColor;opacity:.18;stroke:none}' +
-      '.edrms-menu .chev{transform-box:fill-box;transform-origin:center}' +
-      'html.edrms-side-closed .edrms-menu .chev{transform:scaleX(-1)}' +
-      'html.edrms-side-closed .edrms-menu .pane{opacity:0}' +
-      'html.edrms-side-closed #side{display:none!important}';
+    // 1.0.22: option A of mockups/sidebar-toggle-options.png. A Fluent
+    // subtle button with the Navigation icon at the top of the sidebar it
+    // controls; closing leaves a 56px rail of the page icons, never nothing.
+    let css: string = '.edrms-menu{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;' +
+      'margin:0 0 8px 14px;padding:0;border:0;border-radius:4px;background:transparent;color:#fff;cursor:pointer}' +
+      '.edrms-menu:hover{background:rgba(255,255,255,.14)}' +
+      '.edrms-menu:focus-visible{outline:2px solid #fff;outline-offset:1px}' +
+      '.edrms-menu svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;fill:none}' +
+      'html.edrms-side-closed #side{width:56px!important;min-width:56px!important;max-width:56px!important;flex:0 0 56px!important;padding-left:0!important;padding-right:0!important;overflow:hidden!important}' +
+      'html.edrms-side-closed .edrms-menu{margin:0 auto 8px!important}' +
+      'html.edrms-side-closed #side .brand{display:none!important}' +
+      'html.edrms-side-closed #nav .grp{font-size:0!important;line-height:0!important;padding:0!important;margin:8px 10px 6px!important;border-top:1px solid rgba(255,255,255,.22)!important;height:0;overflow:visible}' +
+      'html.edrms-side-closed #nav a{font-size:0!important;justify-content:center!important;padding:10px 0!important;gap:0!important;margin:0!important;text-align:center!important}' +
+      'html.edrms-side-closed #nav a .ic{font-size:17px!important;margin:0!important;width:auto!important}';
     // No top header strip: its Export to PDF and "EDRMS Reporting Suite"
     // card sit on the right of the dashboard's title band instead, and the
     // menu button on its left (see _relayout).
     css += 'header{display:none!important}' +
       '#view .band.edrms-top{position:relative;min-height:60px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-right:440px!important}' +
-      '#view .band.edrms-top.edrms-has-menu{padding-left:66px!important}' +
-      '.edrms-top>.edrms-menu{position:absolute;left:16px;top:50%;transform:translateY(-50%);margin:0}' +
       '.edrms-tools{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:10px}' +
       '.edrms-tools .dx-btn{position:static!important;transform:none!important;right:auto!important}' +
       '.edrms-tools .crumb{position:relative!important;top:auto!important;right:auto!important;left:auto!important;transform:none!important;margin:0!important;' +
@@ -356,12 +359,14 @@ export class ReportHost {
     // Held by reference: when the band is redrawn the button goes with the old
     // band, so it cannot be found in the page again.
     const menu: HTMLButtonElement | undefined = this._menu;
-    if (menu && this._options.showSidebar) {
-      if (menu.parentElement !== band) band.insertBefore(menu, band.firstChild);
-      band.classList.add('edrms-has-menu');
-    } else {
-      band.classList.remove('edrms-has-menu');
-    }
+    const side: HTMLElement | null = doc.getElementById('side');
+    band.classList.remove('edrms-has-menu');
+    if (menu && this._options.showSidebar && side && menu.parentElement !== side) side.insertBefore(menu, side.firstChild);
+    // In the icon rail the names are hidden, so each link carries its name
+    // as a tooltip.
+    doc.querySelectorAll('#nav a').forEach((a: Element): void => {
+      if (!a.getAttribute('title')) a.setAttribute('title', (a.textContent || '').replace(/^[^A-Za-z]+/, '').trim());
+    });
   }
 
   // The menu (hamburger) button at the left of the report's header opens and
@@ -384,7 +389,7 @@ export class ReportHost {
     this._menu = btn;
     btn.type = 'button';
     btn.className = 'edrms-menu';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="pane" x="3" y="4" width="6" height="16" rx="2"/><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/><path class="chev" d="M16 9.5L13.5 12L16 14.5"/></svg>';
+    btn.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>';
     btn.addEventListener('click', () => {
       const closed: boolean = !doc.documentElement.classList.contains('edrms-side-closed');
       try { window.localStorage.setItem(SIDEBAR_KEY, closed ? '1' : '0'); } catch { /* storage blocked: this visit only */ }
@@ -404,7 +409,7 @@ export class ReportHost {
     doc.documentElement.classList.toggle('edrms-side-closed', closed);
     const btn: HTMLElement | null = this._menu || doc.querySelector('.edrms-menu');
     if (btn) {
-      btn.title = closed ? 'Show the menu' : 'Hide the menu';
+      btn.title = closed ? 'Open navigation' : 'Close navigation';
       btn.setAttribute('aria-label', btn.title);
       btn.setAttribute('aria-expanded', closed ? 'false' : 'true');
     }

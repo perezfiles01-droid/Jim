@@ -128,11 +128,11 @@ function findChromium() {
       const c = await frame.evaluate(() => ({
         pdf: !!document.querySelector('#view .band .edrms-tools .dx-btn'),
         card: !!document.querySelector('#view .band .edrms-tools .crumb'),
-        menu: !!document.querySelector('#view .band > .edrms-menu'),
+        menu: !!document.querySelector('#side > .edrms-menu'),
         header: getComputedStyle(document.querySelector('header')).display
       }));
       if (!c.pdf || !c.card) problems.push('Export / Reporting Suite not on the title band (' + step + ')');
-      if (c.menu !== wantSidebar) problems.push('menu button ' + (c.menu ? 'shown' : 'missing') + ' on the title band (' + step + ')');
+      if (c.menu !== wantSidebar) problems.push('menu button ' + (c.menu ? 'shown' : 'missing') + ' at the top of the sidebar (' + step + ')');
       if (c.header !== 'none') problems.push('top header still shown');
     }
     if (q.includes('d=dp')) await frame.evaluate(() => switchTo('dp')); else await frame.evaluate(() => switchTo('bw'));
@@ -150,16 +150,16 @@ function findChromium() {
       await page.evaluate(() => { document.getElementById('wp').closest('div[style*="overflow"]').scrollTop = 0; });
     }
     if (wantSidebar && !zoom) {
-      // The menu button closes the sidebar, keeps it closed after a reload,
-      // and opens it again.
+      // The menu button closes the sidebar to its icon rail (1.0.22), keeps it
+      // closed after a reload, and opens it again.
       await frame.click('.edrms-menu');
       await page.waitForTimeout(300);
-      const closed = await frame.evaluate(() => getComputedStyle(document.getElementById('side')).display === 'none');
+      const closed = await frame.evaluate(() => document.getElementById('side').offsetWidth <= 60);
       await page.reload(); await page.waitForTimeout(4500);
       const f2 = page.frames().find(f => f !== page.mainFrame());
-      const stillClosed = await f2.evaluate(() => getComputedStyle(document.getElementById('side')).display === 'none');
+      const stillClosed = await f2.evaluate(() => document.getElementById('side').offsetWidth <= 60);
       await f2.click('.edrms-menu'); await page.waitForTimeout(300);
-      const reopened = await f2.evaluate(() => getComputedStyle(document.getElementById('side')).display !== 'none');
+      const reopened = await f2.evaluate(() => document.getElementById('side').offsetWidth > 150);
       if (!closed) problems.push('menu button did not close the sidebar');
       if (!stillClosed) problems.push('closed sidebar did not stay closed after reload');
       if (!reopened) problems.push('menu button did not reopen the sidebar');

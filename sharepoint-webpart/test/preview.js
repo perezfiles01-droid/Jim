@@ -80,12 +80,15 @@ function findChromium() {
   const page = await (await browser.newContext({ viewport: { width: w, height: h } })).newPage();
   await page.goto(base + '?d=' + d);
   await page.waitForTimeout(4500);
+  if (process.env.CLOSE) { await page.evaluate(() => document.querySelector('#wp iframe').contentDocument.querySelector('.edrms-menu').click()); await page.waitForTimeout(800); }
   const m = await page.evaluate(() => {
     const f = document.querySelector('#wp iframe'), doc = f.contentDocument, fr = f.getBoundingClientRect(), sc = fr.width / f.offsetWidth;
     const at = sel => { const e = doc.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return Math.round(fr.top + r.bottom * sc); };
     return { band: at('#view .band'), kpis: at('#view .kpis'), table: at('#view .sites-split .sites-table, #view .panel'), pager: at('#view .pager, #view .pg, #view [class*="pager"]'), screen: innerHeight };
   });
   console.log(JSON.stringify(m));
+  if (process.env.SIDE) console.log(await page.evaluate(() => { const d = document.querySelector('#wp iframe').contentDocument; const sd = d.getElementById('side');
+    return sd.outerHTML.replace(/<svg[\s\S]*?<\/svg>/g,'<svg/>').slice(0, 3000) + '\nWIDTH ' + sd.offsetWidth + ' ' + getComputedStyle(sd).position; }));
   if (process.env.DUMP) console.log(await page.evaluate(() => { const doc = document.querySelector('#wp iframe').contentDocument;
     const out = []; const walk = (e, d) => { if (d > 6) return; const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
       if (r.height > 12) out.push('  '.repeat(d) + e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).join('.') : '') + ' y=' + Math.round(r.top) + ' h=' + Math.round(r.height) + ' pad=' + cs.paddingTop + '/' + cs.paddingBottom + ' mb=' + cs.marginBottom);
