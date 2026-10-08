@@ -145,6 +145,10 @@ export class ReportHost {
         const view: HTMLElement | null = doc.getElementById('view');
         const win2: (Window & typeof globalThis) | null = this._frame.contentWindow as (Window & typeof globalThis) | null;
         if (view && win2) new win2.MutationObserver(() => this._relayout()).observe(view, { childList: true });
+        // Cards are redrawn inside their panels too, so the info icons watch
+        // the whole report (they skip cards that already have one).
+        if (view && win2) new win2.MutationObserver(() => this._infoIcons()).observe(view, { childList: true, subtree: true });
+        this._infoIcons();
         // The report adds its Export button to the header shortly after it
         // starts; pick it up when it appears.
         window.setTimeout(() => this._relayout(), 600);
@@ -268,6 +272,8 @@ export class ReportHost {
     // 1.0.23: SharePoint's own font (Fluent's Segoe UI stack) everywhere,
     // titles included, in place of the report's serif headings.
     css += 'html,body,body *:not(.ic){font-family:\"Segoe UI Web (West European)\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif!important}#view h1,#view h2,#view h3,#view .ptitle,#side .t1,#view .so2-t,#view .dh-t{font-weight:600!important;letter-spacing:0!important}';
+    // 1.0.30: the (i) info icons on cards (see _infoIcons).
+    css += '#view .edrms-has-i .kpi-helper,#view .edrms-has-i .kpi-sub,#view .edrms-has-i>.h{display:none!important}.edrms-i{position:relative;display:inline-block;width:16px;height:16px;margin-left:7px;vertical-align:-2px;border:1.5px solid #9fb2c6;border-radius:50%;color:#5b6b7d;font:700 10px/13px "Segoe UI",sans-serif!important;text-align:center;text-transform:none;letter-spacing:0;cursor:help;flex:0 0 auto}.edrms-i:hover,.edrms-i:focus{border-color:#1f6fbf;color:#1f6fbf;outline:none}.edrms-i:hover::after,.edrms-i:focus::after{content:attr(data-tip);position:absolute;left:-8px;top:22px;z-index:50;width:max-content;max-width:260px;padding:7px 10px;border-radius:6px;background:#fff;color:#242424;box-shadow:0 4px 14px rgba(0,0,0,.2);font:400 12.5px/1.4 "Segoe UI",sans-serif;white-space:normal;text-transform:none;letter-spacing:0;text-align:left}#view .kpi,#view .vs2-k,#view .kpis,#view .kpigrp{overflow:visible!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
@@ -337,6 +343,33 @@ export class ReportHost {
   // onto the right of the dashboard's title band, and the menu button onto
   // its left. The elements are kept and moved, not copied, so they keep
   // their behaviour; when the band is redrawn they are put on the new one.
+  // 1.0.30: a card's description moves into an (i) beside its name, shown on
+  // hover or keyboard focus, so each card reads as name and number. Applies
+  // to every card with a description: Bank-wide, Department Insights and the
+  // Library usage summary.
+  private _infoIcons(): void {
+    const doc: Document | null = this._doc();
+    if (!doc) return;
+    doc.querySelectorAll('#view .kpi, #view .vs2-k').forEach((card: Element): void => {
+      if (card.querySelector('.edrms-i')) return;
+      const desc: HTMLElement | null = card.querySelector('.kpi-helper, .kpi-sub, .h');
+      const lab: HTMLElement | null = card.querySelector('.lab, .l');
+      const text: string = desc ? (desc.textContent || '').replace(/\s+/g, ' ').trim() : '';
+      if (!desc || !lab || !text) return;
+      const i: HTMLElement = doc.createElement('span');
+      i.className = 'edrms-i';
+      i.textContent = 'i';
+      i.setAttribute('tabindex', '0');
+      i.setAttribute('role', 'img');
+      i.setAttribute('aria-label', text);
+      i.setAttribute('data-tip', text);
+      // Reading the description must not open the card's breakdown.
+      i.addEventListener('click', (e: Event): void => { e.stopPropagation(); i.focus(); });
+      lab.appendChild(i);
+      card.classList.add('edrms-has-i');
+    });
+  }
+
   private _relayout(): void {
     const doc: Document | null = this._doc();
     if (!doc) return;
