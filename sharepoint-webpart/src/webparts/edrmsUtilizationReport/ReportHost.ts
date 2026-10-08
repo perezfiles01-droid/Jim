@@ -273,6 +273,15 @@ export class ReportHost {
     // titles included, in place of the report's serif headings.
     css += 'html,body,body *:not(.ic){font-family:\"Segoe UI Web (West European)\",\"Segoe UI\",-apple-system,BlinkMacSystemFont,Roboto,\"Helvetica Neue\",sans-serif!important}#view h1,#view h2,#view h3,#view .ptitle,#side .t1,#view .so2-t,#view .dh-t{font-weight:600!important;letter-spacing:0!important}';
     // 1.0.30: the (i) info icons on cards (see _infoIcons).
+    // 1.0.31: one consistent placement. The name and its (i) have the top row
+    // to themselves, centred together; on Bank-wide, View breakdown moves down
+    // beside the number, where the description used to be. A hovered card
+    // comes to the front so its tooltip is never under the next card.
+    css += '#view .edrms-has-i .lab,#view .edrms-has-i>.l{display:flex!important;align-items:center!important;gap:7px;flex-wrap:nowrap}' +
+      '#view .edrms-has-i .edrms-i{margin-left:0!important;vertical-align:baseline!important}' +
+      '#view .dash-bw .kpi.edrms-has-i .lab{grid-column:1/4!important;grid-row:1}' +
+      '#view .dash-bw .kpi.edrms-has-i .tap{grid-column:3!important;grid-row:2!important;align-self:center!important;justify-self:end}' +
+      '#view .kpi:hover,#view .kpi:focus-within,#view .vs2-k:hover,#view .vs2-k:focus-within{position:relative;z-index:30!important}';
     css += '#view .edrms-has-i .kpi-helper,#view .edrms-has-i .kpi-sub,#view .edrms-has-i>.h{display:none!important}.edrms-i{position:relative;display:inline-block;width:16px;height:16px;margin-left:7px;vertical-align:-2px;border:1.5px solid #9fb2c6;border-radius:50%;color:#5b6b7d;font:700 10px/13px "Segoe UI",sans-serif!important;text-align:center;text-transform:none;letter-spacing:0;cursor:help;flex:0 0 auto}.edrms-i:hover,.edrms-i:focus{border-color:#1f6fbf;color:#1f6fbf;outline:none}.edrms-i:hover::after,.edrms-i:focus::after{content:attr(data-tip);position:absolute;left:-8px;top:22px;z-index:50;width:max-content;max-width:260px;padding:7px 10px;border-radius:6px;background:#fff;color:#242424;box-shadow:0 4px 14px rgba(0,0,0,.2);font:400 12.5px/1.4 "Segoe UI",sans-serif;white-space:normal;text-transform:none;letter-spacing:0;text-align:left}#view .kpi,#view .vs2-k,#view .kpis,#view .kpigrp{overflow:visible!important}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
