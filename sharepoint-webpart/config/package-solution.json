@@ -3,7 +3,7 @@
   "solution": {
     "name": "Util sample",
     "id": "d5e2f0e0-ffae-4e8f-96d3-0c4669f9ac64",
-    "version": "1.0.20.0",
+    "version": "1.0.21.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

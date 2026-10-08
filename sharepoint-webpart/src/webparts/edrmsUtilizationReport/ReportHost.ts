@@ -252,6 +252,9 @@ export class ReportHost {
     // the value beside its description, and no white panel round the first
     // two tables, so the first table and its pager show without scrolling.
     css += '#view>section{padding-top:10px!important}#view .band.edrms-top{min-height:46px!important;flex-direction:row!important;align-items:baseline!important;justify-content:flex-start!important;gap:14px;padding-top:7px!important;padding-bottom:7px!important;margin-bottom:8px!important}#view .band.edrms-top h2{white-space:nowrap}#view .band.edrms-top .bd{margin-top:0!important;min-width:0}#view .kpigrp{margin-bottom:8px!important}#view .kpis{margin-bottom:0!important}#view .dash-bw .kpi{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:baseline;padding:8px 14px!important}#view .dash-bw .kpi .lab{grid-column:1/3;grid-row:1;white-space:normal!important;min-width:0}#view .dash-bw .kpi .tap{grid-column:3;grid-row:1;margin:0!important;padding:0!important;white-space:nowrap}#view .dash-bw .kpi .val{grid-column:1;grid-row:2;margin:2px 0 0!important;white-space:nowrap}#view .dash-bw .kpi .kpi-helper,#view .dash-bw .kpi .kpi-sub{grid-column:2/4;grid-row:2;margin:0!important}#view .panel:has(>.sites-split){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}#view .sites-split .ptitle{margin-bottom:6px!important}#view .sites-split .psub{margin-bottom:8px!important}#view .sites-rank,#view .sites-table{padding-top:12px!important;padding-bottom:12px!important}';
+    // 1.0.21: Data as of beside Export to PDF, which keeps its white style
+    // (mockups/header-cards-redesign.png, as chosen by the requester).
+    css += '.edrms-tools{gap:16px!important}.edrms-tools .crumb{order:-1;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;font-family:inherit!important;line-height:1.2!important;align-items:center!important;gap:8px!important;height:28px!important;min-height:0!important;padding:0 16px 0 0!important;background:none!important;border:0!important;border-right:1px solid #dfe6ee!important;border-radius:0!important;box-shadow:none!important;font-size:13px!important;font-weight:400!important;color:#5b6b7d!important}.edrms-tools .crumb:before{content:none!important;display:none!important}.edrms-tools .crumb b{display:inline!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1.2!important;color:#0b2545!important;margin:0!important}.edrms-tools .edrms-dot{display:inline-block!important;position:static!important;width:8px;height:8px;border-radius:50%;background:#43a047;box-shadow:0 0 0 3px #e3f3e4;flex:0 0 auto}';
     // A more readable sidebar: white menu text a size up, light labels, and
     // the future-release items still dimmed but legible.
     css += '#side .t2{color:#DCE8F6!important;font-size:11.5px!important}' +
@@ -336,6 +339,18 @@ export class ReportHost {
     const crumb: HTMLElement | null = tools.querySelector('.crumb') || doc.querySelector('.crumb');
     if (dx && dx.parentElement !== tools) tools.insertBefore(dx, tools.firstChild);
     if (crumb && crumb.parentElement !== tools) tools.appendChild(crumb);
+    // 1.0.21: the "EDRMS Reporting Suite / As of Sep 2026" card becomes a
+    // quiet "Data as of Sep 2026" beside Export to PDF. The date is still
+    // read from the report's own text, so it moves when the report's does.
+    if (crumb && !crumb.hasAttribute('data-edrms-asof')) {
+      const sd: Element | null = crumb.querySelector('.snapshot-date');
+      const when: string = (sd ? sd.textContent || '' : '').replace(/^\s*as of\s*/i, '').trim();
+      if (when) {
+        crumb.setAttribute('data-edrms-asof', '1');
+        crumb.innerHTML = '<span class="edrms-dot" aria-hidden="true"></span>Data as of <b></b>';
+        (crumb.querySelector('b') as HTMLElement).textContent = when;
+      }
+    }
     band.classList.add('edrms-top');
     if (tools.parentElement !== band) band.appendChild(tools);
     // Held by reference: when the band is redrawn the button goes with the old
