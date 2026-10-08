@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><title>KPI card options</title>
+<style>
+:root{--adb:#194F8E;--ink:#0b2545;--mut:#5b6b7d;--line:#e3e9f0;--bg:#eef2f6;--link:#1f6fbf}
+*{box-sizing:border-box;margin:0}
+body{width:1600px;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;color:var(--ink);padding:24px 28px}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}.lead{color:var(--mut);font-size:13.5px;margin-bottom:16px}
+.tag{display:inline-block;font:700 10.5px/1 "Segoe UI";letter-spacing:.1em;padding:4px 7px;border-radius:5px;margin-bottom:8px}
+.cur{background:#fff4c2;color:#8a6d00}.rec{background:#dff3e0;color:#1b5e20}.alt{background:#e8eef6;color:#33507a}
+.frame{background:var(--bg);border-radius:12px;padding:14px;margin-bottom:8px}
+.why{font-size:12.5px;color:#33475b;line-height:1.55;margin:0 0 24px 4px}.why li{margin-left:18px}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+/* current */
+.c{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px;display:grid;grid-template-columns:auto 1fr auto;column-gap:10px;align-items:center}
+.c.on{border:2px solid #4b8fd6;background:#eef5fd}
+.c .l{grid-column:1/3;font-size:13px;color:var(--mut)}.c .a{font-size:13px;font-weight:600;color:var(--link)}
+.c .v{font-size:26px;font-weight:700}.c .h{grid-column:2/4;font-size:12.5px;color:var(--mut);line-height:1.3}
+/* A */
+.a1{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;position:relative;display:flex;align-items:center;gap:14px;cursor:pointer}
+.a1 .t{flex:1;min-width:0}
+.a1 .l{font-size:13px;color:var(--mut);font-weight:600}
+.a1 .v{font-size:28px;font-weight:700;line-height:1.15;margin:2px 0 1px}
+.a1 .h{font-size:12px;color:var(--mut)}
+.a1 .chev{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--link);background:#f1f6fc;font-size:16px;flex:0 0 auto}
+.a1.hov{box-shadow:0 4px 14px rgba(11,37,69,.10);border-color:#c9daee}
+.a1.on{border-color:#9fc3e2;background:#f4f9ff;box-shadow:inset 0 3px 0 var(--link)}
+.a1.on .chev{transform:rotate(90deg);background:var(--link);color:#fff}
+.a1 .sel{position:absolute;right:14px;bottom:-1px;font-size:10.5px;font-weight:700;color:#fff;background:var(--link);padding:2px 8px;border-radius:6px 6px 0 0;letter-spacing:.04em}
+/* B */
+.b{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px 10px;cursor:pointer;position:relative}
+.b .top{display:flex;justify-content:space-between;align-items:baseline}
+.b .l{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.b .v{font-size:30px;font-weight:700;line-height:1.1;margin-top:4px}
+.b .h{font-size:12px;color:var(--mut);margin-top:2px}
+.b .i{width:18px;height:18px;border-radius:50%;border:1.5px solid #9fb2c6;color:#6d8199;font:700 11px/15px "Segoe UI";text-align:center}
+.b.on{border-color:var(--link);box-shadow:0 0 0 2px #d6e6f8}
+.b.on::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;background:#fff;border-right:1px solid var(--link);border-bottom:1px solid var(--link);transform:translateX(-50%) rotate(45deg)}
+.tipb{position:absolute;right:0;top:26px;background:#fff;color:#242424;font-size:11.5px;padding:6px 9px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.22);white-space:nowrap;z-index:2}
+</style></head><body>
+<h1>Bank-wide cards: calmer, number first</h1>
+<div class="lead">Same four figures. Option A is about 25px taller than today; I would win that back from the empty space under the first table's title, so the table still fits on the first screen. Shown with the first card selected and the second hovered.</div>
+
+<div class="tag cur">CURRENT</div>
+<div class="frame"><div class="row">
+ <div class="c on"><div class="l">Active EDRMS sites</div><div class="a">View breakdown &#8250;</div><div class="v">1,032</div><div class="h">Compliant and active in Cloud Governance</div></div>
+ <div class="c"><div class="l">EDRMS users</div><div class="a">View breakdown &#8250;</div><div class="v">11,800</div><div class="h">Approximate workforce headcount</div></div>
+ <div class="c"><div class="l">Documents in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">3.47M</div><div class="h">All files on EDRMS sites</div></div>
+ <div class="c"><div class="l">Records declared in EDRMS</div><div class="a">View breakdown &#8250;</div><div class="v">21,646</div><div class="h">Declared as records via EDRMS</div></div>
+</div></div>
+<ul class="why"><li>Four things compete on two lines: name, link, number and a sentence. "View breakdown" is repeated four times, and the descriptions wrap.</li></ul>
+
+<div class="tag rec">A &middot; RECOMMENDED: STACKED, WHOLE CARD IS THE BUTTON</div>
+<div class="frame"><div class="row">
+ <div class="a1 on"><div class="t"><div class="l">Active EDRMS sites</div><div class="v">1,032</div><div class="h">Compliant and active</div></div><div class="chev">&#8250;</div><div class="sel">SHOWN BELOW</div></div>
+ <div class="a1 hov"><div class="t"><div class="l">EDRMS users</div><div class="v">11,800</div><div class="h">Approximate headcount</div></div><div class="chev">&#8250;</div></div>
+ <div class="a1"><div class="t"><div class="l">Documents</div><div class="v">3.47M</div><div class="h">Files on EDRMS sites</div></div><div class="chev">&#8250;</div></div>
+ <div class="a1"><div class="t"><div class="l">Records declared</div><div class="v">21,646</div><div class="h">Declared via EDRMS</div></div><div class="chev">&#8250;</div></div>
+</div></div>
+<ul class="why">
+ <li><b>One thing per line, read top to bottom:</b> name, number, a short meaning of 2 or 3 words.</li>
+ <li><b>"View breakdown" becomes a round &#8250; button</b> on each card and the whole card is clickable (hover lifts it). The tooltip says "View breakdown".</li>
+ <li><b>The open card</b> gets a blue top edge, its &#8250; turns down and fills blue, and a small "SHOWN BELOW" tab, so it is clear which table is open.</li>
+ <li><b>Shorter wording.</b> "in EDRMS" is dropped from the names (the whole report is EDRMS), and each description is cut to its core. The full wording moves into the tooltip, so nothing is lost. These captions came from the client, so the shortened wording needs RAC's agreement.</li>
+</ul>
+
+<div class="tag alt">B &middot; LABEL ABOVE, DETAIL IN AN &#9432; TOOLTIP</div>
+<div class="frame"><div class="row">
+ <div class="b on"><div class="top"><div class="l">Active sites</div><div class="i">i</div></div><div class="v">1,032</div><div class="h">Click to hide the table</div></div>
+ <div class="b"><div class="top"><div class="l">Users</div><div class="i" style="position:relative">i<div class="tipb">Approximate workforce headcount</div></div></div><div class="v">11,800</div><div class="h">Click for breakdown</div></div>
+ <div class="b"><div class="top"><div class="l">Documents</div><div class="i">i</div></div><div class="v">3.47M</div><div class="h">Click for breakdown</div></div>
+ <div class="b"><div class="top"><div class="l">Records declared</div><div class="i">i</div></div><div class="v">21,646</div><div class="h">Click for breakdown</div></div>
+</div></div>
+<ul class="why">
+ <li>The leanest: a short label, the number, and the description only on hover of &#9432;. The open card points down at its table with a small notch. Cleanest look, but the meaning of each number is hidden until hovered, which is harder for readers who do not explore.</li>
+</ul>
+</body></html>
