@@ -1,0 +1,82 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Sidebar toggle options</title>
+<style>
+:root{--adb:#194F8E;--ink:#0b2545;--mut:#5b6b7d;--line:#e3e9f0;--bg:#eef2f6}
+*{box-sizing:border-box;margin:0}
+body{width:1600px;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;color:var(--ink);padding:24px 28px}
+h1{font:700 20px Georgia,serif;margin-bottom:4px}.lead{color:var(--mut);font-size:13.5px;margin-bottom:18px}
+.opt{display:grid;grid-template-columns:270px 1fr 1fr;gap:18px;align-items:start;padding:16px 0;border-top:1px solid var(--line)}
+.opt h2{font-size:15px;font-weight:700;margin-bottom:6px}.opt p{font-size:12.5px;color:#33475b;line-height:1.5}
+.tag{display:inline-block;font:700 10.5px/1 "Segoe UI";letter-spacing:.1em;padding:4px 7px;border-radius:5px;margin-bottom:8px}
+.cur{background:#fff4c2;color:#8a6d00}.rec{background:#dff3e0;color:#1b5e20}.alt{background:#e8eef6;color:#33507a}
+.cap{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--mut);margin-bottom:5px}
+.scr{height:190px;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;background:var(--bg)}
+.side{width:200px;background:var(--adb);color:#fff;padding:10px 0;flex:0 0 auto;position:relative}
+.side .t{font:600 13px Georgia,serif;padding:0 14px;margin:2px 0 10px}
+.side a{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:7px 14px}
+.side a.on{background:rgba(255,255,255,.18);border-left:3px solid #7fbf3f;padding-left:11px}
+.side svg.i{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.7;flex:0 0 auto}
+.rail{width:48px;padding:10px 0}.rail a{justify-content:center;padding:9px 0}.rail a.on{padding-left:0;border-left:3px solid #7fbf3f}
+.main{flex:1;padding:12px}
+.band{background:#fff;border:1px solid var(--line);border-radius:10px;height:46px;display:flex;align-items:center;gap:10px;padding:0 12px}
+.band h3{font:700 15px Georgia,serif}.band .d{font-size:11.5px;color:var(--mut)}
+.k{display:flex;gap:8px;margin-top:10px}.k div{flex:1;height:60px;background:#fff;border:1px solid var(--line);border-radius:8px}
+/* buttons */
+.old{width:30px;height:30px;border:1px solid #cfd8e3;border-radius:7px;background:#fff;display:grid;place-items:center}
+.fl{width:32px;height:32px;border-radius:4px;display:grid;place-items:center;position:relative}
+.fl svg{width:20px;height:20px;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.fl.dark svg{stroke:#fff}.fl.dark.hov{background:rgba(255,255,255,.14)}
+.fl.light svg{stroke:#242424}.fl.light.hov{background:#f0f0f0}
+.tip{position:absolute;top:38px;left:0;white-space:nowrap;background:#fff;color:#242424;font-size:11.5px;padding:5px 8px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.22);z-index:2}
+.tip.r{left:auto;right:0}
+.lbl{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 8px;border-radius:4px;font-size:13px;font-weight:600;color:#242424}
+.lbl svg{width:20px;height:20px;stroke:#242424;fill:none;stroke-width:1.5;stroke-linecap:round}
+.lbl.hov{background:#f0f0f0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 14px;margin-bottom:8px}
+.topbar .t{margin:0;padding:0}
+</style></head><body>
+<h1>Sidebar button: Fluent (SharePoint / Microsoft 365) options</h1>
+<div class="lead">Each option is shown with the menu open and closed, hovered, with its tooltip. All three use Microsoft's Fluent icons and its subtle (borderless) button style.</div>
+
+<!-- icons -->
+<svg width="0" height="0" style="position:absolute"><defs>
+ <symbol id="ham" viewBox="0 0 20 20"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></symbol>
+ <symbol id="pc" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13M13 8l-2 2 2 2"/></symbol>
+ <symbol id="pe" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13M11 8l2 2-2 2"/></symbol>
+ <symbol id="home" viewBox="0 0 20 20"><path d="M3 9l7-6 7 6v8H3z"/></symbol>
+ <symbol id="grid" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6"/><rect x="11" y="3" width="6" height="6"/><rect x="3" y="11" width="6" height="6"/><rect x="11" y="11" width="6" height="6"/></symbol>
+ <symbol id="dia" viewBox="0 0 20 20"><path d="M10 3l7 7-7 7-7-7z"/></symbol>
+</defs></svg>
+
+<div class="opt">
+ <div><span class="tag cur">CURRENT</span><h2>Bordered box in the title band</h2><p>A boxed icon on the report's title band. It reads as a separate control rather than part of the menu, has no tooltip, and moves away from the sidebar it controls.</p></div>
+ <div><div class="cap">MENU OPEN</div><div class="scr"><div class="side"><div class="t">EDRMS Utilization Report</div><a class="on"><svg class="i"><use href="#home"/></svg>Bank-wide Oversight</a><a><svg class="i"><use href="#grid"/></svg>Department Insights</a></div>
+  <div class="main"><div class="band"><div class="old"><svg width="18" height="18" style="stroke:#0b2545;fill:none;stroke-width:1.6"><use href="#pc"/></svg></div><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div></div></div></div></div>
+ <div><div class="cap">MENU CLOSED</div><div class="scr"><div class="main"><div class="band"><div class="old"><svg width="18" height="18" style="stroke:#0b2545;fill:none;stroke-width:1.6"><use href="#pe"/></svg></div><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div><div></div></div></div></div></div>
+</div>
+
+<div class="opt">
+ <div><span class="tag rec">A &middot; RECOMMENDED</span><h2>Hamburger at the top of the menu, closes to an icon rail</h2><p>The standard Microsoft 365 navigation button (Fluent "Navigation" icon, &#8801;), placed where SharePoint and Teams put it: top of the menu it controls. Closing it leaves a slim 48px rail with each page's icon, so the menu never disappears completely and is one click away. Tooltip: "Close navigation" / "Open navigation".</p></div>
+ <div><div class="cap">MENU OPEN (HOVER)</div><div class="scr"><div class="side"><div class="topbar"><div class="t">EDRMS Utilization Report</div></div>
+   <div style="padding:0 8px 6px"><div class="fl dark hov"><svg><use href="#ham"/></svg><div class="tip">Close navigation</div></div></div>
+   <a class="on"><svg class="i"><use href="#home"/></svg>Bank-wide Oversight</a><a><svg class="i"><use href="#grid"/></svg>Department Insights</a></div>
+  <div class="main"><div class="band"><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div></div></div></div></div>
+ <div><div class="cap">MENU CLOSED: ICON RAIL</div><div class="scr"><div class="side rail"><div style="display:flex;justify-content:center;margin-bottom:6px"><div class="fl dark"><svg><use href="#ham"/></svg></div></div>
+   <a class="on"><svg class="i"><use href="#home"/></svg></a><a><svg class="i"><use href="#grid"/></svg></a><a style="opacity:.6"><svg class="i"><use href="#dia"/></svg></a></div>
+  <div class="main"><div class="band"><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div><div></div></div></div></div></div>
+</div>
+
+<div class="opt">
+ <div><span class="tag alt">B</span><h2>Collapse icon on the menu's edge</h2><p>The Fluent "Panel left contract / expand" icon (the one you have now) as a subtle button at the top right of the menu, the way new Outlook and Teams do it. Closing hides the menu fully; the expand button then sits at the left of the title band.</p></div>
+ <div><div class="cap">MENU OPEN (HOVER)</div><div class="scr"><div class="side"><div class="topbar"><div class="t">EDRMS Report</div><div class="fl dark hov"><svg><use href="#pc"/></svg><div class="tip r">Collapse menu</div></div></div>
+   <a class="on"><svg class="i"><use href="#home"/></svg>Bank-wide Oversight</a><a><svg class="i"><use href="#grid"/></svg>Department Insights</a></div>
+  <div class="main"><div class="band"><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div></div></div></div></div>
+ <div><div class="cap">MENU CLOSED</div><div class="scr"><div class="main"><div class="band"><div class="fl light"><svg><use href="#pe"/></svg></div><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div><div></div></div></div></div></div>
+</div>
+
+<div class="opt">
+ <div><span class="tag alt">C</span><h2>Icon with a word: "Menu"</h2><p>Same place as today, but a Fluent subtle button with the hamburger and the word "Menu" beside it. Easiest for readers who do not recognise icons, at the cost of a little width on the title band.</p></div>
+ <div><div class="cap">MENU OPEN (HOVER)</div><div class="scr"><div class="side"><div class="t">EDRMS Utilization Report</div><a class="on"><svg class="i"><use href="#home"/></svg>Bank-wide Oversight</a><a><svg class="i"><use href="#grid"/></svg>Department Insights</a></div>
+  <div class="main"><div class="band"><div class="lbl hov"><svg><use href="#ham"/></svg>Hide menu</div><h3>Bank-wide oversight</h3></div><div class="k"><div></div><div></div><div></div></div></div></div></div>
+ <div><div class="cap">MENU CLOSED</div><div class="scr"><div class="main"><div class="band"><div class="lbl"><svg><use href="#ham"/></svg>Menu</div><h3>Bank-wide oversight</h3><span class="d">EDRMS adoption across ADB</span></div><div class="k"><div></div><div></div><div></div><div></div></div></div></div></div>
+</div>
+</body></html>
