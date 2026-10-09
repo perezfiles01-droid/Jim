@@ -1,11 +1,14 @@
-# Text fixes that Floot carries but index.html (GitHub Pages) does not yet,
-# because GitHub only changes when the requester asks. Every SharePoint build
-# must include them until GitHub is synced from Floot, then delete this file.
+# Fixes applied on top of report-source.html for every SharePoint build.
 #   python3 sharepoint-webpart/pending-fixes.py   (writes sp-src.tmp.html)
 #   cd sharepoint-webpart && REPORT_SOURCE=/home/user/Jim/sp-src.tmp.html npm run build
 import re, os
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-s = open(os.path.join(root, 'index.html'), encoding='utf-8').read()
+# The report page the web part is built from. Since 9 Oct 2026 GitHub's
+# index.html is synced from the Floot app and carries Floot's own header tools
+# and export buttons, which the web part adds itself; building from it would
+# show them twice. So the web part keeps its own copy: index.html as it was
+# just before that sync (commit ed8aa1d), which 1.0.32 was built and tested on.
+s = open(os.path.join(root, 'sharepoint-webpart', 'report-source.html'), encoding='utf-8').read()
 s = s.replace('&#9662; Click to open', 'View breakdown <span aria-hidden="true">&#8250;</span>')
 for o, n in [
     ('      var map=prepare(view);\n      html2canvas(view,{', '      var map=prepare(view), LW=document.documentElement.offsetWidth||1920;\n      html2canvas(view,{'),
