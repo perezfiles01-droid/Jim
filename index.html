@@ -2654,7 +2654,8 @@ DASHBOARDS.bw=(function(){
       return dirPhys==="asc"?cmp:-cmp;
     });
 
-    const rows=sortedDepts.map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
+    const physQRaw=document.getElementById("bw-phys-search")?.value||"", physQ=physQRaw.trim().toLowerCase();
+    const rows=sortedDepts.filter(d=>!physQ||(d.code+" "+d.name).toLowerCase().includes(physQ)).map(d=>[d.code+" - "+d.name, F(d.phys), F(d.rec),
                                    PCT(d.phys,d.rec).toFixed(1)+"%"]);
     const pages=Math.max(1,Math.ceil(rows.length/10));
     if(bwPhysPage>pages)bwPhysPage=pages;
@@ -2665,6 +2666,7 @@ DASHBOARDS.bw=(function(){
        <div class="psub">${d.sub}</div>
        <div class="tiles">${tiles.map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
+       <div class="sites-search-wrap phys-search-wrap"><input class="sites-search" id="bw-phys-search" type="search" aria-label="Search by department / office / RM / RO" placeholder="Search by department / office / RM / RO" value="${physQRaw.replace(/"/g,"&quot;")}" /></div>
        <div class="scrollx"><div class="dtab" id="bw-phys" style="--dc:230px repeat(${d.cols.length-1},1fr)">
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="hd${i?" num":""}${sortPhys===SORT_KEYS[i]?" on":""}" data-s="${SORT_KEYS[i]}">${c}${
@@ -2674,6 +2676,8 @@ DASHBOARDS.bw=(function(){
        </div></div>
        <div id="bw-phys-pager">${pager(rows.length,bwPhysPage,pages,"departments")}</div>`;
 
+    const physSearch=document.getElementById("bw-phys-search");
+    if(physSearch)physSearch.oninput=()=>{const v=physSearch.value;bwPhysPage=1;drawPhysPanel();setTimeout(()=>{const n=document.getElementById("bw-phys-search");if(n){n.focus();n.setSelectionRange(v.length,v.length);}},0);};
     document.querySelectorAll("#bw-phys-panel .hd").forEach(el=>el.onclick=()=>{
       const k=el.dataset.s;
       if(sortPhys===k)dirPhys=dirPhys==="asc"?"desc":"asc";
@@ -3477,7 +3481,7 @@ DASHBOARDS.dp=(function(){
          <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
          <div class="kpis">${TILES.map(t=>
            `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
-              <div class="val">${t.val(d)}</div>${t.sub?`<div class="kpi-sub">${t.sub}</div>`:""}<div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+              <div class="val">${t.val(d)}</div>${t.sub?`<div class="kpi-sub">${t.sub}</div>`:""}<div class="tap">View breakdown <span aria-hidden="true">›</span></div></div>`).join("")}</div>
        </div>`;
   }
 
@@ -4083,14 +4087,14 @@ DASHBOARDS.dp=(function(){
   
   var libQ="", libSel=null, libTie=null, libMetric="docs";
   function drawLibs(){
-    var libs=generateSampleLibraries(dept).map(function(l){var o={};for(var k in l)o[k]=l[k];o.key=l.lib+"||"+l.site;var h=0,s=o.key;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%9973;o.users=Math.max(1,Math.round(Math.sqrt(l.docs)/4+(h%9)));return o;});
+    var libs=generateSampleLibraries(dept).map(function(l,li){var o={};for(var k in l)o[k]=l[k];o.key=l.lib+"||"+l.site;var h=0,s=o.key;o.key+="||"+li;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%9973;o.users=Math.max(1,Math.round(Math.sqrt(l.docs)/4+(h%9)));return o;});
     var sum=function(f){return libs.reduce(function(a,l){return a+l[f];},0);};
     var maxU=libs.reduce(function(a,l){return Math.max(a,l.users);},0), uniqU=Math.min(sum("users"),Math.round(maxU*3));
     console.assert(uniqU<=sum("users")&&uniqU>=maxU,"Unique active users must sit between the largest library and the sum of libraries");
     var LAB={docs:"documents",rec:"records declared",phys:"physical counterparts",users:"active users"};
     var met=LAB[libMetric]?libMetric:"docs";
     var q=libQ.trim().toLowerCase();
-    var filt=libs.filter(function(l){return (!libSel||l.key===libSel)&&(!libTie||String(l[libTie.m])===libTie.k)&&(!q||(l.lib+" "+l.site).toLowerCase().indexOf(q)>=0);});
+    var filt=libs.filter(function(l){return (!libSel||l.key===libSel)&&(!libTie||(String(l[libTie.m])===libTie.k&&(libTie.x||[]).indexOf(l.key)<0))&&(!q||(l.lib+" "+l.site).toLowerCase().indexOf(q)>=0);});
     var alt={docs:"rec",rec:"phys",phys:"rec",users:"docs"}[met];
     var rows=filt.slice().sort(function(a,b){var x=a[sortLibs],y=b[sortLibs];var c=typeof x==="string"?x.localeCompare(y):x-y;return dirLibs==="asc"?c:-c;});
     var pages=Math.max(1,Math.ceil(rows.length/10));
@@ -4139,7 +4143,7 @@ DASHBOARDS.dp=(function(){
       libsPage=1; drawLibs();
     };});
     document.querySelectorAll("#dp-libs .lb-bar").forEach(function(b){b.onclick=function(){var k=b.getAttribute("data-k");libSel=libSel===k?null:k;libTie=null;libsPage=1;drawLibs();};});
-    document.querySelectorAll("#dp-libs .lb-more").forEach(function(m){m.onclick=function(){libTie={m:met,k:m.getAttribute("data-k")};libSel=null;libsPage=1;drawLibs();};});
+    document.querySelectorAll("#dp-libs .lb-more").forEach(function(m){m.onclick=function(){libTie={m:met,k:m.getAttribute("data-k"),x:shown};libSel=null;libsPage=1;drawLibs();};});
     document.querySelectorAll("#dp-libs [data-lm]").forEach(function(b){b.onclick=function(){libMetric=b.getAttribute("data-lm");libSel=null;libTie=null;libsPage=1;drawLibs();};});
     var clr=document.getElementById("lb-clr"); if(clr) clr.onclick=function(){libSel=null;libTie=null;libsPage=1;drawLibs();};
     var qi=document.getElementById("lb-q");
@@ -4160,6 +4164,7 @@ DASHBOARDS.dp=(function(){
   const html=`<section class="dash-dp">
     <div class="band">
       <h2>Department insights</h2>
+      <div class="bd">EDRMS use by department: sites, site visitors, documents, declared records and physical counterparts</div>
     </div>
     <div class="panel">
       <!-- The "Choose a department, office or resident mission" sub-caption
@@ -4198,6 +4203,7 @@ DASHBOARDS.dp=(function(){
 
     <div class="band">
       <h2>Library usage</h2>
+      <div class="bd">Document libraries in EDRMS sites: documents, declared records, physical counterparts and active users</div>
     </div>
     <div class="panel">
       <div class="ptitle">Libraries by Department / Office / RM / RO</div>
@@ -5245,7 +5251,7 @@ DASHBOARDS.pj=(function(){
          <div class="gh"><b>Open a breakdown</b><span>${TILES.length} cards, each opens the table beneath</span></div>
          <div class="kpis">${TILES.map(t=>
            `<div class="kpi ${t.k===openKpi?"on":""}" data-k="${t.k}"><div class="lab">${t.lab}</div>
-              <div class="val">${t.val(p)}</div><div class="tap">&#9662; Click to open</div></div>`).join("")}</div>
+              <div class="val">${t.val(p)}</div><div class="tap">View breakdown <span aria-hidden="true">›</span></div></div>`).join("")}</div>
        </div>`;
   }
 
@@ -6390,7 +6396,7 @@ switchTo("bw");
                   const number=document.createElement("span");number.className="physical-donut-value";number.textContent=Number(value).toLocaleString("en-US")+" records, "+Number(portion).toFixed(1)+"%";
                   copy.append(name,number);key.append(swatch,copy);row.append(key);legend.append(row);
                 });
-                chart.append(donut,legend);scroll.parentElement.insertBefore(split,scroll);main.append(scroll);split.append(main,chart);
+                chart.append(donut,legend);scroll.parentElement.insertBefore(split,scroll);split.append(main,chart);const physWrap=scope.querySelector(".phys-search-wrap");if(physWrap){const fi=document.activeElement&&physWrap.contains(document.activeElement)?document.activeElement:null,fp=fi?fi.selectionStart:0;main.append(physWrap);if(fi){fi.focus();fi.setSelectionRange(fp,fp);}}main.append(scroll);
                 // Post-render integrity check: exactly one chart, correct source
                 // totals, and a valid 0–100% share. Roll back the injected layout
                 // rather than leave a broken or misleading visualization.
@@ -6754,17 +6760,19 @@ switchTo("bw");
     var name=dashName(), d=new Date();
     var stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
     setTimeout(function(){
-      var map=prepare(view);
+      var map=prepare(view), LW=document.documentElement.offsetWidth||1920;
       html2canvas(view,{onclone:function(doc){
         // Every adjustment is made on html2canvas's own copy of the page, never
         // on the page being read, so nothing on screen moves during the export.
         // CSS zoom (GitHub Pages fits the 1920px canvas with it) is undone so
         // the copy lays out at full size, and #main, which scrolls on its own,
         // is opened up so the whole dashboard is captured.
-        var r=doc.documentElement; r.style.zoom="1"; r.style.width="1920px";
+        // The copy keeps the page's own layout width, so charts drawn for that
+        // width fill their panels instead of leaving a white strip.
+        var r=doc.documentElement; r.style.zoom="1"; r.style.width=LW+"px";
         var m=doc.getElementById("main"); if(m){m.style.height="auto";m.style.maxHeight="none";m.style.overflow="visible";}
         onclone(map)(doc);
-      },windowHeight:Math.max(1080,view.scrollHeight+400),scale:1.5,useCORS:true,backgroundColor:"#F4F6F9",windowWidth:1920,ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("csel-list"));}})
+      },windowHeight:Math.max(1080,view.scrollHeight+400),scale:1.5,useCORS:true,backgroundColor:"#F4F6F9",windowWidth:LW,ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("edrms-menu")||el.classList.contains("csel-list"));}})
       .then(function(canvas){
         var J=window.jspdf.jsPDF, W=1200, MAXH=14000;
         var fullH=W*canvas.height/canvas.width;
@@ -6793,6 +6801,171 @@ switchTo("bw");
   setTimeout(place,500);setTimeout(place,1500);
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(place);
   window.addEventListener("load",place);
+})();
+</script><style>
+.edrms-menu{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;margin:0 0 8px 14px;padding:0;border:0;border-radius:4px;background:transparent;color:#fff;cursor:pointer}
+.edrms-menu:hover{background:rgba(255,255,255,.14)}
+.edrms-menu:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.edrms-menu svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;fill:none}
+html.edrms-side-closed #side{width:56px!important;min-width:56px!important;max-width:56px!important;flex:0 0 56px!important;padding-left:0!important;padding-right:0!important;overflow:hidden!important}
+html.edrms-side-closed .edrms-menu{margin:0 auto 8px!important}
+#side .brand{display:grid!important;grid-template-columns:36px minmax(0,1fr);column-gap:10px;align-items:start}
+#side .brand>.edrms-menu{grid-row:1/3;grid-column:1;margin:0!important}
+#side .brand>.t1{grid-column:2;font-size:17px!important;line-height:1.25!important;padding-top:7px}
+#side .brand>.t2{grid-column:2;letter-spacing:.08em!important;white-space:nowrap}
+html.edrms-side-closed #side .brand{display:flex!important;justify-content:center!important;padding-left:0!important;padding-right:0!important}
+html.edrms-side-closed #side .brand>.t1,html.edrms-side-closed #side .brand>.t2{display:none!important}
+html.edrms-side-closed #nav .grp{font-size:0!important;line-height:0!important;padding:0!important;margin:8px 10px 6px!important;border-top:1px solid rgba(255,255,255,.22)!important;height:0;overflow:visible}
+html.edrms-side-closed #nav a{font-size:0!important;justify-content:center!important;padding:10px 0!important;gap:0!important;margin:0!important;text-align:center!important}
+html.edrms-side-closed #nav a .ic{font-size:17px!important;margin:0!important;width:auto!important}
+/* SharePoint's own font (Fluent's Segoe UI stack) everywhere, titles included */
+html,body,body *:not(.ic){font-family:"Segoe UI Web (West European)","Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif!important}
+#view h1,#view h2,#view h3,#view .ptitle,#side .t1,#view .so2-t,#view .dh-t{font-weight:600!important;letter-spacing:0!important}
+/* Synced from the SharePoint web part 1.0.25 to 1.0.32: sidebar name block, Bank-wide card alignment, (i) info icons */
+#side .brand { grid-template-columns: 32px minmax(0px, 1fr); column-gap: 8px; align-items: start; display: grid !important; padding-left: 14px !important; padding-right: 14px !important; }
+#side .brand > .edrms-menu { grid-area: 1 / 1 / 3; margin: 0px !important; width: 32px !important; height: 32px !important; }
+#side .brand > .t1 { grid-column: 2; padding-top: 6px; white-space: nowrap; font-size: var(--edrms-t1,16px) !important; line-height: 1.25 !important; }
+#side .brand > .t2 { grid-column: 2; font-size: 10.5px !important; letter-spacing: 0.05em !important; white-space: normal !important; margin-top: 5px !important; }
+html.edrms-side-closed #side .brand { display: flex !important; justify-content: center !important; padding-left: 0px !important; padding-right: 0px !important; }
+html.edrms-side-closed #side .brand > .t1, html.edrms-side-closed #side .brand > .t2 { display: none !important; }
+#view .kpigrp { margin-bottom: 8px !important; }
+#view .dash-bw .kpis { grid-template-rows: auto auto !important; row-gap: 0px !important; }
+#view .dash-bw .kpi { grid-row: span 2; grid-template-columns: auto minmax(0px, 1fr) auto; column-gap: 10px; align-items: baseline; display: grid !important; grid-template-rows: subgrid !important; align-content: start !important; padding: 8px 14px !important; }
+#view .dash-bw .kpi .lab { grid-area: 1 / 1 / auto / 3; min-width: 0px; white-space: normal !important; }
+#view .dash-bw .kpi .tap { grid-area: 1 / 3; white-space: nowrap; margin: 0px !important; padding: 0px !important; }
+#view .dash-bw .kpi .val { grid-area: 2 / 1; white-space: nowrap; margin: 2px 0px 0px !important; align-self: center !important; }
+#view .dash-bw .kpi .kpi-helper, #view .dash-bw .kpi .kpi-sub { grid-area: 2 / 2 / auto / 4; margin: 0px !important; align-self: center !important; }
+#view .edrms-has-i .lab, #view .edrms-has-i > .l { gap: 7px; flex-wrap: nowrap; display: flex !important; align-items: center !important; }
+#view .edrms-has-i .edrms-i { margin-left: 0px !important; vertical-align: baseline !important; }
+#view .dash-bw .kpi.edrms-has-i .lab { grid-row: 1; grid-column: 1 / 4 !important; }
+#view .dash-bw .kpi.edrms-has-i .tap { justify-self: end; grid-area: 2 / 3 !important; align-self: center !important; }
+#view .kpi:hover, #view .kpi:focus-within, #view .vs2-k:hover, #view .vs2-k:focus-within { position: relative; z-index: 30 !important; }
+#view .edrms-has-i { position: relative !important; }
+#view .edrms-has-i .lab, #view .edrms-has-i > .l { padding-right: 22px !important; }
+#view .edrms-has-i .edrms-i { top: 9px; right: 10px; width: 14px; height: 14px; border-width: 1.2px; color: rgb(122, 138, 156); border-color: rgb(181, 195, 210); position: absolute !important; margin: 0px !important; font: 700 9px / 11.5px "Segoe UI", sans-serif !important; }
+#view .edrms-has-i .edrms-i:hover::after, #view .edrms-has-i .edrms-i:focus::after { left: auto; right: -2px; top: 18px; max-width: 240px; padding: 4px 8px; border-radius: 3px; background: rgb(43, 43, 43); color: rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 6px; font: 400 12px / 1.35 "Segoe UI", sans-serif; }
+#view .edrms-has-i .kpi-helper, #view .edrms-has-i .kpi-sub, #view .edrms-has-i > .h { display: none !important; }
+.edrms-i { position: relative; display: inline-block; width: 16px; height: 16px; margin-left: 7px; vertical-align: -2px; border: 1.5px solid rgb(159, 178, 198); border-radius: 50%; color: rgb(91, 107, 125); text-align: center; text-transform: none; letter-spacing: 0px; cursor: help; flex: 0 0 auto; font: 700 10px / 13px "Segoe UI", sans-serif !important; }
+.edrms-i:hover, .edrms-i:focus { border-color: rgb(31, 111, 191); color: rgb(31, 111, 191); outline: none; }
+.edrms-i:hover::after, .edrms-i:focus::after { content: attr(data-tip); position: absolute; left: -8px; top: 22px; z-index: 50; width: max-content; max-width: 260px; padding: 7px 10px; border-radius: 6px; background: rgb(255, 255, 255); color: rgb(36, 36, 36); box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 14px; font: 400 12.5px / 1.4 "Segoe UI", sans-serif; white-space: normal; text-transform: none; letter-spacing: 0px; text-align: left; }
+#view .kpi, #view .vs2-k, #view .kpis, #view .kpigrp { overflow: visible !important; }
+/* ADB blue: the BPMSD SharePoint site's colour, same as the SharePoint web part */
+:root{--nav:#194F8E!important;--nav-hi:#2A62A3!important}
+#side{background:#194F8E!important}
+/* No top header strip: Export to PDF and the EDRMS Reporting Suite card sit on
+   the right of the dashboard's title band, the menu button on its left. Same
+   as the SharePoint web part. */
+header{display:none!important}
+#view .band.edrms-top{position:relative;min-height:60px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;padding-right:440px!important}
+
+.edrms-tools{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:10px}
+.edrms-tools .dx-btn{position:static!important;transform:none!important;right:auto!important}
+.edrms-tools .crumb{position:relative!important;top:auto!important;right:auto!important;left:auto!important;transform:none!important;margin:0!important;max-width:none!important;min-width:0!important;width:auto!important;white-space:nowrap!important;flex:0 0 auto}
+.edrms-tools .crumb *{white-space:nowrap!important}
+/* Compact layout, same as the SharePoint web part 1.0.9: a smaller Export
+   button and suite card, shorter cards and table rows, so the first table
+   shows in full on first view. */
+#view .band.edrms-top{padding-top:8px!important;padding-bottom:8px!important;margin-bottom:12px!important}
+#view .band.edrms-top h2{font-size:17px!important}
+#view .band.edrms-top .bd{font-size:12.5px!important;margin-top:2px!important}
+.edrms-tools .dx-btn{height:32px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:8px!important;gap:6px!important}
+.edrms-tools .dx-btn svg{width:14px!important;height:14px!important}
+.edrms-tools .crumb{padding:6px 12px 6px 38px!important;font-size:12.5px!important;min-height:0!important}
+.edrms-tools .crumb .snapshot-date{font-size:11px!important;margin-top:1px!important}
+.kpi{position:relative!important;padding:10px 14px!important;min-height:0!important;display:flex!important;flex-direction:column!important}
+.kpi .lab{font-size:12.5px!important;margin:0!important;line-height:1.3!important;min-height:0!important;padding-right:0!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;display:block!important;word-break:normal!important}
+.kpi .val{font-size:24px!important;line-height:1.15!important;margin:3px 0 0!important}
+.kpi .kpi-helper,.kpi .kpi-sub{font-size:11.5px!important;min-height:0!important;margin-top:2px!important;line-height:1.3!important}
+.kpi .tap{position:static!important;margin:auto 0 0!important;padding-top:6px!important;font-size:12px!important}
+#bw-phys{min-width:0!important;--dc:minmax(0,1.5fr) repeat(3,minmax(0,1fr))!important}#bw-phys .hd{white-space:normal!important;line-height:1.25!important}#dp-libs-tab th:nth-child(2){width:26%!important}#dp-libs-tab th:nth-child(3){width:92px!important}#dp-libs-tab th:nth-child(4){width:76px!important}#dp-libs-tab th:nth-child(5){width:122px!important}#dp-libs-tab th:nth-child(6){width:72px!important}#dp-libs-tab th:nth-child(n+5){white-space:normal!important;line-height:1.2!important;word-break:normal!important;overflow-wrap:normal!important}
+#dp-libs-tab th:nth-child(2){width:22%!important}#dp-libs-tab th:nth-child(3){width:86px!important}#dp-libs-tab th:nth-child(4){width:70px!important}#dp-libs-tab td.so-name{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.25!important;padding-top:6px!important;padding-bottom:6px!important}
+#view>section{padding-top:10px!important}#view .band.edrms-top{min-height:46px!important;flex-direction:row!important;align-items:baseline!important;justify-content:flex-start!important;gap:14px;padding-top:7px!important;padding-bottom:7px!important;margin-bottom:8px!important}#view .band.edrms-top h2{white-space:nowrap}#view .band.edrms-top .bd{margin-top:0!important;min-width:0}#view .kpigrp{margin-bottom:8px!important}#view .kpis{margin-bottom:0!important}#view .dash-bw .kpi{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:baseline;padding:8px 14px!important}#view .dash-bw .kpi .lab{grid-column:1/3;grid-row:1;white-space:normal!important;min-width:0}#view .dash-bw .kpi .tap{grid-column:3;grid-row:1;margin:0!important;padding:0!important;white-space:nowrap}#view .dash-bw .kpi .val{grid-column:1;grid-row:2;margin:2px 0 0!important;white-space:nowrap}#view .dash-bw .kpi .kpi-helper,#view .dash-bw .kpi .kpi-sub{grid-column:2/4;grid-row:2;margin:0!important}#view .panel:has(>.sites-split){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}#view .sites-split .ptitle{margin-bottom:6px!important}#view .sites-split .psub{margin-bottom:8px!important}#view .sites-rank,#view .sites-table{padding-top:12px!important;padding-bottom:12px!important}
+.edrms-tools{gap:16px!important}.edrms-tools .crumb{order:-1;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;font-family:inherit!important;line-height:1.2!important;align-items:center!important;gap:8px!important;height:28px!important;min-height:0!important;padding:0 16px 0 0!important;background:none!important;border:0!important;border-right:1px solid #dfe6ee!important;border-radius:0!important;box-shadow:none!important;font-size:13px!important;font-weight:400!important;color:#5b6b7d!important}.edrms-tools .crumb:before{content:none!important;display:none!important}.edrms-tools .crumb b{display:inline!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1.2!important;color:#0b2545!important;margin:0!important}.edrms-tools .edrms-dot{display:inline-block!important;position:static!important;width:8px;height:8px;border-radius:50%;background:#43a047;box-shadow:0 0 0 3px #e3f3e4;flex:0 0 auto}
+.dash-bw .kpis,.dash-dp .kpis{margin-bottom:12px!important}
+.dash-bw .drow,.dash-dp .drow{padding-top:5px!important;padding-bottom:5px!important;min-height:0!important;row-gap:2px!important}
+.dash-bw .hbar{margin:4px 0!important}
+.dash-bw .dn .dcx,.dash-dp .dn .dcx{padding:0!important;line-height:1.25!important}
+.dash-bw .hbar,.dash-dp .hbar{row-gap:3px!important}
+.dash-bw .hbar .hl,.dash-dp .hbar .hl{line-height:1.25!important}
+.dash-bw .drow .dcx,.dash-dp .drow .dcx,.sites-rank .dcx{flex-direction:row!important;align-items:baseline!important;justify-content:flex-start!important;gap:8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.sites-split .sites-table .drow,.sites-split .sites-rank .hbar{height:34px!important}
+.sites-split .sites-rank .ht{height:16px!important}
+#view .panel{margin-bottom:14px!important}
+.dash-dp .dp-strip{margin:0 0 10px!important}
+.dash-dp .dp-chip{padding:7px 14px!important}
+.dash-dp .dp-ic{width:30px!important;height:30px!important}
+.dash-dp .kpigrp{margin-bottom:4px!important}
+.dash-dp .kpigrp .gh{margin-bottom:6px!important}
+.dash-dp .toolbar{margin-bottom:10px!important}
+.so3-bar{padding:8px 14px!important;margin-top:8px!important}
+.dash-dp .ptitle+.psub{margin-bottom:8px!important}
+.sites-rank .psub,.sites-rank p{margin-bottom:6px!important}
+/* A more readable sidebar */
+#side .t2{color:#DCE8F6!important;font-size:11.5px!important}
+#nav .grp,#nav .future-release-group{color:#DCE8F6!important;font-size:12px!important;opacity:1!important}
+#nav a{color:#FFFFFF!important;font-size:15.5px!important}
+#nav .future-release-group a{color:#E8F0FA!important;opacity:.72!important;font-size:14.5px!important}
+#nav a.on{background:rgba(255,255,255,.18)!important}
+</style>
+<script>
+(function(){
+  var KEY="edrms-sidebar-closed", menu=null, tools=null;
+  function sync(closed){
+    if(closed===undefined){try{closed=localStorage.getItem(KEY)==="1";}catch(e){closed=false;}}
+    document.documentElement.classList.toggle("edrms-side-closed",closed);
+    if(menu){menu.title=closed?"Open navigation":"Close navigation";menu.setAttribute("aria-label",menu.title);menu.setAttribute("aria-expanded",closed?"false":"true");}
+  }
+  // A card's description moves into a small (i) at its top right, shown on hover or keyboard focus.
+  function infoIcons(){
+    document.querySelectorAll("#view .kpi, #view .vs2-k").forEach(function(card){
+      if(card.querySelector(".edrms-i"))return;
+      var desc=card.querySelector(".kpi-helper, .kpi-sub, .h"), lab=card.querySelector(".lab, .l");
+      var text=desc?(desc.textContent||"").replace(/\s+/g," ").trim():"";
+      if(!desc||!lab||!text)return;
+      var i=document.createElement("span");i.className="edrms-i";i.textContent="i";
+      i.setAttribute("tabindex","0");i.setAttribute("role","img");i.setAttribute("aria-label",text);i.setAttribute("data-tip",text);
+      i.addEventListener("click",function(e){e.stopPropagation();i.focus();});
+      lab.appendChild(i);card.classList.add("edrms-has-i");
+    });
+  }
+  (function watchCards(){var v=document.getElementById("view");if(!v){setTimeout(watchCards,300);return;}new MutationObserver(infoIcons).observe(v,{childList:true,subtree:true});infoIcons();})();
+  // Move (not copy) the header's controls onto the dashboard's title band.
+  // Opening a dashboard redraws the band and takes them with it, so they are
+  // held by reference and put back on the new band.
+  function relayout(){
+    var band=document.querySelector("#view .band"); if(!band) return;
+    if(!menu){
+      menu=document.createElement("button"); menu.type="button"; menu.className="edrms-menu";
+      menu.innerHTML='<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>';
+      menu.onclick=function(){var c=!document.documentElement.classList.contains("edrms-side-closed");try{localStorage.setItem(KEY,c?"1":"0");}catch(e){}sync(c);};
+      sync();
+    }
+    if(!tools){tools=document.createElement("div");tools.className="edrms-tools";}
+    var dx=tools.querySelector(".dx-btn")||document.querySelector("header .dx-btn");
+    var crumb=tools.querySelector(".crumb")||document.querySelector(".crumb");
+    if(dx&&dx.parentElement!==tools) tools.insertBefore(dx,tools.firstChild);
+    if(crumb&&crumb.parentElement!==tools) tools.appendChild(crumb);
+    // The suite card becomes a quiet "Data as of Sep 2026"; the date is read from the report's own text.
+    if(crumb&&!crumb.hasAttribute("data-edrms-asof")){
+      var sd=crumb.querySelector(".snapshot-date"), when=(sd?sd.textContent||"":"").replace(/^\s*as of\s*/i,"").trim();
+      if(when){crumb.setAttribute("data-edrms-asof","1");crumb.innerHTML='<span class="edrms-dot" aria-hidden="true"></span>Data as of <b></b>';crumb.querySelector("b").textContent=when;}
+    }
+    band.classList.add("edrms-top"); band.classList.remove("edrms-has-menu");
+    if(tools.parentElement!==band) band.appendChild(tools);
+    // Fluent navigation button at the top of the sidebar it controls; closed, the sidebar is an icon rail.
+    var side=document.getElementById("side");
+    var home=(side&&side.querySelector(".brand"))||side;
+    if(home&&menu.parentElement!==home) home.insertBefore(menu,home.firstChild);
+    // The report's name on one line: sized on the reader's own screen, 16px down to 12px.
+    var t1=side&&side.querySelector(".brand .t1");
+    if(t1&&t1.clientWidth){var sz=16;t1.style.setProperty("--edrms-t1",sz+"px");while(t1.scrollWidth>t1.clientWidth+1&&sz>12){sz-=0.5;t1.style.setProperty("--edrms-t1",sz+"px");}}
+    infoIcons();
+    document.querySelectorAll("#nav a").forEach(function(a){if(!a.getAttribute("title"))a.setAttribute("title",(a.textContent||"").replace(/^[^A-Za-z]+/,"").trim());});
+  }
+  sync(); relayout();
+  var view=document.getElementById("view");
+  if(view) new MutationObserver(relayout).observe(view,{childList:true});
+  setTimeout(relayout,300); setTimeout(relayout,1200); setTimeout(relayout,2500);
 })();
 </script><!-- Same as the Floot app: the report is laid out on a fixed 1920px canvas
      and scaled to the window, and a one time password gate (client side
