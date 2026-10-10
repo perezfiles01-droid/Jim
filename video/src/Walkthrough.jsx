@@ -1,25 +1,18 @@
-import { AbsoluteFill, Img, Sequence, interpolate, spring, staticFile,
+import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile,
   useCurrentFrame, useVideoConfig } from 'remotion';
+import SCENES from './scenes.gen.json';
 
 const INK = '#10243E', BLUE = '#0072BC', TEAL = '#00A5A8';
 const FONT = 'Segoe UI, Helvetica, Arial, sans-serif';
+const FPS = 30, PAD = 24, BAR = 120, AREA = 1080 - BAR;
 
-/* One scene per dashboard, in nav order. Captions describe what each
-   dashboard is for; they carry no figures, so they cannot go stale. */
-const SCENES = [
-  ['bw', 'Bank-wide Oversight', 'Adoption and compliance across the whole Bank'],
-  ['dp', 'Department Insights', 'How each department is using the EDRMS'],
-  ['pj', 'Project Insights', 'Project sites and their records activity'],
-  ['fp', 'Institutional File Plan', 'Content organised against the file plan'],
-  ['rd', 'Retention & Disposal', 'Retention labels and what is due for disposal'],
-  ['ra', 'Records & Archive Holdings', 'Physical and digital archive holdings'],
-];
-const TITLE = 90, SCENE = 150, OUTRO = 90;
-export const TOTAL = TITLE + SCENES.length * SCENE + OUTRO;
+/* Each scene lasts as long as its voiceover plus a short pause either side. */
+const frames = s => Math.ceil(s.seconds * FPS) + 2 * PAD;
+const starts = SCENES.reduce((a, s, i) => [...a, i ? a[i - 1] + frames(SCENES[i - 1]) : 0], []);
+export const TOTAL = starts.at(-1) + frames(SCENES.at(-1));
 
 const Card = ({ title, sub }) => {
-  const f = useCurrentFrame(), { fps } = useVideoConfig();
-  const s = spring({ frame: f, fps, config: { damping: 200 } });
+  const s = spring({ frame: useCurrentFrame(), fps: FPS, config: { damping: 200 } });
   return (
     <AbsoluteFill style={{ background: INK, justifyContent: 'center', alignItems: 'center',
       fontFamily: FONT, color: 'white', opacity: s }}>
@@ -30,22 +23,32 @@ const Card = ({ title, sub }) => {
   );
 };
 
-const Scene = ({ id, name, desc, n }) => {
-  const f = useCurrentFrame(), { fps } = useVideoConfig();
-  const zoom = interpolate(f, [0, SCENE], [1, 1.08]);
-  const fade = interpolate(f, [0, 12, SCENE - 12, SCENE], [0, 1, 1, 0]);
-  const slide = spring({ frame: f - 8, fps, config: { damping: 200 } });
+/* Frames one section of the full-page screenshot: fits it to the area under
+   the title bar, dims everything else, and drifts slowly through it. */
+const Section = ({ s, len }) => {
+  const f = useCurrentFrame();
+  const { top, bottom } = s.crop, h = bottom - top + 32;
+  const scale = Math.min(1, AREA / h);
+  const overflow = Math.max(0, h * scale - AREA);
+  const drift = interpolate(f, [PAD, len - PAD], [0, overflow + 12], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const y = BAR + 24 - (top - 16) * scale - drift;
+  const fade = interpolate(f, [0, 10, len - 10, len], [0, 1, 1, 0]);
   return (
-    <AbsoluteFill style={{ background: INK, opacity: fade }}>
-      <Img src={staticFile(`${id}.png`)} style={{ width: '100%', transform: `scale(${zoom})`,
-        transformOrigin: 'top left' }} />
-      <div style={{ position: 'absolute', left: 60, bottom: 60, fontFamily: FONT,
-        background: 'rgba(16,36,62,0.92)', color: 'white', padding: '28px 40px',
-        borderLeft: `8px solid ${BLUE}`, borderRadius: 6,
-        transform: `translateX(${(slide - 1) * 700}px)` }}>
-        <div style={{ fontSize: 26, color: TEAL, fontWeight: 600 }}>Dashboard {n} of {SCENES.length}</div>
-        <div style={{ fontSize: 56, fontWeight: 700 }}>{name}</div>
-        <div style={{ fontSize: 30, color: '#C9D8E6' }}>{desc}</div>
+    <AbsoluteFill style={{ background: '#E9EEF4', opacity: fade, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: (1920 - 1920 * scale) / 2, top: y,
+        transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        <Img src={staticFile(`${s.dash}.png`)} style={{ display: 'block', width: 1920 }} />
+        <div style={{ position: 'absolute', left: 245, right: 4, top: top - 8, height: h - 16,
+          boxShadow: '0 0 0 4000px rgba(16,36,62,0.55)', border: `4px solid ${TEAL}`, borderRadius: 10 }} />
+      </div>
+      <div style={{ position: 'absolute', inset: '0 0 auto 0', height: BAR, background: INK,
+        display: 'flex', alignItems: 'center', padding: '0 60px', fontFamily: FONT, color: 'white' }}>
+        <div style={{ width: 8, height: 64, background: BLUE, marginRight: 28 }} />
+        <div>
+          <div style={{ fontSize: 24, color: TEAL, fontWeight: 600 }}>
+            {s.dash === 'bw' ? 'Bank-wide Oversight' : 'Department Insights'}</div>
+          <div style={{ fontSize: 44, fontWeight: 700 }}>{s.title.split(': ').at(-1)}</div>
+        </div>
       </div>
     </AbsoluteFill>
   );
@@ -53,16 +56,13 @@ const Scene = ({ id, name, desc, n }) => {
 
 export const Walkthrough = () => (
   <AbsoluteFill style={{ background: INK }}>
-    <Sequence durationInFrames={TITLE}>
-      <Card title="EDRMS Utilization Report" sub="Prototype walkthrough" />
-    </Sequence>
-    {SCENES.map(([id, name, desc], i) => (
-      <Sequence key={id} from={TITLE + i * SCENE} durationInFrames={SCENE}>
-        <Scene id={id} name={name} desc={desc} n={i + 1} />
+    {SCENES.map((s, i) => (
+      <Sequence key={s.id} from={starts[i]} durationInFrames={frames(s)}>
+        {s.dash ? <Section s={s} len={frames(s)} />
+          : <Card title={s.title} sub={s.id === 'intro'
+              ? 'Bank-wide Oversight and Department Insights' : 'perezfiles01-droid.github.io/Jim'} />}
+        <Sequence from={PAD}><Audio src={staticFile(`vo/${s.id}.wav`)} /></Sequence>
       </Sequence>
     ))}
-    <Sequence from={TITLE + SCENES.length * SCENE} durationInFrames={OUTRO}>
-      <Card title="Live prototype" sub="perezfiles01-droid.github.io/Jim" />
-    </Sequence>
   </AbsoluteFill>
 );
