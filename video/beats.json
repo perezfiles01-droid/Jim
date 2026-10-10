@@ -1,0 +1,160 @@
+[
+ {
+  "dash": null,
+  "sec": "intro",
+  "t": "Imagine you're responsible for records across the whole of A D B. Thousands of people, more than a thousand sites, millions of documents. So how do you actually know whether E D R M S is being used? Let's find out, starting from the top."
+ },
+ {
+  "dash": "bw",
+  "sec": "Bank-wide Oversight",
+  "sel": ".band.edrms-top",
+  "t": "Welcome to Bank-wide Oversight. Think of it as the view from the very top of the building. One question drives everything on this page: how far has E D R M S been adopted across the Bank?"
+ },
+ {
+  "dash": "bw",
+  "sec": "Headline cards",
+  "sel": ".kpi",
+  "n": 0,
+  "t": "Our story starts with four headline cards. First up, active E D R M S sites. This is how many working spaces have been set up for records."
+ },
+ {
+  "dash": "bw",
+  "sec": "Headline cards",
+  "sel": ".kpi",
+  "n": 1,
+  "t": "Next, the people. E D R M S users tells us how many colleagues are actually working in the system."
+ },
+ {
+  "dash": "bw",
+  "sec": "Headline cards",
+  "sel": ".kpi",
+  "n": 2,
+  "t": "Then the content itself. Documents held in E D R M S."
+ },
+ {
+  "dash": "bw",
+  "sec": "Headline cards",
+  "sel": ".kpi",
+  "n": 3,
+  "t": "And finally, the one that matters most for recordkeeping. Records declared. These are documents formally locked down as official records."
+ },
+ {
+  "dash": "bw",
+  "sec": "Headline cards",
+  "sel": ".edrms-tools",
+  "t": "Up in the corner, a quick but important detail. The data as of date, so you always know how fresh the numbers are. And an export, if you need to take this page into a meeting."
+ },
+ {
+  "dash": "bw",
+  "sec": "Sites by unit",
+  "sel": ".sites-rank",
+  "t": "Now, where are all those sites? This chart ranks the top ten departments, offices, resident missions and regional offices. Straight away, you can see who's leading the way."
+ },
+ {
+  "dash": "bw",
+  "sec": "Sites by unit",
+  "sel": ".sites-table",
+  "t": "But what about everyone else? On the right, the full list. Every unit, searchable, sortable, and ready to export."
+ },
+ {
+  "dash": "bw",
+  "sec": "Physical counterparts",
+  "sel": ".tiles",
+  "t": "Here's a twist in the story. Not every record lives only on screen. Some still exist on paper too. We call these physical counterparts. These tiles count them, compare them with all declared records, and give the share that still has a paper twin."
+ },
+ {
+  "dash": "bw",
+  "sec": "Physical counterparts",
+  "sel": ".physical-donut-panel",
+  "t": "The donut makes that share easy to picture at a glance. The slice with a paper counterpart, against everything that's fully digital."
+ },
+ {
+  "dash": "bw",
+  "sec": "Physical counterparts",
+  "sel": ".physical-split-main",
+  "t": "And the table tells you exactly where that paper sits, unit by unit. So the offices still leaning on paper really stand out."
+ },
+ {
+  "dash": "bw",
+  "sec": "Comparison",
+  "sel": ".toolbar",
+  "t": "Of course, raw totals can be misleading. A big department will naturally have more documents. So this section asks a fairer question. Pick what to compare here."
+ },
+ {
+  "dash": "bw",
+  "sec": "Comparison",
+  "sel": ".cmp",
+  "n": 0,
+  "until": 5,
+  "t": "Each row sets a unit's approximate headcount, provided by R A C, right beside its documents, or its declared records. Now you can see whether a unit's use of the system is in proportion to its size."
+ },
+ {
+  "dash": "bw",
+  "sec": "Declaration trend",
+  "sel": ".trctl",
+  "t": "Last stop on this page, the story over time. Choose a preset, like the last twelve months or year to date. Or set your own custom range, and show it by month or by year."
+ },
+ {
+  "dash": "bw",
+  "sec": "Declaration trend",
+  "sel": ".panel",
+  "n": -1,
+  "skipTop": 180,
+  "t": "The green bars show how many records were declared in each period. And the blue line climbs as the running total. When that line is rising steadily, adoption is taking hold."
+ },
+ {
+  "dash": "dp",
+  "sec": "Department Insights",
+  "sel": ".band.edrms-top",
+  "t": "Now let's zoom in. Department Insights tells the same story, but one department at a time."
+ },
+ {
+  "dash": "dp",
+  "sec": "Department profile",
+  "sel": ".dp-strip",
+  "t": "Choose a department, office, R M or R O, and its profile appears. When it went live on E D R M S, and the site naming convention it has agreed to follow."
+ },
+ {
+  "dash": "dp",
+  "sec": "Department profile",
+  "sel": ".kpis",
+  "t": "Underneath, five cards. Sites, site visitors, documents, records declared, and physical counterparts. Click any one of them, and its full breakdown opens right below."
+ },
+ {
+  "dash": "dp",
+  "sec": "EDRMS sites",
+  "sel": ".so3-bar",
+  "t": "Next, the department's sites. Filter them by year, or by a custom date range."
+ },
+ {
+  "dash": "dp",
+  "sec": "EDRMS sites",
+  "sel": ".so2-box",
+  "n": 0,
+  "t": "Each site is listed with its owner and the date it was created. So if you ever wonder who looks after a site, the answer is right here."
+ },
+ {
+  "dash": "dp",
+  "sec": "EDRMS sites",
+  "sel": ".so2-chart",
+  "t": "And this chart shows how quickly sites were created, year by year. Click a year, and it opens up into months."
+ },
+ {
+  "dash": "dp",
+  "sec": "Library usage",
+  "sel": ".lb-sum",
+  "t": "Our final chapter goes one level deeper, into the document libraries inside each site. These figures sum up libraries, documents, records, paper counterparts, and active users."
+ },
+ {
+  "dash": "dp",
+  "sec": "Library usage",
+  "sel": ".vs2-layout .so2-box",
+  "n": 0,
+  "t": "And the table shows every library with those same measures. This is where you spot which libraries are truly being used for recordkeeping, and which are just sitting quietly."
+ },
+ {
+  "dash": null,
+  "sec": "outro",
+  "t": "So that's the story. From the whole Bank, right down to a single library. Both dashboards are live in the prototype, so go ahead and explore. Thanks for watching."
+ }
+]
