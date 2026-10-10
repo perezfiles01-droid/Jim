@@ -47,7 +47,7 @@ const Section = ({ s, len }) => {
         <div>
           <div style={{ fontSize: 24, color: TEAL, fontWeight: 600 }}>
             {s.dash === 'bw' ? 'Bank-wide Oversight' : 'Department Insights'}</div>
-          <div style={{ fontSize: 44, fontWeight: 700 }}>{s.title.split(': ').at(-1)}</div>
+          <div style={{ fontSize: 44, fontWeight: 700 }}>{s.title.split(': ').at(-1).replace(/^./, c => c.toUpperCase())}</div>
         </div>
       </div>
     </AbsoluteFill>
