@@ -499,3 +499,27 @@ UPDATE (v9): NO NARRATOR CHARACTERS. TRADEMARK INTRO. (user, 11 Oct 2026)
   Lola) calls a grandchild "apo"; a parent calls a child "anak"; an aunt or uncle (Tita, Tito)
   calls a niece or nephew "pamangkin" or uses the name; a younger person says "po". The Aswang
   video wrongly had Lolo Kanor say "anak".
+
+
+UPDATE (v10): PIPELINE NOTES FROM THE BATANG 90s BUILD (11 Oct 2026)
+--------------------------------------------------------------------
+- Reference build: examples/batang90s.html + examples/batang90s-voiceover-script.txt (no narrator
+  characters, word-timed beats, comic-style kids). Reuse its helpers: kid() (comic 90s kid with
+  poses run/hop/leap/throw/kick/wave/cheer), ink() (thick comic outline), stamp() (year stamp),
+  bigPhone(), tvSet(), postCard(), comicStreet(), and B('word') / since('word') / lt() for beats.
+  Set window.KS at the start of each scene's draw() to scale kids for that scene.
+- Story page = head (canvas + paper helpers) + base styles (cardboard, crumple, crayon, wc, sil,
+  wood, grit, titleCard) + scenes. titleCard() reads the episode name from const EP.
+- tts4.py: set YEARS for each story ('1990s':'nineteen nineties' style; plural keys are matched
+  whole). Put speech-only rewrites in spoken() (e.g. 'Batang 90s' -> 'Batang nineties').
+  Resolve every pronunciation_issues.txt line before audio is made.
+- Render with: node render1440-beats.js page.html "" out-raw.mp4  (second arg = preview times).
+  A 4 to 4.5 minute story takes about 25 minutes to render at 1440p.
+- Waiting on a background job: never use `pgrep -f "<text>"` or `pkill -f "<text>"` in a command that
+  itself contains that text; it matches itself and loops forever or kills itself. Wait on the
+  output file instead (e.g. until [ -f out.mp4 ] && ...), or use the PID.
+- Upload in the Composio workbench with run_composio_tool (multipart upload, then thumbnail), then
+  proxy_execute PUT for en-US languages, all in one cell. Download the video to /home/user in the
+  workbench (not /mnt/files: large writes fail there).
+- Right after upload YouTube may show the thumbnail as a still picture with audio until processing
+  finishes; check processingDetails.processingStatus == 'succeeded' before reporting a problem.
