@@ -27,11 +27,25 @@ def ph(t):
     whole=whole.replace(w,ipa,1)
   return whole
 L=json.load(open('lines.json'));res=[];dump=[]
+# strict pre-check: every word must have one known pronunciation before any audio is made
+FW=set(FL)|{x for k in FL for x in k.split()}
+issues=[]
+for si,s in enumerate(L):
+  for li,t in enumerate(s['lines']):
+    t2,_=heteronyms.apply(spoken(t));t2=rx.sub(' ',t2)
+    for p in heteronyms.strict_check(re.sub('\x00\\d+\x00',' ',t2),FW): issues.append(f'{si}.{li}  {p}')
+if issues:
+  open('pronunciation_issues.txt','w').write('\n'.join(issues));print('\n'.join(issues));raise SystemExit('STOP: resolve every word above (fil.json, RULES or SAFE), then re-run.')
 for si,s in enumerate(L):
   for li,t in enumerate(s['lines']):
     p=ph(t);dump.append(f'{si}.{li}: {p}')
     for w in heteronyms.audit(t): AUDIT.append(f'{si}.{li}  {w:10s} {t}')
     a,sr=K.create(p,voice='af_heart',speed=0.92,is_phonemes=True)
     sf.write(f'n_{si}_{li}.wav',a,sr);res.append([si,li,len(a)/sr])
+sheet={}
+for si,s in enumerate(L):
+  for t in s['lines']:
+    for w in re.findall(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’-]*",spoken(t)): sheet.setdefault(w.lower(),ph(w).strip(' .'))
+open('pronunciation_sheet.txt','w').write('Every word and the exact sound used\n'+'\n'.join(f'{w:22s} {p}' for w,p in sorted(sheet.items())))
 json.dump(res,open('durs.json','w'));open('phonemes.txt','w').write('\n'.join(dump))
 open('pronunciation_audit.txt','w').write('Check each word below sounds right in phonemes.txt before rendering.\n'+'\n'.join(AUDIT));print('\n'.join(AUDIT))

@@ -2,7 +2,7 @@
 
 Add these to the starter kit. They are standing rules from the user.
 
-## Narration: use `tts4.py` (replaces `tts3.py`) with `heteronyms.py` beside it
+## Narration (full rules in paper-story-video-instructions.txt, UPDATE v6): use `tts4.py` (replaces `tts3.py`) with `heteronyms.py` beside it
 - Fixes words spelled the same but said differently. First fix: "lives" as a verb
   ("an aswang lives in the next village") is now "livz", not "layvz". "Long live", "lived",
   "living" are "liv"; "their lives", "many lives" stay "layvz"; "live music" stays "layv".
