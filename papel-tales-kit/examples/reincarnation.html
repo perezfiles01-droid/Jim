@@ -1,0 +1,317 @@
+<title>Once Again: A Paper Tale</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap">
+<style>
+/* Layout: a single paper-diorama stage, controls tucked beneath like a theatre ticket stub */
+:root{
+  --bg:#2b3a33; --card:#f3ecd6; --ink:#2a241c; --accent:#e8743b; --leaf:#3f8a4f; --muted:#7c7360;
+  --display:"Fredoka",ui-rounded,"Trebuchet MS",sans-serif; --body:"Nunito",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--card);font-family:var(--body);padding-inline:16px;padding-block:20px;box-sizing:border-box}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(1.4rem,3vw,2rem);margin:0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.sub{margin:0;color:#c9c1a8;font-size:.95rem;max-width:65ch}
+.stage{position:relative;width:100%;aspect-ratio:16/9;max-width:100%;border-radius:10px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.45);background:#9cc}
+canvas{width:100%;height:100%;display:block}
+.cap{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);width:min(88%,860px);background:rgba(243,236,214,.94);color:var(--ink);
+  font-family:var(--body);font-weight:700;font-size:clamp(.78rem,1.7vw,1.15rem);line-height:1.4;padding:.55em 1em;border-radius:6px;
+  box-shadow:0 4px 0 rgba(0,0,0,.18);text-align:center;transition:opacity .4s}
+.cap:empty{opacity:0}
+.chap{position:absolute;left:3%;top:4%;background:var(--accent);color:#fff;font-family:var(--display);font-size:clamp(.7rem,1.4vw,.95rem);
+  padding:.3em .8em;border-radius:4px;transform:rotate(-2deg);box-shadow:0 3px 0 rgba(0,0,0,.2);letter-spacing:.04em}
+.play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:rgba(20,30,25,.35);border:0;cursor:pointer;color:#fff;font-family:var(--display);font-size:1.2rem}
+.play b{width:84px;height:84px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 6px 0 rgba(0,0,0,.25);font-size:2rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font-family:var(--display);background:var(--card);color:var(--ink);border:0;border-radius:6px;padding:.5em .9em;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.25);font-size:.95rem}
+.bar button[aria-pressed="false"]{opacity:.55}
+.bar button:focus-visible,.play:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.dots{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.dots i{width:22px;height:6px;border-radius:3px;background:#4f6158;cursor:pointer}
+.dots i.on{background:var(--accent)}
+details{background:#33443c;border-radius:8px;padding:.7em 1em}
+summary{cursor:pointer;font-family:var(--display)}
+details ul{margin:.6em 0 0;padding-left:1.2em;line-height:1.55;color:#ddd5bd;max-width:75ch}
+</style>
+
+<div class="wrap">
+  <h1>Once <span>Again</span></h1>
+  <p class="sub">A paper-cut story about where the idea of reincarnation came from, how the rumours spread, and why people still believe it. Narrated, with music. Best with sound on.</p>
+  <div class="stage">
+    <canvas id="cv" width="1280" height="720"></canvas>
+    <div class="chap" id="chap">Prologue</div>
+    <div class="cap" id="cap"></div>
+    <button class="play" id="start"><b>▶</b>Play the story</button>
+  </div>
+  <div class="bar">
+    <button id="prev">◀ Back</button>
+    <button id="pause">Pause</button>
+    <button id="next">Next ▶</button>
+    <button id="voice" aria-pressed="true">Voice</button>
+    <button id="music" aria-pressed="true">Music</button>
+    <div class="dots" id="dots"></div>
+  </div>
+  <details>
+    <summary>Sources behind the story</summary>
+    <ul>
+      <li>Brihadaranyaka Upanishad 4.4.3–5 (c. 700 BCE): the caterpillar simile and "as one acts, so one becomes". Chandogya Upanishad 5.10.</li>
+      <li>Milindapañha (c. 100 BCE): King Milinda and Nagasena, the lamp lit from another lamp.</li>
+      <li>Xenophanes fragment 7, quoted in Diogenes Laërtius 8.36: Pythagoras and the beaten puppy.</li>
+      <li>Plato, Republic book X: the Myth of Er and the plain of Lethe. Phaedo and Meno on recollection.</li>
+      <li>Julius Caesar, Gallic War 6.14: the Druids teach that souls pass from one body to another.</li>
+      <li>Sefer ha-Bahir (12th c.) and Isaac Luria's school (16th c.): gilgul in Jewish mysticism. Druze doctrine of taqammus.</li>
+      <li>Shanti Devi case, Delhi, 1930s; Ian Stevenson, Twenty Cases Suggestive of Reincarnation (1966), University of Virginia.</li>
+      <li>Morey Bernstein, The Search for Bridey Murphy (1956), and the press investigations into Virginia Tighe's childhood that followed. Cryptomnesia research.</li>
+      <li>Pew Research Center surveys: roughly a quarter to a third of U.S. adults say they believe in reincarnation.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d'),W=1280,H=720;
+const capEl=document.getElementById('cap'),chapEl=document.getElementById('chap');
+
+/* ---------- paper helpers ---------- */
+function sh(on=true,d=5){c.shadowColor=on?'rgba(0,0,0,.28)':'transparent';c.shadowBlur=on?d*1.6:0;c.shadowOffsetY=on?d:0;c.shadowOffsetX=0}
+function fill(col,fn,d=5){c.save();sh(true,d);c.fillStyle=col;c.beginPath();fn();c.fill();c.restore()}
+function rr(x,y,w,h,r){c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)}
+function circ(x,y,r){c.moveTo(x+r,y);c.arc(x,y,r,0,7)}
+function ell(x,y,rx,ry,rot=0){c.moveTo(x+rx*Math.cos(rot),y+rx*Math.sin(rot));c.ellipse(x,y,rx,ry,rot,0,7)}
+const grain=(()=>{const g=document.createElement('canvas');g.width=g.height=160;const x=g.getContext('2d');const d=x.createImageData(160,160);
+  for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=14}x.putImageData(d,0,0);return g})();
+let grainPat;
+function sky(a,b){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H)}
+function hills(y,col,amp,seed,t=0,d=4){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);
+  for(let x=0;x<=W;x+=40){c.lineTo(x,y-Math.abs(Math.sin(x*.004+seed))*amp-Math.sin(x*.011+seed*3)*amp*.3)}c.lineTo(W,H)},d)}
+function ground(y,col){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);c.bezierCurveTo(W*.3,y-20,W*.6,y+25,W,y-5);c.lineTo(W,H)},6)}
+function pine(x,y,s,col='#2f7a46',t=0){const sw=Math.sin(t*1.3+x)*2*s;
+  fill('#5a3a22',()=>{c.rect(x-4*s,y-30*s,8*s,30*s)},3);
+  for(let i=0;i<3;i++){const yy=y-30*s-i*38*s,w=(60-i*13)*s;fill(col,()=>{c.moveTo(x-w+sw*.4,yy);c.lineTo(x+w+sw*.4,yy);c.lineTo(x+sw,yy-70*s)},5)}}
+function blob(x,y,s,col,t=0){fill('#5a3a22',()=>{c.rect(x-5*s,y-70*s,10*s,70*s)},3);
+  fill(col,()=>{const w=Math.sin(t+x)*3;circ(x-26*s+w,y-90*s,30*s);circ(x+24*s+w,y-95*s,32*s);circ(x+w,y-125*s,36*s)},6)}
+function fire(x,y,s,t){fill('#6b4425',()=>{c.save();c.translate(x,y);c.rotate(.25);c.rect(-45*s,-6*s,90*s,12*s);c.restore()},3);
+  fill('#5a3a22',()=>{c.save();c.translate(x,y);c.rotate(-.25);c.rect(-45*s,-6*s,90*s,12*s);c.restore()},3);
+  [['#f5c13b',1],['#ef7d2d',.72],['#e04a2a',.45]].forEach(([col,k],i)=>{const f=Math.sin(t*9+i*2)*6*s,h=(90+Math.sin(t*6+i)*10)*k*s;
+    fill(col,()=>{c.moveTo(x-30*k*s,y-4*s);c.quadraticCurveTo(x-34*k*s,y-h*.6,x+f,y-h);c.quadraticCurveTo(x+34*k*s,y-h*.6,x+30*k*s,y-4*s)},2)});
+  c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y-40*s,5,x,y-40*s,220*s);g.addColorStop(0,'rgba(255,170,60,.28)');g.addColorStop(1,'rgba(255,170,60,0)');c.fillStyle=g;c.fillRect(x-240*s,y-260*s,480*s,480*s);c.restore()}
+function stars(t,n=60){c.save();for(let i=0;i<n;i++){const x=(i*197)%W,y=(i*83)%(H*.45),a=.4+.4*Math.sin(t*2+i);c.fillStyle=`rgba(255,250,220,${a})`;c.beginPath();circ(x,y,1.6+(i%3)*.6);c.fill()}c.restore()}
+function moon(x,y,r){fill('#f6efcf',()=>circ(x,y,r),4);fill('#e7dfba',()=>{circ(x-r*.3,y-r*.2,r*.18);circ(x+r*.25,y+r*.3,r*.12)},0)}
+function water(y,t,col='#2aa0d8'){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);for(let x=0;x<=W;x+=20)c.lineTo(x,y+Math.sin(x*.02+t*2)*5);c.lineTo(W,H)},5);
+  c.save();c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=3;for(let i=0;i<6;i++){const xx=((i*230+t*40)%(W+200))-100,yy=y+30+i*12;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx+50,yy);c.stroke()}c.restore()}
+function eye(x,y,r=6){fill('#fff',()=>circ(x,y,r),1);fill('#222',()=>circ(x+r*.25,y,r*.5),0)}
+function txt(s,x,y,size=40,col='#2a241c',font='Fredoka',align='center'){c.save();c.font=`700 ${size}px ${font},sans-serif`;c.textAlign=align;c.fillStyle=col;sh(true,3);c.fillText(s,x,y);c.restore()}
+
+/* ---------- characters ---------- */
+function tortoise(x,y,s,t,talk){const b=Math.sin(t*2)*2;
+  fill('#7fa35a',()=>{ell(x-50*s,y-8*s,16*s,10*s);ell(x+50*s,y-8*s,16*s,10*s)},3);
+  fill('#8a5a2b',()=>{c.moveTo(x-70*s,y-10*s);c.quadraticCurveTo(x,y-120*s+b,x+70*s,y-10*s)},6);
+  fill('#a8723a',()=>{c.moveTo(x-45*s,y-25*s);c.quadraticCurveTo(x,y-90*s+b,x+45*s,y-25*s)},2);
+  fill('#c4924f',()=>{for(let i=-1;i<=1;i++)ell(x+i*24*s,y-48*s+b*.5,10*s,12*s)},1);
+  const hx=x+86*s,hy=y-48*s+Math.sin(t*1.5)*3;
+  fill('#8fb867',()=>{c.moveTo(x+55*s,y-25*s);c.quadraticCurveTo(x+80*s,y-30*s,hx-10*s,hy+10*s);c.lineTo(hx-20*s,hy-10*s);c.lineTo(x+50*s,y-40*s)},3);
+  fill('#8fb867',()=>ell(hx,hy,28*s,22*s),4);eye(hx+8*s,hy-6*s,6*s);
+  fill('#5c3d1e',()=>{const m=talk?Math.abs(Math.sin(t*14))*7*s:1.5*s;ell(hx+16*s,hy+9*s,9*s,m)},0);
+  // spectacles
+  c.save();c.strokeStyle='#3b2a18';c.lineWidth=2.5*s;c.beginPath();circ(hx+8*s,hy-6*s,10*s);c.stroke();c.restore()}
+function fox(x,y,s,t,talk){const tail=Math.sin(t*3)*.25;
+  c.save();c.translate(x-60*s,y-30*s);c.rotate(-.6+tail);fill('#e0702c',()=>{ell(-30*s,0,45*s,18*s)},4);fill('#f8efe0',()=>ell(-65*s,0,14*s,10*s),1);c.restore();
+  fill('#e0702c',()=>{ell(x-10*s,y-55*s,48*s,58*s)},6);fill('#f8efe0',()=>ell(x+5*s,y-45*s,24*s,40*s),2);
+  fill('#c25a20',()=>{ell(x-30*s,y-4*s,16*s,8*s);ell(x+20*s,y-4*s,16*s,8*s)},2);
+  const hy=y-125*s+Math.sin(t*2)*2,hx=x+5*s;
+  fill('#e0702c',()=>{c.moveTo(hx-30*s,hy-10*s);c.lineTo(hx-26*s,hy-58*s);c.lineTo(hx-6*s,hy-22*s);c.moveTo(hx+30*s,hy-10*s);c.lineTo(hx+28*s,hy-58*s);c.lineTo(hx+6*s,hy-22*s)},3);
+  fill('#e0702c',()=>{c.moveTo(hx-36*s,hy-10*s);c.quadraticCurveTo(hx,hy-40*s,hx+36*s,hy-10*s);c.lineTo(hx+48*s,hy+18*s);c.quadraticCurveTo(hx,hy+40*s,hx-30*s,hy+14*s)},5);
+  fill('#f8efe0',()=>{c.moveTo(hx,hy+4*s);c.lineTo(hx+48*s,hy+18*s);c.quadraticCurveTo(hx+10*s,hy+38*s,hx-10*s,hy+22*s)},1);
+  fill('#222',()=>circ(hx+48*s,hy+16*s,5*s),0);eye(hx-8*s,hy-6*s,6*s);eye(hx+14*s,hy-6*s,6*s);
+  if(talk)fill('#5c2a10',()=>ell(hx+30*s,hy+26*s,6*s,Math.abs(Math.sin(t*14))*5*s+1),0)}
+function person(x,y,s,robe,skin='#e2b48c',t=0,beard=false,hat=null){
+  fill(robe,()=>{c.moveTo(x-34*s,y);c.lineTo(x-24*s,y-110*s);c.quadraticCurveTo(x,y-124*s,x+24*s,y-110*s);c.lineTo(x+34*s,y)},6);
+  fill(skin,()=>circ(x,y-140*s+Math.sin(t*2)*1.5,24*s),4);
+  if(beard)fill('#ece8de',()=>{c.moveTo(x-20*s,y-136*s);c.quadraticCurveTo(x,y-90*s,x+20*s,y-136*s)},2);
+  eye(x-8*s,y-146*s,4*s);eye(x+8*s,y-146*s,4*s);
+  if(hat)fill(hat,()=>{c.moveTo(x-26*s,y-150*s);c.quadraticCurveTo(x,y-190*s,x+26*s,y-150*s)},3)}
+function ghost(x,y,s,t,col='rgba(240,245,255,.92)'){const w=Math.sin(t*3+x)*4;
+  fill(col,()=>{c.moveTo(x-22*s,y);c.lineTo(x-22*s,y-30*s);c.arc(x,y-30*s,22*s,Math.PI,0);c.lineTo(x+22*s,y);
+    for(let i=0;i<4;i++)c.lineTo(x+22*s-(i*2+1)*5.5*s,y+(i%2?0:8*s)+w*.5)},4);eye(x-7*s,y-34*s,4*s);eye(x+7*s,y-34*s,4*s)}
+
+/* ---------- scenes ---------- */
+const forest=(t,night=true)=>{if(night){sky('#1d2a4a','#4a5f7d');stars(t);moon(1080,120,46)}else sky('#8fd3e8','#d9f1e6');
+  hills(330,night?'#3b4d5e':'#7fa98a',90,1,t);hills(400,night?'#2f5244':'#5f9a6c',70,4,t);
+  [80,230,1150,1230].forEach((x,i)=>pine(x,520,1.1+(i%2)*.2,night?'#24583a':'#2f7a46',t));
+  ground(500,night?'#c9c08f':'#efe7b8');water(640,t,night?'#1f6f9a':'#2aa0d8')};
+
+const S=[
+{chap:'Prologue',lines:[
+ 'One night, beside a paper lake, an old tortoise named Tula sat by the fire with a curious young fox.',
+ '"Grandma Tula," said the fox, "my friend says I was a tiger in my last life. Is that true?"',
+ 'Tula chuckled. "That idea is older than any tree in this forest. Let me tell you how the rumour began."'],
+ draw(t,li){forest(t);blob(380,530,1,'#2e6b45',t);pine(980,520,1.3,'#24583a',t);fire(640,560,1,t);tortoise(430,575,1.1,t,li!==1);fox(850,580,1,t,li===1);
+  if(li===1){const a=Math.min(1,(t%99)/1);fill('#f3ecd6',()=>{ell(1000,300,90,55)},4);txt('🐯 ?',1000,316,44)}}},
+
+{chap:'India, c. 800–500 BCE',lines:[
+ 'Nearly three thousand years ago, sages in India gathered in forests to ask what happens to the self after death.',
+ 'Their teachings, the Upanishads, describe a soul, the atman, that does not die with the body.',
+ 'One text compares it to a caterpillar that reaches the end of a blade of grass, then pulls itself onto the next.',
+ 'Which next life you reach depends on karma. "As one acts, so one becomes." Round and round turns the wheel of samsara.'],
+ draw(t,li){sky('#f2b866','#f6dfa3');fill('#fff2c4',()=>circ(640,250,120),3);hills(380,'#c98a4b',60,2);hills(450,'#9c6b3c',40,5);ground(560,'#d8b56d');
+  if(li>=2){[300,520,740,960].forEach((x,i)=>fill('#4f9a52',()=>{c.moveTo(x-12,620);c.quadraticCurveTo(x+20,450,x+70,330+i*6);c.quadraticCurveTo(x+18,470,x+12,620)},4));
+    const p=(t*.18)%4,i=Math.floor(p),f=p-i,x=300+i*220+70*f,y=330+i*6+40*(1-f)*0;
+    for(let k=0;k<6;k++)fill(k%2?'#7bc043':'#9ad15c',()=>circ(x+k*12-30+Math.sin(t*8+k)*2,y+Math.sin(t*6+k)*4,11),2);eye(x+32,y-4,4)}
+  else{c.save();c.translate(640,360);c.rotate(t*.35);for(let k=0;k<8;k++){c.rotate(Math.PI/4);fill('#b5482c',()=>{c.rect(-6,-200,12,200)},3)}
+    fill('#b5482c',()=>{circ(0,0,210);circ(0,0,0)},5);fill('#f6dfa3',()=>circ(0,0,180),0);
+    for(let k=0;k<8;k++){c.save();c.rotate(k*Math.PI/4);fill('#b5482c',()=>c.rect(-7,-185,14,185),2);c.restore()}
+    fill('#e8743b',()=>circ(0,0,40),4);c.restore();
+    ['🐘','🐟','🦚','🧘','🐄','🐒'].forEach((e,k)=>{const a=k/6*Math.PI*2-t*.35;c.font='54px serif';c.textAlign='center';c.fillText(e,640+Math.cos(a)*260,380+Math.sin(a)*250)})}
+  if(li>=1&&li<2)person(150,640,1.1,'#e36b2c','#c48a5c',t,true);
+  if(li===3)txt('karma → next life → karma …',640,690,34,'#5c2f12')}},
+
+{chap:'The Buddha, c. 5th century BCE',lines:[
+ 'The Buddha kept rebirth but made it stranger. He taught there is no fixed, permanent self to hop from body to body.',
+ 'Later a monk, Nagasena, explained it to a Greek king with fire: light a lamp from another lamp. Is it the same flame?',
+ 'Not quite the same, not quite different. Something carries over, like a flame passed along a row of candles.'],
+ draw(t,li){sky('#3a2d55','#6b4d78');stars(t,30);hills(420,'#4b3a63',60,3);ground(540,'#8a6f8f');
+  fill('#d8a54a',()=>{c.moveTo(560,540);c.lineTo(560,380);c.quadraticCurveTo(640,280,720,380);c.lineTo(720,540)},6);fill('#f0c75e',()=>{circ(640,330,26)},3);
+  for(let i=0;i<7;i++){const x=180+i*155,lit=(t*.8)%8>i;fill('#f3ecd6',()=>c.rect(x-14,560,28,90),4);
+    if(lit){fill('#f5c13b',()=>{c.moveTo(x-10,560);c.quadraticCurveTo(x,520+Math.sin(t*10+i)*5,x,505);c.quadraticCurveTo(x+2,530,x+10,560)},2);
+      c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,540,2,x,540,70);g.addColorStop(0,'rgba(255,200,90,.45)');g.addColorStop(1,'rgba(255,200,90,0)');c.fillStyle=g;c.fillRect(x-70,470,140,140);c.restore()}}
+  if(li===1){person(1080,540,1,'#c9772c','#d9a676',t,false);person(200,540,1,'#3a5ca8','#e2b48c',t,true,'#d8b04a')}}},
+
+{chap:'Greece, c. 530 BCE',lines:[
+ 'Meanwhile in Greece, the philosopher Pythagoras taught that souls migrate into new bodies, even animals. The Greeks called it metempsychosis.',
+ 'And here is the first real piece of gossip. The poet Xenophanes mocked him with this story:',
+ 'Pythagoras saw a man beating a puppy and cried, "Stop! That is the soul of my friend. I recognised his voice!"',
+ 'Pythagoras even claimed to remember his own past lives, including one as a Trojan warrior. His followers refused to eat beans and meat.'],
+ draw(t,li){sky('#6fc3e8','#d7f0f7');fill('#f6f2e4',()=>circ(180,140,60),2);ground(520,'#efe3c0');water(615,t,'#2e8fd0');
+  fill('#e9e2cc',()=>{c.moveTo(780,250);c.lineTo(1040,170);c.lineTo(1300,250)},6);fill('#e9e2cc',()=>c.rect(790,250,500,26),5);
+  for(let i=0;i<5;i++)fill('#f5efdc',()=>c.rect(810+i*95,280,40,240),4);
+  person(420,560,1.2,'#f3f0e6','#d9a676',t,true,null);fill('#2f7a46',()=>{c.arc(420,560-140*1.2-14,30,Math.PI*1.05,Math.PI*1.95)},2);
+  if(li>=2){person(760,560,1,'#8a5a2b','#c48a5c',t);const j=Math.sin(t*12)*3;fill('#c99a5b',()=>{ell(640+j,530,34,20)},4);fill('#c99a5b',()=>circ(612+j,510,16),3);eye(606+j,506,3.5);
+    fill('#f3ecd6',()=>{ell(420,190,180,60)},4);txt('"I know that voice!"',420,203,30)}
+  if(li===3){c.font='44px serif';['🫘','🫘','🫘'].forEach((e,k)=>{c.fillText(e,600+k*70,180+Math.sin(t*3+k)*8)});txt('✕',670,200,90,'#c0392b')}}},
+
+{chap:'Plato’s Myth of Er, c. 375 BCE',lines:[
+ 'Plato turned the rumour into a famous story. A soldier named Er died in battle, then woke on his funeral pyre twelve days later.',
+ 'He said he had watched souls choose their next lives like goods at a market, then march across a dry plain.',
+ 'There they drank from the River of Forgetfulness, Lethe. That, said Plato, is why nobody remembers their past lives.'],
+ draw(t,li){sky('#24304f','#5a5f8a');stars(t,40);hills(380,'#3d4670',50,6);ground(470,'#b9a77a');
+  fill('#6aa8d8',()=>{c.moveTo(0,560);for(let x=0;x<=W;x+=20)c.lineTo(x,560+Math.sin(x*.015+t*1.5)*10);c.lineTo(W,640);for(let x=W;x>=0;x-=20)c.lineTo(x,640+Math.sin(x*.015+t*1.5)*10)},4);
+  txt('L E T H E',640,612,30,'#e6f2fb');
+  for(let i=0;i<7;i++){const x=((i*190+t*45)%(W+200))-100,y=520-Math.abs(Math.sin(t*2+i))*10,faded=x>640;
+    ghost(x,y,1,t,faded?'rgba(255,255,255,.55)':'rgba(240,245,255,.95)');if(!faded&&li<2){fill('#f3ecd6',()=>ell(x,y-90,22,18),2);txt(['🦁','🐦','👑','🐟','🧑‍🌾','🐢','🦊'][i],x,y-80,22)}}
+  if(li===0){fill('#7a4a2b',()=>c.rect(560,430,160,24),4);person(640,430,.8,'#9b2d2d','#d9a676',t)}}},
+
+{chap:'The rumour travels',lines:[
+ 'Over the centuries the idea kept appearing in new places. Julius Caesar wrote that the Celtic Druids taught souls pass from body to body, so warriors did not fear death.',
+ 'Jewish mystics of the Kabbalah called it gilgul, the rolling of souls. The Druze of the Middle East teach that a soul is reborn at once.',
+ 'And Hindu, Buddhist, Jain and Sikh traditions carried rebirth across Asia, to hundreds of millions of people.'],
+ draw(t,li){sky('#e8d7b0','#f3ecd6');
+  fill('#cfe0c3',()=>{ell(640,380,560,270)},6);
+  fill('#a7c793',()=>{ell(470,300,140,90,.3);ell(820,330,230,120,-.1);ell(640,470,120,60);ell(1000,470,90,60)},3);
+  const pts=[[880,380,'India'],[690,280,'Greece'],[470,240,'Gaul'],[740,320,'Levant'],[1020,330,'China'],[1090,420,'Tibet']];
+  c.save();c.setLineDash([12,10]);c.lineDashOffset=-t*40;c.strokeStyle='#b5482c';c.lineWidth=4;
+  pts.slice(1).forEach(p=>{c.beginPath();c.moveTo(880,380);c.quadraticCurveTo((880+p[0])/2,Math.min(380,p[1])-90,p[0],p[1]);c.stroke()});c.restore();
+  pts.forEach(([x,y,n],i)=>{const b=Math.sin(t*3+i)*4;fill('#e8743b',()=>{c.moveTo(x,y+b);c.arc(x,y-24+b,16,Math.PI*.8,Math.PI*2.2);c.closePath()},3);fill('#fff',()=>circ(x,y-24+b,6),0);txt(n,x,y+30,22,'#3a2a18')});
+  const lab=li===0?'Druids, Gaul':li===1?'Kabbalah · Druze':'Asia';fill('#f3ecd6',()=>c.rect(80,70,330,60),4);txt(lab,245,112,30)}},
+
+{chap:'Modern gossip, 1930s–1950s',lines:[
+ 'In the 1930s a girl in Delhi named Shanti Devi said she remembered a husband and home in another town. Newspapers across India ran the story.',
+ 'Then, in 1952, an American businessman hypnotised a housewife in Colorado. She spoke in an Irish accent as "Bridey Murphy", a woman from 1800s Cork.',
+ 'His book became a bestseller. People threw "come as you were" parties. But reporters found she had grown up near an Irish woman named Bridie Murphey Corkell.',
+ 'Psychologists call this cryptomnesia: forgotten memories that come back feeling like someone else’s.'],
+ draw(t,li){sky('#5ab2a8','#bfe4d6');fill('#e9d9b5',()=>c.rect(0,470,W,250),5);fill('#d0b98d',()=>{for(let i=0;i<8;i++)c.rect(i*170,470,4,250)},0);
+  fill('#8a4a3a',()=>{rr(200,330,300,150,30)},6);fill('#a8604a',()=>rr(220,300,260,80,30),4);
+  if(li>=1){person(350,460,.9,'#3c7fb8','#f0c9a0',t);fill('#33302a',()=>{c.rect(740,330,16,170)},3);person(820,500,1,'#2c2c3a','#e2b48c',t);
+    const sw=Math.sin(t*3)*.5;c.save();c.translate(760,320);c.rotate(sw);c.strokeStyle='#555';c.lineWidth=2;c.beginPath();c.moveTo(0,0);c.lineTo(0,110);c.stroke();fill('#d8b04a',()=>circ(0,118,14),3);c.restore()}
+  if(li===0){person(640,520,1,'#d8577a','#c48a5c',t);fill('#f3ecd6',()=>{ell(820,240,140,60)},4);txt('I remember…',820,252,30)}
+  if(li>=2){for(let i=0;i<4;i++){const a=t*.8+i*1.6;const x=640+Math.cos(a)*420,y=200+Math.sin(a*1.3)*80;c.save();c.translate(x,y);c.rotate(Math.sin(a)*.4);
+    fill('#f4f1e8',()=>c.rect(-90,-55,180,110),5);txt('BRIDEY',0,-15,26,'#1d1d1d','Fredoka');txt('MURPHY?',0,22,26,'#b5482c');c.restore()}}
+  if(li===3){c.save();c.globalAlpha=.9;fill('#f3ecd6',()=>{ell(350,180,120,70)},4);txt('🧠 ↺ 👧',350,195,40);c.restore()}}},
+
+{chap:'The scientists, 1960s–today',lines:[
+ 'A psychiatrist at the University of Virginia, Ian Stevenson, spent forty years collecting cases of young children who described past lives.',
+ 'His team logged over two thousand cases. Most children start talking about it between ages two and five, and usually stop by seven.',
+ 'Supporters call it the best evidence there is. Critics point out it relies on interviews, often after families have already met, and no mechanism has ever been found.',
+ 'So the scientific verdict is simple. Interesting stories, no proof.'],
+ draw(t,li){sky('#d9cfb8','#efe7d2');fill('#6b4a30',()=>c.rect(0,520,W,200),5);
+  fill('#8a5a2b',()=>c.rect(240,430,800,30),6);fill('#7a4d26',()=>{c.rect(270,460,20,140);c.rect(990,460,20,140)},4);
+  for(let i=0;i<Math.min(16,Math.floor(t*3)+1);i++)fill(i%2?'#f0e6c8':'#e3d4a8',()=>c.rect(300+(i%4)*8,420-i*14,170,14),2);
+  for(let i=0;i<10;i++){const x=640+(i%5)*70,y=200+Math.floor(i/5)*80;fill('#f3ecd6',()=>c.rect(x,y,56,64),3);fill('#e8743b',()=>circ(x+28,y+10,6),1)}
+  person(560,520,1,'#4a5a7a','#e2b48c',t,false);c.save();c.strokeStyle='#2a241c';c.lineWidth=2.5;c.beginPath();circ(552,374,8);circ(568,374,8);c.stroke();c.restore();
+  if(li===2){fill('#f3ecd6',()=>c.rect(820,470,300,46),3);txt('⚖ evidence?',970,505,30)}
+  if(li===3){c.save();c.translate(640,330);c.rotate(-.08);fill('#c0392b',()=>rr(-230,-50,460,100,12),6);txt('NOT PROVEN',0,18,58,'#fff');c.restore()}}},
+
+{chap:'Why the rumour never dies',lines:[
+ 'So why do so many people still believe? Surveys suggest about a quarter to a third of Americans do, and many more in Asia.',
+ 'Nature repeats. Seasons die and return, seeds sprout, the moon is reborn every month.',
+ 'Déjà vu and vivid dreams feel like old memories. Children tell wonderful stories. Grieving families hope to meet loved ones again.',
+ 'And karma feels fair. If life is unjust now, perhaps it balances out next time.'],
+ draw(t,li){const season=(t*.25)%4,cols=['#7cc36a','#4f9a52','#e39b3b','#eef4f8'],skies=[['#9fdcf0','#e3f6ef'],['#6fc3e8','#d7f0f7'],['#f2b866','#f6dfa3'],['#a9bccb','#e7eef3']];
+  const si=Math.floor(season);sky(...skies[si]);hills(420,['#86b874','#5f9a6c','#c98a4b','#dfe7ec'][si],60,2);ground(560,si===3?'#f5f8fa':'#d6cf95');
+  fill('#6b4425',()=>{c.moveTo(620,600);c.lineTo(630,330);c.lineTo(600,280);c.lineTo(640,320);c.lineTo(680,260);c.lineTo(650,340);c.lineTo(660,600)},5);
+  if(si<3)fill(cols[si],()=>{circ(580,260,70);circ(700,250,75);circ(640,190,80)},6);
+  if(si===2)for(let i=0;i<8;i++){const y=(t*60+i*90)%400+220;fill('#e39b3b',()=>ell(500+i*40+Math.sin(t*2+i)*20,y,10,6,t+i),2)}
+  if(si===3)for(let i=0;i<40;i++){fill('#fff',()=>circ((i*97+Math.sin(t+i)*20)%W,(t*40+i*53)%H,4),0)}
+  const lab=['Spring: born','Summer: growing','Autumn: falling','Winter: resting'][si];fill('#f3ecd6',()=>c.rect(70,70,300,56),4);txt(lab,220,108,28);
+  if(li===3){c.save();c.translate(1020,330);c.rotate(Math.sin(t*1.5)*.08);fill('#8a5a2b',()=>c.rect(-6,-80,12,180),4);fill('#8a5a2b',()=>c.rect(-140,-86,280,12),4);
+    fill('#d8b04a',()=>{ell(-120,10,60,14)},4);fill('#d8b04a',()=>{ell(120,10,60,14)},4);txt('good',-120,0,22);txt('bad',120,0,22);c.restore()}}},
+
+{chap:'Epilogue',lines:[
+ 'The fox stared into the fire. "So nobody knows if I was a tiger?"',
+ '"Nobody can prove it," said Tula. "But the question is three thousand years old, and it has always taught the same lesson."',
+ '"Live kindly, because what you do comes back around." The fox smiled. "Then I’ll be kind. Just in case."'],
+ draw(t,li){forest(t);blob(380,530,1,'#2e6b45',t);pine(980,520,1.3,'#24583a',t);fire(640,560,1,t);tortoise(430,575,1.1,t,li===1||li===2&&t%10<5);fox(850,580,1,t,li!==1);
+  if(li===2){for(let i=0;i<14;i++){const a=t*.6+i,r=60+((t*30+i*20)%200);c.save();c.globalAlpha=Math.max(0,1-r/260);fill('#ffd27a',()=>circ(640+Math.cos(a)*r*.6,500-r,4),0);c.restore()}
+   txt('The End',640,200,72,'#f3ecd6')}}}
+];
+
+/* ---------- playback ---------- */
+let si=0,li=0,t0=performance.now(),lineStart=0,paused=true,started=false,voiceOn=true,lineTimer=null,trans=1,prevScene=null;
+const dots=document.getElementById('dots');S.forEach((_,i)=>{const d=document.createElement('i');d.title=S[i].chap;d.onclick=()=>go(i,0);dots.appendChild(d)});
+function setDots(){[...dots.children].forEach((d,i)=>d.classList.toggle('on',i===si))}
+let voices=[];function loadV(){voices=speechSynthesis?.getVoices?.()||[]}try{loadV();speechSynthesis.onvoiceschanged=loadV}catch(e){}
+function pickVoice(){const en=voices.filter(v=>/^en/i.test(v.lang));return en.find(v=>/Google UK English Female|Samantha|Serena|Libby|Sonia|Natural/i.test(v.name))||en[0]}
+function speak(){clearTimeout(lineTimer);try{speechSynthesis.cancel()}catch(e){}
+  const text=S[si].lines[li];capEl.textContent=text;chapEl.textContent=S[si].chap;setDots();
+  const fallback=Math.max(3500,text.split(' ').length*380);
+  if(voiceOn&&'speechSynthesis'in window){const u=new SpeechSynthesisUtterance(text.replace(/[“”"]/g,''));const v=pickVoice();if(v)u.voice=v;u.rate=.95;u.pitch=1.02;
+    let done=false;const fin=()=>{if(done)return;done=true;if(!paused)lineTimer=setTimeout(advance,600)};u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);
+    lineTimer=setTimeout(fin,fallback*1.8)}
+  else lineTimer=setTimeout(advance,fallback)}
+function advance(){if(paused)return;if(li<S[si].lines.length-1){li++;speak()}else if(si<S.length-1)go(si+1,0);else{capEl.textContent='';paused=true;pauseBtn.textContent='Replay'}}
+function go(s,l){prevScene=si!==s?si:null;trans=si!==s?0:1;si=s;li=l;if(started&&!paused)speak();else{capEl.textContent=S[si].lines[li];chapEl.textContent=S[si].chap;setDots()}}
+const pauseBtn=document.getElementById('pause');
+document.getElementById('start').onclick=e=>{e.currentTarget.hidden=true;started=true;paused=false;music.start();speak()};
+pauseBtn.onclick=()=>{if(!started){document.getElementById('start').click();return}
+  if(pauseBtn.textContent==='Replay'){go(0,0);paused=false;pauseBtn.textContent='Pause';speak();return}
+  paused=!paused;pauseBtn.textContent=paused?'Resume':'Pause';if(paused){clearTimeout(lineTimer);try{speechSynthesis.cancel()}catch(e){}music.mute(true)}else{music.mute(false);speak()}};
+document.getElementById('next').onclick=()=>{if(li<S[si].lines.length-1)go(si,li+1);else if(si<S.length-1)go(si+1,0)};
+document.getElementById('prev').onclick=()=>{if(li>0)go(si,li-1);else if(si>0)go(si-1,0)};
+const vb=document.getElementById('voice');vb.onclick=()=>{voiceOn=!voiceOn;vb.setAttribute('aria-pressed',voiceOn);if(started&&!paused)speak()};
+const mb=document.getElementById('music');mb.onclick=()=>{const on=mb.getAttribute('aria-pressed')!=='true';mb.setAttribute('aria-pressed',on);music.enabled=on;music.mute(!on||paused)};
+
+/* ---------- music: soft pentatonic music box + fire crackle ---------- */
+const music={ctx:null,gain:null,enabled:true,start(){if(this.ctx)return;try{const A=new (window.AudioContext||window.webkitAudioContext)();this.ctx=A;
+  this.gain=A.createGain();this.gain.gain.value=this.enabled?.16:0;this.gain.connect(A.destination);
+  const notes=[0,2,4,7,9,12,14,16],base=220;let step=0;const chords=[[0,4,7],[9,12,16],[5,9,12],[7,11,14]];
+  const pluck=(f,when,v=.5,dur=1.6)=>{const o=A.createOscillator(),g=A.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(v,when+.01);g.gain.exponentialRampToValueAtTime(.001,when+dur);o.connect(g);g.connect(this.gain);o.start(when);o.stop(when+dur+.1)};
+  const tick=()=>{const now=A.currentTime;for(let i=0;i<8;i++){const w=now+i*.35;const n=notes[(step*3+i*5+(i%3))%notes.length];if(i%2===0||Math.random()<.4)pluck(base*2*Math.pow(2,n/12),w,.32);
+      if(i===0){chords[step%4].forEach(cn=>pluck(base/2*Math.pow(2,cn/12),w,.18,2.6))}}step++};
+  tick();setInterval(tick,2800);
+  const buf=A.createBuffer(1,A.sampleRate*2,A.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()<.0008?(Math.random()*2-1):(Math.random()*2-1)*.01;
+  const src=A.createBufferSource();src.buffer=buf;src.loop=true;const fg=A.createGain();fg.gain.value=.5;src.connect(fg);fg.connect(this.gain);src.start()}catch(e){}},
+ mute(m){if(this.gain)this.gain.gain.setTargetAtTime(m?0:(this.enabled?.16:0),this.ctx.currentTime,.3)}};
+
+/* ---------- render loop ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function frame(now){const t=reduce?2:(now-t0)/1000;
+  if(!grainPat)grainPat=c.createPattern(grain,'repeat');
+  if(trans<1&&prevScene!==null){trans=Math.min(1,trans+0.025);
+    c.save();S[prevScene].draw(t,S[prevScene].lines.length-1);c.restore();
+    const e=1-Math.pow(1-trans,3);c.save();c.translate(W*(1-e),0);c.rotate((1-e)*.06);sh(true,14);c.fillStyle='#000';c.fillRect(0,0,W,H);sh(false);
+    c.beginPath();c.rect(0,0,W,H);c.clip();S[si].draw(t,li);c.restore()}
+  else S[si].draw(t,li);
+  c.fillStyle=grainPat;c.fillRect(0,0,W,H);
+  const v=c.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,H*.95);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.28)');c.fillStyle=v;c.fillRect(0,0,W,H);
+  requestAnimationFrame(frame)}
+capEl.textContent='';chapEl.textContent=S[0].chap;setDots();requestAnimationFrame(frame);
+</script>
