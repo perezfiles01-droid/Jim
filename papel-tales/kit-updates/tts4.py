@@ -6,7 +6,7 @@ F=json.load(open('fil.json'));FL={k.lower():v for k,v in F.items()}
 rx=re.compile(r'\b('+'|'.join(map(re.escape,sorted(F,key=len,reverse=True)))+r')\b(’s)?',re.I)
 YEARS={'1582':'fifteen eighty-two','1589':'fifteen eighty-nine'}
 PH=['apple','zebra','violin','marble','tulip','walrus','pepper','candle','rocket','button','pillow','ladder','basket','helmet','muffin','window']
-AUDIT=[]
+AUDIT=[];WORDS={}
 def spoken(t):
   t=t.replace('"','').replace('“','').replace('”','')
   for y,w in YEARS.items(): t=re.sub(r'\b'+y+r's?\b',w,t)
@@ -42,10 +42,14 @@ for si,s in enumerate(L):
     for w in heteronyms.audit(t): AUDIT.append(f'{si}.{li}  {w:10s} {t}')
     a,sr=K.create(p,voice='af_heart',speed=0.92,is_phonemes=True)
     sf.write(f'n_{si}_{li}.wav',a,sr);res.append([si,li,len(a)/sr])
+    # estimated start time of every word (share of phonemes, pauses weighted at punctuation)
+    toks=t.split();wts=[max(1,len(re.sub(r'[^\w]','',ph(w))))+(4 if re.search(r'[,.;:?!]$',w) else 0) for w in toks];tot=sum(wts);acc=0;wt=[]
+    for w,k in zip(toks,wts): wt.append([re.sub(r'[^\w’\'-]','',w).lower(),round(acc/tot*len(a)/sr,2)]);acc+=k
+    WORDS.setdefault(si,{})[li]=wt
 sheet={}
 for si,s in enumerate(L):
   for t in s['lines']:
     for w in re.findall(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’-]*",spoken(t)): sheet.setdefault(w.lower(),ph(w).strip(' .'))
 open('pronunciation_sheet.txt','w').write('Every word and the exact sound used\n'+'\n'.join(f'{w:22s} {p}' for w,p in sorted(sheet.items())))
-json.dump(res,open('durs.json','w'));open('phonemes.txt','w').write('\n'.join(dump))
+json.dump(res,open('durs.json','w'));json.dump(WORDS,open('words.json','w'));open('phonemes.txt','w').write('\n'.join(dump))
 open('pronunciation_audit.txt','w').write('Check each word below sounds right in phonemes.txt before rendering.\n'+'\n'.join(AUDIT));print('\n'.join(AUDIT))

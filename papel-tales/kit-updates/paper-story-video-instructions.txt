@@ -454,3 +454,33 @@ UPDATE (v7): OTHER STANDING RULES FROM THE USER (11 Oct 2026)
     * Suggest US-evening scheduling (6-9 PM Eastern = about 6-9 AM Philippine time) and a Short.
 - Next pipeline upgrade: Remotion, rough.js, torn-paper SVG filters, GSAP MorphSVG
   (see papel-tales/ANIMATION-TOOLKIT.md).
+
+
+UPDATE (v8): MOTION EVERY 1-2 SECONDS, PICTURES THAT FOLLOW EVERY PHRASE (user, 11 Oct 2026)
+-------------------------------------------------------------------------------------------
+The user liked The Aswang's amount of visuals but wants MUCH more: the picture should follow
+the narration in detail, and something new should move or appear every 1-2 seconds.
+
+Rules for every scene:
+  1. Beat map first. Before drawing, split each narration line into beats of 1-2 seconds
+     (about every 3-6 words). Write the beat list into the script file under each line:
+       Line 7. "...In 1582, Miguel de Loarca described a Visayan belief..."
+         beat "1582"     -> year stamp slams onto the parchment
+         beat "Loarca"   -> quill writer slides in, quill starts scratching
+         beat "Visayan"  -> map of the Visayas unrolls behind
+         beat "asuang"   -> the word inks itself onto the scroll in red
+  2. Every noun, number, place and action said aloud gets its own visual, appearing on the
+     exact word (word timing comes from words.json, written by tts4.py; use since()/popIn()/
+     after() from beats.js). No more one static set per line.
+  3. Never a still frame. Three layers move at all times:
+       - camera (push-in plus drift, already in render),
+       - characters (breathing, blinking every 3-5 s, ears, tails, heads turning to the speaker,
+         mouths synced to talking lines, small walks or hops),
+       - environment (wind in plants, water, clouds, particles, flickering light, drifting paper scraps).
+  4. Beat entrances vary: pop, slide, unfold, ink-on, cut-out drop with a bounce, flip like a
+     paper card, rise from below, iris in. Exits fade or slide away before the next beat
+     crowds the frame.
+  5. Aim: at least 6-10 distinct visual events per scene and about 40-60 per video.
+     Count them in the beat map and say the count when showing the script for approval.
+  6. Check: grab a frame every 1.5 s of one scene (ffmpeg -vf fps=2/3) as a contact sheet;
+     consecutive frames must look clearly different and match the subtitle under them.
