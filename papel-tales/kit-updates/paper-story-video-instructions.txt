@@ -484,3 +484,18 @@ Rules for every scene:
      Count them in the beat map and say the count when showing the script for approval.
   6. Check: grab a frame every 1.5 s of one scene (ffmpeg -vf fps=2/3) as a contact sheet;
      consecutive frames must look clearly different and match the subtitle under them.
+
+
+UPDATE (v9): NO NARRATOR CHARACTERS. TRADEMARK INTRO. (user, 11 Oct 2026)
+-------------------------------------------------------------------------
+- Stop using a storyteller pair (grandparent and child animals). Tell the story directly and
+  creatively: open on a striking image or question, end on a scene that brings it home.
+  This replaces the "new characters every story" rule in v7. People and animals can still
+  appear inside the story (kids playing, historical figures, crowds).
+- ALWAYS open with the Papel Tales title card (crumpled white "PAPEL TALES" sign hung on strings
+  over cardboard, cut-out teal and blue letters, scissors, red tab with the episode name). This is
+  the channel's trademark. It holds about 3.5 s, then fades into scene 1. Narration starts at ~4.6 s.
+- If characters ever speak Filipino terms of address, use them correctly: a grandparent (Lolo,
+  Lola) calls a grandchild "apo"; a parent calls a child "anak"; an aunt or uncle (Tita, Tito)
+  calls a niece or nephew "pamangkin" or uses the name; a younger person says "po". The Aswang
+  video wrongly had Lolo Kanor say "anak".

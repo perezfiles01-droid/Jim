@@ -1,20 +1,18 @@
 BATANG 90s: WHY FILIPINOS LOVE THE NINETIES. VOICEOVER SCRIPT (DRAFT FOR APPROVAL)
 ====================================================================================
 Narrator: Kokoro af_heart (American female), speed 0.92
-New characters: Tito Jun-jun, a grown-up Philippine long-tailed macaque who was a 90s kid
-(sando, band-aid on his cheek, slingshot in his back pocket), and Mika, his niece, a young
-Palawan pangolin who rolls into a ball when she laughs.
+No narrator characters (user, 11 Oct): told directly. Opens with the Papel Tales title card.
 Length: about 4.5 minutes, 10 scenes, 32 lines. Visual beats: 92 (every 1-2 seconds).
 Styles: comic-book thick outlines (from your Batang 90s images), cardboard, crayon,
 watercolour, candlelit silhouettes, TV-screen panels, grey cut-outs, collage.
 
---- PROLOGUE ---  (cardboard living room, night)
-Line 1. One rainy evening, Mika the pangolin found her Tito Jun-jun laughing at his phone, wiping tears from his eyes.
-   beats: rain streaks on the window / "Mika" rolls in as a ball and uncurls / "Tito Jun-jun" phone glow lights his face / "laughing" he shakes / "tears" two drops fly off
-Line 2. "Tito, why do you keep sharing pictures of slippers and marbles? And what is a Batang 90s?"
-   beats: phone screen fills the frame: post of a slipper / scroll to marbles / "Batang 90s" stamp drops on the post / Mika tilts head
-Line 3. Tito Jun-jun put down his phone and grinned. "Sit down, Mika. Let me take you back to the nineteen nineties."
-   beats: phone slides away / grin / "nineteen nineties" a calendar flips fast back from 2026 to 1990 and the room fades to sunny street
+--- PROLOGUE ---  (cardboard desk, a paper phone with a scrolling feed)
+Line 1. Open almost any Filipino social media feed, and you may find pictures of rubber slippers, glass marbles and old cartoon shows, shared thousands of times.
+   beats: paper phone slides up / "slippers" post / "marbles" post / "cartoon" post / "thousands" hearts and share arrows float up
+Line 2. The captions all say the same thing: Batang 90s, a child of the nineties.
+   beats: caption strip types itself / "Batang 90s" stamp slams / "child" a kid's face card pops
+Line 3. So why does a whole generation keep looking back? To find out, we have to rewind to the nineteen nineties.
+   beats: "generation" a row of phones / "rewind" a cassette rewinds / "nineteen nineties" calendar flips from 2026 down to 1990
 
 --- WHAT IS A BATANG 90s? ---  (crayon on construction paper)
 Line 4. Batang 90s means a child of the nineties: Filipinos who grew up in the nineteen nineties, now mostly in their thirties and forties.
@@ -81,30 +79,29 @@ Line 27. Batang 90s grew up just before smartphones and social media filled ever
    beats: a tsinelas card and a smartphone card face off / a clock fills with app icons
 Line 28. So when they share a picture of a slipper or a marble, they are really sharing a feeling: long afternoons, friends outside, and a simpler pace.
    beats: "slipper" card / "marble" card / "feeling" a heart pops / "friends outside" mini street scene / "simpler pace" a slow-swinging hammock
-Line 29. "So it is not really about the toys," said Mika. "It is about who you played with."
-   beats: toys fade back / kid faces appear in the cards / Mika nods
+Line 29. So it is not really about the toys. It is about who they played with.
+   beats: toys fade back / kid faces appear in the cards / cards join hands
 
---- EPILOGUE ---  (comic style street, sunset)
-Line 30. "Exactly," said Tito Jun-jun. He found an old can, set it in the middle of the road, and handed Mika a slipper.
-   beats: "can" set down with a clink / "slipper" handed over / Mika's eyes sparkle
-Line 31. Mika threw, the can went flying, and children from the neighborhood came running to join in.
+--- EPILOGUE ---  (comic-style street at sunset)
+Line 30. On a quiet street today, someone sets an old can in the middle of the road and picks up a slipper.
+   beats: "can" set down with a clink / "slipper" picked up / sunset glints
+Line 31. The can goes flying, and children from the neighborhood come running to join in.
    beats: slipper flies / can tumbles / "children" kids pour in from both sides / laughter lines
-Line 32. And just like that, on one small street, the nineties came back to play.
-   beats: camera pulls back / sunset / "nineties" the 9-0 cut-outs drop into the sky like a sign / title card returns
+Line 32. And just like that, on one small street, the nineties come back to play.
+   beats: camera pulls back / "nineties" the 9-0 cut-outs drop into the sky like a sign / Papel Tales sign returns
 
 PRONUNCIATION GUIDE (please approve or correct)
 Years: 1990s "nineteen nineties", 1993 "nineteen ninety-three", 1994 "nineteen ninety-four",
 1995 "nineteen ninety-five", 1996 "nineteen ninety-six", 2001 "two thousand one", 2006 "two thousand six".
-Batang          BAH-tahng                 Jun-jun         JOON-joon
-Tito            TEE-toh                   Mika            MEE-kah
-Palawan         Pa-LAH-wan                tsinelas        chee-NEH-las
+Batang          BAH-tahng                 
+tsinelas        chee-NEH-las
 patintero       pa-tin-TEH-ro             tumbang preso   toom-BAHNG PREH-so
 piko            PEE-ko                    sipa            SEE-pa
 luksong tinik   look-SONG tee-NEEK        teks            TEKS
 jolens          JOH-lens                  trumpo          TROOM-po
 tirador         tee-ra-DOR                Tamagotchi      ta-ma-GO-chee
 Sineskwela      see-nes-KWEH-la           Hiraya Manawari hee-RAH-ya ma-na-WAH-ree
-Tagalog         ta-GAH-log                Wildschut       VILT-skhoot
+Tagalog         ta-GAH-log                Wildschut       WILD-shoot
 Constantine Sedikides   KON-stan-teen se-DI-ki-deez
 Risky English words to be checked by the new strict pronunciation step: "read" none, "live"
 none (script says "grew up"), "wind" none. The full every-word sheet will come with the audio.

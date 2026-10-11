@@ -57,7 +57,7 @@ def audit(text):
 import cmudict
 _D=cmudict.dict()
 _CLASS={'IH':'e','IY':'i','EH':'e','AE':'e','EY':'ey','AA':'o','AO':'o','AH':'o','UH':'o','OW':'ow','UW':'u','AY':'ay','AW':'aw','OY':'oy','ER':'er'}
-SAFE={'sometimes','unfair','because','into','really','caused','us','when','says','again','either','neither','route','data','often','been','were','your','aunt','tomato','envelope','vase','garage','schedule','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'}  # checked by ear; extend with care
+SAFE={'inside','sometimes','unfair','because','into','really','caused','us','when','says','again','either','neither','route','data','often','been','were','your','aunt','tomato','envelope','vase','garage','schedule','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'}  # checked by ear; extend with care
 def _stressed(p):
     return tuple(sorted({_CLASS.get(x[:-1],x[:-1]) for x in p if x[-1]=='1'}))
 def _known(w):
