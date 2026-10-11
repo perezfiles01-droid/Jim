@@ -1,0 +1,366 @@
+<!doctype html><meta charset="utf-8"><title>The Aswang</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&family=Caveat:wght@700&display=swap"><style>body{margin:0;background:#24302a}canvas{width:100%;max-width:1280px;display:block;margin:auto}</style><canvas id="cv" width="1280" height="720"></canvas><script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d'),W=1280,H=720;
+/* ---------- paper helpers ---------- */
+function sh(on=true,d=5){c.shadowColor=on?'rgba(0,0,0,.28)':'transparent';c.shadowBlur=on?d*1.6:0;c.shadowOffsetY=on?d:0;c.shadowOffsetX=0}
+function fill(col,fn,d=5){c.save();sh(true,d);c.fillStyle=col;c.beginPath();fn();c.fill();c.restore()}
+function rr(x,y,w,h,r){c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)}
+function circ(x,y,r){c.moveTo(x+r,y);c.arc(x,y,r,0,7)}
+function ell(x,y,rx,ry,rot=0){c.moveTo(x+rx*Math.cos(rot),y+rx*Math.sin(rot));c.ellipse(x,y,rx,ry,rot,0,7)}
+const grain=(()=>{const g=document.createElement('canvas');g.width=g.height=160;const x=g.getContext('2d');const d=x.createImageData(160,160);
+  for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=14}x.putImageData(d,0,0);return g})();
+let grainPat;
+function sky(a,b){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H)}
+function hills(y,col,amp,seed,t=0,d=4){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);
+  for(let x=0;x<=W;x+=40){c.lineTo(x,y-Math.abs(Math.sin(x*.004+seed))*amp-Math.sin(x*.011+seed*3)*amp*.3)}c.lineTo(W,H)},d)}
+function ground(y,col){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);c.bezierCurveTo(W*.3,y-20,W*.6,y+25,W,y-5);c.lineTo(W,H)},6)}
+function pine(x,y,s,col='#2f7a46',t=0){const sw=Math.sin(t*1.3+x)*2*s;
+  fill('#5a3a22',()=>{c.rect(x-4*s,y-30*s,8*s,30*s)},3);
+  for(let i=0;i<3;i++){const yy=y-30*s-i*38*s,w=(60-i*13)*s;fill(col,()=>{c.moveTo(x-w+sw*.4,yy);c.lineTo(x+w+sw*.4,yy);c.lineTo(x+sw,yy-70*s)},5)}}
+function blob(x,y,s,col,t=0){fill('#5a3a22',()=>{c.rect(x-5*s,y-70*s,10*s,70*s)},3);
+  fill(col,()=>{const w=Math.sin(t+x)*3;circ(x-26*s+w,y-90*s,30*s);circ(x+24*s+w,y-95*s,32*s);circ(x+w,y-125*s,36*s)},6)}
+function fire(x,y,s,t){fill('#6b4425',()=>{c.save();c.translate(x,y);c.rotate(.25);c.rect(-45*s,-6*s,90*s,12*s);c.restore()},3);
+  fill('#5a3a22',()=>{c.save();c.translate(x,y);c.rotate(-.25);c.rect(-45*s,-6*s,90*s,12*s);c.restore()},3);
+  [['#f5c13b',1],['#ef7d2d',.72],['#e04a2a',.45]].forEach(([col,k],i)=>{const f=Math.sin(t*9+i*2)*6*s,h=(90+Math.sin(t*6+i)*10)*k*s;
+    fill(col,()=>{c.moveTo(x-30*k*s,y-4*s);c.quadraticCurveTo(x-34*k*s,y-h*.6,x+f,y-h);c.quadraticCurveTo(x+34*k*s,y-h*.6,x+30*k*s,y-4*s)},2)});
+  c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y-40*s,5,x,y-40*s,220*s);g.addColorStop(0,'rgba(255,170,60,.28)');g.addColorStop(1,'rgba(255,170,60,0)');c.fillStyle=g;c.fillRect(x-240*s,y-260*s,480*s,480*s);c.restore()}
+function stars(t,n=60){c.save();for(let i=0;i<n;i++){const x=(i*197)%W,y=(i*83)%(H*.45),a=.4+.4*Math.sin(t*2+i);c.fillStyle=`rgba(255,250,220,${a})`;c.beginPath();circ(x,y,1.6+(i%3)*.6);c.fill()}c.restore()}
+function moon(x,y,r){fill('#f6efcf',()=>circ(x,y,r),4);fill('#e7dfba',()=>{circ(x-r*.3,y-r*.2,r*.18);circ(x+r*.25,y+r*.3,r*.12)},0)}
+function water(y,t,col='#2aa0d8'){fill(col,()=>{c.moveTo(0,H);c.lineTo(0,y);for(let x=0;x<=W;x+=20)c.lineTo(x,y+Math.sin(x*.02+t*2)*5);c.lineTo(W,H)},5);
+  c.save();c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=3;for(let i=0;i<6;i++){const xx=((i*230+t*40)%(W+200))-100,yy=y+30+i*12;c.beginPath();c.moveTo(xx,yy);c.lineTo(xx+50,yy);c.stroke()}c.restore()}
+function eye(x,y,r=6){fill('#fff',()=>circ(x,y,r),1);fill('#222',()=>circ(x+r*.25,y,r*.5),0)}
+function txt(s,x,y,size=40,col='#2a241c',font='Fredoka',align='center'){c.save();c.font=`700 ${size}px ${font},sans-serif`;c.textAlign=align;c.fillStyle=col;sh(true,3);c.fillText(s,x,y);c.restore()}
+
+/* ---------- characters ---------- */
+function person(x,y,s,robe,skin='#c48a5c',t=0,beard=false,hat=null){
+  fill(robe,()=>{c.moveTo(x-34*s,y);c.lineTo(x-24*s,y-110*s);c.quadraticCurveTo(x,y-124*s,x+24*s,y-110*s);c.lineTo(x+34*s,y)},6);
+  fill(skin,()=>circ(x,y-140*s+Math.sin(t*2+x)*1.5,24*s),4);
+  fill('#2a1d14',()=>{c.arc(x,y-146*s+Math.sin(t*2+x)*1.5,25*s,Math.PI*1.05,Math.PI*1.95)},1);
+  if(beard)fill('#3a2a1c',()=>{c.moveTo(x-20*s,y-136*s);c.quadraticCurveTo(x,y-100*s,x+20*s,y-136*s)},2);
+  eye(x-8*s,y-142*s,4*s);eye(x+8*s,y-142*s,4*s);
+  if(hat)fill(hat,()=>{ell(x,y-160*s,40*s,9*s);c.moveTo(x-20*s,y-160*s);c.quadraticCurveTo(x,y-195*s,x+20*s,y-160*s)},3)}
+function carabao(x,y,s,t,talk){const b=Math.sin(t*2)*2;
+  fill('#4f5560',()=>{c.rect(x-70*s,y-40*s,22*s,40*s);c.rect(x+40*s,y-40*s,22*s,40*s)},3);
+  fill('#5d6470',()=>{ell(x-5*s,y-75*s+b,95*s,52*s)},6);
+  c.save();c.strokeStyle='#4f5560';c.lineWidth=6*s;c.lineCap='round';c.beginPath();c.moveTo(x-95*s,y-85*s);c.quadraticCurveTo(x-120*s,y-60*s+Math.sin(t*3)*12*s,x-112*s,y-30*s);c.stroke();c.restore();
+  const hx=x+95*s,hy=y-92*s+Math.sin(t*1.6)*3;
+  fill('#e9e2cc',()=>{c.moveTo(hx-30*s,hy-28*s);c.quadraticCurveTo(hx-90*s,hy-80*s,hx-40*s,hy-95*s);c.quadraticCurveTo(hx-60*s,hy-60*s,hx-12*s,hy-34*s);
+    c.moveTo(hx+30*s,hy-28*s);c.quadraticCurveTo(hx+90*s,hy-80*s,hx+40*s,hy-95*s);c.quadraticCurveTo(hx+60*s,hy-60*s,hx+12*s,hy-34*s)},4);
+  fill('#6b7380',()=>{ell(hx,hy,38*s,42*s)},5);fill('#8a8f99',()=>ell(hx,hy+26*s,26*s,18*s),2);
+  eye(hx-14*s,hy-10*s,7*s);eye(hx+14*s,hy-10*s,7*s);fill('#333',()=>{circ(hx-9*s,hy+28*s,3.5*s);circ(hx+9*s,hy+28*s,3.5*s)},0);
+  if(talk)fill('#3a2a2a',()=>ell(hx,hy+40*s,8*s,Math.abs(Math.sin(t*14))*5*s+1),0);
+  // sampaguita garland
+  for(let i=0;i<9;i++)fill('#fffdf2',()=>circ(hx-30*s+i*7.5*s,hy+50*s+Math.sin(i/8*Math.PI)*10*s,5*s),1)}
+function tarsier(x,y,s,t,talk){const hop=Math.abs(Math.sin(t*2.2))*8*s;y-=hop;
+  c.save();c.strokeStyle='#8a6440';c.lineWidth=4*s;c.beginPath();c.moveTo(x-20*s,y-20*s);c.quadraticCurveTo(x-60*s,y,x-50*s,y+30*s+hop);c.stroke();c.restore();
+  fill('#a77c52',()=>ell(x,y-40*s,28*s,38*s),5);fill('#c9a07a',()=>ell(x+4*s,y-34*s,15*s,24*s),1);
+  fill('#a77c52',()=>{ell(x-14*s,y-2*s,16*s,7*s);ell(x+14*s,y-2*s,16*s,7*s)},2);
+  const hy=y-95*s+Math.sin(t*3)*2;fill('#a77c52',()=>{ell(x-30*s,hy-24*s,13*s,17*s);ell(x+30*s,hy-24*s,13*s,17*s)},3);
+  fill('#b88b5e',()=>ell(x,hy,40*s,34*s),5);
+  [[-16,0],[16,0]].forEach(([dx])=>{fill('#f2d27a',()=>circ(x+dx*s,hy-4*s,15*s),1);fill('#1d140c',()=>circ(x+dx*s+2*s,hy-4*s,9*s),0);fill('#fff',()=>circ(x+dx*s+5*s,hy-8*s,3*s),0)});
+  fill('#5a3a22',()=>circ(x,hy+12*s,3*s),0);if(talk)fill('#5a2a1a',()=>ell(x,hy+22*s,5*s,Math.abs(Math.sin(t*15))*4*s+1),0)}
+function nipa(x,y,s,col='#c9a46a'){fill('#8a6a3e',()=>{c.rect(x-60*s,y-20*s,8*s,20*s);c.rect(x+52*s,y-20*s,8*s,20*s)},2);
+  fill(col,()=>c.rect(x-62*s,y-95*s,124*s,76*s),5);fill('#6e4e2a',()=>c.rect(x-14*s,y-70*s,28*s,50*s),1);
+  fill('#9c7a3c',()=>{c.moveTo(x-90*s,y-90*s);c.lineTo(x,y-165*s);c.lineTo(x+90*s,y-90*s)},6)}
+
+/* ---------- mixed cut-out styles (all deterministic) ---------- */
+const hr=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+const clamp01=x=>x<0?0:x>1?1:x;
+function bg(col){c.fillStyle=col;c.fillRect(-40,-40,W+80,H+80)}
+function cardboard(col='#b07a45'){bg(col);c.save();
+ for(let x=-40;x<W+40;x+=9){c.fillStyle=`rgba(70,40,12,${.05+.04*Math.sin(x*.7)})`;c.fillRect(x,-40,3,H+80)}
+ for(let i=0;i<220;i++){const lt=hr(i)>.5;c.fillStyle=lt?'rgba(255,225,180,.08)':'rgba(60,30,8,.08)';c.beginPath();c.ellipse(hr(i*3)*W,hr(i*7)*H,4+hr(i*11)*30,2+hr(i*13)*8,0,0,7);c.fill()}
+ const v=c.createRadialGradient(W/2,H/2,100,W/2,H/2,W*.7);v.addColorStop(0,'rgba(255,220,160,.14)');v.addColorStop(1,'rgba(40,20,5,.35)');c.fillStyle=v;c.fillRect(-40,-40,W+80,H+80);c.restore()}
+// crumpled paper card: faceted light and shade
+function crumple(x,y,w,h,base='#f4f2ee',seed=1,d=8){c.save();sh(true,d);c.fillStyle=base;c.beginPath();c.moveTo(x,y);c.lineTo(x+w,y+4);c.lineTo(x+w-3,y+h);c.lineTo(x+3,y+h-4);c.closePath();c.fill();sh(false);c.clip();
+ const nx=8,ny=5,P=[];for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const k=seed*100+j*13+i;P.push([x+i/nx*w+(i&&i<nx?(hr(k)-.5)*w/nx*.8:0),y+j/ny*h+(j&&j<ny?(hr(k+50)-.5)*h/ny*.8:0)])}
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=P[j*(nx+1)+i],b=P[j*(nx+1)+i+1],d2=P[(j+1)*(nx+1)+i],e=P[(j+1)*(nx+1)+i+1];
+  [[a,b,e],[a,e,d2]].forEach((tr,q)=>{const s=hr(seed*7+j*31+i*3+q)*.16-.06;c.fillStyle=s>0?`rgba(0,0,0,${s})`:`rgba(255,255,255,${-s*2.5})`;c.beginPath();c.moveTo(...tr[0]);c.lineTo(...tr[1]);c.lineTo(...tr[2]);c.fill()})}
+ c.restore()}
+// crayon on construction paper: flat fill plus waxy hatching
+function crayon(col,fn,d=4){c.save();sh(true,d);c.fillStyle=col;c.beginPath();fn();c.fill();sh(false);c.clip();c.lineWidth=1.4;
+ c.strokeStyle='rgba(255,255,255,.22)';c.beginPath();for(let i=-H;i<W;i+=6){c.moveTo(i,0);c.lineTo(i+H*.4,H)}c.stroke();
+ c.strokeStyle='rgba(0,0,0,.12)';c.beginPath();for(let i=-H+3;i<W;i+=11){c.moveTo(i,0);c.lineTo(i+H*.4,H)}c.stroke();c.restore()}
+// watercolour cut-out: soft wash, darker pooled edge, ink outline
+function wc(col,fn,seed=1){c.save();c.fillStyle=col;c.globalAlpha=.9;c.beginPath();fn();c.fill();c.globalAlpha=1;c.clip();
+ for(let i=0;i<14;i++){c.fillStyle=`rgba(${hr(seed+i)>.5?'255,250,235':'60,40,20'},.1)`;c.beginPath();c.ellipse(hr(seed*3+i)*W,hr(seed*5+i)*H,40+hr(seed+i*2)*120,30+hr(seed+i*4)*70,hr(i)*3,0,7);c.fill()}
+ c.restore();c.save();c.strokeStyle='rgba(70,45,25,.55)';c.lineWidth=2.2;c.beginPath();fn();c.stroke();c.restore()}
+// silhouette (shadow-puppet look)
+function sil(fn,col='#070a14'){c.save();c.fillStyle=col;c.beginPath();fn();c.fill();c.restore()}
+// wood-grain paper
+function wood(col,fn,d=5,seed=1){c.save();sh(true,d);c.fillStyle=col;c.beginPath();fn();c.fill();sh(false);c.clip();c.strokeStyle='rgba(90,40,10,.28)';c.lineWidth=1.5;
+ for(let y=-20;y<H+20;y+=7){c.beginPath();for(let x=0;x<=W;x+=30)c.lineTo(x,y+Math.sin(x*.012+y*.05+seed)*5+Math.sin(x*.04+y)*1.5);c.stroke()}c.restore()}
+// gritty grey card with scratches and speckle
+function grit(col,fn,d=6,seed=1){c.save();sh(true,d);c.fillStyle=col;c.beginPath();fn();c.fill();sh(false);c.clip();
+ for(let i=0;i<260;i++){c.fillStyle=hr(seed+i)>.5?'rgba(0,0,0,.18)':'rgba(255,255,255,.14)';c.fillRect(hr(seed*2+i)*W,hr(seed*9+i)*H,1.5+hr(i)*2,1.5+hr(i*5)*2)}
+ c.strokeStyle='rgba(0,0,0,.18)';c.lineWidth=1;for(let i=0;i<30;i++){const x=hr(seed*4+i)*W,y=hr(seed*6+i)*H;c.beginPath();c.moveTo(x,y);c.lineTo(x+20+hr(i)*50,y+(hr(i*3)-.5)*20);c.stroke()}c.restore()}
+function hand(s,x,y,size=34,col='#2a241c',align='center',rot=0){c.save();c.translate(x,y);c.rotate(rot);c.font=`700 ${size}px Caveat,cursive`;c.textAlign=align;c.fillStyle=col;c.fillText(s,0,0);c.restore()}
+function bubble(x,y,w,h,txtS,col='#fffdf4',ink='#2a241c',size=26){fill(col,()=>{rr(x-w/2,y-h/2,w,h,16);c.moveTo(x-12,y+h/2-2);c.lineTo(x-22,y+h/2+22);c.lineTo(x+8,y+h/2-2)},4);hand(txtS,x,y+size*.33,size,ink)}
+const pop=(t,t0,d=.5)=>{const p=clamp01((t-t0)/d);return p<1?1-Math.pow(1-p,3)*Math.cos(p*8)*1:1};
+
+/* ---------- characters added for this story ---------- */
+function blanket(x,y,w,h,t){c.save();fill('#3a6fd8',()=>rr(x,y,w,h,14),4);c.beginPath();rr(x,y,w,h,14);c.clip();for(let i=0;i<6;i++)fill(i%2?'#f4c430':'#e63946',()=>c.rect(x,y+8+i*14,w,5),0);c.restore()}
+function sleepyTarsier(x,y,s,t){tarsier(x,y,s,0,false);const hy=y-95*s;[-16,16].forEach(dx=>{fill('#b88b5e',()=>circ(x+dx*s,hy-4*s,16*s),0);c.save();c.strokeStyle='#5a3a22';c.lineWidth=3*s;c.beginPath();c.arc(x+dx*s,hy-6*s,9*s,.3,Math.PI-.3);c.stroke();c.restore()});
+ [0,1,2].forEach(i=>{const p=((t*.5+i/3)%1);c.save();c.globalAlpha=1-p;hand('z',x+40*s+p*40,hy-30*s-p*70,22+p*16,'#f3ecd6');c.restore()})}
+function owl(x,y,s,t){fill('#6e4e2a',()=>ell(x,y,26*s,34*s),4);fill('#8a6a3e',()=>ell(x,y+8*s,16*s,22*s),1);fill('#6e4e2a',()=>{c.moveTo(x-22*s,y-22*s);c.lineTo(x-26*s,y-44*s);c.lineTo(x-8*s,y-28*s);c.moveTo(x+22*s,y-22*s);c.lineTo(x+26*s,y-44*s);c.lineTo(x+8*s,y-28*s)},2);
+ const bl=Math.sin(t*1.3)>.96?.15:1;[-10,10].forEach(dx=>{fill('#f2d27a',()=>ell(x+dx*s,y-14*s,9*s,9*s*bl),0);fill('#111',()=>ell(x+dx*s,y-14*s,4*s,4*s*bl),0)});fill('#e8a13a',()=>{c.moveTo(x-3*s,y-6*s);c.lineTo(x+3*s,y-6*s);c.lineTo(x,y+2*s)},0)}
+function windowFrame(x,y,w,h,inner){c.save();c.beginPath();c.rect(x,y,w,h);c.clip();inner();c.restore();
+ wood('#8a5a2e',()=>{c.rect(x-14,y-14,w+28,14);c.rect(x-14,y+h,w+28,14);c.rect(x-14,y,14,h);c.rect(x+w,y,14,h);c.rect(x+w/2-6,y,12,h)},6,2)}
+function lamp(x,y,t){fill('#6b4425',()=>{rr(x-16,y-10,32,22,6)},3);const f=1+Math.sin(t*9)*.08+Math.sin(t*13)*.05;
+ c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y-26,2,x,y-26,140);g.addColorStop(0,'rgba(255,200,90,.45)');g.addColorStop(1,'rgba(255,200,90,0)');c.fillStyle=g;c.fillRect(x-150,y-170,300,300);c.restore();
+ fill('#ffcf5a',()=>{c.moveTo(x,y-10);c.quadraticCurveTo(x-10*f,y-26,x,y-46*f);c.quadraticCurveTo(x+10*f,y-26,x,y-10)},0)}
+function homeSet(t,windowInner){cardboard('#a8713f');
+ windowFrame(720,60,440,300,windowInner);
+ c.save();c.translate(0,0);crumple(-20,560,W+40,200,'#d6bd8f',11,6);c.restore();
+ // woven banig mat
+ c.save();c.translate(260,600);c.scale(1,.35);fill('#c9a46a',()=>ell(0,0,330,170),4);c.restore();
+ for(let i=0;i<8;i++)fill(i%2?'#b5904f':'#d8b276',()=>{c.save();c.translate(260,600);c.scale(1,.35);c.rect(-300+i*75,-150,36,300);c.restore()},0);
+ lamp(110,520,t)}
+const nightSky=()=>{const g=c.createLinearGradient(0,0,0,400);g.addColorStop(0,'#0f1838');g.addColorStop(1,'#2b3f6e');c.fillStyle=g;c.fillRect(0,0,W,H)};
+function bamboo(x,t,col='#123018'){for(let k=0;k<3;k++){const sw=Math.sin(t*1.1+k+x)*10;c.save();c.strokeStyle=col;c.lineWidth=10-k*2;c.beginPath();c.moveTo(x+k*24,H);c.quadraticCurveTo(x+k*24,250,x+k*24+sw,40);c.stroke();
+ for(let j=0;j<5;j++){const yy=120+j*60,xx=x+k*24+sw*(1-yy/H);fill(col,()=>{c.moveTo(xx,yy);c.quadraticCurveTo(xx+30,yy-14+Math.sin(t*2+j)*4,xx+58,yy+4);c.quadraticCurveTo(xx+30,yy+2,xx,yy)},0)}c.restore()}}
+
+function titleCard(t){cardboard('#a8743f');const sw=Math.sin(t*1.2)*.012;
+ c.save();c.strokeStyle='#2a1d14';c.lineWidth=2;c.beginPath();c.moveTo(420,-10);c.lineTo(400,120);c.moveTo(880,-10);c.lineTo(890,124);c.stroke();c.restore();
+ c.save();c.translate(640,330);c.rotate(-.02+sw);c.translate(-640,-330);
+ crumple(330,110,620,430,'#f6f4f0',5,10);
+ // paper clips
+ [[395,104,'#d33'],[408,104,'#2a7'],[875,108,'#38c']].forEach(([x,y,col])=>{c.save();c.strokeStyle=col;c.lineWidth=3;c.beginPath();rr(x-6,y-14,12,40,6);c.stroke();c.restore()});
+ const L1='PAPEL',L2='TALES',cols=['#1aa39a','#1f6fb2'];c.font='900 112px Fredoka,sans-serif';
+ [[L1,250],[L2,410]].forEach(([w,yy],r)=>{let x=640-c.measureText(w).width/2-(w.length-1)*4;
+  [...w].forEach((ch,i)=>{const wob=Math.sin(t*2+i+r*3)*.04;c.save();c.translate(x+c.measureText(ch).width/2,yy);c.rotate((hr(i+r*9)-.5)*.16+wob);sh(true,5);c.fillStyle=cols[(i+r)%2];c.textAlign='center';c.fillText(ch,0,0);c.restore();x+=c.measureText(ch).width+8})});
+ c.save();c.setLineDash([12,9]);c.strokeStyle='#1f6fb2';c.lineWidth=4;c.strokeRect(440,312,400,126);c.restore();
+ // scissors cutting the dashed line
+ c.save();c.translate(845,300);c.rotate(.5);const o=Math.sin(t*6)*.18;c.strokeStyle='#1aa39a';c.lineWidth=6;
+ [o,-o].forEach((a,i)=>{c.save();c.rotate(a);c.beginPath();c.arc(-26,i?12:-12,10,0,7);c.stroke();c.fillStyle='#1aa39a';c.beginPath();c.moveTo(-14,i?6:-6);c.lineTo(34,0);c.lineTo(-14,i?14:-14);c.fill();c.restore()});c.restore();
+ c.restore();
+ // red tab with the episode name
+ c.save();c.translate(640,575);c.rotate(.02);sh(true,5);c.fillStyle='#e63946';c.beginPath();rr(-210,-34,420,68,10);c.fill();sh(false);c.font='700 40px Fredoka,sans-serif';c.fillStyle='#fff';c.textAlign='center';c.fillText('The Aswang Legend',0,14);c.restore();
+ mousedeer(1020,640,1.5,t,false);
+ // green folded paper bird perched on the sign
+ const by=120+Math.sin(t*2)*3;fill('#7cc242',()=>{c.moveTo(930,by);c.lineTo(1000,by-60);c.lineTo(990,by+10)},4);fill('#5aa02c',()=>{c.moveTo(960,by-20);c.lineTo(1040,by-40+Math.sin(t*6)*10);c.lineTo(990,by)},3);eye(985,by-38,7);fill('#e8743b',()=>{c.moveTo(1000,by-40);c.lineTo(1018,by-34);c.lineTo(1000,by-30)},0)}
+
+/* crayon creatures (scene 1) */
+function cPerson(x,y,s,robe='#3a6fd8'){crayon(robe,()=>{c.moveTo(x-32*s,y);c.lineTo(x-22*s,y-100*s);c.lineTo(x+22*s,y-100*s);c.lineTo(x+32*s,y)},4);crayon('#d9a066',()=>circ(x,y-128*s,26*s),4);crayon('#2a1d14',()=>c.arc(x,y-134*s,27*s,Math.PI,0),1);eye(x-9*s,y-128*s,6*s);eye(x+9*s,y-128*s,6*s)}
+function cDog(x,y,s,t){crayon('#22222e',()=>{ell(x,y-50*s,60*s,30*s);c.rect(x-45*s,y-30*s,12*s,30*s);c.rect(x+30*s,y-30*s,12*s,30*s);ell(x+62*s,y-78*s,26*s,22*s);c.moveTo(x+50*s,y-96*s);c.lineTo(x+56*s,y-120*s);c.lineTo(x+70*s,y-98*s);c.moveTo(x-58*s,y-60*s);c.lineTo(x-90*s,y-80*s+Math.sin(t*10)*8*s);c.lineTo(x-56*s,y-50*s)},4);fill('#ffe14a',()=>circ(x+70*s,y-82*s,5*s),0)}
+function cPig(x,y,s){crayon('#e88aa8',()=>{ell(x,y-50*s,62*s,38*s);c.rect(x-40*s,y-24*s,13*s,24*s);c.rect(x+28*s,y-24*s,13*s,24*s);ell(x+64*s,y-62*s,26*s,24*s);c.moveTo(x+50*s,y-82*s);c.lineTo(x+46*s,y-104*s);c.lineTo(x+66*s,y-86*s)},4);crayon('#d0628a',()=>ell(x+88*s,y-58*s,10*s,12*s),1);eye(x+70*s,y-70*s,5*s)}
+function cBird(x,y,s,t){const f=Math.sin(t*9)*30*s;crayon('#1e1e28',()=>{ell(x,y,40*s,20*s);ell(x+40*s,y-12*s,16*s,14*s);c.moveTo(x-10*s,y);c.lineTo(x-40*s,y-60*s-f);c.lineTo(x+20*s,y-6*s);c.moveTo(x-38*s,y);c.lineTo(x-70*s,y+12*s);c.lineTo(x-40*s,y+10*s)},5);fill('#ffe14a',()=>circ(x+44*s,y-14*s,4*s),0);fill('#e8a13a',()=>{c.moveTo(x+54*s,y-14*s);c.lineTo(x+70*s,y-8*s);c.lineTo(x+54*s,y-6*s)},0)}
+function scraps(t){const cols=['#ffffff','#f4c430','#3a6fd8','#7cc242','#b0161f','#e8c07a'];for(let i=0;i<26;i++){const x=hr(i*3)*W,y=hr(i*5)*H,r=8+hr(i*7)*16,a=hr(i)*6+Math.sin(t*.5+i)*.2;
+ fill(cols[i%cols.length],()=>{c.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r);c.lineTo(x+Math.cos(a+2.2)*r*.7,y+Math.sin(a+2.2)*r*.7);c.lineTo(x+Math.cos(a+4)*r,y+Math.sin(a+4)*r)},2)}}
+
+/* watercolour pieces (scene 2) */
+function wcTree(x,y,s,t,seed){wc('#8a5a32',()=>{c.moveTo(x-14*s,y);c.lineTo(x-8*s,y-140*s);c.lineTo(x-50*s,y-200*s);c.lineTo(x-38*s,y-206*s);c.lineTo(x,y-160*s);c.lineTo(x+40*s,y-210*s);c.lineTo(x+52*s,y-202*s);c.lineTo(x+10*s,y-140*s);c.lineTo(x+16*s,y)},seed);
+ const sw=Math.sin(t*.8+seed)*4;[[-60,-220,80,50],[50,-230,90,55],[-5,-270,90,55],[-90,-190,50,34],[90,-195,55,34]].forEach(([dx,dy,rx,ry],i)=>wc(i%2?'#d9b86a':'#c9a456',()=>ell(x+dx*s+sw,y+dy*s,rx*s,ry*s),seed+i))}
+function scroll(x,y,w,h,lines,t){wc('#f3e5bf',()=>rr(x,y,w,h,8),9);wc('#d8c08a',()=>{ell(x,y+h/2,14,h/2);ell(x+w,y+h/2,14,h/2)},4);lines.forEach((l,i)=>hand(l[0],x+w/2,y+60+i*54,l[1]||40,l[2]||'#4a2a14'))}
+function galleon(x,y,s,t){const b=Math.sin(t*1.5)*4;c.save();c.translate(x,y+b);c.rotate(Math.sin(t*1.2)*.03);
+ wc('#7a4a26',()=>{c.moveTo(-120*s,0);c.lineTo(120*s,0);c.lineTo(90*s,40*s);c.lineTo(-100*s,40*s)},3);
+ c.strokeStyle='#4a2a14';c.lineWidth=4;c.beginPath();c.moveTo(-30*s,0);c.lineTo(-30*s,-150*s);c.moveTo(40*s,0);c.lineTo(40*s,-120*s);c.stroke();
+ wc('#f6ecd2',()=>{c.moveTo(-80*s,-140*s);c.quadraticCurveTo(-30*s+Math.sin(t*2)*6,-110*s,-80*s,-30*s);c.lineTo(20*s,-30*s);c.quadraticCurveTo(-10*s+Math.sin(t*2)*6,-90*s,20*s,-140*s)},6);
+ wc('#f6ecd2',()=>{c.moveTo(0,-112*s);c.lineTo(80*s,-112*s);c.quadraticCurveTo(70*s+Math.sin(t*2)*5,-70*s,80*s,-30*s);c.lineTo(0,-30*s)},7);
+ wc('#b0161f',()=>{c.moveTo(-30*s,-150*s);c.lineTo(10*s,-140*s+Math.sin(t*5)*4);c.lineTo(-30*s,-130*s)},8);c.restore()}
+
+/* silhouette night (scene 3) */
+function willow(x,y,s,t,flip=1){sil(()=>{c.moveTo(x-16*s,y);c.quadraticCurveTo(x-6*s,y-150*s,x+flip*40*s,y-260*s);c.lineTo(x+flip*56*s,y-250*s);c.quadraticCurveTo(x+10*s,y-150*s,x+16*s,y)});
+ c.save();c.strokeStyle='#070a14';c.lineCap='round';for(let i=0;i<12;i++){const bx=x+flip*(40+i*14)*s,by=y-260*s+i*6*s,sw=Math.sin(t*1.2+i)*12*s;c.lineWidth=3;c.beginPath();c.moveTo(x+flip*44*s,y-256*s);c.quadraticCurveTo(bx+flip*30*s,by-60*s,bx+sw,by+120*s+i*8*s);c.stroke();
+  for(let j=0;j<7;j++){const tt=j/7,lx=bx+sw*tt+flip*20*s*(1-tt),ly=by-30*s+(150+i*8)*s*tt;sil(()=>ell(lx+6*s,ly,11*s,4*s,.6*flip))}}c.restore()}
+function silHouse(x,y,s,t){sil(()=>{c.rect(x-70*s,y-110*s,140*s,90*s);c.moveTo(x-100*s,y-104*s);c.lineTo(x,y-190*s);c.lineTo(x+100*s,y-104*s);c.rect(x-62*s,y-20*s,8*s,20*s);c.rect(x+54*s,y-20*s,8*s,20*s)});
+ const f=.75+.25*Math.sin(t*7+x);fill(`rgba(255,190,80,${f})`,()=>c.rect(x-20*s,y-88*s,40*s,34*s),0);c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y-70*s,4,x,y-70*s,90*s);g.addColorStop(0,`rgba(255,180,80,${.35*f})`);g.addColorStop(1,'rgba(255,180,80,0)');c.fillStyle=g;c.fillRect(x-100*s,y-170*s,200*s,200*s);c.restore()}
+function silManananggal(x,y,s,t){const f=Math.sin(t*6)*28*s;sil(()=>{ell(x,y-36*s,16*s,18*s);c.moveTo(x-14*s,y-20*s);c.lineTo(x+14*s,y-20*s);c.lineTo(x+10*s,y+30*s);c.lineTo(x-10*s,y+30*s);
+ [-1,1].forEach(k=>{c.moveTo(x,y-10*s);c.lineTo(x+k*70*s,y-40*s-f);c.lineTo(x+k*110*s,y-10*s-f*.6);c.lineTo(x+k*85*s,y+4*s);c.lineTo(x+k*60*s,y-6*s);c.lineTo(x+k*40*s,y+10*s);c.lineTo(x,y)});
+ for(let i=0;i<6;i++){c.moveTo(x-12*s,y-46*s);c.lineTo(x-26*s-i*4*s,y-6*s+Math.sin(t*3+i)*4*s);c.lineTo(x-8*s,y-40*s)}})}
+function silBird(x,y,s,t){const f=Math.sin(t*3)*.15;sil(()=>{ell(x,y,20*s,12*s);ell(x+18*s,y-8*s,9*s,8*s);c.moveTo(x+26*s,y-9*s);c.lineTo(x+36*s,y-6*s);c.lineTo(x+26*s,y-4*s);c.moveTo(x-16*s,y);c.lineTo(x-40*s,y+10*s+f*20);c.lineTo(x-14*s,y+6*s);c.rect(x-2*s,y+10*s,2*s,12*s);c.rect(x+6*s,y+10*s,2*s,12*s)})}
+
+/* geometric wood panels (scene 4) */
+function panels(t){bg('#140f0c');const P=[['#2c4a6a',80],['#1d3a2a',240],['#3a5f8a',400],['#2f5a3a',560],['#24405e',720],['#2f5a3a',880],['#3a5f8a',1040],['#1d3a2a',1200]];
+ P.forEach(([col,x],i)=>{const sw=Math.sin(t*.6+i)*6;fill(col,()=>{c.moveTo(x-90,560);c.lineTo(x+sw,-20);c.lineTo(x+90,560)},6);c.save();c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=2;c.beginPath();c.moveTo(x+sw*.5,560);c.lineTo(x+sw,0);
+  for(let y=60;y<540;y+=40){const half=90*(y/560)*.7;c.moveTo(x+sw*(1-y/560),y);c.lineTo(x-half,y+30);c.moveTo(x+sw*(1-y/560),y);c.lineTo(x+half,y+30)}c.stroke();c.restore()});
+ c.save();const g=c.createLinearGradient(0,540,0,H);g.addColorStop(0,'#e9c9a6');g.addColorStop(1,'#c99f78');c.fillStyle=g;c.fillRect(-40,540,W+80,220);c.restore();
+ c.save();c.strokeStyle='rgba(120,70,40,.25)';for(let i=0;i<10;i++){c.beginPath();c.moveTo(i*140,540);c.lineTo(i*140-200,H);c.stroke()}c.restore()}
+function panay(x,y,s){return()=>{const P=[[0,-150],[60,-140],[150,-60],[170,10],[120,70],[60,140],[-20,150],[-90,110],[-150,40],[-140,-30],[-80,-90]];c.moveTo(x+P[0][0]*s,y+P[0][1]*s);P.forEach(p=>c.lineTo(x+p[0]*s,y+p[1]*s));c.closePath()}}
+function capizWindow(x,y,t){wood('#7a4a26',()=>c.rect(x-160,y-150,320,300),6,4);for(let j=0;j<6;j++)for(let i=0;i<6;i++){const gx=x-140+i*47,gy=y-130+j*45,a=.75+.2*Math.sin(t*1.5+i*.7+j*.5);
+ c.save();c.fillStyle=`rgba(255,246,222,${a})`;c.fillRect(gx,gy,40,38);const g=c.createLinearGradient(gx,gy,gx+40,gy+38);g.addColorStop(0,'rgba(200,220,255,.25)');g.addColorStop(.5,'rgba(255,220,240,.15)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(gx,gy,40,38);c.restore()}
+ c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y,20,x,y,300);g.addColorStop(0,'rgba(255,230,180,.25)');g.addColorStop(1,'rgba(255,230,180,0)');c.fillStyle=g;c.fillRect(x-300,y-300,600,600);c.restore()}
+function woodFish(x,y,s,t,col){const w=Math.sin(t*5+x)*.2;c.save();c.translate(x,y);c.rotate(w*.3);wood(col,()=>{c.moveTo(-60*s,0);c.quadraticCurveTo(0,-34*s,50*s,0);c.quadraticCurveTo(0,34*s,-60*s,0);c.moveTo(-50*s,0);c.lineTo(-90*s,-26*s+w*20);c.lineTo(-90*s,26*s+w*20)},4,x);eye(28*s,-6*s,5*s);c.restore()}
+
+/* amber silhouettes (scene 5) */
+function amber(t){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f9c23c');g.addColorStop(.6,'#f08a24');g.addColorStop(1,'#c4511a');c.fillStyle=g;c.fillRect(-40,-40,W+80,H+80);
+ c.save();c.globalCompositeOperation='lighter';const s=c.createRadialGradient(900,330,30,900,330,360);s.addColorStop(0,'rgba(255,240,180,.85)');s.addColorStop(1,'rgba(255,200,90,0)');c.fillStyle=s;c.fillRect(400,-40,1000,800);c.restore();
+ fill('#fff1c0',()=>circ(900,330,90),0);
+ sil(()=>{c.moveTo(-40,H);c.lineTo(-40,470);for(let x=-40;x<=W+40;x+=40)c.lineTo(x,470-Math.abs(Math.sin(x*.004+1))*110-Math.sin(x*.02)*10);c.lineTo(W+40,H)},'#5a2a10');
+ sil(()=>{c.moveTo(-40,H);c.lineTo(-40,560);for(let x=-40;x<=W+40;x+=40)c.lineTo(x,560-Math.abs(Math.sin(x*.003+3))*70);c.lineTo(W+40,H)},'#1a0c06');
+ c.save();c.strokeStyle='#1a0c06';c.lineWidth=2;for(let i=0;i<60;i++){const x=i*22,b=Math.sin(t*1.5+i*.4)*6;c.beginPath();c.moveTo(x,600);c.quadraticCurveTo(x+b,560,x+b*2,530-hr(i)*30);c.stroke()}c.restore()}
+function silSoldier(x,y,s,t,walk=true){const ph=walk?t*4+x:0,l=Math.sin(ph)*14*s;sil(()=>{ell(x,y-150*s,14*s,16*s);ell(x,y-160*s,22*s,6*s);c.moveTo(x-16*s,y-134*s);c.lineTo(x+16*s,y-134*s);c.lineTo(x+14*s,y-70*s);c.lineTo(x-14*s,y-70*s);
+ c.moveTo(x-10*s,y-72*s);c.lineTo(x-12*s+l,y);c.lineTo(x-2*s+l,y);c.lineTo(x,y-70*s);c.moveTo(x+2*s,y-72*s);c.lineTo(x+2*s-l,y);c.lineTo(x+12*s-l,y);c.lineTo(x+12*s,y-72*s);
+ c.save();c.translate(x+10*s,y-120*s);c.rotate(-.9);c.rect(0,-3*s,80*s,6*s);c.restore()},'#120804')}
+function silJeep(x,y,s,t){const b=Math.sin(t*12)*1.5;sil(()=>{c.rect(x-90*s,y-50*s+b,180*s,34*s);c.moveTo(x-40*s,y-50*s+b);c.lineTo(x-20*s,y-90*s+b);c.lineTo(x+40*s,y-90*s+b);c.lineTo(x+50*s,y-50*s+b);circ(x-55*s,y-14*s,20*s);circ(x+55*s,y-14*s,20*s);
+ c.moveTo(x+20*s,y-90*s+b);c.lineTo(x+20*s,y-120*s+b);c.lineTo(x+60*s,y-140*s+b);c.lineTo(x+60*s,y-110*s+b);c.lineTo(x+24*s,y-110*s+b)},'#120804');
+ c.save();c.strokeStyle='rgba(18,8,4,.7)';c.lineWidth=3;for(let i=0;i<3;i++){const p=((t*.8+i/3)%1);c.globalAlpha=1-p;c.beginPath();c.arc(x+60*s,y-125*s+b,20*s+p*120*s,-.6,.6);c.stroke()}c.restore()}
+
+/* gritty grey jointed cut-outs (scene 6) */
+function riveted(t){bg('#4a5148');grit('#566052',()=>c.rect(-40,-40,W+80,H+80),0,3);
+ for(let i=0;i<4;i++)grit('#4e574a',()=>c.rect(60+i*300,60,260,380),3,10+i);
+ for(let i=0;i<4;i++)for(let k=0;k<2;k++){fill('#2e332c',()=>{circ(75+i*300+k*230,75,5);circ(75+i*300+k*230,425,5)},1)}
+ grit('#3a4038',()=>c.rect(-40,560,W+80,200),6,7)}
+function jointed(x,y,s,t,write){const a=Math.sin(t*(write?6:1.5))*.25;grit('#e8e4dc',()=>{ell(x,y-150*s,24*s,28*s);c.moveTo(x-20*s,y-122*s);c.lineTo(x+22*s,y-122*s);c.lineTo(x+16*s,y-50*s);c.lineTo(x-16*s,y-50*s)},5,x);
+ grit('#d8d4cc',()=>{c.save();c.translate(x+16*s,y-110*s);c.rotate(.9+a);c.rect(0,-6*s,60*s,12*s);c.translate(60*s,0);c.rotate(-1.1);c.rect(0,-5*s,50*s,10*s);c.restore()},3,x+1);
+ grit('#d8d4cc',()=>{c.rect(x-14*s,y-52*s,12*s,52*s);c.rect(x+4*s,y-52*s,12*s,52*s)},3,x+2);
+ fill('#222',()=>{circ(x+8*s,y-154*s,4*s)},0);c.save();c.strokeStyle='#333';c.lineWidth=2;c.beginPath();c.arc(x,y-150*s,10*s,.3,1.2);c.stroke();c.restore()}
+function face(x,y,s,t,k,turn){const wob=Math.sin(t*2+k)*2;fill('#2a2a3a',()=>ell(x,y+38*s,26*s,24*s),3);fill('#f2efe6',()=>ell(x+turn*4*s,y+wob,22*s,28*s),4);fill(['#5a3a22','#c8a24a','#2a1d14','#8a4a2a'][k%4],()=>c.arc(x+turn*4*s,y-8*s+wob,23*s,Math.PI,0),1);
+ fill('#1a1a1a',()=>{circ(x-8*s+turn*8*s,y-2*s+wob,3.5*s);circ(x+8*s+turn*8*s,y-2*s+wob,3.5*s)},0);fill('#5a1a1a',()=>ell(x+turn*6*s,y+14*s+wob,5*s,6*s+Math.abs(Math.sin(t*3+k))*3*s),0)}
+function icon(x,y,kind,t){grit('#d8d0bc',()=>rr(x-90,y-90,180,180,10),6,x);c.save();c.strokeStyle='#2a241c';c.fillStyle='#2a241c';c.lineWidth=6;c.lineCap='round';
+ if(kind===0){c.beginPath();c.rect(x-60,y,120,30);c.stroke();c.beginPath();c.arc(x-36,y-14,14,0,7);c.fill();c.beginPath();c.moveTo(x-60,y+30);c.lineTo(x-60,y+50);c.moveTo(x+60,y+30);c.lineTo(x+60,y+50);c.stroke();hand('~',x+20,y-30+Math.sin(t*3)*4,40)}
+ if(kind===1){c.beginPath();c.arc(x,y,48,0,Math.PI);c.stroke();c.beginPath();c.moveTo(x-48,y);c.lineTo(x+48,y);c.stroke();c.beginPath();c.moveTo(x-36,y+44);c.lineTo(x-50,y+64);c.moveTo(x+36,y+44);c.lineTo(x+50,y+64);c.stroke()}
+ if(kind===2){c.beginPath();c.rect(x-14,y-10,28,70);c.fill();c.fillStyle='#e8a13a';c.beginPath();c.moveTo(x,y-16);c.quadraticCurveTo(x-12-Math.sin(t*8)*3,y-36,x,y-62);c.quadraticCurveTo(x+12,y-36,x,y-16);c.fill()}
+ c.restore()}
+
+/* Lolo Kanor: old Philippine eagle with shaggy crest */
+function eagle(x,y,s,t,talk){const b=Math.sin(t*1.6)*2*s,hb=Math.sin(t*1.2)*3*s;
+ fill('#f2c230',()=>{c.rect(x-26*s,y-22*s,10*s,22*s);c.rect(x+14*s,y-22*s,10*s,22*s)},2);
+ fill('#6b4a2e',()=>{ell(x,y-90*s+b,62*s,80*s)},6);fill('#f3ead6',()=>ell(x+6*s,y-80*s+b,36*s,58*s),2);
+ fill('#4f3520',()=>{c.moveTo(x-58*s,y-130*s+b);c.quadraticCurveTo(x-80*s,y-60*s,x-40*s,y-14*s);c.lineTo(x-20*s,y-60*s+b)},4);
+ const hx=x+6*s,hy=y-178*s+hb;
+ for(let i=0;i<9;i++){const a=-2.6+i*.22+Math.sin(t*2+i)*.05;fill(i%2?'#8a6a3e':'#a8834e',()=>{c.moveTo(hx+Math.cos(a-.15)*26*s,hy+Math.sin(a-.15)*26*s);c.lineTo(hx+Math.cos(a)*64*s,hy+Math.sin(a)*64*s);c.lineTo(hx+Math.cos(a+.15)*26*s,hy+Math.sin(a+.15)*26*s)},2)}
+ fill('#e9dcc0',()=>ell(hx,hy,36*s,34*s),4);eye(hx+4*s,hy-6*s,8*s);
+ fill('#5f7488',()=>{c.moveTo(hx+20*s,hy-12*s);c.quadraticCurveTo(hx+62*s,hy-14*s,hx+56*s,hy+20*s);c.quadraticCurveTo(hx+46*s,hy+8*s,hx+20*s,hy+10*s)},3);
+ if(talk)fill('#3a2a2a',()=>ell(hx+36*s,hy+10*s,8*s,Math.abs(Math.sin(t*14))*4*s+1),0)}
+/* Pina: young pilandok (mouse-deer) */
+function mousedeer(x,y,s,t,talk,sleep=false){const hop=sleep?0:Math.abs(Math.sin(t*2.2))*5*s;y-=hop;
+ if(!sleep)fill('#7a4e2a',()=>{c.rect(x-34*s,y-40*s,6*s,40*s);c.rect(x-20*s,y-40*s,6*s,40*s);c.rect(x+18*s,y-40*s,6*s,40*s);c.rect(x+30*s,y-40*s,6*s,40*s)},2);
+ fill('#a8703f',()=>ell(x,y-(sleep?24:56)*s,48*s,26*s),5);fill('#f0dcc0',()=>ell(x+4*s,y-(sleep?16:46)*s,30*s,10*s),0);
+ fill('#a8703f',()=>ell(x-48*s,y-(sleep?30:64)*s,7*s,5*s),1);
+ const hx=x+(sleep?50:46)*s,hy=y-(sleep?36:92)*s+(sleep?0:Math.sin(t*3)*2*s);
+ if(!sleep)fill('#a8703f',()=>{c.moveTo(x+26*s,y-66*s);c.lineTo(hx-8*s,hy+10*s);c.lineTo(hx+10*s,hy+14*s);c.lineTo(x+40*s,y-54*s)},3);
+ fill('#a8703f',()=>{ell(hx-10*s,hy-24*s,7*s,14*s,-.4);ell(hx+8*s,hy-26*s,7*s,14*s,.3)},2);
+ fill('#b8804c',()=>{ell(hx,hy,22*s,18*s);ell(hx+18*s,hy+6*s,12*s,9*s)},4);
+ c.save();c.strokeStyle='#fff3e0';c.lineWidth=2.5*s;[0,1,2].forEach(i=>{c.beginPath();c.moveTo(hx-12*s+i*6*s,hy+14*s);c.lineTo(hx-18*s+i*6*s,hy+30*s);c.stroke()});c.restore();
+ if(sleep){c.save();c.strokeStyle='#3a2414';c.lineWidth=2.5*s;c.beginPath();c.arc(hx+4*s,hy-2*s,6*s,.3,Math.PI-.3);c.stroke();c.restore();
+  [0,1,2].forEach(i=>{const p=((t*.5+i/3)%1);c.save();c.globalAlpha=1-p;hand('z',hx+20*s+p*40,hy-30*s-p*70,22+p*16,'#f3ecd6');c.restore()})}
+ else{fill('#1d140c',()=>circ(hx+4*s,hy-2*s,7*s),0);fill('#fff',()=>circ(hx+7*s,hy-5*s,2.4*s),0)}
+ fill('#2a1a10',()=>circ(hx+28*s,hy+4*s,3*s),0);if(talk&&!sleep)fill('#5a2a1a',()=>ell(hx+18*s,hy+14*s,4*s,Math.abs(Math.sin(t*15))*3*s+1),0)}
+
+/* ---------- scenes ---------- */
+const S=[
+{chap:'Prologue',lines:[
+ 'On a quiet night in the barrio, the frogs were singing and the bamboo creaked in the wind. Little Pina the mouse-deer pulled her blanket up to her big dark eyes.',
+ '"Lolo Kanor, my cousin says an aswang lives in the next village. Is it true? What is an aswang?"',
+ 'Lolo Kanor, the old eagle, chuckled softly. "That story is more than four hundred years old, anak. Come closer, and I will tell you where it began."'],
+ draw(t,li){homeSet(t,()=>{nightSky();stars(t,50);moon(1060,130,40);bamboo(760,t);bamboo(1080,t,'#0e2614')});
+  eagle(400,620,1.25,t,li===2);mousedeer(850,630,1.4,t,li===1);blanket(818,532,84,34,t);
+  if(t<8){c.save();c.globalAlpha=t<6.6?1:1-clamp01((t-6.6)/1.2);titleCard(t);c.restore()}}},
+
+{chap:'What is an aswang?',lines:[
+ 'In Philippine folklore, aswang is a name for many night creatures at once. It can mean a shapeshifter, a witch, a ghoul, or a vampire.',
+ 'By day, the story goes, an aswang looks like an ordinary neighbour. By night, it may turn into a black dog, a pig, or a large bird.',
+ 'One famous kind, the manananggal, leaves the bottom half of its body behind and flies away on bat wings.'],
+ draw(t,li){bg('#dd4f3a');for(let i=0;i<500;i++){c.fillStyle=hr(i)>.5?'rgba(255,255,255,.06)':'rgba(80,0,0,.07)';c.fillRect(hr(i*2)*W,hr(i*9)*H,2,2)}scraps(t);
+  if(li===0){cPerson(640,520,1.3,'#3a6fd8');hand('aswang?',640,190,60,'#fff4d6');
+   ['shapeshifter','witch','ghoul','vampire'].forEach((w,i)=>{const k=pop(t,4.6+i*1.4);if(t<4.6+i*1.4)return;const x=[230,1050,250,1030][i],y=[260,260,520,520][i];c.save();c.translate(x,y);c.scale(k,k);c.rotate((i%2?.05:-.05));crumple(-120,-46,240,92,'#fff6dc',i+20,5);hand(w,0,14,44,'#2a241c');c.restore()})}
+  if(li===1){crayon('#f4c430',()=>circ(200,150,60),3);crayon('#f3ecd6',()=>{circ(1080,150,56)},3);crayon('#dd4f3a',()=>circ(1104,136,50),0);cPerson(330,560,1.2,'#7cc242');hand('day',330,280,50,'#fff4d6');
+   const k=Math.floor(Math.max(0,t-5)/2.2)%3,pp=pop(t,5+Math.floor(Math.max(0,t-5)/2.2)*2.2,.6);c.save();c.translate(870,560);c.scale(pp,pp);if(k===0)cDog(0,0,1.4,t);if(k===1)cPig(0,0,1.4);if(k===2)cBird(0,-120,1.6,t);c.restore();hand('night',870,280,50,'#fff4d6')}
+  if(li===2){crayon('#7a3a2a',()=>{c.moveTo(250,520);c.lineTo(310,520);c.lineTo(300,640);c.lineTo(260,640)},4);crayon('#3a2a28',()=>{c.rect(262,640,14,50);c.rect(286,640,14,50)},3);
+   const fx=520+((t*60)%520),fy=280+Math.sin(t*2)*30,f=Math.sin(t*8)*40;
+   crayon('#1e1e28',()=>{[-1,1].forEach(k=>{c.moveTo(fx,fy+10);c.lineTo(fx+k*120,fy-40-f);c.lineTo(fx+k*170,fy+10-f*.5);c.lineTo(fx+k*120,fy+20);c.lineTo(fx+k*80,fy+6);c.lineTo(fx+k*50,fy+30)})},5);
+   crayon('#7a3a2a',()=>{c.moveTo(fx-28,fy);c.lineTo(fx+28,fy);c.lineTo(fx+22,fy+70);c.lineTo(fx-22,fy+70)},4);crayon('#d9a066',()=>circ(fx,fy-30,28),4);crayon('#1e1e28',()=>{c.arc(fx,fy-36,30,Math.PI,0);c.rect(fx-30,fy-36,10,60);c.rect(fx+20,fy-36,10,60)},1);eye(fx-10,fy-30,7);eye(fx+10,fy-30,7)}}},
+
+{chap:'1582 and 1589',lines:[
+ 'The oldest written records come from Spanish colonial writers. In 1582, Miguel de Loarca described a Visayan belief in a creature he wrote as asuang.',
+ 'In 1589, the friar Juan de Plasencia listed the osuang among Tagalog beliefs: someone said to fly at night and eat human flesh.',
+ 'Some friars used these stories to paint the old healers, the babaylan, as witches. Many of the women who led rituals were treated as dangerous.'],
+ draw(t,li){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#e9e2cf');g.addColorStop(1,'#f3ead2');c.fillStyle=g;c.fillRect(-40,-40,W+80,H+80);
+  for(let i=0;i<4;i++)wc('rgba(240,240,250,.9)',()=>{const x=(i*380+t*8)%(W+300)-150;ell(x,90+i%2*40,90,26);ell(x+60,80+i%2*40,60,30)},i+40);
+  wc('#cfc39b',()=>{c.moveTo(-40,H);c.lineTo(-40,520);c.bezierCurveTo(300,490,700,540,W+40,500);c.lineTo(W+40,H)},3);
+  wcTree(120,560,1,t,1);wcTree(1170,560,1.1,t,5);
+  if(li===0){wc('#8ab6c8',()=>{c.moveTo(-40,H);c.lineTo(-40,600);for(let x=-40;x<=W+40;x+=20)c.lineTo(x,600+Math.sin(x*.02+t*2)*5);c.lineTo(W+40,H)},6);galleon(330,600,1,t);scroll(620,170,420,250,[['Miguel de Loarca'],['1582',54],['“asuang”',58,'#b0161f']],t)}
+  if(li===1){person(380,560,1.4,'#6b4a2e','#c48a5c',t);c.save();c.strokeStyle='#f6f2e6';c.lineWidth=4;c.beginPath();const qx=440,qy=420+Math.sin(t*6)*6;c.moveTo(qx,qy);c.lineTo(qx+40,qy-60);c.stroke();c.restore();
+   scroll(560,170,500,250,[['Juan de Plasencia'],['1589',54],['“osuang”',58,'#b0161f']],t)}
+  if(li===2){person(400,560,1.4,'#6b4a2e','#c48a5c',t);person(820,560,1.4,'#b0161f','#a8703f',t,false,'#f4c430');
+   c.save();c.strokeStyle='#6b4a2e';c.lineWidth=12;c.lineCap='round';c.beginPath();c.moveTo(430,420);c.lineTo(560+Math.sin(t*3)*10,380);c.stroke();c.restore();
+   for(let i=0;i<5;i++){const a=t*.8+i*1.26;wc('#e8b84a',()=>circ(820+Math.cos(a)*90,330+Math.sin(a)*40,8),i)}
+   crumple(710,600,220,60,'#fff6dc',33,4);hand('babaylan',820,642,42)}}},
+
+{chap:'The village at night',lines:[
+ 'For centuries, the tales passed from grandparent to grandchild, around oil lamps and under nipa roofs.',
+ 'People said a tiktik bird calls softly when an aswang is near, and that the softer the call, the closer it really is.',
+ 'To stay safe, families hung garlic, kept salt and vinegar near the door, and carried a buntot pagi, the tail of a stingray.'],
+ draw(t,li){const g=c.createRadialGradient(640,280,40,640,280,820);g.addColorStop(0,'#bfe6ff');g.addColorStop(.25,'#3d9cf0');g.addColorStop(.7,'#0d3a8a');g.addColorStop(1,'#040a26');c.fillStyle=g;c.fillRect(-40,-40,W+80,H+80);
+  fill('rgba(230,248,255,.95)',()=>circ(640,260,120),0);
+  const mx=((t*55)%1700)-200;silManananggal(mx,140+Math.sin(t)*30,.9,t);
+  sil(()=>{c.moveTo(-40,H);c.lineTo(-40,560);c.bezierCurveTo(300,520,900,600,W+40,540);c.lineTo(W+40,H)});
+  willow(120,600,1.2,t,1);willow(1180,600,1.2,t,-1);
+  silHouse(480,600,1,t);silHouse(820,610,.85,t);
+  if(li===1){silBird(980,300,1.6,t);const p=(t*.7)%1;c.save();c.globalAlpha=(1-p)*.9;hand('tik... tik...',1040,250-p*40,40-p*14,'#e6f6ff');c.restore();sil(()=>{c.moveTo(900,322);c.lineTo(1080,330);c.lineTo(1080,336);c.lineTo(900,328)})}
+  if(li===2){c.save();c.strokeStyle='#e6f6ff';c.lineWidth=2;c.beginPath();c.moveTo(640,420);c.lineTo(640,470);c.stroke();c.restore();
+   for(let i=0;i<4;i++){const y=470+i*28,sw=Math.sin(t*1.5+i)*3;fill('#f4f1e6',()=>{c.moveTo(640+sw,y-14);c.quadraticCurveTo(620+sw,y+6,640+sw,y+14);c.quadraticCurveTo(660+sw,y+6,640+sw,y-14)},3)}
+   c.save();c.strokeStyle='#070a14';c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(200,640);c.bezierCurveTo(280,600,360,680,460+Math.sin(t*2)*10,630);c.stroke();c.restore();
+   c.save();c.globalAlpha=.9;hand('buntot pagi',330,700,34,'#e6f6ff');c.restore()}}},
+
+{chap:'Capiz',lines:[
+ 'Over time, one province became tied to the legend more than any other: Capiz, on the island of Panay.',
+ 'Researchers think trade, rivalry and gossip between regions helped give Capiz that reputation. People there have long found it unfair.',
+ 'Today Capiz is better known for its seafood and its shining capiz shell windows, but the old joke still follows it.'],
+ draw(t,li){panels(t);
+  if(li<2){c.save();c.translate(640,330);c.rotate(Math.sin(t*.5)*.02);c.translate(-640,-330);wood('#e0883a',panay(640,330,1.4),8,2);
+   c.save();c.beginPath();panay(640,330,1.4)();c.clip();wood('#b5541c',()=>{c.moveTo(640,0);c.lineTo(900,0);c.lineTo(900,260);c.lineTo(660,330)},0,5);c.restore();
+   const k=pop(t,4.8);c.save();c.translate(760,230);c.scale(k,k);fill('#e63946',()=>{circ(0,-30,16);c.moveTo(-12,-20);c.lineTo(0,0);c.lineTo(12,-20)},4);c.restore();
+   crumple(800,140,170,58,'#fff6dc',41,4);hand('Capiz',885,182,44);crumple(420,500,170,54,'#fff6dc',42,4);hand('Panay',505,540,40);c.restore()}
+  if(li===1){[[200,160,'Capiz?'],[1080,200,'aswang!'],[220,420,'they say...']].forEach(([x,y,w],i)=>{const k=pop(t,4.4+i*.9);if(t<4.4+i*.9)return;c.save();c.translate(x,y);c.scale(k,k);bubble(0,0,190,74,w);c.restore()})}
+  if(li===2){capizWindow(640,300,t);woodFish(250,470,1.2,t,'#e0883a');woodFish(1040,450,1.1,t+1,'#d9a35a');woodFish(1000,250,.8,t+2,'#c87a3a')}}},
+
+{chap:'1950s: a war story',lines:[
+ 'The legend even reached a real war. In the early nineteen fifties, the government fought the Huk rebels in central Luzon.',
+ 'American officer Edward Lansdale later wrote that his team spread aswang rumours near a rebel camp, then staged a body to look like a victim.',
+ 'He claimed the frightened rebels left the area. Historians still debate how much of his story happened exactly as told.'],
+ draw(t,li){amber(t);
+  if(li===0){for(let i=0;i<4;i++)silSoldier(260+i*120+((t*12)%60),600,1,t);silSoldier(1000,600,1.1,t,false)}
+  if(li===1){silJeep(340+Math.sin(t*.4)*30,610,1.2,t);c.save();c.globalAlpha=.85;[[700,260,'aswang...'],[900,200,'aswang!'],[780,140,'...aswang']].forEach(([x,y,w],i)=>{const p=((t*.4+i/3)%1);c.globalAlpha=Math.sin(p*Math.PI)*.9;hand(w,x+p*60,y-p*30,44,'#3a1406',-.08)});c.restore();for(let i=0;i<3;i++)silSoldier(1040+i*60,600,.9,t,false)}
+  if(li===2){for(let i=0;i<5;i++){const x=1300-((t*35+i*110)%900);silSoldier(x,560-Math.abs(Math.sin(x*.004+1))*40,.8,t)}
+   const k=pop(t,6);if(t>6){c.save();c.translate(300,250);c.scale(k,k);crumple(-70,-80,140,150,'#fff3d6',51,6);hand('?',0,40,120,'#c4511a');c.restore()}}}},
+
+{chap:'What scholars say',lines:[
+ 'In the nineteen sixties and seventies, folklorist Maximo Ramos collected aswang stories from all over the islands.',
+ 'He found that the aswang often explained frightening things: a sudden illness, a baby lost before birth, a death no one understood.',
+ 'Scholars such as Herminia Meñez saw another pattern. The person called aswang was often an outsider, a loner, or someone who was simply different.',
+ 'No scientist has ever found a real aswang. But the fear it caused was very real, and sometimes innocent people were blamed.'],
+ draw(t,li){riveted(t);
+  if(li===0){grit('#6a5a40',()=>c.rect(700,470,380,30),4,1);for(let i=0;i<5;i++)grit(['#c9b48a','#b59a6a','#d8c8a0'][i%3],()=>c.rect(740+i*8,430-i*22,180,22),3,i+5);
+   jointed(560,600,1.6,t,true);for(let i=0;i<3;i++){const p=((t*.3+i/3)%1);c.save();c.globalAlpha=1-p;c.translate(980+p*120,380-p*200);c.rotate(p*3);grit('#efe6d0',()=>c.rect(-30,-20,60,40),3,i);c.restore()}}
+  if(li===1){[0,1,2].forEach(i=>{const k=pop(t,4.5+i*1.6);if(t<4.5+i*1.6)return;c.save();c.translate(340+i*300,300);c.scale(k,k);icon(0,0,i,t);c.restore()})}
+  if(li===2){for(let r=0;r<3;r++)for(let i=0;i<7;i++){const x=150+i*95+(r%2)*45,y=250+r*120;face(x,y,1.1,t,i+r*7,1)}
+   fill('#e8743b',()=>{c.moveTo(1060,600);c.lineTo(1070,430);c.lineTo(1110,430);c.lineTo(1120,600)},6);fill('#f2efe6',()=>ell(1090,400,26,30),4);eye(1082,396,5);eye(1098,396,5)}
+  if(li===3){for(let r=0;r<3;r++)for(let i=0;i<7;i++){const x=150+i*95+(r%2)*45,y=250+r*120;c.save();c.globalAlpha=.55;face(x,y,1.1,t,i+r*7,0);c.restore()}
+   const gx=880+Math.sin(t*.9)*60,gy=330+Math.cos(t*.7)*30;c.save();c.lineWidth=12;c.strokeStyle='#2a241c';c.beginPath();c.arc(gx,gy,70,0,7);c.stroke();c.beginPath();c.moveTo(gx+50,gy+50);c.lineTo(gx+120,gy+120);c.stroke();c.fillStyle='rgba(220,240,255,.35)';c.beginPath();c.arc(gx,gy,64,0,7);c.fill();c.restore();
+   crumple(760,520,320,70,'#fff6dc',61,4);hand('no aswang found',920,568,42)}}},
+
+{chap:'Why the story lives on',lines:[
+ 'Today the aswang appears in films, comics and games, and it has become one of the best known creatures of Filipino storytelling.',
+ 'Its stories also kept old knowledge alive: names of plants, rules about the night, and the habit of looking after one another.',
+ '"So the aswang is a story that tells us what people were afraid of," said Pina slowly.'],
+ draw(t,li){cardboard('#9a6a3c');
+  const pane=(x,y,w,h,rot,inner,k)=>{const p=pop(t,4.2+k*.5);if(t<4.2+k*.5)return;c.save();c.translate(x+w/2,y+h/2);c.rotate(rot+Math.sin(t*.7+k)*.01);c.scale(p,p);c.translate(-w/2,-h/2);
+   fill('#f6f2e6',()=>c.rect(-10,-10,w+20,h+20),8);c.save();c.beginPath();c.rect(0,0,w,h);c.clip();inner(w,h);c.restore();fill('#c33',()=>circ(w/2,-2,8),2);c.restore()};
+  if(li<2){pane(80,80,340,240,-.05,(w,h)=>{c.fillStyle='#dd4f3a';c.fillRect(0,0,w,h);cBird(170,130,1.4,t);bubble(240,50,150,56,'KRAK!','#fff6dc','#2a241c',30)},0);
+   pane(470,60,300,400,.03,(w,h)=>{const g=c.createRadialGradient(w/2,h*.4,10,w/2,h*.4,h);g.addColorStop(0,'#bfe6ff');g.addColorStop(.4,'#2a7ad8');g.addColorStop(1,'#040a26');c.fillStyle=g;c.fillRect(0,0,w,h);silManananggal(w/2,h*.4+Math.sin(t)*10,1,t);c.font='900 54px Fredoka,sans-serif';c.textAlign='center';c.fillStyle='#e6f6ff';c.fillText('ASWANG',w/2,h-40)},1);
+   pane(830,110,360,230,.06,(w,h)=>{c.fillStyle='#1d3a2a';c.fillRect(0,0,w,h);wood('#e0883a',()=>{rr(60,70,240,100,50)},4,3);fill('#2a241c',()=>{c.rect(100,108,40,12);c.rect(114,94,12,40);circ(240,104,10);circ(262,128,10)},1)},2);
+   if(li===1)pane(300,400,640,260,-.02,(w,h)=>{c.fillStyle='#efe6cf';c.fillRect(0,0,w,h);for(let i=0;i<6;i++){const x=60+i*100,sw=Math.sin(t*1.4+i)*.1;c.save();c.translate(x,h-30);c.rotate(sw);wc(i%2?'#6aa04a':'#4f8a3a',()=>{c.moveTo(0,0);c.quadraticCurveTo(-40,-90,0,-170);c.quadraticCurveTo(40,-90,0,0)},i+70);c.restore()}hand('plants · night rules · bayanihan',w/2,50,40,'#4a2a14')},3)}
+  if(li===2){pane(160,90,420,300,-.04,(w,h)=>{c.fillStyle='#dd4f3a';c.fillRect(0,0,w,h);cDog(200,250,1.3,t)},0);pane(700,90,420,300,.04,(w,h)=>{c.fillStyle='#0d3a8a';c.fillRect(0,0,w,h);silManananggal(w/2,140,1,t)},1);
+   mousedeer(640,660,1.6,t,true)}}},
+
+{chap:'Epilogue',lines:[
+ '"Exactly, anak," said Lolo Kanor. "And a good lesson is never to call someone a monster just because they are different."',
+ 'Outside, a small bird called from the mango tree. Pina jumped.',
+ 'Lolo Kanor laughed. "That is only a kuwago, an owl, looking for its supper."',
+ 'Pina giggled, snuggled close under his wing, and finally closed her big dark eyes.',
+ 'And in the quiet barrio, the stories kept on whispering, just as they have for four hundred years.'],
+ draw(t,li){homeSet(t,()=>{nightSky();stars(t,50);moon(800,120,34);
+   fill('#1a3a22',()=>{c.rect(1000,180,26,200)},0);[[960,170,90],[1060,150,80],[1010,110,80],[920,220,60],[1100,220,60]].forEach(([x,y,r])=>fill('#204a2a',()=>circ(x,y,r),2));
+   for(let i=0;i<6;i++)fill('#e8b84a',()=>ell(940+i*30,200+Math.sin(i)*30,8,12),1);
+   if(li>=1)owl(1060,206+Math.sin(t*2)*1,1,t)});
+  eagle(400,620,1.25,t,li===0||li===2);
+  if(li<3){const j=li===1?Math.abs(Math.sin(Math.min(1,(t-4.3)*2)*Math.PI))*40:0;mousedeer(850,630-j,1.4,t,false);blanket(818,532,84,34,t)}
+  else{mousedeer(560,640,1.4,t,false,true);blanket(500,598,130,46,t)}}}
+];
+let reduce=false;const t0=performance.now();
+function frame(now){const t=(now-t0)/1000+4,dur=4.5*60;let acc=0,si=0,li=0;outer:for(let s=0;s<S.length;s++)for(let l=0;l<S[s].lines.length;l++){if((t-4)%dur<acc+8){si=s;li=l;break outer}acc+=8}
+ c.setTransform(1,0,0,1,0,0);S[si].draw(t,li);c.fillStyle=grainPat||(grainPat=c.createPattern(grain,'repeat'));c.fillRect(0,0,W,H);requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+window.FONTS=Promise.all(["700 40px Caveat","900 40px Fredoka","700 40px Fredoka","700 25px Nunito"].map(f=>document.fonts.load(f)));
+</script>
