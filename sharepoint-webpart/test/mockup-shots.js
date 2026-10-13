@@ -33,7 +33,12 @@ const server=http.createServer((q,r)=>{const u=new URL(q.url,'http://x');
    if(o.scroll){el=document.querySelector(o.scroll);el=el&&(el.closest('.panel')||el);const pv=el&&el.previousElementSibling;if(pv&&pv.classList.contains('band'))el=pv;}
    if(!el)return 0;return el.getBoundingClientRect().top+document.documentElement.scrollTop-12;},o);
   const oy=await p.evaluate(y=>{const fr=document.querySelector('iframe');const r=fr.getBoundingClientRect();const sc=r.width/(fr.contentDocument?fr.contentDocument.documentElement.clientWidth:r.width);return Math.max(0,Math.round(r.top+window.scrollY+y*sc));},y);
-  offs[name]=oy;
+  const bot=await f.evaluate(o=>{let el=null;
+   if(o.scroll){el=document.querySelector(o.scroll);el=el&&(el.closest('.panel')||el);}
+   else{el=document.querySelector(o.dp?'#dp-drill':'#bw-drill');el=el&&(el.closest('.panel')||el);}
+   if(!el)return 0;return el.getBoundingClientRect().bottom+document.documentElement.scrollTop+16;},o);
+  const ob=await p.evaluate(y=>{const fr=document.querySelector('iframe');const r=fr.getBoundingClientRect();const sc=r.width/(fr.contentDocument?fr.contentDocument.documentElement.clientWidth:r.width);return Math.round(r.top+window.scrollY+y*sc);},bot);
+  offs[name]=[oy,ob];
   await f.evaluate(()=>window.scrollTo(0,0));await p.evaluate(()=>{window.scrollTo(0,0);document.querySelectorAll('*').forEach(e=>{if(e.scrollTop)e.scrollTop=0;if(e.scrollLeft)e.scrollLeft=0;});});await p.waitForTimeout(800);
   await p.screenshot({path:path.join(OUT,name+'.full.png')});
  }
