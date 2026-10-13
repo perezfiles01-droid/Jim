@@ -1,5 +1,5 @@
 EDRMS UTILIZATION REPORT: SESSION HANDOFF
-Written 7 October 2026. Paste this whole file into a new Claude Code session
+Written 7 October 2026, updated 13 October 2026. Paste this whole file into a new Claude Code session
 (repo perezfiles01-droid/Jim) to carry on exactly where we stopped.
 
 ======================================================================
@@ -30,6 +30,14 @@ There are three copies of the report. Keep them straight:
        It is synced FROM Floot by the GitHub Action "Sync from Floot"
        (.github/workflows/sync-from-floot.yml, sync-from-floot.js).
        floot-wrapper.html holds the zoom and password logic.
+  D. FLOOT ADMIN SITE (reporting database viewer)
+       Project id : a42346cb-40e4-47ef-af4c-c07156d0e7df
+       Live       : https://edrms-reporting-db-admin.floot.app
+       Files      : pages/_index.tsx (TABLES list, DataGrid, sidebar, CSS),
+                    helpers/reportData.tsx (sample DB built from the report),
+                    components/ColumnSources.tsx (column source mapping),
+                    components/FigureSearch.tsx (METRICS: figure -> formula).
+       Publish with publish_app(domain:"edrms-reporting-db-admin").
   C. SHAREPOINT SPFx WEB PART, in the folder sharepoint-webpart/
        Test tenant 7rkd12. Account JimTest@7rkd12.onmicrosoft.com.
        Site       : https://7rkd12.sharepoint.com/sites/EDRMSUtilsample
@@ -37,12 +45,15 @@ There are three copies of the report. Keep them straight:
        App Catalog: https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
        Delivered package (keep THIS filename so the user can Replace):
                     EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg
-                    (repo root). Current version: 1.0.10.0.
+                    (repo root). Current version: 1.0.32.0. App Catalog title: "Util sample".
 
 ======================================================================
 1. STANDING RULES FROM THE USER (ALWAYS FOLLOW)
 ======================================================================
 - PUBLISH FLOOT AUTOMATICALLY after every Floot change. Don't ask.
+- UPDATE 13 Oct: Floot was paused for a while, then the user asked for all
+  changes to go to Floot again. Floot is back in sync: every web part change
+  goes to Floot too, and Floot is published.
 - DON'T UPDATE GITHUB PAGES WHEN FLOOT CHANGES. "Floot app will serve as a
   test for me before going into the final which is the github." Sync
   index.html only when the user asks. Use the GitHub Action "Sync from
@@ -50,7 +61,7 @@ There are three copies of the report. Keep them straight:
 - KEEP SHAREPOINT AND FLOOT IN SYNC. Every change to the SharePoint web part
   also goes into the Floot app, which is then published, and the reverse.
 - REPO: every change is merged to main and pushed in the same turn
-  (CLAUDE.md rule). Work on the branch claude/nice-ride-0cbkem, then:
+  (CLAUDE.md rule). Work on the session's branch (last: claude/confident-ptolemy-p55gms), then:
     git checkout main && git merge --no-edit <branch> && git push origin main
     git checkout <branch>
   End commit messages with the attribution lines the session gives you.
@@ -78,6 +89,19 @@ Visual or CSS change (menu, cards, spacing, colours):
      in the _applyStyle() css string.
   3. Floot: put the SAME CSS in MENU_PATCH in pages/_index.tsx with
      mcp__Floot__edit_file, then publish.
+IMPORTANT (since 13 Oct): SharePoint builds no longer read index.html.
+GitHub's index.html is synced from Floot and carries Floot's own header
+tools, which duplicate the toolbar and Export buttons. Always build with:
+    python3 sharepoint-webpart/pending-fixes.py      (writes sp-src.tmp.html
+        from sharepoint-webpart/report-source.html plus all text fixes:
+        View breakdown, export width, Department insights and Library usage
+        descriptions, phys search box, libraries key fix)
+    cd sharepoint-webpart && REPORT_SOURCE=/home/user/Jim/sp-src.tmp.html npm run build
+    rm /home/user/Jim/sp-src.tmp.html
+Report text changes for SharePoint go into pending-fixes.py (or
+report-source.html), never only into index.html.
+The older notes below about temporary copies are superseded by this.
+
 Report text or content change:
   - Floot: edit the replacement chain in pages/_index.tsx. Use
     split().join() to replace every occurrence; .replace() only changes the
@@ -96,7 +120,7 @@ Report text or content change:
 Building and shipping SharePoint:
   1. Bump the version in sharepoint-webpart/config/package-solution.json
      (x.y.z.0) and VERSION in EdrmsUtilizationReportWebPart.ts.
-  2. cd sharepoint-webpart && npm run build      (Node 22, SPFx 1.23.2, heft)
+  2. Build via pending-fixes.py as described above (Node 22, SPFx 1.23.2, heft)
   3. NODE_PATH=/home/user/Jim/node_modules node test/host-test.js
      All 8 cases must PASS.
   4. cp sharepoint/solution/edrms-utilization-report.sppkg \
@@ -183,18 +207,72 @@ before committing.
   Permissions page, Visitors [Read], not Full control).
 
 ======================================================================
-5. OPEN ITEMS / WHERE WE STOPPED
+4b. DONE SINCE 7 OCTOBER (web part 1.0.11 to 1.0.32, all mirrored to Floot)
 ======================================================================
-- Department Insights still can't show its whole first table (EDRMS sites)
-  on the first screen. The department profile and the year filter take up
-  too much room above it. Offered options, with no answer yet:
-  (a) 5 rows per page, (b) fold the go-live and site-convention boxes into
-  a single line. Wait for the user to choose.
-- GitHub Pages is behind Floot. It lacks the compact layout, the new icon
-  and "View breakdown" on Department Insights. Sync only when the user asks.
-  After a sync, normal SharePoint builds from index.html carry the text
-  fixes again; the temporary-copy step is no longer needed.
-- The user is checking 1.0.10 in SharePoint, and testing as Leah Test with
-  Read access.
-- Next step: wait for the user's next request and handle it with the rules
-  in sections 1 and 2.
+- Sidebar no longer follows the scroll (stopped the shaking); _stickSidebar
+  is not called any more. Card names shown in full.
+- PDF export no longer leaves a white strip beside charts.
+- App Catalog title "Util sample".
+- Physical counterparts table: search box, Export table on the same row.
+  (Focus bug fixed: split.append(main,chart) before moving the wrapper.)
+- Library and Site columns widened, library names wrap.
+- Descriptions under Department insights and Library usage titles.
+- SharePoint top bars: briefly hidden, then shown again at user request
+  (HIDE_CHROME = false). Edit page button clicks SharePoint's native Edit
+  (fallback location.assign). Footer CSS targets only site footer IDs.
+- First-screen spacing; "● Data as of" beside Export to PDF (button stays
+  white, not solid blue).
+- Fluent ≡ sidebar toggle in #side .brand, closes to a 56-60px icon rail
+  (option A). Report name fitted to one line (--edrms-t1, 16px down to 12px).
+- Segoe UI throughout. Card numbers aligned and centred (CSS subgrid on
+  .dash-bw .kpi).
+- Library bars open exactly that library; "+N more" opens exactly N
+  (libraries key fix o.key+="||"+li).
+- ⓘ info icons: small, top-right of every card with a description, compact
+  dark tooltip (_infoIcons() + MutationObserver, class edrms-has-i).
+- GitHub synced on request to match SharePoint (Action run published main
+  7431cc2). After that, report-source.html was introduced (see section 2).
+- Source zip for the developer: EDRMS_WebPart_Source_1.0.32.zip (BUILD.txt).
+- Mockups in mockups/ (first screen, header/cards, sidebar toggle, KPI cards).
+- Admin site: one view per table (hash routing, default first table,
+  "t-find" = Find a report figure), Overview and "How the tables fit
+  together" removed, full-height fixed ADB-blue sidebar that collapses to a
+  56px rail (localStorage dbadmin-side-closed), 100 rows per page,
+  Source/Refresh badges removed. Reflects visitor sourcing decisions.
+
+Advice given (do not re-derive):
+- Visitors: Purview audit events, distinct people per site; Purview "Site"
+  = Cloud Governance report site ID; internal/external from Entra UserType
+  (#EXT# = guest); drop UserAgent starting "ISV|" (AvePoint backup) and
+  service accounts; keep FileAccessed and PageViewed. History is kept, not
+  deleted.
+- Purview delay: load one day behind (run on the 10th collects to end of
+  the 8th). Fine to call it a Microsoft limitation.
+- Outlook add-in follows the selected item (normal Outlook behaviour).
+  Mobile: phones need the Outlook app; tablets can also use the browser.
+- Full-width trouble for the developer: likely a team site; use a
+  Full-width section, an app page, or a communication site.
+
+Sourcing check (12 Oct): every figure on the two live dashboards
+(Bank-wide, Department Insights) can be computed from the admin DB tables.
+Gaps: (1) "Data as of" has no load-log table, suggest rpt_LoadLog (table,
+run time, data up to); (2) "New documents" is a snapshot difference, so
+deletions lower it; label "net new" or footnote. rpt_Users.LastActivityDate
+is tenant-wide, not EDRMS-only, so EDRMS user counts come from
+rpt_AuditActivity. Locked future dashboards (pj, fp, rd, ra) still need
+sources: retention labels and disposal dates, sensitivity labels, file
+formats, file plan term usage, RAC archive figures. Offered to add
+rpt_LoadLog and the LastActivityDate note to the admin site; no answer yet.
+
+======================================================================
+5. OPEN ITEMS / WHERE WE STOPPED (13 October 2026)
+======================================================================
+- Waiting on the user: add rpt_LoadLog + LastActivityDate note to the admin
+  site? If yes, edit pages/_index.tsx TABLES, ColumnSources and FigureSearch,
+  publish, give the link https://edrms-reporting-db-admin.floot.app
+- Web part is at 1.0.32 and in sync with Floot. GitHub index.html matches
+  as of the last sync; sync again only when asked.
+- Visual checks of Floot and the admin site were not possible from the
+  container (no browser access to floot.app); Purview behaviour not
+  verified in the real tenant.
+- Next step: wait for the user's next request and follow sections 1 and 2.
