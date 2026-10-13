@@ -8,7 +8,7 @@ const html=t.match(/export const REPORT_HTML: string = (.*);\n/)[1],scripts=t.ma
 const host=fs.readFileSync(path.join(HERE,'lib-commonjs/webparts/edrmsUtilizationReport/ReportHost.js'),'utf8');
 const files={'template.js':'window.REPORT_HTML='+html+';window.REPORT_SCRIPTS='+scripts+';',
  'reporthost.js':'(function(){var exports={};var module={exports:exports};\n'+host+'\n;window.ReportHost=exports.ReportHost;})();',
- 'start.js':"(function(){var o=new URLSearchParams(location.search);window.__host=new ReportHost(document.getElementById('wp'),location.origin+'/assets/',window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:true,sizing:'content',height:1080,textSize:'large'});})();"};
+ 'start.js':"(function(){var o=new URLSearchParams(location.search);window.__host=new ReportHost(document.getElementById('wp'),location.origin+'/assets/',window.REPORT_HTML,window.REPORT_SCRIPTS,{dashboard:o.get('d')||'bw',showSidebar:true,sizing:'content',height:1080,textSize:'large',adbBlue:true});})();"};
 const server=http.createServer((q,r)=>{const u=new URL(q.url,'http://x');
  if(u.pathname==='/'){r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end('<!doctype html><html><head><style>body{margin:0}.box{position:relative;width:100%;overflow-y:hidden}.frame,iframe{display:block;border:0;transform-origin:0 0!important}</style></head><body><div id="wp"></div>'+['template.js','reporthost.js','start.js'].map(f=>'<script src="/t/'+f+'"></script>').join('')+'</body></html>');return;}
  if(u.pathname.startsWith('/t/')&&files[u.pathname.slice(3)]){r.writeHead(200,{'Content-Type':'application/javascript'});r.end(files[u.pathname.slice(3)]);return;}
