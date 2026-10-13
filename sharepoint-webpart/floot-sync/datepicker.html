@@ -1,0 +1,117 @@
+<style>
+/* EDRMS_DATEPICKER (13 Oct 2026): the Records trend custom range keeps its date
+   fields, but the calendar lists only years that have figures. */
+#bw-trend-panel input.edp-native,.dash-dp input.edp-native{display:none!important}
+.edp{position:relative;display:inline-block}
+.edp-btn{display:inline-flex;align-items:center;gap:10px;height:34px;min-width:140px;padding:0 10px 0 12px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;color:#1f2d3d;font:inherit;font-size:13px;cursor:pointer;justify-content:space-between}
+.edp-btn:hover{border-color:#9cc8e8}
+.edp-btn.edp-empty{color:#7a8899}
+.edp-pop .csel-wrap{width:auto!important;min-width:76px}
+.edp-pop .csel-wrap:has(.edp-y){min-width:84px}
+.edp-pop{position:absolute;left:0;top:40px;z-index:70;width:268px;background:#fff;border:1px solid #cfd8e3;border-radius:10px;box-shadow:0 10px 28px rgba(16,48,80,.18);padding:12px}
+.edp-pop[hidden]{display:none}
+.edp-hd{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.edp-hd select{height:30px;border:1px solid #cfd8e3;border-radius:6px;background:#fff;font:inherit;font-size:13px;padding:0 6px;color:#1f2d3d}
+.edp-hd .edp-nav{margin-left:auto;display:flex;gap:2px}
+.edp-hd .edp-nav button{width:28px;height:28px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#34465a;font-size:16px}
+.edp-hd .edp-nav button:hover:not(:disabled){background:#f2f7fb}
+.edp-hd .edp-nav button:disabled{color:#c3ccd6;cursor:default}
+.edp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.edp-grid .dw{font-size:11px;font-weight:600;color:#5b6b7d;padding:4px 0}
+.edp-grid button{height:30px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:13px;color:#1f2d3d;cursor:pointer}
+.edp-grid button:hover:not(:disabled){background:#e8f3fb}
+.edp-grid button:disabled{color:#c3ccd6;cursor:default}
+.edp-grid button.sel{background:#194F8E;color:#fff;font-weight:600}
+.edp-grid button.today{box-shadow:inset 0 0 0 1px #78b8e2}
+.edp-ft{display:flex;justify-content:space-between;margin-top:8px;border-top:1px solid #eef2f7;padding-top:8px}
+.edp-ft button{border:0;background:transparent;color:#0563C1;font:inherit;font-size:13px;cursor:pointer;padding:4px 6px;border-radius:5px}
+.edp-ft button:hover{background:#f2f7fb}
+#so3-apply{height:32px;padding:0 14px;border:1px solid #194F8E;border-radius:8px;background:#194F8E;color:#fff;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+#so3-apply:disabled{background:#e9eef4;border-color:#d6dee7;color:#8a98a8;cursor:default}
+#bw-trend-apply{height:34px;padding:0 16px;border:1px solid #194F8E;border-radius:6px;background:#194F8E;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+#bw-trend-apply:disabled{background:#e9eef4;border-color:#d6dee7;color:#8a98a8;cursor:default}
+</style>
+<script>
+(function(){
+  var MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var CAL='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2 6.5h12M5.5 1.8v2.6M10.5 1.8v2.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  function iso(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");}
+  function fmt(v){return v?v.slice(5,7)+"/"+v.slice(8,10)+"/"+v.slice(0,4):"mm/dd/yyyy";}
+  function years(inp){
+    var ys={};
+    /* Department Insights sites range: the years its own Year list offers. */
+    var yl=inp.id.indexOf("so3-")===0&&document.getElementById("so3-year");
+    if(yl){[].forEach.call(yl.options,function(o){if(/^[0-9]{4}$/.test(o.value))ys[o.value]=1;});return Object.keys(ys).sort();}
+    try{DATA.MONTH_KEYS.forEach(function(k,i){if(!DATA.MONTH_VALUES||DATA.MONTH_VALUES[i]>0)ys[k.slice(0,4)]=1;});}catch(e){}
+    return Object.keys(ys).sort();
+  }
+  function enhance(inp){
+    if(!inp||inp.dataset.edp)return;
+    inp.dataset.edp="1";inp.classList.add("edp-native");
+    var w=document.createElement("span");w.className="edp";
+    w.innerHTML='<button type="button" class="edp-btn" aria-haspopup="dialog"><span class="edp-v"></span>'+CAL+'</button><div class="edp-pop" hidden role="dialog" aria-label="'+(inp.getAttribute("aria-label")||"Choose a date")+'"></div>';
+    inp.insertAdjacentElement("afterend",w);
+    var btn=w.querySelector(".edp-btn"),pop=w.querySelector(".edp-pop"),view=null;
+    function lim(){
+      /* The From date cannot be after the To date, and the To date cannot be before the From date. */
+      var mn=inp.min||"0000-01-01",mx=inp.max||"9999-12-31",isF=/-from$/.test(inp.id),o=document.getElementById(isF?inp.id.replace(/-from$/,"-to"):inp.id.replace(/-to$/,"-from"));
+      if(o&&o.value){if(!isF&&o.value>mn)mn=o.value;if(isF&&o.value<mx)mx=o.value;}
+      return {min:mn,max:mx};}
+    function sync(){var v=inp.value,el=btn.querySelector(".edp-v"),t=fmt(v);if(el.textContent!==t)el.textContent=t;if(btn.classList.contains("edp-empty")!==!v)btn.classList.toggle("edp-empty",!v);}
+    w._sync=function(){sync();applyState();};
+    function draw(){
+      var L=lim(),ys=years(inp).filter(function(v){return v>=L.min.slice(0,4)&&v<=L.max.slice(0,4);}),y=view.y,m=view.m;
+      var mins=L.min.slice(0,7),maxs=L.max.slice(0,7);
+      var ms=MN.map(function(n,i){var k=y+"-"+String(i+1).padStart(2,"0");return (k>=mins&&k<=maxs)?'<option value="'+i+'"'+(i===m?" selected":"")+'>'+n+'</option>':"";}).join("");
+      var h='<div class="edp-hd"><select class="edp-m" aria-label="Month">'+ms+'</select><select class="edp-y" aria-label="Year">'+ys.map(function(v){return '<option'+(+v===y?" selected":"")+'>'+v+'</option>';}).join("")+'</select><span class="edp-nav"><button type="button" class="edp-p" aria-label="Previous month">&#8249;</button><button type="button" class="edp-n" aria-label="Next month">&#8250;</button></span></div><div class="edp-grid">';
+      ["Su","Mo","Tu","We","Th","Fr","Sa"].forEach(function(d){h+='<span class="dw">'+d+'</span>';});
+      var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),t=new Date(),tk=iso(t.getFullYear(),t.getMonth(),t.getDate());
+      for(var i=0;i<first;i++)h+="<span></span>";
+      for(var d=1;d<=days;d++){var k=iso(y,m,d),off=k<L.min||k>L.max;h+='<button type="button" data-d="'+k+'"'+(off?" disabled":"")+' class="'+(k===inp.value?"sel ":"")+(k===tk?"today":"")+'">'+d+'</button>';}
+      h+='</div><div class="edp-ft"><button type="button" class="edp-c">Clear</button><button type="button" class="edp-t">Today</button></div>';
+      pop.innerHTML=h;
+      var prevK=iso(m===0?y-1:y,(m+11)%12,1).slice(0,7),nextK=iso(m===11?y+1:y,(m+1)%12,1).slice(0,7);
+      pop.querySelector(".edp-p").disabled=prevK<mins||ys.indexOf(prevK.slice(0,4))<0;
+      pop.querySelector(".edp-n").disabled=nextK>maxs||ys.indexOf(nextK.slice(0,4))<0;
+      pop.querySelector(".edp-m").onchange=function(e){view.m=+e.target.value;draw();};
+      pop.querySelector(".edp-y").onchange=function(e){view.y=+e.target.value;clamp();draw();};
+      pop.querySelector(".edp-p").onclick=function(){view.m--;if(view.m<0){view.m=11;view.y--;}draw();};
+      pop.querySelector(".edp-n").onclick=function(){view.m++;if(view.m>11){view.m=0;view.y++;}draw();};
+      pop.querySelectorAll("[data-d]").forEach(function(b){b.onclick=function(){set(b.dataset.d);};});
+      pop.querySelector(".edp-c").onclick=function(){set("");};
+      pop.querySelector(".edp-t").onclick=function(){var L2=lim();set(tk<L2.min?L2.min:tk>L2.max?L2.max:tk);};
+    }
+    function clamp(){var L=lim(),k=view.y+"-"+String(view.m+1).padStart(2,"0");if(k<L.min.slice(0,7)){view.m=+L.min.slice(5,7)-1;}if(k>L.max.slice(0,7)){view.m=+L.max.slice(5,7)-1;}}
+    function set(v){inp.value=v;sync();close();applyState();}
+    function close(){pop.hidden=true;}
+    btn.onclick=function(e){e.stopPropagation();if(!pop.hidden){close();return;}
+      document.querySelectorAll(".edp-pop").forEach(function(p){p.hidden=true;});
+      var v=inp.value||inp.max||"",L=lim();if(!v||v>L.max)v=L.max;if(v<L.min)v=L.min;
+      view={y:+v.slice(0,4),m:+v.slice(5,7)-1};draw();pop.hidden=false;};
+    pop.onclick=function(e){e.stopPropagation();};
+    sync();
+  }
+  /* Dates are only used once Apply is clicked. */
+  /* Each range: its two fields, its Reset button and the Apply button added beside it. */
+  var RANGES=[{p:"bw-trend",reset:"bw-trend-reset"},{p:"so3",reset:"so3-reset"}];
+  function applyState(){RANGES.forEach(function(R){var a=document.getElementById(R.p+"-apply"),f=document.getElementById(R.p+"-from"),t=document.getElementById(R.p+"-to");if(!a||!f||!t)return;var off=!f.value&&!t.value;if(a.disabled!==off)a.disabled=off;});}
+  function ensureApply(){
+    RANGES.forEach(function(R){
+      var rs=document.getElementById(R.reset);if(!rs||document.getElementById(R.p+"-apply"))return;
+      var a=document.createElement("button");a.type="button";a.id=R.p+"-apply";a.textContent="Apply";
+      rs.insertAdjacentElement("beforebegin",a);
+      a.onclick=function(){
+        var f=document.getElementById(R.p+"-from"),t=document.getElementById(R.p+"-to"),fv=f?f.value:"",tv=t?t.value:"";
+        if(R.p==="bw-trend"){if(fv)f.dispatchEvent(new Event("change",{bubbles:true}));else if(tv)t.dispatchEvent(new Event("change",{bubbles:true}));return;}
+        /* The sites panel redraws after each field, so apply From, then set To on the redrawn field. */
+        if(f){f.value=fv;f.dispatchEvent(new Event("change",{bubbles:true}));}
+        var t2=document.getElementById(R.p+"-to");if(t2){t2.value=tv;t2.dispatchEvent(new Event("change",{bubbles:true}));}
+      };
+    });
+    applyState();
+  }
+  function scan(){ensureApply();["bw-trend-from","bw-trend-to","so3-from","so3-to"].forEach(function(id){var i=document.getElementById(id);if(i&&i.type==="date"){enhance(i);var w=i.nextElementSibling;if(w&&w._sync)w._sync();}});}
+  document.addEventListener("click",function(e){if(e.target&&e.target.closest&&e.target.closest(".csel-list,.edp-pop"))return;document.querySelectorAll(".edp-pop").forEach(function(p){p.hidden=true;});});
+  (function watch(){var v=document.getElementById("view");if(!v){setTimeout(watch,300);return;}new MutationObserver(scan).observe(v,{childList:true,subtree:true});scan();})();
+})();
+</script>

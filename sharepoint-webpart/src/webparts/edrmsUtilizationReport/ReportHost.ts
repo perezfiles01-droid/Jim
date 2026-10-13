@@ -369,6 +369,8 @@ export class ReportHost {
     const doc: Document | null = this._doc();
     if (!doc) return;
     doc.querySelectorAll('#view .kpi, #view .vs2-k').forEach((card: Element): void => {
+      // 1.0.34: Bank-wide cards carry no hover title; the (i) already describes them.
+      if (card.closest('.dash-bw') && card.hasAttribute('title')) card.removeAttribute('title');
       if (card.querySelector('.edrms-i')) return;
       const desc: HTMLElement | null = card.querySelector('.kpi-helper, .kpi-sub, .h');
       const lab: HTMLElement | null = card.querySelector('.lab, .l');

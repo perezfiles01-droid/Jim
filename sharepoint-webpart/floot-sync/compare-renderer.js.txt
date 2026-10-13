@@ -1,0 +1,63 @@
+  function drawCmp(){
+    /* 13 Oct 2026: headcount and the EDRMS figure in separate columns, each on
+       its own scale. Column headers sort (click again to reverse), a search box
+       and a multi-select department filter with Reset and Apply, 10 per page. */
+    const c=CMP[cmpMode];
+    const st=window.__edrmsCmp||(window.__edrmsCmp={k:"b",dir:"desc",q:"",sel:[]});
+    const lbl=c.lb==="Documents"?"Documents in EDRMS":"Records declared in EDRMS";
+    const K=n=>(Number(n)||0)>=10000?Math.round(n/1000)+"k":F(n);
+    const noteEl=document.getElementById("bw-cmp-note");
+    noteEl.textContent="Approximate headcount provided by RAC, compared with "+lbl.charAt(0).toLowerCase()+lbl.slice(1)+". Each column has its own scale.";
+    noteEl.style.display="";
+    const legend=document.getElementById("bw-cmp-legend");
+    legend.innerHTML="";legend.style.display="none";
+    const old=document.getElementById("bw-cmp-sort");if(old)old.remove();
+    const tb=document.getElementById("bw-cmp-sel").closest(".toolbar");
+    let tools=document.getElementById("bw-cmp-tools");
+    if(!tools&&tb){
+      tools=document.createElement("div");tools.id="bw-cmp-tools";
+      tools.innerHTML=`<input type="search" id="bw-cmp-q" class="cmp-q" placeholder="Search by department / office / RM / RO" aria-label="Search by department / office / RM / RO"><div class="cmp-f"><button type="button" class="cmp-fbtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 3h12l-4.5 5.5V13l-3 1.5V8.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Filter<span class="cmp-fn"></span></button><div class="cmp-fpop" hidden><div class="cmp-fh">Department / Office / RM / RO</div><label class="cmp-fall"><input type="checkbox" data-all="1"> Select all</label><div class="cmp-flist"></div><div class="cmp-fact"><button type="button" class="cmp-reset">Reset</button><button type="button" class="cmp-apply">Apply</button></div></div></div>`;
+      tb.appendChild(tools);
+      const q=tools.querySelector(".cmp-q"),btn=tools.querySelector(".cmp-fbtn"),pop=tools.querySelector(".cmp-fpop"),list=tools.querySelector(".cmp-flist"),all=tools.querySelector("[data-all]");
+      const boxes=()=>[...list.querySelectorAll("input[data-c]")];
+      const syncAll=()=>{const b=boxes(),n=b.filter(x=>x.checked).length;all.checked=n===b.length;all.indeterminate=n>0&&n<b.length;};
+      const open=v=>{pop.hidden=!v;btn.setAttribute("aria-expanded",String(v));if(v){const s=window.__edrmsCmp.sel;boxes().forEach(x=>x.checked=!s.length||s.includes(x.dataset.c));syncAll();}};
+      list.innerHTML=[...DEPTS].sort((x,y)=>x.code.localeCompare(y.code)).map(d=>`<label><input type="checkbox" data-c="${d.code}"> <b>${d.code}</b> <span>${d.name}</span></label>`).join("");
+      q.oninput=()=>{window.__edrmsCmp.q=q.value;window.__edrmsCmp.page=1;drawCmp();};
+      btn.onclick=e=>{e.stopPropagation();open(pop.hidden);};
+      pop.onclick=e=>e.stopPropagation();
+      list.onchange=syncAll;
+      all.onchange=()=>{boxes().forEach(x=>x.checked=all.checked);syncAll();};
+      tools.querySelector(".cmp-reset").onclick=()=>{boxes().forEach(x=>x.checked=true);syncAll();window.__edrmsCmp.sel=[];window.__edrmsCmp.page=1;open(false);drawCmp();};
+      tools.querySelector(".cmp-apply").onclick=()=>{const b=boxes(),on=b.filter(x=>x.checked).map(x=>x.dataset.c);window.__edrmsCmp.sel=on.length===b.length?[]:on;window.__edrmsCmp.page=1;open(false);drawCmp();};
+      document.addEventListener("click",()=>{if(document.body.contains(pop))open(false);});
+    }
+    if(tools){const n=st.sel.length;tools.querySelector(".cmp-fn").textContent=n?" ("+n+")":"";tools.querySelector(".cmp-fbtn").classList.toggle("on",n>0);const q=tools.querySelector(".cmp-q");if(q.value!==st.q)q.value=st.q;}
+    const term=st.q.trim().toLowerCase();
+    const val=(d,k)=>k==="code"?d.code:(Number(d[c[k]])||0);
+    const rows=[...DEPTS]
+      .filter(d=>!st.sel.length||st.sel.includes(d.code))
+      .filter(d=>!term||(d.code+" "+d.name).toLowerCase().includes(term))
+      .sort((x,y)=>{const a=val(x,st.k),b=val(y,st.k);const r=st.k==="code"?String(a).localeCompare(String(b)):a-b;return (st.dir==="asc"?r:-r)||x.code.localeCompare(y.code);});
+    const PER=20;
+    const pages=Math.max(1,Math.ceil(rows.length/PER));
+    st.page=Math.min(Math.max(1,st.page||1),pages);
+    const shown=rows.slice((st.page-1)*PER,st.page*PER);
+    const headcountMax=Math.max(1,...DEPTS.map(r=>Number(r[c.a])||0));
+    const recordsMax=Math.max(1,...DEPTS.map(r=>Number(r[c.b])||0));
+    const host=document.getElementById("bw-cmp");
+    host.dataset.headcountMax=String(headcountMax);
+    host.dataset.recordsMax=String(recordsMax);
+    const H=(k,t,sw)=>`<div class="hd2${st.k===k?" on":""}" data-k="${k}" role="button" tabindex="0" aria-sort="${st.k===k?(st.dir==="asc"?"ascending":"descending"):"none"}">${sw?`<i style="background:${sw}"></i>`:""}${t}${st.k===k?(st.dir==="asc"?" ↑":" ↓"):""}</div>`;
+    host.innerHTML=`<div class="cmp2 cmp2-h">${H("code","DEPARTMENT / OFFICE / RM / RO")}${H("a","APPROXIMATE HEADCOUNT","#0f9f87")}${H("b",lbl.toUpperCase(),"#2677d4")}</div>`+
+      (shown.length?shown.map(d=>`
+      <div class="cmp2">
+        <span class="dcx"><span class="dc-code">${d.code}</span><span class="dc-name">${d.name}</span></span>
+        <div class="tk2"><div class="b2" data-series="headcount" title="Approximate headcount: ${F(d[c.a])}" style="width:${100*(Number(d[c.a])||0)/headcountMax}%;background:#0f9f87"><em>${K(d[c.a])}</em></div></div>
+        <div class="tk2"><div class="b2" data-series="edrms" title="${lbl}: ${F(d[c.b])}" style="width:${100*(Number(d[c.b])||0)/recordsMax}%;background:#2677d4"><em>${K(d[c.b])}</em></div></div>
+      </div>`).join(""):`<div class="cmp2-empty">No department matches the search or filter.</div>`)+
+      `<div id="bw-cmp-pager">${pager(rows.length,st.page,pages,"departments")}</div>`;
+    const pinfo=host.querySelector("#bw-cmp-pager .pinfo");if(pinfo&&pages>1)pinfo.textContent="Showing "+((st.page-1)*PER+1)+" to "+Math.min(rows.length,st.page*PER)+" of "+rows.length+" departments";
+    wirePager("#bw-cmp-pager",go=>{st.page=go==="prev"?Math.max(1,st.page-1):go==="next"?Math.min(pages,st.page+1):+go;drawCmp();});
+    host.querySelectorAll(".hd2[data-k]").forEach(el=>{const go=()=>{const k=el.dataset.k;if(st.k===k)st.dir=st.dir==="asc"?"desc":"asc";else{st.k=k;st.dir=k==="code"?"asc":"desc";}st.page=1;drawCmp();};el.onclick=go;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}};});
+  }

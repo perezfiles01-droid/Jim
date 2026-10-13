@@ -1,0 +1,59 @@
+/* Comparison panel: separate headcount and EDRMS columns, one line per department (13 Oct 2026). */
+#bw-cmp{display:block!important}
+#bw-cmp .cmp2{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;height:32px;border-bottom:1px solid #f1f5f9}
+#bw-cmp .cmp2 .dcx{flex-direction:row!important;justify-content:flex-start!important;align-items:baseline!important;gap:8px!important;text-align:left!important;min-width:0;overflow:hidden;white-space:nowrap}
+#bw-cmp .cmp2 .dc-code{font-size:13.5px}
+#bw-cmp .cmp2 .dc-name{font-size:12.5px;margin-top:0!important}
+#bw-cmp .cmp2-h{height:auto;padding-bottom:6px;margin-bottom:2px;border-bottom:1px solid #d7e1ec;font-size:11px;letter-spacing:.06em;color:#0878c9;font-weight:600}
+#bw-cmp .cmp2-h i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#bw-cmp .tk2{height:16px;background:#f1f5f9;border-radius:4px;min-width:0}
+#bw-cmp .b2{height:100%;border-radius:4px;display:flex;justify-content:flex-end;align-items:center;min-width:40px;max-width:100%;box-sizing:border-box}
+#bw-cmp .b2 em{font-style:normal;color:#fff;font-size:11px;font-weight:700;padding-right:6px;white-space:nowrap}
+#bw-cmp .hd2{cursor:pointer;user-select:none;white-space:nowrap}
+#bw-cmp .hd2:hover{color:#006fbd;text-decoration:underline}
+#bw-cmp .hd2.on{color:#005a96}
+#bw-cmp .hd2 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+#bw-cmp .cmp2-empty{padding:18px 0;color:#6b7b8c;font-size:13px}
+#bw-cmp .cmp2-foot{padding-top:10px;color:#6b7b8c;font-size:12.5px}
+#bw-cmp-pager{margin-top:10px}
+#bw-cmp-legend:empty{display:none!important}
+.toolbar:has(#bw-cmp-tools){display:flex!important;align-items:center;flex-wrap:wrap;gap:10px}
+#bw-cmp-tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+#bw-cmp-tools .cmp-q{width:300px;height:36px;box-sizing:border-box;padding:7px 11px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#142b48;font:inherit;font-size:13px}
+#bw-cmp-tools .cmp-q:focus{outline:none;border-color:#0878c9;box-shadow:0 0 0 2px rgba(8,120,201,.12)}
+#bw-cmp-tools .cmp-f{position:relative}
+#bw-cmp-tools .cmp-fbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#1f2d3d;font:inherit;font-size:13px;cursor:pointer}
+#bw-cmp-tools .cmp-fbtn:hover{background:#f2f7fb}
+#bw-cmp-tools .cmp-fbtn.on{background:#e8f3fb;color:#005a96;font-weight:600;border-color:#9cc8e8}
+#bw-cmp-tools .cmp-fpop{position:absolute;right:0;top:42px;z-index:50;width:320px;background:#fff;border:1px solid #cfd8e3;border-radius:10px;box-shadow:0 10px 28px rgba(16,48,80,.18);padding:12px}
+#bw-cmp-tools .cmp-fpop[hidden]{display:none}
+#bw-cmp-tools .cmp-fh{font-size:11px;letter-spacing:.06em;color:#0878c9;font-weight:600;text-transform:uppercase;margin-bottom:8px}
+#bw-cmp-tools .cmp-fpop label{display:flex;align-items:center;gap:8px;padding:5px 4px;font-size:13px;color:#1f2d3d;cursor:pointer;border-radius:5px}
+#bw-cmp-tools .cmp-fpop label:hover{background:#f2f7fb}
+#bw-cmp-tools .cmp-fpop label span{color:#6b7b8c;font-size:12px}
+#bw-cmp-tools .cmp-fall{border-bottom:1px solid #eef2f7;margin-bottom:4px;padding-bottom:8px!important;font-weight:600}
+#bw-cmp-tools .cmp-flist{max-height:260px;overflow:auto}
+#bw-cmp-tools .cmp-fact{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #eef2f7;margin-top:8px;padding-top:10px}
+#bw-cmp-tools .cmp-fact button{height:32px;padding:0 16px;border-radius:7px;font:inherit;font-size:13px;cursor:pointer}
+#bw-cmp-tools .cmp-reset{border:1px solid #cfd8e3;background:#fff;color:#1f2d3d}
+#bw-cmp-tools .cmp-apply{border:1px solid #194F8E;background:#194F8E;color:#fff;font-weight:600}
+/* Sites by department: every department reads as a standard link (13 Oct 2026). */
+#view #bw-sites .drow.go{cursor:pointer}
+#view #bw-sites .drow.go .dn,#view #bw-sites .drow.go .dn *{text-decoration:none!important;cursor:pointer}
+#view #bw-sites .drow.go .dc-name{color:#5b6b7c!important}
+#view #bw-sites .drow.go .dc-code{color:#0563C1!important;text-decoration:underline!important;text-decoration-color:#0563C1!important;text-decoration-thickness:1px!important;text-underline-offset:3px!important}
+#view #bw-sites .drow.go .dcx,#view #bw-sites .drow.go .dc-name{overflow:visible!important;padding-bottom:4px!important}
+#view #bw-sites .drow.go .dcx{margin-bottom:-4px!important}
+#view #bw-sites .drow.go:hover{background:#EAF3FB!important}
+#view #bw-sites .drow.go:hover .dc-code{color:#194F8E!important;text-decoration-color:#194F8E!important;text-decoration-thickness:2px!important}
+/* Records declared over time: legend row, breadcrumb pill, clickable year bars (13 Oct 2026). */
+#bw-trend-panel .trlegend{align-items:center;font-size:13px!important;margin:16px 0 8px!important;gap:10px 22px!important}
+#bw-trend-panel .trcrumb{font-size:13px;color:#5b6b7d;margin:0 0 0 auto;background:#f6f9fc;border:1px solid #e3e9f0;border-radius:999px;padding:4px 12px}
+#bw-trend-panel .trcrumb a{color:#0563C1;text-decoration:underline;text-underline-offset:3px}
+#bw-trend-panel .trcrumb b{color:#172b4d}
+#bw-trend-panel .trbar{cursor:pointer}
+#bw-trend-panel .trbar:hover,#bw-trend-panel .trbar:focus{fill:#478a33;outline:none}
+/* Department Insights: Sites created breadcrumb (13 Oct 2026). */
+.dash-dp .so3-crumb{flex:0 0 auto;align-self:flex-start;font-size:13px;color:#5b6b7d;background:#f6f9fc;border:1px solid #e3e9f0;border-radius:999px;padding:4px 12px;white-space:nowrap}
+.dash-dp .so3-crumb a{color:#0563C1;text-decoration:underline;text-underline-offset:3px}
+.dash-dp .so3-crumb b{color:#172b4d}

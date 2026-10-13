@@ -1,0 +1,57 @@
+<style>
+/* Department filter on the Sites and Physical counterparts tables, as on Compare (13 Oct 2026). */
+.sites-search-wrap:has(.edrms-filt){display:flex!important;align-items:center;gap:10px}
+.sites-search-wrap:has(.edrms-filt) .sites-search{flex:1 1 auto;min-width:0;width:auto!important}
+.edrms-filt{position:relative;flex:0 0 auto}
+.edrms-filt .cmp-fbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;color:#1f2d3d;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.edrms-filt .cmp-fbtn:hover{background:#f2f7fb}
+.edrms-filt .cmp-fbtn.on{background:#e8f3fb;color:#005a96;font-weight:600;border-color:#9cc8e8}
+.edrms-filt .cmp-fpop{position:absolute;right:0;top:42px;z-index:60;width:320px;background:#fff;border:1px solid #cfd8e3;border-radius:10px;box-shadow:0 10px 28px rgba(16,48,80,.18);padding:12px;text-align:left}
+.edrms-filt .cmp-fpop[hidden]{display:none}
+.edrms-filt .cmp-fh{font-size:11px;letter-spacing:.06em;color:#0878c9;font-weight:600;text-transform:uppercase;margin-bottom:8px}
+.edrms-filt .cmp-fpop label{display:flex;align-items:center;gap:8px;padding:5px 4px;font-size:13px;color:#1f2d3d;cursor:pointer;border-radius:5px;font-weight:400}
+.edrms-filt .cmp-fpop label:hover{background:#f2f7fb}
+.edrms-filt .cmp-fpop label span{color:#6b7b8c;font-size:12px}
+.edrms-filt .cmp-fall{border-bottom:1px solid #eef2f7;margin-bottom:4px;padding-bottom:8px!important;font-weight:600!important}
+.edrms-filt .cmp-flist{max-height:260px;overflow:auto}
+.edrms-filt .cmp-fact{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #eef2f7;margin-top:8px;padding-top:10px}
+.edrms-filt .cmp-fact button{height:32px;padding:0 16px;border-radius:7px;font:inherit;font-size:13px;cursor:pointer}
+.edrms-filt .cmp-reset{border:1px solid #cfd8e3;background:#fff;color:#1f2d3d}
+.edrms-filt .cmp-apply{border:1px solid #194F8E;background:#194F8E;color:#fff;font-weight:600}
+</style>
+<script>
+(function(){
+  // Filter button beside a table's search box. The selection lives in
+  // window.__edrmsSel[key]; the table's own draw code reads it, and an input
+  // event on the search box redraws the table from page 1.
+  var CFG=[{k:"sites",id:"bw-sites-search"},{k:"phys",id:"bw-phys-search"}];
+  var ICON='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 3h12l-4.5 5.5V13l-3 1.5V8.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+  window.__edrmsSel=window.__edrmsSel||{};
+  function depts(){return window.__edrmsDepts||null;}
+  function build(cfg){
+    var inp=document.getElementById(cfg.id),D=depts(); if(!inp||!D)return;
+    var wrap=inp.parentElement; if(!wrap||wrap.querySelector(".edrms-filt"))return;
+    var sel=window.__edrmsSel[cfg.k]||[];
+    var f=document.createElement("div");f.className="edrms-filt";
+    f.innerHTML='<button type="button" class="cmp-fbtn'+(sel.length?' on':'')+'" aria-haspopup="true" aria-expanded="false">'+ICON+'Filter'+(sel.length?' ('+sel.length+')':'')+'</button>'+
+      '<div class="cmp-fpop" hidden><div class="cmp-fh">Department / Office / RM / RO</div><label class="cmp-fall"><input type="checkbox" data-all="1"> Select all</label><div class="cmp-flist">'+
+      D.slice().sort(function(a,b){return a.code.localeCompare(b.code);}).map(function(d){return '<label><input type="checkbox" data-c="'+d.code+'"> <b>'+d.code+'</b> <span>'+d.name+'</span></label>';}).join("")+
+      '</div><div class="cmp-fact"><button type="button" class="cmp-reset">Reset</button><button type="button" class="cmp-apply">Apply</button></div></div>';
+    inp.insertAdjacentElement("afterend",f);
+    var btn=f.querySelector(".cmp-fbtn"),pop=f.querySelector(".cmp-fpop"),list=f.querySelector(".cmp-flist"),all=f.querySelector("[data-all]");
+    function boxes(){return [].slice.call(list.querySelectorAll("input[data-c]"));}
+    function syncAll(){var b=boxes(),n=b.filter(function(x){return x.checked;}).length;all.checked=n===b.length;all.indeterminate=n>0&&n<b.length;}
+    function open(v){pop.hidden=!v;btn.setAttribute("aria-expanded",String(v));if(v){var s=window.__edrmsSel[cfg.k]||[];boxes().forEach(function(x){x.checked=!s.length||s.indexOf(x.dataset.c)>=0;});syncAll();}}
+    function apply(v){window.__edrmsSel[cfg.k]=v;open(false);var i=document.getElementById(cfg.id);if(i)i.dispatchEvent(new Event("input",{bubbles:true}));}
+    btn.onclick=function(e){e.stopPropagation();open(pop.hidden);};
+    pop.onclick=function(e){e.stopPropagation();};
+    list.onchange=syncAll;
+    all.onchange=function(){boxes().forEach(function(x){x.checked=all.checked;});syncAll();};
+    f.querySelector(".cmp-reset").onclick=function(){apply([]);};
+    f.querySelector(".cmp-apply").onclick=function(){var b=boxes(),on=b.filter(function(x){return x.checked;}).map(function(x){return x.dataset.c;});apply(on.length===b.length?[]:on);};
+  }
+  function scan(){CFG.forEach(build);}
+  document.addEventListener("click",function(){[].forEach.call(document.querySelectorAll(".edrms-filt .cmp-fpop:not([hidden])"),function(p){p.hidden=true;});});
+  (function watch(){var v=document.getElementById("view");if(!v){setTimeout(watch,300);return;}new MutationObserver(scan).observe(v,{childList:true,subtree:true});scan();})();
+})();
+</script>

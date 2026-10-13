@@ -53,4 +53,8 @@ LIBS = [
 for o, n in LIBS:
     assert s.count(o) == 1, o
     s = s.replace(o, n)
+# Floot changes of 13 Oct 2026 (see floot-sync/apply.py).
+import sys; sys.path.insert(0, os.path.join(root, 'sharepoint-webpart', 'floot-sync'))
+import apply as floot_sync
+s = floot_sync.apply(s)
 open(os.path.join(root, 'sp-src.tmp.html'), 'w', encoding='utf-8').write(s)

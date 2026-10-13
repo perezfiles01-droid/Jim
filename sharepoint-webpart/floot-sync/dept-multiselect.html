@@ -1,0 +1,55 @@
+<style>
+/* EDRMS_DEPT_MULTI (13 Oct 2026): Department Insights picker allows several departments. */
+select.dpm-native,.dpm-host > .csel-wrap{display:none!important}
+.dpm{position:relative;display:inline-block}
+.dpm .cmp-fbtn{min-width:300px;justify-content:space-between}
+.dpm .dpm-lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:420px;text-align:left}
+.dpm .cmp-fpop{left:0;right:auto;width:360px}
+.dpm .dpm-chev{width:12px;height:12px;flex:0 0 auto}
+</style>
+<script>
+(function(){
+  var CHEV='<svg class="dpm-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function label(sel){
+    var v=sel.value||"ALL";
+    if(v.indexOf(",")>0){var n=v.split(",").length;return n<=3?v.split(",").join(", "):n+" departments selected";}
+    var o=sel.options[sel.selectedIndex];return o?o.text:v;
+  }
+  /* Both Department Insights pickers: the profile one and the Library usage one. */
+  function build(){build1("dp-sel");build1("dp-libs-sel");}
+  function build1(id){
+    var sel=document.getElementById(id);if(!sel)return;
+    var host=sel.parentElement;
+    var w=host.querySelector(":scope > .dpm");
+    if(w){var t=label(sel),l=w.querySelector(".dpm-lab");if(l.textContent!==t)l.textContent=t;return;}
+    sel.classList.add("dpm-native");host.classList.add("dpm-host");
+    var opts=[].slice.call(sel.options).filter(function(o){return o.value!=="ALL"&&o.value.indexOf(",")<0;});
+    w=document.createElement("div");w.className="dpm edrms-filt";
+    w.innerHTML='<button type="button" class="cmp-fbtn" aria-haspopup="true" aria-expanded="false"><span class="dpm-lab"></span>'+CHEV+'</button>'+
+      '<div class="cmp-fpop" hidden><div class="cmp-fh">Department / Office / RM / RO</div><label class="cmp-fall"><input type="checkbox" data-all="1"> Select all</label><div class="cmp-flist">'+
+      opts.map(function(o){var p=o.text.split(" - ");return '<label><input type="checkbox" data-c="'+o.value+'"> <b>'+o.value+'</b> <span>'+(p[1]||"")+'</span></label>';}).join("")+
+      '</div><div class="cmp-fact"><button type="button" class="cmp-reset">Reset</button><button type="button" class="cmp-apply">Apply</button></div></div>';
+    sel.insertAdjacentElement("afterend",w);
+    w.querySelector(".dpm-lab").textContent=label(sel);
+    var btn=w.querySelector(".cmp-fbtn"),pop=w.querySelector(".cmp-fpop"),list=w.querySelector(".cmp-flist"),all=w.querySelector("[data-all]");
+    function boxes(){return [].slice.call(list.querySelectorAll("input[data-c]"));}
+    function syncAll(){var b=boxes(),n=b.filter(function(x){return x.checked;}).length;all.checked=n===b.length;all.indeterminate=n>0&&n<b.length;w.querySelector(".cmp-apply").disabled=n===0;}
+    function open(v){pop.hidden=!v;btn.setAttribute("aria-expanded",String(v));if(v){var s=document.getElementById(id),cur=(s&&s.value)||"ALL",set=cur==="ALL"?null:cur.split(",");boxes().forEach(function(x){x.checked=!set||set.indexOf(x.dataset.c)>=0;});syncAll();}}
+    function apply(codes){
+      var s=document.getElementById(id);if(!s)return;
+      var b=boxes(),key=(!codes.length||codes.length===b.length)?"ALL":codes.join(",");
+      if(key.indexOf(",")>0&&![].some.call(s.options,function(o){return o.value===key;})){var o=document.createElement("option");o.value=key;o.text=key;s.appendChild(o);}
+      s.value=key;open(false);s.dispatchEvent(new Event("change",{bubbles:true}));
+      var l=w.querySelector(".dpm-lab");if(l)l.textContent=label(s);
+    }
+    btn.onclick=function(e){e.stopPropagation();open(pop.hidden);};
+    pop.onclick=function(e){e.stopPropagation();};
+    list.onchange=syncAll;
+    all.onchange=function(){boxes().forEach(function(x){x.checked=all.checked;});syncAll();};
+    w.querySelector(".cmp-reset").onclick=function(){apply([]);};
+    w.querySelector(".cmp-apply").onclick=function(){apply(boxes().filter(function(x){return x.checked;}).map(function(x){return x.dataset.c;}));};
+  }
+  document.addEventListener("click",function(e){if(e.target&&e.target.closest&&e.target.closest(".dpm"))return;[].forEach.call(document.querySelectorAll(".dpm .cmp-fpop:not([hidden])"),function(p){p.hidden=true;});});
+  (function watch(){var v=document.getElementById("view");if(!v){setTimeout(watch,300);return;}new MutationObserver(build).observe(v,{childList:true,subtree:true});build();})();
+})();
+</script>
