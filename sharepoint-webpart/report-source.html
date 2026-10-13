@@ -2722,11 +2722,11 @@ DASHBOARDS.bw=(function(){
        ${d.sub?`<div class="psub">${d.sub}</div>`:""}
        <div class="tiles">${d.tiles().map(([l,v])=>
          `<div class="tile"><div class="tl">${l}</div><div class="tv">${v}</div></div>`).join("")}</div>
-              <div class="sites-split"><section class="sites-rank"><div class="ptitle">Top 10 by number of sites</div><div class="psub">Highest site counts across departments, offices, RM and RO.</div><div class="sites-bars">${CHART.hbars(topSites.map(x=>({label:x.code,value:x.sites})),{color:"#2878cf"})}</div></section><section class="sites-table"><div class="ptitle">Sites by department / office / RM / RO</div><div class="sites-search-wrap"><input class="sites-search" id="bw-sites-search" type="search" aria-label="Search by department / office / RM / RO" placeholder="Search by department / office / RM / RO" /></div><div class="scrollx"><div class="dtab wide" id="bw-sites">
+              <div class="sites-split"><section class="sites-rank"><div class="ptitle">Top 10 by number of sites</div><div class="psub">Highest site counts across departments, offices, RM and RO.</div><div class="sites-bars">${CHART.hbars(topSites.map(x=>({label:x.code,value:x.sites})),{color:"#2878cf"})}</div></section><section class="sites-table"><div class="ptitle">Sites by department / office / RM / RO</div><style>.dash-bw #bw-sites .drow.go .dn{color:#194F8E}.dash-bw #bw-sites .drow.go .dn>:first-child,.dash-bw #bw-sites .drow.go:hover .dn{text-decoration:underline;text-underline-offset:3px}</style><div class="sites-search-wrap"><input class="sites-search" id="bw-sites-search" type="search" aria-label="Search by department / office / RM / RO" placeholder="Search by department / office / RM / RO" /></div><div class="scrollx"><div class="dtab wide" id="bw-sites">
          <div class="dhead">${d.cols.map((c,i)=>
            `<div class="hd${i?" num":""}${sortDept===KEYS[i]?" on":""}" data-s="${KEYS[i]}">${i===1?"Sites":c}${
              sortDept===KEYS[i]?(dirDept==="asc"?" ↑":" ↓"):""}</div>`).join("")}</div>
-         ${page.map(x=>`<div class="drow">
+         ${page.map(x=>`<div class="drow go" data-dept="${x.code}" tabindex="0" role="link" title="Open in Department Insights">
            <div class="dn">${x.code}</div>
            <div class="num">${F(x.sites)}</div></div>`).join("")}
        </div></div>
