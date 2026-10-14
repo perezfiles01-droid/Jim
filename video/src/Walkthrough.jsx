@@ -5,7 +5,7 @@ import BEATS from './beats.gen.json';
 const INK = '#10243E', BLUE = '#0072BC', TEAL = '#00A5A8';
 const FONT = 'Segoe UI, Helvetica, Arial, sans-serif';
 const FPS = 30, W = 1920, H = 1080, GAP = 14, CARD_PAD = 30;
-const PAGE_H = { bw: 3418, dp: 2082 };
+const PAGE_H = { bw: 3884, dp: 3020 };
 
 /* Timeline: each beat lasts as long as its voiceover plus a breath. */
 const len = b => Math.ceil(b.seconds * FPS) + GAP + (b.dash ? 0 : 2 * CARD_PAD);
@@ -114,8 +114,7 @@ export const Walkthrough = () => {
   return (
     <AbsoluteFill style={{ background: INK }}>
       {b.dash ? <Stage f={f} />
-        : <Card f={f - START[i]} n={len(b)} title={i ? 'Explore the live prototype' : 'EDRMS Utilization Report'}
-            sub={i ? 'perezfiles01-droid.github.io/Jim' : 'Bank-wide Oversight and Department Insights'} />}
+        : <Card f={f - START[i]} n={len(b)} title={b.title} sub={b.sub} />}
       <Audio src={staticFile('music.mp3')} volume={musicVol} />
       {BEATS.map((b, j) => (
         <Sequence key={j} from={START[j] + (b.dash ? 4 : CARD_PAD)} durationInFrames={Math.ceil(b.seconds * FPS) + 2}>
