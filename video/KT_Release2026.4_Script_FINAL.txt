@@ -30,4 +30,8 @@ Need it for a meeting? Every table exports to Excel, and every dashboard exports
 
 Before you quote a figure, check the data as of date in the corner.
 
+Please note, the figures you see in this video are demo data. They show how the report works, not actual E D R M S usage.
+
 So, Bank-wide Oversight for the whole Bank, and Department Insights for a closer look at the departments you choose. Click any card to dig deeper, and always check the date.
+
+Thanks for watching.
