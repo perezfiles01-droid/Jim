@@ -1,5 +1,5 @@
 EDRMS UTILIZATION REPORT: SESSION HANDOFF
-Written 7 October 2026, updated 13 October 2026. Paste this whole file into a new Claude Code session
+Written 7 October 2026, updated 14 October 2026. Paste this whole file into a new Claude Code session
 (repo perezfiles01-droid/Jim) to carry on exactly where we stopped.
 
 ======================================================================
@@ -264,13 +264,81 @@ sources: retention labels and disposal dates, sensitivity labels, file
 formats, file plan term usage, RAC archive figures. Offered to add
 rpt_LoadLog and the LastActivityDate note to the admin site; no answer yet.
 
+
+13-14 October session:
+- Floot (project d7e7628e...) got 13 changes, all published:
+  department code links in "Sites by department" (open Department
+  Insights filtered, code underlined only); hover titles removed on
+  Bank-wide cards; watchdog false alarm fixed (view click listener bumps
+  navigationSequence); Comparison panel redesigned (sortable columns,
+  search, department multi-select filter with Apply/Reset, 20 per page
+  with paging, no docs-per-person); same sort/filter on the physical
+  counterparts and other dept tables; Records trend option A (live to
+  today's date, counts on bars, custom range hides empty years, Apply
+  button, To date cannot be before From); Manila time removed; multi-
+  select pickers on Department Insights and Library usage; Site filter
+  beside the department filter (lists only sites in chosen departments,
+  "All 1,032 sites" by default); Library usage shows site NAMES (links
+  were tried and reverted: adb.sharepoint.com NXDOMAIN, test tenant 404);
+  Library usage uses the same sites as sites/visitors and follows the
+  Site filter; "Entered by RAC"/"Link from RAC" wording removed; Sites
+  created months view has a way back to years.
+  If Floot shows "Verification failed: comparison renderer", update
+  requiredComparisonRuntime to the DEPTS.map strings.
+- Web part 1.0.34: sharepoint-webpart/floot-sync/apply.py replays all
+  the Floot changes; pending-fixes.py calls it. Build: python3
+  sharepoint-webpart/pending-fixes.py, then REPORT_SOURCE=... npm run
+  build; test NODE_PATH=/home/user/Jim/node_modules node test/host-test.js
+  (8 PASS). Package at repo root:
+  EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg (1.0.34).
+  Source zip EDRMS_WebPart_Source_1.0.34.zip (answers Wenying).
+- Mockups: EDRMS_Mockups_V2.1.pdf (16 pages; 1, 2, 10 from V2.0, rest are
+  web part screenshots via sharepoint-webpart/test/mockup-shots.js, which
+  needs adbBlue:true and transform-origin 0 0 or the sidebar/crops go wrong).
+- Deck: EDRMS_R2026.4_Requirements_Reconfirmation_v2.pptx. Slide 5 has
+  Option A (disabled) / Option B (hidden) screenshots for future
+  dashboards; slides 23-24 are the full summary (#, Item, Description,
+  Refer to slide, Type; owner/date column removed); new items 9 Site
+  filter, 10 Folder count per library, 11 Site name instead of URL. The
+  user then kept editing their own copy (_1.pptx) and added item 12 Data
+  refresh frequency (weekly; Records declared real time, slides 10, 13).
+  Wording fix still to make in the deck: Site filter is BESIDE (not
+  under) the department picker.
+- RAC email: drafted in chat in the style of the R2026.3.1 Email Records
+  Declaration email (A. Information to provide 1-4, B. Decisions to
+  confirm 5-13). drafts/RAC_inputs_tables.html is the paste-ready plain
+  grid table for New Outlook (item 13 = updated Comparison panel, ref
+  slide 12 / mockup V2.1).
+- Answers given to the team (Teams):
+  * Folder count per library: NOT from the EDRMS DB (only declared
+    records, FolderPath undercounts). Must come from SharePoint in the
+    scheduled job (search IsContainer per library path, REST FSObjType
+    eq 1, or Graph). Not tested on the tenant; Dane to test.
+  * Data: scheduled job into the DB, not live SPO calls (slow, throttled,
+    per-viewer permissions). Dane plans a nightly midnight job; user
+    proposes weekly to RAC. Records declaration trend can be live because
+    it is a DB query on drm-npr, but then it will not match weekly cards
+    unless labelled; declaration rate stays on the job schedule.
+  * Web part goes on ONE site (Utilization Report site). It is already a
+    separate .sppkg from the EDRMS solution. For production it still
+    needs: name (currently "Util sample"), developer details, a new
+    solution ID, skipFeatureDeployment false, version reset. Not done;
+    waiting for the name and developer details.
+
 ======================================================================
-5. OPEN ITEMS / WHERE WE STOPPED (13 October 2026)
+5. OPEN ITEMS / WHERE WE STOPPED (14 October 2026)
 ======================================================================
+- Production .sppkg: waiting on solution name and developer details.
+- Folder count feasibility: waiting on Dane's test.
+- Refresh frequency: RAC to confirm (proposed weekly; records real time).
+- Deck/email: fix "under" -> "beside" for the Site filter (slide 15 row,
+  item 9). RAC inputs (headcount, training, go-live, site convention)
+  still outstanding.
+- Earlier open items still stand:
 - Waiting on the user: add rpt_LoadLog + LastActivityDate note to the admin
   site? If yes, edit pages/_index.tsx TABLES, ColumnSources and FigureSearch,
   publish, give the link https://edrms-reporting-db-admin.floot.app
-- Web part is at 1.0.32 and in sync with Floot. GitHub index.html matches
+- Web part is at 1.0.34 and in sync with Floot. GitHub index.html matches
   as of the last sync; sync again only when asked.
 - Visual checks of Floot and the admin site were not possible from the
   container (no browser access to floot.app); Purview behaviour not
