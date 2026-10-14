@@ -25,6 +25,11 @@ html body .dash-dp #dp-libs table#dp-libs-tab td.so-empty{text-align:center!impo
 html body #view .tap{font-size:12px!important;font-weight:400!important;color:#6b8db3!important;letter-spacing:0!important;text-transform:none!important}
 html body #view .tap *{font-size:inherit!important;font-weight:inherit!important;color:inherit!important}
 html body #view .kpi:hover .tap,html body #view .kpi:focus-within .tap,html body #view .tap:hover{color:#0563C1!important;text-decoration:underline;text-underline-offset:3px}
+/* Documents in EDRMS cards: full width, equal columns, same spacing and type as the other breakdown cards. */
+html body #view .dh-kpis{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;width:100%!important;margin-bottom:14px!important}
+html body #view .dh-kpis .dh-k{width:auto!important;padding:11px 13px!important;border:1.25px solid #d9e1ea!important;border-radius:9px!important;background:#f5f8fc!important;display:flex!important;flex-direction:column!important;box-sizing:border-box}
+html body #view .dh-kpis .dh-k .l{flex:1 1 auto;font-size:10.5px!important;text-transform:uppercase!important;letter-spacing:.05em!important;color:#6b7a8c!important;margin-bottom:10px!important;line-height:1.3!important}
+html body #view .dh-kpis .dh-k .v{font-size:19px!important;font-weight:700!important;color:#10243e!important;margin-top:0!important;line-height:1!important}
 /* Physical counterparts donut, option A: thinner ring, roomy centre. */
 #view .physical-donut{width:clamp(190px,46cqi,240px)!important}
 #view .physical-donut:before{inset:12%!important}
