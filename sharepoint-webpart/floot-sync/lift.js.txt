@@ -1,0 +1,17 @@
+        var r=doc.documentElement; r.style.setProperty("zoom","1","important"); r.style.width=LW+"px";
+        if(doc.body)doc.body.style.setProperty("zoom","1","important");
+        /* html2canvas places every line of text 2px below where the browser puts
+           it (its font baseline adds 2); lift text in buttons and picker boxes. */
+        doc.__lift=function(){
+          [].forEach.call(doc.querySelectorAll("#view button svg, #view button img"),function(s){
+            if(doc.defaultView.getComputedStyle(s).position==="static"){s.style.position="relative";s.style.zIndex="1";}
+          });
+          var xs=document.querySelectorAll("#view .xp-btn"),xc=doc.querySelectorAll("#view .xp-btn");
+          [].forEach.call(xc,function(b,i){var o=xs[i];if(!o)return;var c=getComputedStyle(o);
+            b.style.setProperty("color",c.color,"important");b.style.setProperty("background-color",c.backgroundColor,"important");b.style.setProperty("border-color",c.borderTopColor,"important");});
+          [].forEach.call(doc.querySelectorAll("#view button, #view [data-pdfbox]"),function(b){
+            var c=doc.defaultView.getComputedStyle(b),pt=parseFloat(c.paddingTop)||0,pb=parseFloat(c.paddingBottom)||0;
+            if(pt>=2){b.style.setProperty("padding-top",(pt-2)+"px","important");b.style.setProperty("padding-bottom",(pb+2)+"px","important");}
+            else b.style.setProperty("padding-bottom",(pb+4)+"px","important");
+          });
+        };

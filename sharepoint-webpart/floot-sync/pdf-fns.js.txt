@@ -1,0 +1,64 @@
+  function prepare(view){
+    var n=0, map={};
+    view.querySelectorAll("*").forEach(function(el){
+      var bg=getComputedStyle(el).backgroundImage;
+      if(bg&&bg.indexOf("conic-gradient")>=0){var u=conicToImage(el);if(u){el.setAttribute("data-dx",++n);map[n]={img:u};}}
+      else if(el.tagName==="INPUT"&&el.type==="date"&&getComputedStyle(el).display==="none"){/* hidden behind the calendar button: leave it hidden */}
+      else if(el.tagName==="INPUT"&&el.type==="date"){el.setAttribute("data-dx",++n);var v=el.value;map[n]={date:v?new Date(v+"T00:00:00").toLocaleDateString():datePattern(),empty:!v};}
+      /* 14 Oct 2026: picker buttons are drawn as plain boxes holding their text,
+         and icons get a fixed size, so the PDF shows the chosen department and
+         site and a proper search glass. */
+      /* Empty text boxes: show the placeholder in its own grey and size (14 Oct 2026). */
+      else if(el.tagName==="INPUT"&&/^(text|search|)$/.test(el.type||"")&&!el.value&&el.placeholder&&getComputedStyle(el).display!=="none"){el.setAttribute("data-dx",++n);map[n]={ph:el.placeholder,phc:getComputedStyle(el,"::placeholder").color};}
+      /* html2canvas draws a select's text at the top of the box; draw it as a picker box instead. */
+      else if(el.tagName==="SELECT"&&getComputedStyle(el).display!=="none"&&el.getBoundingClientRect().width){var so=el.options[el.selectedIndex];el.setAttribute("data-dx",++n);map[n]={pick:so?so.text.trim():"",sel:1};}
+      else if(el.matches&&el.matches("button.cmp-fbtn,button.edp-btn")&&el.querySelector(".dpm-lab,.dps-lab,.edp-v")){var lb=el.querySelector(".dpm-lab,.dps-lab,.edp-v");el.setAttribute("data-dx",++n);map[n]={pick:(lb.textContent||"").trim()};}
+      /* Only icons painted by CSS need help; an icon that carries its own colours
+         (the Filter funnel) already draws correctly and is left alone. */
+      else if(el.tagName&&el.tagName.toLowerCase()==="svg"&&[].some.call(el.querySelectorAll("circle,path,rect,line,polyline,polygon,ellipse"),function(sh){return !sh.hasAttribute("stroke")&&!sh.hasAttribute("fill");})){var rr=el.getBoundingClientRect();if(rr.width&&rr.height){el.setAttribute("data-dx",++n);
+        /* html2canvas draws an svg as a picture, without the page's CSS, so a
+           search glass styled in CSS came out as a dot. Carry each shape's paint. */
+        var paint=[].map.call(el.querySelectorAll("circle,path,rect,line,polyline,polygon,ellipse"),function(sh){var c=getComputedStyle(sh);return {fill:c.fill,stroke:c.stroke,sw:c.strokeWidth,lc:c.strokeLinecap,lj:c.strokeLinejoin};});
+        map[n]={svg:[rr.width,rr.height],paint:paint,color:getComputedStyle(el).color};}}
+    });
+    return map;
+  }
+  function onclone(map){
+    return function(doc){
+      Object.keys(map).forEach(function(k){
+        var el=doc.querySelector('[data-dx="'+k+'"]'); if(!el)return; var it=map[k];
+        if(it.img){el.style.backgroundImage="url("+it.img+")";el.style.backgroundSize="100% 100%";el.style.backgroundRepeat="no-repeat";}
+        else if(it.svg){el.setAttribute("width",it.svg[0]);el.setAttribute("height",it.svg[1]);el.style.width=it.svg[0]+"px";el.style.height=it.svg[1]+"px";
+          if(it.color)el.setAttribute("color",it.color);
+          var shapes=el.querySelectorAll("circle,path,rect,line,polyline,polygon,ellipse");
+          (it.paint||[]).forEach(function(p,ix){var sh=shapes[ix];if(!sh)return;
+            if(p.fill)sh.setAttribute("fill",p.fill);if(p.stroke)sh.setAttribute("stroke",p.stroke);
+            if(p.sw)sh.setAttribute("stroke-width",p.sw);if(p.lc)sh.setAttribute("stroke-linecap",p.lc);if(p.lj)sh.setAttribute("stroke-linejoin",p.lj);});
+          /* Small icons go in as a ready-made picture, which html2canvas always draws. */
+          if(it.svg[0]<=40&&it.svg[1]<=40){try{var cp=el.cloneNode(true);cp.setAttribute("xmlns","http://www.w3.org/2000/svg");cp.removeAttribute("style");cp.removeAttribute("class");
+            [].forEach.call(cp.querySelectorAll("[style]"),function(z){z.removeAttribute("style");});
+            var im=doc.createElement("img");im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(cp.outerHTML);
+            var os=document.querySelector('[data-dx="'+k+'"]'),oc=getComputedStyle(os);["position","margin","verticalAlign","display"].forEach(function(q){im.style[q]=oc[q];});
+            /* an svg has no offsetParent, so find the positioned box it sits in */
+            var opr=os.parentElement;while(opr&&getComputedStyle(opr).position==="static")opr=opr.parentElement;
+            if(oc.position==="absolute"&&opr){var pr=opr.getBoundingClientRect(),sr=os.getBoundingClientRect(),pc=getComputedStyle(opr);
+              /* centred on the box's height, so a search glass lines up with the text */
+              var ph=opr.clientHeight;
+              im.style.left=(sr.left-pr.left-parseFloat(pc.borderLeftWidth||0))+"px";im.style.top=Math.round((ph-it.svg[1])/2)+"px";im.style.right="auto";im.style.bottom="auto";im.style.margin="0";im.style.transform="none";}
+            im.style.width=it.svg[0]+"px";im.style.height=it.svg[1]+"px";el.parentNode.replaceChild(im,el);}catch(e){}}}
+        else if(it.ph!==undefined){var oi=document.querySelector('[data-dx="'+k+'"]'),ci=getComputedStyle(oi),pb=doc.createElement("div");
+          ["width","height","boxSizing","borderTop","borderRight","borderBottom","borderLeft","borderRadius","paddingTop","paddingRight","paddingBottom","paddingLeft","backgroundColor","fontSize","fontFamily","fontWeight","lineHeight","marginTop","marginRight","marginBottom","marginLeft","position","left","top","flex","flexGrow","flexShrink","flexBasis","maxWidth","minWidth"].forEach(function(p){pb.style[p]=ci[p];});
+          pb.style.display="flex";pb.style.alignItems="center";pb.setAttribute("data-pdfbox","1");pb.style.color=it.phc||"#8a9aab";pb.style.whiteSpace="nowrap";pb.style.overflow="hidden";pb.textContent=it.ph;el.parentNode.replaceChild(pb,el);}
+        else if(it.pick!==undefined){var o=document.querySelector('[data-dx="'+k+'"]'),c2=getComputedStyle(o),bx=doc.createElement("div");
+          ["width","height","boxSizing","border","borderRadius","padding","backgroundColor","fontSize","fontFamily","fontWeight","color","lineHeight"].forEach(function(p){bx.style[p]=c2[p];});
+          bx.style.display="flex";bx.style.alignItems="center";bx.style.justifyContent="space-between";bx.style.gap="8px";bx.setAttribute("data-pdfbox","1");
+          var tx=doc.createElement("span");tx.textContent=it.pick;tx.style.whiteSpace="nowrap";tx.style.overflow="hidden";
+          /* the same chevron the pickers use on screen */
+          var cv=doc.createElement("img");cv.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="12" height="12"><path d="M3 4.5l3 3 3-3" fill="none" stroke="#1f2d3d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');cv.style.width="12px";cv.style.height="12px";cv.style.flex="none";
+          bx.appendChild(tx);bx.appendChild(cv);el.parentNode.replaceChild(bx,el);}
+        else{var sp=doc.createElement("div");var cs=getComputedStyle(document.querySelector('[data-dx="'+k+'"]'));
+          ["width","height","boxSizing","border","borderRadius","padding","background","font","fontSize","fontFamily","lineHeight"].forEach(function(p){sp.style[p]=cs[p];});
+          sp.style.display="inline-flex";sp.style.alignItems="center";sp.style.color=it.empty?"#757575":cs.color;sp.textContent=it.date;el.parentNode.replaceChild(sp,el);}
+      });
+    };
+  }

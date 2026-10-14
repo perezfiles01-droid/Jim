@@ -1,0 +1,13 @@
+
+      (function(){
+        var B={style:"thin",color:{rgb:"D9E1EA"}}, BOX={top:B,bottom:B,left:B,right:B}, nR=aoa.length, nC=head.length;
+        for(var r=0;r<nR;r++)for(var c=0;c<nC;c++){
+          var a=XLSX.utils.encode_cell({r:r,c:c}), x=ws[a]; if(!x)x=ws[a]={t:"s",v:""};
+          var hd=r===0, tt=!!tot&&r===nR-1, num=x.t==="n";
+          x.s={font:{name:"Segoe UI",sz:hd?11:10,bold:hd||tt,color:{rgb:hd?"FFFFFF":"10243E"}},
+            fill:{patternType:"solid",fgColor:{rgb:hd?"194F8E":tt?"DCEAF7":(r%2===0?"EAF3FB":"FFFFFF")}},
+            alignment:{vertical:"center",horizontal:num?"right":"left",wrapText:hd},border:BOX};
+        }
+        ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:nR-1-(tot?1:0),c:nC-1}})};
+        ws["!rows"]=[{hpt:26}];
+      })();

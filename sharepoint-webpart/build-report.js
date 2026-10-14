@@ -33,7 +33,7 @@ const TEMPLATE = path.join(HERE, 'src', 'webparts', 'edrmsUtilizationReport', 'r
 const BASE = '__EDRMS_BASE__';
 
 const LIBS = {
-  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js': 'node_modules/xlsx/dist/xlsx.full.min.js',
+  'https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js': 'node_modules/xlsx-js-style/dist/xlsx.bundle.js',
   'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js': 'node_modules/html2canvas/dist/html2canvas.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js': 'node_modules/jspdf/dist/jspdf.umd.min.js'
 };

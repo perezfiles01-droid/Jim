@@ -93,6 +93,17 @@ def apply(s):
     s = once(s, 'card("Documents",sum("docs"),"Files stored in these libraries")+', 'card("Folders",sum("folders"),"Folders inside these libraries")+\n        card("Documents",sum("docs"),"Files stored in these libraries")+', 'folders card')
     s = once(s, '<div class="so2-seg"><button data-lm="docs"', '<div class="so2-seg"><button data-lm="folders"\'+(met==="folders"?\' class="on"\':\'\')+\'>Folders</button><button data-lm="docs"', 'folders seg')
     s = once(s, '.dash-dp .lb-sum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:14px}', '.dash-dp .lb-sum{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:14px}', 'six cards')
+    # 14 Oct 2026 (later): PDF export matches the screen; styled Excel export.
+    s, k = re.subn(r'  function prepare\(view\)\{[\s\S]*?\n(?=  function cleanup\(view\))', lambda m: T('pdf-fns.js.txt'), s, count=1)
+    assert k == 1, 'floot-sync: pdf prepare'
+    s = once(s, '        var r=doc.documentElement; r.style.zoom="1"; r.style.width=LW+"px";\n', T('lift.js.txt'), 'pdf zoom')
+    s = once(s, '        onclone(map)(doc);\n', '        onclone(map)(doc);\n        if(doc.__lift)doc.__lift();\n        doc.querySelectorAll("button span").forEach(function(s){if(s.textContent==="Preparing PDF...")s.textContent=old;});\n', 'pdf label')
+    s = once(s, 'ignoreElements:function(el){return el.classList&&(el.classList.contains("xp-bar")||el.classList.contains("xp-btn")||el.classList.contains("csel-list"));}',
+             'ignoreElements:function(el){return el.classList&&(el.classList.contains("edrms-menu")||el.classList.contains("csel-list")||el.classList.contains("cmp-fpop"));}', 'pdf ignore')
+    s = once(s, 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js', 'https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js', 'xlsx style lib')
+    s = once(s, '    var s=String(v).trim(), m;\n', '    var s=String(v).trim(), m;\n    if(/^[A-Z]{2,6}$/.test(s)){try{var dd=(typeof DEPTS!=="undefined"?DEPTS:[]).find(function(x){return x.code===s;});if(dd&&dd.name)s=s+" - "+dd.name;}catch(e){}}\n', 'xlsx names')
+    a = 'ws["!cols"]=head.map(function(h,ci){var w=h.length;all.forEach(function(r){w=Math.max(w,String(r[ci]||"").length);});return {wch:Math.min(60,w+2)};});'
+    s = once(s, a, a.replace('w+2', 'w+4') + T('xlsx-style.js.txt'), 'xlsx style')
     # Floot-only add-ons, appended as in the Floot app.
     add = '<style>\n' + T('styles.css') + '</style>\n' + T('table-filter.html') + T('datepicker.html') + T('dept-multiselect.html') + T('site-filter.html') + T('dept-links.html') + T('oct14.html')
     i = s.rfind('</body>')

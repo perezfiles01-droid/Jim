@@ -35,6 +35,17 @@ html body #view .pager{flex-wrap:nowrap!important;gap:12px!important}
 html body #view .pager .pinfo{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html body #view .pager .pbtns{flex:0 0 auto;flex-wrap:nowrap!important;gap:4px!important;margin-left:auto}
 html body #view .pager .pbtns button{min-width:32px;padding:5px 8px!important;white-space:nowrap}
+/* Physical counterparts legend, option 1: a small full-width table under the donut, figures right-aligned. */
+#view .physical-donut-panel{flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:center!important;gap:22px!important}
+#view .physical-donut-legend{max-width:none!important;min-width:0!important;width:100%!important;flex:none!important;gap:0!important;border-top:1px solid #e3e9f0}
+#view .physical-donut-legend-row{padding:10px 4px!important;border-bottom:1px solid #eef2f7;align-items:center!important}
+#view .physical-donut-key{align-items:center!important;gap:10px!important}
+#view .physical-donut-swatch{width:14px!important;height:14px!important;flex:0 0 14px!important;border-radius:3px!important;margin-top:0!important}
+#view .physical-donut-copy{display:flex!important;align-items:center!important;gap:0!important;flex:1;min-width:0}
+#view .physical-donut-name{flex:1;font-size:14px!important;min-width:0}
+#view .physical-donut-value{display:flex!important;gap:0;font-size:14px!important}
+#view .physical-donut-value .pdn{width:80px;text-align:right;font-weight:600;color:#10243e;font-variant-numeric:tabular-nums}
+#view .physical-donut-value .pdp{width:64px;text-align:right;color:#5b6b7c;font-variant-numeric:tabular-nums}
 /* Physical counterparts donut, option A: thinner ring, roomy centre. */
 #view .physical-donut{width:clamp(190px,46cqi,240px)!important}
 #view .physical-donut:before{inset:12%!important}
@@ -42,6 +53,9 @@ html body #view .pager .pbtns button{min-width:32px;padding:5px 8px!important;wh
 #view .physical-donut-percent{font-size:34px!important;line-height:1.1!important}
 #view .physical-donut-caption{font-size:0!important;margin-top:6px!important}
 #view .physical-donut-caption:after{content:"of records have a physical counterpart";display:block;font-size:13px;line-height:1.3;color:#64748b}
+#view .physical-donut-panel .physical-donut{margin:0 auto!important;width:clamp(200px,60cqi,300px)!important}
+#view .physical-donut-percent{font-size:40px!important}
+html body #view .physical-donut-caption:after{font-size:14px!important}
 /* Breakdown cards: figures line up along the bottom whatever the label length. */
 #view #bw-drill .tiles{align-items:stretch!important}
 #view #bw-drill .tiles .tile{display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
@@ -76,6 +90,10 @@ html body #view .edrms-i:hover::after,html body #view .edrms-i:focus::after{box-
   function norm(t){return (t||"").replace(/\s+/g," ").trim().toLowerCase();}
   function mk(text){var i=document.createElement("span");i.className="edrms-i";i.innerHTML=SVG;i.setAttribute("tabindex","0");i.setAttribute("role","img");i.setAttribute("aria-label",text);i.setAttribute("data-tip",text);i.addEventListener("click",function(e){e.stopPropagation();i.focus();});return i;}
   function run(){
+    document.querySelectorAll("#view .physical-donut-value:not([data-split])").forEach(function(v){
+      var m=(v.textContent||"").match(/^([\d,]+) records?, ([\d.]+%)$/);if(!m)return;
+      v.setAttribute("data-split","1");v.innerHTML='<span class="pdn">'+m[1]+'</span><span class="pdp">'+m[2]+'</span>';
+    });
     document.querySelectorAll("#view .edrms-i").forEach(function(i){
       if(!i.querySelector("svg"))i.innerHTML=SVG;
       var lab=i.parentElement, t=lab?norm((lab.textContent||"")):"";
