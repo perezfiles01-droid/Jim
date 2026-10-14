@@ -37,6 +37,7 @@
   }
   document.addEventListener("click",function(e){
     var r=e.target.closest&&e.target.closest(".dash-bw .dgo"); if(r) go(r);
+    else if(e.target.closest&&e.target.closest("#bw-sites .drow.go")){ requestAnimationFrame(top); setTimeout(top,60); setTimeout(top,250); }
   });
   document.addEventListener("keydown",function(e){
     if(e.key!=="Enter"&&e.key!==" ") return;
