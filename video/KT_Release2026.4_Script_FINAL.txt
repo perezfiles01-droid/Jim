@@ -1,0 +1,33 @@
+Welcome. In the next four minutes, you'll learn what's in Release 2026.4 of the E D R M S Utilization Report, and how to read it.
+
+In A D B, users can upload documents and files to E D R M S SharePoint sites, and declare them as records. They can also declare emails as records straight from Outlook, and those are saved in the E D R M S site they choose. Every declared record is then kept in the E D R M S database. This report shows whether people are actually using all of this. Are users uploading documents to E D R M S sites? Are they declaring them as records? And which departments need support?
+
+This release has two dashboards. Bank-wide Oversight, for the whole Bank. And Department Insights, for a closer look at the departments you choose.
+
+First, three words. A document is any file saved in E D R M S. A record is a document formally declared as the Bank's official version. And a physical counterpart is a record that also exists on paper.
+
+This is Bank-wide Oversight. At the top are four cards.
+
+Active E D R M S sites. E D R M S users, which is each department's approximate headcount. Documents in E D R M S. And records declared, the figure that matters most.
+
+Every card is clickable. Click one, and its breakdown opens below. The users card, for example, shows who was active in the last 180 days, who had no access, and who completed training. The records card shows the declaration rate, which is records declared divided by documents.
+
+Below the cards, the physical counterparts panel shows how many records still have a paper version, department by department.
+
+The comparison panel puts each department's documents or records beside its headcount, so you can see whether its use matches its size.
+
+And the Records Declaration Trend shows records declared each month, with a running total. Pick a preset, or set your own date range. A rising line means adoption is taking hold.
+
+Department Insights takes a closer look at the departments you choose.
+
+Use the picker to select one department, several, or all of them, and the whole page changes to match. The profile shows when each department went live on E D R M S, and its site naming convention. The Site filter beside it narrows the page to the sites you choose.
+
+Then five cards. Sites, site visitors, documents, records declared, and physical counterparts. Again, click any card for its breakdown, site by site. Sites shows each site's owner and creation date. Site visitors shows who opened each site in the last 180 days, internal users and external guests, and the ten most visited sites.
+
+Last, library usage goes one level deeper, showing documents, records and active users for every library. This is where you spot which libraries are really used for recordkeeping.
+
+Need it for a meeting? Every table exports to Excel, and every dashboard exports to PDF, exactly as you see it.
+
+Before you quote a figure, check the data as of date in the corner.
+
+So, Bank-wide Oversight for the whole Bank, and Department Insights for a closer look at the departments you choose. Click any card to dig deeper, and always check the date.
