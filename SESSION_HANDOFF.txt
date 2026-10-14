@@ -1,5 +1,5 @@
 EDRMS UTILIZATION REPORT: SESSION HANDOFF
-Written 7 October 2026, updated 14 October 2026. Paste this whole file into a new Claude Code session
+Written 7 October 2026, updated 14 October 2026 (late session). Paste this whole file into a new Claude Code session
 (repo perezfiles01-droid/Jim) to carry on exactly where we stopped.
 
 ======================================================================
@@ -45,7 +45,7 @@ There are three copies of the report. Keep them straight:
        App Catalog: https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
        Delivered package (keep THIS filename so the user can Replace):
                     EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg
-                    (repo root). Current version: 1.0.32.0. App Catalog title: "Util sample".
+                    (repo root). Current version: 1.0.37.0. App Catalog title: "Util sample".
 
 ======================================================================
 1. STANDING RULES FROM THE USER (ALWAYS FOLLOW)
@@ -61,7 +61,7 @@ There are three copies of the report. Keep them straight:
 - KEEP SHAREPOINT AND FLOOT IN SYNC. Every change to the SharePoint web part
   also goes into the Floot app, which is then published, and the reverse.
 - REPO: every change is merged to main and pushed in the same turn
-  (CLAUDE.md rule). Work on the session's branch (last: claude/confident-ptolemy-p55gms), then:
+  (CLAUDE.md rule). Work on the session's branch (last: claude/dept-office-rm-ro-hyperlink-rl6mgh), then:
     git checkout main && git merge --no-edit <branch> && git push origin main
     git checkout <branch>
   End commit messages with the attribution lines the session gives you.
@@ -326,7 +326,78 @@ rpt_LoadLog and the LastActivityDate note to the admin site; no answer yet.
     waiting for the name and developer details.
 
 ======================================================================
-5. OPEN ITEMS / WHERE WE STOPPED (14 October 2026)
+4c. 14 OCTOBER, LATER SESSION (Floot first, then web part 1.0.35 to 1.0.37)
+======================================================================
+User preference this session: "update in Floot first", then sync to
+SharePoint only when asked. Floot was published after every change.
+Bank-wide Oversight
+- Every Department / Office / RM / RO column (EDRMS users, Documents incl.
+  #dh-panel, Records declared, Physical counterparts, Comparison) works like
+  Sites by department: code underlined, row click/Enter opens Department
+  Insights for that department, landing at the TOP of the page (scrolls every
+  scrolling ancestor and the parent to 0). Top 10 bar chart unchanged.
+  Code: floot-sync/dept-links.html (class "dgo" on rows).
+- Small breakdown cards (#bw-drill .tile): (i) with full-sentence tooltips
+  (no figures); the lines under Completed training / Training completion were
+  removed; figures line up at the bottom whatever the label length.
+- Documents in EDRMS cards (.dh-kpis) now full width, 3 equal columns, same
+  style as the other breakdown cards.
+- Physical counterparts chart: option A donut (thinner ring, larger), legend
+  option 1 = small table under the donut (name | count | %), centred
+  vertically in the panel. Mockups: mockups/phys-donut-options.png,
+  mockups/phys-legend-options.png.
+- (i) icons everywhere: drawn as SVG (dot + bar), 13px, pale grey, darker on
+  hover; tooltips 240px wide, open leftward, slide right only to clear the
+  side menu. "Unique visitors" tooltip is a full sentence.
+- "View breakdown" links: 12px, regular weight, muted blue, underline on hover.
+Department Insights
+- Library usage: Folders column + Folders card (6 cards) + Folders chart
+  button; chart (Top 10) ABOVE a full-width table; compact bars; even columns
+  (22% / 23% / five x 11%, numbers right-aligned). FOLDER FIGURES ARE SAMPLE
+  DATA until Dane's job supplies them.
+- Site filter resets to "All N sites" on EVERY department Apply (both
+  pickers). A site chosen in Library usage now redraws through the Library
+  usage picker (it used to swap in the profile picker's department).
+- Pagers stay on one line on any page (no wrap below the panel).
+Exports
+- Excel: styled with xlsx-js-style 1.2.0 (jsdelivr in Floot, bundled in the
+  web part): ADB blue header, autofilter on every column, light blue banding,
+  thin borders, bold total row; bare codes get their names (PARD - ...).
+  Sample: mockups/Sites_by_department_sample.xlsx.
+- PDF (html2canvas) now matches the screen: no "Preparing PDF..." label;
+  department/site/Compare/Year/date pickers drawn as boxes with their text and
+  the screen chevron; hidden native date inputs stay hidden; empty search boxes
+  show their placeholder grey; CSS-painted icons (search glass, export arrow)
+  go in as pictures, centred; Export table buttons included in their screen
+  colours; Filter funnel shows.
+  LESSONS: (1) html2canvas draws all text 2px low ("+2" in its FontMetrics),
+  so text in buttons/boxes is lifted 2px in the clone; (2) it draws a select's
+  text at the TOP of the box, so selects are replaced by boxes; (3) an svg has
+  no offsetParent; (4) an icon inside a button inside a position:relative box
+  is painted BEFORE the button's white fill, so icons in buttons get
+  position:relative;z-index:1 in the clone; (5) an svg that carries its own
+  stroke/fill attributes draws fine, leave it alone.
+SharePoint
+- 1.0.35, 1.0.36, 1.0.37 built, 8/8 host tests PASS each time. 1.0.37 = all of
+  the above. New floot-sync files: dept-links.html, oct14.html (CSS + icons +
+  tiles + legend split), pdf-fns.js.txt (whole prepare/onclone), lift.js.txt,
+  xlsx-style.js.txt. build-report.js maps the jsdelivr xlsx-js-style URL to
+  node_modules/xlsx-js-style (npm install needed; container may need
+  "npm ci" in sharepoint-webpart first).
+- Source zip for the developer: EDRMS_WebPart_Source_1.0.37.zip (replaces
+  1.0.34).
+Advice given
+- Dane: a library with 3 folders x 3 files = 9 documents and 3 folders.
+  Documents = files at every depth, folders counted separately, do not use
+  ItemCount (files + folders = 12), exclude system folders (Forms), current
+  versions only. No web part change needed for this.
+
+======================================================================
+5. OPEN ITEMS / WHERE WE STOPPED (14 October 2026, late)
+- Not verified by eye: Floot pages and PDF/Excel exports on floot.app and in
+  SharePoint (no browser access from the container). User to confirm.
+- Export table colour: user said "blank"; kept the screen colour (#0b4f82).
+  Ask if they meant black.
 ======================================================================
 - Production .sppkg: waiting on solution name and developer details.
 - Folder count feasibility: waiting on Dane's test.
@@ -338,7 +409,7 @@ rpt_LoadLog and the LastActivityDate note to the admin site; no answer yet.
 - Waiting on the user: add rpt_LoadLog + LastActivityDate note to the admin
   site? If yes, edit pages/_index.tsx TABLES, ColumnSources and FigureSearch,
   publish, give the link https://edrms-reporting-db-admin.floot.app
-- Web part is at 1.0.34 and in sync with Floot. GitHub index.html matches
+- Web part is at 1.0.37 and in sync with Floot (14 Oct, late). GitHub index.html matches
   as of the last sync; sync again only when asked.
 - Visual checks of Floot and the admin site were not possible from the
   container (no browser access to floot.app); Purview behaviour not
