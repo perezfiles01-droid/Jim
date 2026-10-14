@@ -23,7 +23,18 @@
       r.title="Open in Department Insights";
     });
   }
-  function go(r){ if(typeof openDashboard==="function") openDashboard("dp",r.dataset.dept); }
+  function top(){
+    var v=document.getElementById("view"), el=v;
+    while(el){ if(el.scrollTop) el.scrollTop=0; el=el.parentElement; }
+    if(document.scrollingElement) document.scrollingElement.scrollTop=0;
+    window.scrollTo(0,0);
+    try{ if(window.parent!==window) window.parent.scrollTo(0,0); }catch(e){}
+    if(v&&v.scrollIntoView) v.scrollIntoView({block:"start"});
+  }
+  function go(r){
+    if(typeof openDashboard==="function") openDashboard("dp",r.dataset.dept);
+    top(); requestAnimationFrame(top); setTimeout(top,60); setTimeout(top,250);
+  }
   document.addEventListener("click",function(e){
     var r=e.target.closest&&e.target.closest(".dash-bw .dgo"); if(r) go(r);
   });
