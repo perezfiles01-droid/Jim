@@ -1,0 +1,54 @@
+EDRMS Utilization Report, Release 2026.4
+Knowledge Transfer Video Script (about 4 minutes)
+
+Scene 1. Opening
+
+Welcome. In the next four minutes, you'll learn what's in Release 2026.4 of the E D R M S Utilization Report, and how to read it.
+
+A D B keeps its records in E D R M S, on SharePoint. This report shows whether people are actually using it. Are documents going in? Are records being declared? And which units need support?
+
+This release has two dashboards. Bank-wide Oversight, for the whole Bank. And Department Insights, for one unit at a time.
+
+Scene 2. Three words to know
+
+First, three words. A document is any file saved in E D R M S. A record is a document formally declared as the Bank's official version. And a physical counterpart is a record that also exists on paper.
+
+A unit means a department, office, resident mission, or regional office.
+
+Scene 3. Bank-wide Oversight
+
+This is Bank-wide Oversight. At the top are four cards.
+
+Active E D R M S sites. E D R M S users, which is each unit's approximate headcount, provided by R A C. Documents in E D R M S. And records declared, the figure that matters most.
+
+Every card is clickable. Click one, and its breakdown opens below. The users card, for example, shows who was active in the last 180 days, who had no access, and who completed training. The records card shows the declaration rate, which is records declared divided by documents.
+
+Below the cards, the physical counterparts panel shows how many records still have a paper version, unit by unit.
+
+The comparison panel puts each unit's documents or records beside its headcount, so you can see whether its use matches its size.
+
+And the Records Declaration Trend shows records declared each month, with a running total. Pick a preset, or set your own date range. A rising line means adoption is taking hold.
+
+Scene 4. Department Insights
+
+Department Insights tells the same story for one unit.
+
+Choose a unit from the picker, and the whole page changes. Its profile shows when the unit went live on E D R M S, and its site naming convention. The Site filter beside it narrows the page to the sites you choose.
+
+Then five cards. Sites, site visitors, documents, records declared, and physical counterparts. Again, click any card for its breakdown, site by site. Sites shows each site's owner and creation date. Site visitors shows who opened each site in the last 180 days, staff and guests, and the ten most visited sites.
+
+Last, library usage goes one level deeper, showing documents, records and active users for every library. This is where you spot which libraries are really used for recordkeeping.
+
+Scene 5. Export and reading the numbers
+
+Need it for a meeting? Every table exports to Excel, and every dashboard exports to PDF, exactly as you see it.
+
+Before you quote a figure, check the data as of date in the corner. The report is refreshed weekly.
+
+And remember, until production data is loaded, the numbers on screen are sample data. They show how the report works, not actual usage.
+
+Scene 6. Wrap up
+
+So, Bank-wide Oversight for the whole Bank, and Department Insights for one unit. Click any card to dig deeper, and always check the date.
+
+More dashboards will follow in future releases. Thanks for watching.
