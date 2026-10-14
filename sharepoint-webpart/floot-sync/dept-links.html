@@ -1,0 +1,38 @@
+<style>
+/* Every department / office / RM / RO column on Bank-wide Oversight works like
+   Sites by department: the code is a link that opens Department Insights (14 Oct 2026). */
+#view .dash-bw .dgo{cursor:pointer}
+#view .dash-bw .dgo .dc-name{color:#5b6b7c!important}
+#view .dash-bw .dgo .dc-code{color:#0563C1!important;text-decoration:underline!important;text-decoration-color:#0563C1!important;text-decoration-thickness:1px!important;text-underline-offset:3px!important}
+#view .dash-bw .dgo .dcx,#view .dash-bw .dgo .dc-name{overflow:visible!important;padding-bottom:4px!important}
+#view .dash-bw .dgo .dcx{margin-bottom:-4px!important}
+#view .dash-bw .dgo:hover{background:#EAF3FB!important}
+#view .dash-bw .dgo:hover .dc-code{color:#194F8E!important;text-decoration-color:#194F8E!important;text-decoration-thickness:2px!important}
+#view .dash-bw .dgo:focus-visible{outline:2px solid #0563C1;outline-offset:-2px}
+</style>
+<script>
+(function(){
+  var ROWS="#bw-users .drow,#bw-docs .drow,#dh-panel tr,#bw-recs .drow,#bw-phys .drow,#bw-cmp .cmp2";
+  function mark(){
+    document.querySelectorAll(".dash-bw .dc-code").forEach(function(c){
+      var r=c.closest(ROWS);
+      if(!r||r.classList.contains("dgo")) return;
+      var code=(c.textContent||"").trim();
+      r.classList.add("dgo"); r.dataset.dept=code;
+      r.setAttribute("tabindex","0"); r.setAttribute("role","link");
+      r.title="Open in Department Insights";
+    });
+  }
+  function go(r){ if(typeof openDashboard==="function") openDashboard("dp",r.dataset.dept); }
+  document.addEventListener("click",function(e){
+    var r=e.target.closest&&e.target.closest(".dash-bw .dgo"); if(r) go(r);
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key!=="Enter"&&e.key!==" ") return;
+    var r=e.target.closest&&e.target.closest(".dash-bw .dgo"); if(r&&e.target===r){e.preventDefault();go(r);}
+  });
+  var busy=false;
+  new MutationObserver(function(){ if(busy) return; busy=true; requestAnimationFrame(function(){ requestAnimationFrame(function(){ mark(); busy=false; }); }); }).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",mark); else mark();
+})();
+</script>

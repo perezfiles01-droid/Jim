@@ -78,6 +78,6 @@ def apply(s):
     s = once(s, '  function drawLibs(){\n    var libs=generateSampleLibraries(dept).filter(',
              '  function drawLibs(){\n    try{window.__dpSiteList=sitesFor(dept).map(function(s){return s.name;});var _f=window.__dpSites;if(_f&&_f.length)window.__dpSites=_f.filter(function(n){return window.__dpSiteList.indexOf(n)>=0;});}catch(e){}\n    var libs=generateSampleLibraries(dept).filter(', 'libs list')
     # Floot-only add-ons, appended as in the Floot app.
-    add = '<style>\n' + T('styles.css') + '</style>\n' + T('table-filter.html') + T('datepicker.html') + T('dept-multiselect.html') + T('site-filter.html')
+    add = '<style>\n' + T('styles.css') + '</style>\n' + T('table-filter.html') + T('datepicker.html') + T('dept-multiselect.html') + T('site-filter.html') + T('dept-links.html')
     i = s.rfind('</body>')
     return s[:i] + add + s[i:]
