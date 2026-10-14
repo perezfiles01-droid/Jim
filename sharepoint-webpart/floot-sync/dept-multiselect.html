@@ -39,6 +39,7 @@ select.dpm-native,.dpm-host > .csel-wrap{display:none!important}
       var s=document.getElementById(id);if(!s)return;
       var b=boxes(),key=(!codes.length||codes.length===b.length)?"ALL":codes.join(",");
       if(key.indexOf(",")>0&&![].some.call(s.options,function(o){return o.value===key;})){var o=document.createElement("option");o.value=key;o.text=key;s.appendChild(o);}
+      window.__dpSites=null;
       s.value=key;open(false);s.dispatchEvent(new Event("change",{bubbles:true}));
       var l=w.querySelector(".dpm-lab");if(l)l.textContent=label(s);
     }

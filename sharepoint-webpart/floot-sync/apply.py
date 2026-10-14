@@ -77,7 +77,23 @@ def apply(s):
              'generateSampleLibraries(dept).filter(function(l){var f=window.__dpSites;return !f||!f.length||f.indexOf(l.site)>=0;}).map(', 'libs site')
     s = once(s, '  function drawLibs(){\n    var libs=generateSampleLibraries(dept).filter(',
              '  function drawLibs(){\n    try{window.__dpSiteList=sitesFor(dept).map(function(s){return s.name;});var _f=window.__dpSites;if(_f&&_f.length)window.__dpSites=_f.filter(function(n){return window.__dpSiteList.indexOf(n)>=0;});}catch(e){}\n    var libs=generateSampleLibraries(dept).filter(', 'libs list')
+    # 14 Oct 2026: Library usage gets a Folders column, a full-width table
+    # under the Top 10 chart, and a fresh Site filter on any department change.
+    s = once(s, '  function drawLibs(){\n    try{window.__dpSiteList',
+             '  function drawLibs(){\n    if(window.__dpLastDept!==undefined&&window.__dpLastDept!==String(dept)){window.__dpSites=null;libSel=null;libTie=null;libsPage=1;}\n    window.__dpLastDept=String(dept);\n    try{window.__dpSiteList', 'libs reset')
+    s = once(s, 'o.users=Math.max(1,Math.round(Math.sqrt(l.docs)/4+(h%9)));return o;});',
+             'o.users=Math.max(1,Math.round(Math.sqrt(l.docs)/4+(h%9)));o.folders=Math.max(1,Math.round(l.docs/45+(h%7)));return o;});', 'folders')
+    s = once(s, 'var LAB={docs:"documents",', 'var LAB={folders:"folders",docs:"documents",', 'folders lab')
+    s = once(s, 'var alt={docs:"rec",', 'var alt={folders:"docs",docs:"rec",', 'folders alt')
+    s = once(s, 'var COLS=[{k:"lib",lab:"Library"},{k:"site",lab:"Site",w:"20%"},{k:"docs",lab:"Documents",n:1,w:"100px"},{k:"rec",lab:"Records",n:1,w:"84px"},{k:"phys",lab:"Physical Counterparts",n:1,w:"150px"},{k:"users",lab:"Active users",n:1,w:"104px"}];',
+             'var COLS=[{k:"lib",lab:"Library",w:"22%"},{k:"site",lab:"Site",w:"22%"},{k:"folders",lab:"Folders",n:1,w:"10%"},{k:"docs",lab:"Documents",n:1,w:"11%"},{k:"rec",lab:"Records",n:1,w:"10%"},{k:"phys",lab:"Physical counterparts",n:1,w:"14%"},{k:"users",lab:"Active users",n:1,w:"11%"}];', 'folders cols')
+    s = once(s, "'+l.site+'</td><td class=\"n\">'+F(l.docs)+'</td>", "'+l.site+'</td><td class=\"n\">'+F(l.folders)+'</td><td class=\"n\">'+F(l.docs)+'</td>", 'folders cell')
+    s = once(s, 'colspan="6" class="so-empty">No libraries match.', 'colspan="7" class="so-empty">No libraries match.', 'colspan')
+    s = once(s, '(libTie?({docs:"Documents",', '(libTie?({folders:"Folders",docs:"Documents",', 'folders chip')
+    s = once(s, 'card("Documents",sum("docs"),"Files stored in these libraries")+', 'card("Folders",sum("folders"),"Folders inside these libraries")+\n        card("Documents",sum("docs"),"Files stored in these libraries")+', 'folders card')
+    s = once(s, '<div class="so2-seg"><button data-lm="docs"', '<div class="so2-seg"><button data-lm="folders"\'+(met==="folders"?\' class="on"\':\'\')+\'>Folders</button><button data-lm="docs"', 'folders seg')
+    s = once(s, '.dash-dp .lb-sum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:14px}', '.dash-dp .lb-sum{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:14px}', 'six cards')
     # Floot-only add-ons, appended as in the Floot app.
-    add = '<style>\n' + T('styles.css') + '</style>\n' + T('table-filter.html') + T('datepicker.html') + T('dept-multiselect.html') + T('site-filter.html') + T('dept-links.html')
+    add = '<style>\n' + T('styles.css') + '</style>\n' + T('table-filter.html') + T('datepicker.html') + T('dept-multiselect.html') + T('site-filter.html') + T('dept-links.html') + T('oct14.html')
     i = s.rfind('</body>')
     return s[:i] + add + s[i:]

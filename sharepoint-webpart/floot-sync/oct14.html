@@ -1,0 +1,94 @@
+<style>
+/* 14 Oct 2026, mirrored from the Floot app. */
+/* Library usage: Top 10 chart above a full-width table, compact chart, even columns. */
+.dash-dp #dp-libs .vs2-layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:16px!important}
+.dash-dp #dp-libs .so2-box{width:auto!important;min-width:0}
+.dash-dp #dp-libs .vs2-layout>.so2-box:last-child{order:-1}
+.dash-dp #dp-libs .vs-chart{padding-top:4px!important;padding-bottom:4px!important;margin-top:0!important;min-height:0!important;height:auto!important}
+.dash-dp #dp-libs .so2-box:last-child .so2-hd{margin-bottom:6px!important;padding-bottom:0!important;min-height:0!important;height:auto!important}
+.dash-dp #dp-libs .lb-bar{grid-template-columns:minmax(0,1.6fr) minmax(0,3fr) 80px;height:28px!important;margin:0!important}
+.dash-dp #dp-libs .lb-bar .vs-tr{height:10px!important}
+.dash-dp #dp-libs .lb-bar .vs-fl{height:100%!important}
+.dash-dp #dp-libs .lb-more{height:30px!important;margin-top:2px}
+.dash-dp #dp-libs .so2-box:last-child{height:auto!important;min-height:0!important;padding-bottom:12px!important}
+.dash-dp #dp-libs .so2-box:last-child .so2-body{flex:none!important;min-height:0!important;height:auto!important;display:block!important;padding-top:0!important}
+.dash-dp #dp-libs .so-tab td.so-name,.dash-dp #dp-libs .so-tab td.lb-site{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-dp #dp-libs .so-tab td{vertical-align:middle!important}
+html body .dash-dp #dp-libs table#dp-libs-tab{table-layout:fixed!important;width:100%!important}
+html body .dash-dp #dp-libs table#dp-libs-tab th,html body .dash-dp #dp-libs table#dp-libs-tab td{padding-left:16px!important;padding-right:16px!important}
+html body .dash-dp #dp-libs table#dp-libs-tab tr>:nth-child(1){width:22%!important}
+html body .dash-dp #dp-libs table#dp-libs-tab tr>:nth-child(2){width:23%!important;text-align:left!important}
+html body .dash-dp #dp-libs table#dp-libs-tab tr>:nth-child(n+3){width:11%!important;text-align:right!important;font-variant-numeric:tabular-nums}
+html body .dash-dp #dp-libs table#dp-libs-tab th{white-space:normal!important;word-break:keep-all!important;overflow-wrap:normal!important;vertical-align:bottom!important}
+html body .dash-dp #dp-libs table#dp-libs-tab td.so-empty{text-align:center!important;width:auto!important}
+/* "View breakdown": small and quiet, like the (i). */
+html body #view .tap{font-size:12px!important;font-weight:400!important;color:#6b8db3!important;letter-spacing:0!important;text-transform:none!important}
+html body #view .tap *{font-size:inherit!important;font-weight:inherit!important;color:inherit!important}
+html body #view .kpi:hover .tap,html body #view .kpi:focus-within .tap,html body #view .tap:hover{color:#0563C1!important;text-decoration:underline;text-underline-offset:3px}
+/* Physical counterparts donut, option A: thinner ring, roomy centre. */
+#view .physical-donut{width:clamp(190px,46cqi,240px)!important}
+#view .physical-donut:before{inset:12%!important}
+#view .physical-donut-center{max-width:70%;margin:0 auto}
+#view .physical-donut-percent{font-size:34px!important;line-height:1.1!important}
+#view .physical-donut-caption{font-size:0!important;margin-top:6px!important}
+#view .physical-donut-caption:after{content:"of records have a physical counterpart";display:block;font-size:13px;line-height:1.3;color:#64748b}
+/* Breakdown cards: figures line up along the bottom whatever the label length. */
+#view #bw-drill .tiles{align-items:stretch!important}
+#view #bw-drill .tiles .tile{display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+#view #bw-drill .tiles .tile .tl{flex:1 1 auto!important;margin-bottom:10px!important}
+#view #bw-drill .tiles .tile>:not(.tl){margin-top:0!important}
+#view .tile.edrms-tile-i{position:relative!important;overflow:visible!important}
+#view .tile.edrms-tile-i .tl{padding-right:24px!important}
+#view .tile.edrms-tile-i .tr-sub{display:none!important}
+#view .tile.edrms-tile-i:hover,#view .tile.edrms-tile-i:focus-within{z-index:30!important}
+/* The (i): small, quiet, drawn not typed so it sits dead centre. */
+html body #view .edrms-has-i .edrms-i,html body #view [class] .edrms-i,html body #view .edrms-i{letter-spacing:0!important;text-transform:none!important;text-indent:0!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:13px!important;height:13px!important;padding:0!important;border:1px solid #d3dce6!important;color:#a3b1c0!important;background:transparent!important;box-shadow:none!important;line-height:1!important;font:700 10px/1 "Segoe UI",sans-serif!important}
+html body #view .edrms-i svg{width:5px!important;height:7px!important}
+html body #view .edrms-i:hover,html body #view .edrms-i:focus{color:#5b6b7c!important;border-color:#9fb2c6!important;outline:none}
+html body #view .edrms-i:hover::after,html body #view .edrms-i:focus::after{box-sizing:border-box!important;width:240px!important;max-width:240px!important;white-space:normal!important;text-align:left!important;text-transform:none!important;letter-spacing:0!important;right:auto!important;left:var(--tipx,-224px)!important;top:18px!important;z-index:1000!important}
+</style>
+<script>
+(function(){
+  var SVG='<svg viewBox="0 0 8 10" width="8" height="10" aria-hidden="true" style="display:block;width:8px;height:10px"><circle cx="4" cy="1.4" r="1.3" fill="currentColor"/><rect x="2.9" y="3.6" width="2.2" height="6.4" rx="0.6" fill="currentColor"/></svg>';
+  var KTIP={"unique visitors":"The number of different people who opened at least one EDRMS site in the last 180 days. A person who opened several sites is counted once."};
+  var TIP={
+    "approximate headcount":"The approximate number of people in each Department, Office, RM or RO, as provided by RAC.",
+    "users active in the last 180 days":"People who opened or edited a file in an EDRMS site at least once in the last 180 days.",
+    "no access in 180 days (approx)":"An estimate of the people who have not opened any EDRMS site in the last 180 days: the approximate headcount minus the active users.",
+    "departments, offices, rms and ros in the list":"The number of Departments, Offices, RMs and ROs shown in the table below.",
+    "completed training":"The number of people who have completed the EDRMS training course.",
+    "training completion":"The share of the approximate headcount who have completed the EDRMS training course.",
+    "documents":"All files stored in EDRMS sites for the Departments, Offices, RMs and ROs shown.",
+    "records declared":"Documents that have been declared as official records in EDRMS.",
+    "declaration rate":"Records declared as a share of all documents stored in EDRMS.",
+    "unique users declaring records":"The number of different people who have declared at least one record in EDRMS."
+  };
+  function norm(t){return (t||"").replace(/\s+/g," ").trim().toLowerCase();}
+  function mk(text){var i=document.createElement("span");i.className="edrms-i";i.innerHTML=SVG;i.setAttribute("tabindex","0");i.setAttribute("role","img");i.setAttribute("aria-label",text);i.setAttribute("data-tip",text);i.addEventListener("click",function(e){e.stopPropagation();i.focus();});return i;}
+  function run(){
+    document.querySelectorAll("#view .edrms-i").forEach(function(i){
+      if(!i.querySelector("svg"))i.innerHTML=SVG;
+      var lab=i.parentElement, t=lab?norm((lab.textContent||"")):"";
+      if(KTIP[t]&&i.getAttribute("data-tip")!==KTIP[t]){i.setAttribute("data-tip",KTIP[t]);i.setAttribute("aria-label",KTIP[t]);}
+    });
+    document.querySelectorAll("#view #bw-drill .tile").forEach(function(t){
+      if(t.querySelector(".edrms-i"))return;
+      var lab=t.querySelector(".tl");if(!lab)return;
+      var text=TIP[norm(lab.textContent)];if(!text)return;
+      lab.appendChild(mk(text));t.classList.add("edrms-has-i","edrms-tile-i");
+    });
+  }
+  function tipSide(e){
+    var i=e.target&&e.target.closest&&e.target.closest(".edrms-i");if(!i)return;
+    var r=i.getBoundingClientRect(),side=document.getElementById("side"),sr=side?side.getBoundingClientRect():null;
+    var edge=(sr&&sr.width&&sr.right<window.innerWidth/2)?sr.right:0;
+    var want=r.right+4-240,min=edge+8,max=window.innerWidth-248;
+    var x=Math.min(Math.max(want,min),Math.max(min,max));
+    i.style.setProperty("--tipx",Math.round(x-r.left)+"px");
+  }
+  document.addEventListener("mouseover",tipSide,true);document.addEventListener("focusin",tipSide,true);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){requestAnimationFrame(function(){run();busy=false;});});}).observe(document.documentElement,{childList:true,subtree:true});
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run);else run();
+})();
+</script>
