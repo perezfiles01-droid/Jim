@@ -1,3 +1,4 @@
+import React from 'react';
 import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile,
   useCurrentFrame } from 'remotion';
 import BEATS from './beats.gen.json';

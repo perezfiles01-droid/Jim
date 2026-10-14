@@ -1,3 +1,4 @@
+import React from 'react';
 /* Motion graphics, one per script line. Each scene gets the beat's local frame
    `f`, its length `n`, and `at(phrase)`, the frame at which the voice reaches
    that phrase, so every element lands on the word that names it. */
@@ -220,24 +221,43 @@ const Bar = ({ label, v, k, c = BLUE, val }) => (
     <div style={{ height: 22, borderRadius: 11, background: 'rgba(255,255,255,.08)' }}><div style={{ width: `${v * k * 100}%`, height: '100%', borderRadius: 11, background: c }} /></div></div>
 );
 
+/* The four headline cards, shared by the two Bank-wide opening lines so they
+   stay on screen across both. Each card lights up when the voice names it. */
+const HEAD = [['Active EDRMS sites', '1,032', <Site s={44} />, 'Active'], ['EDRMS users', '11,800', <User s={40} />, 'E D R M S users'],
+  ['Documents in EDRMS', '3.47M', <Doc s={32} />, 'Documents'], ['Records declared', '21,646', <Doc s={32} lock />, 'records declared']];
+const HeadGrid = ({ f, at, enter, live }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+    {HEAD.map(([l, v, ic, ph], i) => {
+      const k = enter ? pop(f, 8 + i * 4, 14) : 1, on = live && f >= at(ph);
+      const nxt = live && i < 3 ? f >= at(HEAD[i + 1][3]) : false, hot = on && !nxt;
+      const star = live && i === 3 && f >= at('matters most');
+      return <In key={l} k={k} y={20}><div style={{ height: 112, borderRadius: 14, background: 'white', color: INK, padding: '12px 14px', boxSizing: 'border-box',
+        borderLeft: `8px solid ${star ? GREEN : TEAL}`, boxShadow: hot || star ? `0 0 0 4px ${star ? GREEN : TEAL}, 0 10px 30px rgba(0,165,168,.45)` : 'none',
+        transform: `scale(${hot ? 1.05 : 1})`, opacity: live && !on ? 0.55 : 1, position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, height: 46 }}>{ic}<div style={{ fontSize: 17, fontWeight: 700, color: '#4A5D75', lineHeight: 1.1 }}>{l}</div></div>
+        <div style={{ fontSize: 34, fontWeight: 800, marginTop: 4 }}>{v}</div>
+        {star && <div style={{ position: 'absolute', top: -14, right: -8, background: GREEN, color: 'white', fontSize: 15, fontWeight: 800, borderRadius: 999, padding: '4px 10px' }}>★ Matters most</div>}
+      </div></In>;
+    })}
+  </div>
+);
 const BwIntro = ({ f, at }) => (
   <Panel title="Bank-wide Oversight" f={f}>
-    <In k={pop(f, 0)}><div style={{ display: 'flex', justifyContent: 'center' }}><Bank s={150} /></div></In>
-    <In k={pop(f, 6)}><Label size={34} w={800}>The whole Bank, one page</Label></In>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 10 }}>
-      {[0, 1, 2, 3].map(i => <In key={i} k={pop(f, at('four cards') + i * 5, 10)} y={-40}><div style={{ height: 80, borderRadius: 14, background: 'white', borderLeft: `8px solid ${TEAL}` }} /></In>)}
-    </div>
-    <In k={pop(f, at('four cards') + 22)}><Label size={30} c={TEAL}>4 headline cards</Label></In>
+    <In k={pop(f, 0)}><div style={{ display: 'flex', justifyContent: 'center' }}><Bank s={110} /></div></In>
+    <In k={pop(f, 4)}><Label size={30} w={800}>The whole Bank, one page</Label></In>
+    <HeadGrid f={f} at={at} enter />
+    <In k={pop(f, at('four cards'))}><Label size={26} c={TEAL}>4 headline cards</Label></In>
   </Panel>
 );
-const Cards = ({ f, at }) => (
-  <Panel title="Headline cards" f={f}>
-    <Row k={pop(f, at('Active'))} icon={<Site s={60} />} text="Active EDRMS sites" />
-    <Row k={pop(f, at('E D R M S users'))} icon={<User s={56} />} text="EDRMS users" sub="Approximate headcount" />
-    <Row k={pop(f, at('Documents'))} icon={<Doc s={46} />} text="Documents in EDRMS" />
-    <Row k={pop(f, at('records declared'))} icon={<Doc s={46} lock />} text="Records declared" sub="The figure that matters most" hi={f > at('matters most')} />
-  </Panel>
-);
+const Cards = ({ f, at }) => {
+  const cur = [...HEAD].reverse().find(h => f >= at(h[3]));
+  return (<Panel title="Bank-wide Oversight" f={99}>
+    <div style={{ display: 'flex', justifyContent: 'center' }}><Bank s={110} /></div>
+    <Label size={30} w={800}>The whole Bank, one page</Label>
+    <HeadGrid f={f} at={at} live />
+    <Label size={26} c={TEAL}>{cur ? cur[0] : '4 headline cards'}</Label>
+  </Panel>);
+};
 const Click = ({ f, at }) => {
   const mv = ease(f, 4, 22), clk = ease(f, at('Click one'), 14), open = pop(f, at('breakdown opens'), 16), rate = pop(f, at('declaration rate'), 12);
   const users = at('users card');

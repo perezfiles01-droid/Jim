@@ -1,3 +1,4 @@
+import React from 'react';
 import { Composition } from 'remotion';
 import { Walkthrough, TOTAL } from './Walkthrough';
 import { Paper, PAGES, PW, PH } from './Paper';
