@@ -1,6 +1,7 @@
 import { AbsoluteFill, Audio, Img, Sequence, interpolate, spring, staticFile,
   useCurrentFrame } from 'remotion';
 import BEATS from './beats.gen.json';
+import { FULL, SIDE } from './MG';
 
 const INK = '#10243E', BLUE = '#0072BC', TEAL = '#00A5A8';
 const FONT = 'Segoe UI, Helvetica, Arial, sans-serif';
@@ -62,8 +63,6 @@ const Stage = ({ f }) => {
           borderRadius: 12, border: `${4 / s}px solid ${TEAL}`, opacity: glow,
           boxShadow: `0 0 0 6000px rgba(16,36,62,${0.5 * glow}), 0 0 ${30 / s}px rgba(0,165,168,0.6)` }} />
       </div>
-      <Chip dash={b.dash} sec={b.sec} f={lf} fresh={!p || p.sec !== b.sec} />
-      <Subtitle text={b.t} f={lf} n={len(b)} />
     </AbsoluteFill>
   );
 };
@@ -71,14 +70,14 @@ const Stage = ({ f }) => {
 const Chip = ({ dash, sec, f, fresh }) => {
   const k = fresh ? spring({ frame: f - 6, fps: FPS, config: { damping: 200 } }) : 1;
   return (
-    <div style={{ position: 'absolute', left: 48, top: 40, display: 'flex', alignItems: 'center',
-      background: 'rgba(16,36,62,0.94)', color: 'white', fontFamily: FONT, padding: '16px 28px 16px 22px',
+    <div style={{ position: 'absolute', left: 50, top: 18, display: 'flex', alignItems: 'center',
+      background: 'rgba(16,36,62,0.94)', color: 'white', fontFamily: FONT, padding: '10px 26px 10px 20px',
       borderRadius: 10, borderLeft: `7px solid ${BLUE}`, transform: `translateX(${(k - 1) * 600}px)`,
       boxShadow: '0 8px 30px rgba(0,0,0,0.25)' }}>
       <div>
-        <div style={{ fontSize: 22, color: TEAL, fontWeight: 600 }}>
+        <div style={{ fontSize: 18, color: TEAL, fontWeight: 600 }}>
           {dash === 'bw' ? 'Bank-wide Oversight' : 'Department Insights'}</div>
-        <div style={{ fontSize: 36, fontWeight: 700 }}>{sec}</div>
+        <div style={{ fontSize: 30, fontWeight: 700 }}>{sec}</div>
       </div>
     </div>
   );
@@ -87,14 +86,14 @@ const Chip = ({ dash, sec, f, fresh }) => {
 /* Subtitles in short phrases, paced across the clip by length. */
 const Subtitle = ({ text, f, n }) => {
   const parts = text.replace(/E D R M S/g, 'EDRMS').replace(/A D B/g, 'ADB').replace(/R A C/g, 'RAC')
-    .replace(/R M/g, 'RM').replace(/R O/g, 'RO').match(/[^.?!]+[.?!]*/g).map(s => s.trim()).filter(Boolean);
+    .replace(/R M/g, 'RM').replace(/R O/g, 'RO').match(/(?:[^.?!]|\.(?=\d))+[.?!]*/g).map(s => s.trim()).filter(Boolean);
   const tot = parts.reduce((a, s) => a + s.length, 0), span = n - GAP;
   let acc = 0, cur = parts[0];
   for (const s of parts) { if ((acc / tot) * span <= f) cur = s; acc += s.length; }
   return (
-    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 46, display: 'flex', justifyContent: 'center' }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 40, display: 'flex', justifyContent: 'center' }}>
       <div style={{ maxWidth: 1500, background: 'rgba(16,36,62,0.88)', color: 'white', fontFamily: FONT,
-        fontSize: 36, lineHeight: 1.35, padding: '14px 30px', borderRadius: 10, textAlign: 'center' }}>{cur}</div>
+        fontSize: 32, lineHeight: 1.3, padding: '12px 28px', borderRadius: 10, textAlign: 'center' }}>{cur}</div>
     </div>
   );
 };
@@ -108,13 +107,43 @@ const musicVol = f => {
   return mix(from, target, Math.min(1, lf / 20)) * end;
 };
 
+/* The frame, within beat j, at which the voice reaches a phrase. */
+const atFor = j => phrase => {
+  const b = BEATS[j], i = b.t.toLowerCase().indexOf(phrase.toLowerCase());
+  return (b.dash ? 4 : CARD_PAD) + (i < 0 ? 0 : (i / b.t.length) * b.seconds * FPS);
+};
+
+const SC = 0.68, SX = 50, SY = 120;
+const Layout = ({ f, i }) => {
+  const b = BEATS[i], lf = f - START[i], p = BEATS[i - 1], nx = BEATS[i + 1];
+  const Side = SIDE[b.mg];
+  const inK = p && p.dash ? 1 : interpolate(lf, [0, 12], [0, 1], { extrapolateRight: 'clamp' });
+  const outK = nx && nx.dash ? 1 : interpolate(lf, [len(b) - 12, len(b)], [1, 0], { extrapolateLeft: 'clamp' });
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(circle at 20% 10%, #1B3A63 0%, ${INK} 65%)`, opacity: Math.min(inK, outK) }}>
+      <div style={{ position: 'absolute', left: SX, top: SY, width: W * SC, height: H * SC, borderRadius: 18, overflow: 'hidden',
+        boxShadow: '0 30px 80px rgba(0,0,0,.45)', border: '1px solid rgba(255,255,255,.12)' }}>
+        <div style={{ width: W, height: H, transform: `scale(${SC})`, transformOrigin: 'top left' }}><Stage f={f} /></div>
+      </div>
+      <div style={{ position: 'absolute', left: SX + W * SC + 34, top: SY, width: W - (SX + W * SC + 34) - 50, height: H * SC }}>
+        {Side && <Side key={i} f={lf} n={len(b)} at={atFor(i)} />}
+      </div>
+      <Chip dash={b.dash} sec={b.sec} f={lf} fresh={!p || p.sec !== b.sec} />
+      <Subtitle text={b.t} f={lf} n={len(b)} />
+    </AbsoluteFill>
+  );
+};
+
 export const Walkthrough = () => {
   const f = useCurrentFrame();
-  const i = START.findLastIndex(s => s <= f), b = BEATS[i];
+  const i = START.findLastIndex(s => s <= f), b = BEATS[i], lf = f - START[i];
+  const Full = FULL[b.mg];
+  const fade = Math.min(interpolate(lf, [0, 12], [0, 1], { extrapolateRight: 'clamp' }),
+    interpolate(lf, [len(b) - 12, len(b)], [1, 0], { extrapolateLeft: 'clamp' }));
   return (
     <AbsoluteFill style={{ background: INK }}>
-      {b.dash ? <Stage f={f} />
-        : <Card f={f - START[i]} n={len(b)} title={b.title} sub={b.sub} />}
+      {b.dash ? <Layout f={f} i={i} />
+        : <AbsoluteFill style={{ opacity: fade }}><Full f={lf} n={len(b)} at={atFor(i)} /><Subtitle text={b.t} f={lf - CARD_PAD} n={len(b)} /></AbsoluteFill>}
       <Audio src={staticFile('music.mp3')} volume={musicVol} />
       {BEATS.map((b, j) => (
         <Sequence key={j} from={START[j] + (b.dash ? 4 : CARD_PAD)} durationInFrames={Math.ceil(b.seconds * FPS) + 2}>

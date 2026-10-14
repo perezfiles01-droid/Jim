@@ -4,34 +4,39 @@
   "sec": "intro",
   "title": "EDRMS Utilization Report",
   "sub": "Release 2026.4",
-  "t": "Welcome. In the next four minutes, you'll learn what's in Release 2026.4 of the E D R M S Utilization Report, and how to read it."
+  "t": "Welcome. In the next four minutes, you'll learn what's in Release 2026.4 of the E D R M S Utilization Report, and how to read it.",
+  "mg": "intro"
  },
  {
   "dash": null,
   "sec": "context",
   "title": "Why this report",
   "sub": "Documents, records and the people who declare them",
-  "t": "In A D B, users can upload documents and files to E D R M S SharePoint sites, and declare them as records. They can also declare emails as records straight from Outlook, and those are saved in the E D R M S site they choose. Every declared record is then kept in the E D R M S database. This report shows whether people are actually using all of this. Are users uploading documents to E D R M S sites? Are they declaring them as records? And which departments need support?"
+  "t": "In A D B, users can upload documents and files to E D R M S SharePoint sites, and declare them as records. They can also declare emails as records straight from Outlook, and those are saved in the E D R M S site they choose. Every declared record is then kept in the E D R M S database. This report shows whether people are actually using all of this. Are users uploading documents to E D R M S sites? Are they declaring them as records? And which departments need support?",
+  "mg": "context"
  },
  {
   "dash": null,
   "sec": "scope",
   "title": "Two dashboards",
   "sub": "Bank-wide Oversight and Department Insights",
-  "t": "This release has two dashboards. Bank-wide Oversight, for the whole Bank. And Department Insights, for a closer look at the departments you choose."
+  "t": "This release has two dashboards. Bank-wide Oversight, for the whole Bank. And Department Insights, for a closer look at the departments you choose.",
+  "mg": "scope"
  },
  {
   "dash": null,
   "sec": "terms",
   "title": "Three words to know",
   "sub": "Document, record, physical counterpart",
-  "t": "First, three words. A document is any file saved in E D R M S. A record is a document formally declared as the Bank's official version. And a physical counterpart is a record that also exists on paper."
+  "t": "First, three words. A document is any file saved in E D R M S. A record is a document formally declared as the Bank's official version. And a physical counterpart is a record that also exists on paper.",
+  "mg": "terms"
  },
  {
   "dash": "bw",
   "sec": "Bank-wide Oversight",
   "sel": ".band.edrms-top",
-  "t": "This is Bank-wide Oversight. At the top are four cards."
+  "t": "This is Bank-wide Oversight. At the top are four cards.",
+  "mg": "bwIntro"
  },
  {
   "dash": "bw",
@@ -39,7 +44,8 @@
   "sel": ".kpi",
   "n": 0,
   "until": 4,
-  "t": "Active E D R M S sites. E D R M S users, which is each department's approximate headcount. Documents in E D R M S. And records declared, the figure that matters most."
+  "t": "Active E D R M S sites. E D R M S users, which is each department's approximate headcount. Documents in E D R M S. And records declared, the figure that matters most.",
+  "mg": "cards"
  },
  {
   "dash": "bw",
@@ -47,19 +53,22 @@
   "sel": ".kpi",
   "n": 1,
   "until": 4,
-  "t": "Every card is clickable. Click one, and its breakdown opens below. The users card, for example, shows who was active in the last 180 days, who had no access, and who completed training. The records card shows the declaration rate, which is records declared divided by documents."
+  "t": "Every card is clickable. Click one, and its breakdown opens below. The users card, for example, shows who was active in the last 180 days, who had no access, and who completed training. The records card shows the declaration rate, which is records declared divided by documents.",
+  "mg": "click"
  },
  {
   "dash": "bw",
   "sec": "Physical counterparts",
   "sel": ".physical-split-main",
-  "t": "Below the cards, the physical counterparts panel shows how many records still have a paper version, department by department."
+  "t": "Below the cards, the physical counterparts panel shows how many records still have a paper version, department by department.",
+  "mg": "physical"
  },
  {
   "dash": "bw",
   "sec": "Comparison",
   "sel": "#bw-cmp",
-  "t": "The comparison panel puts each department's documents or records beside its headcount, so you can see whether its use matches its size."
+  "t": "The comparison panel puts each department's documents or records beside its headcount, so you can see whether its use matches its size.",
+  "mg": "compare"
  },
  {
   "dash": "bw",
@@ -67,51 +76,59 @@
   "sel": ".panel",
   "n": -1,
   "skipTop": 180,
-  "t": "And the Records Declaration Trend shows records declared each month, with a running total. Pick a preset, or set your own date range. A rising line means adoption is taking hold."
+  "t": "And the Records Declaration Trend shows records declared each month, with a running total. Pick a preset, or set your own date range. A rising line means adoption is taking hold.",
+  "mg": "trend"
  },
  {
   "dash": "dp",
   "sec": "Department Insights",
   "sel": ".band.edrms-top",
-  "t": "Department Insights takes a closer look at the departments you choose."
+  "t": "Department Insights takes a closer look at the departments you choose.",
+  "mg": "dpIntro"
  },
  {
   "dash": "dp",
   "sec": "Department profile",
   "sel": ".panel",
   "t": "Use the picker to select one department, several, or all of them, and the whole page changes to match. The profile shows when each department went live on E D R M S, and its site naming convention. The Site filter beside it narrows the page to the sites you choose.",
-  "n": 0
+  "n": 0,
+  "mg": "profile"
  },
  {
   "dash": "dp",
   "sec": "Five cards",
   "sel": ".kpis",
-  "t": "Then five cards. Sites, site visitors, documents, records declared, and physical counterparts. Again, click any card for its breakdown, site by site. Sites shows each site's owner and creation date. Site visitors shows who opened each site in the last 180 days, internal users and external guests, and the ten most visited sites."
+  "t": "Then five cards. Sites, site visitors, documents, records declared, and physical counterparts. Again, click any card for its breakdown, site by site. Sites shows each site's owner and creation date. Site visitors shows who opened each site in the last 180 days, internal users and external guests, and the ten most visited sites.",
+  "mg": "five"
  },
  {
   "dash": "dp",
   "sec": "Library usage",
   "sel": "#dp-libs",
-  "t": "Last, library usage goes one level deeper, showing documents, records and active users for every library. This is where you spot which libraries are really used for recordkeeping."
+  "t": "Last, library usage goes one level deeper, showing documents, records and active users for every library. This is where you spot which libraries are really used for recordkeeping.",
+  "mg": "library"
  },
  {
   "dash": "bw",
   "sec": "Export and data date",
   "sel": ".edrms-tools",
-  "t": "Need it for a meeting? Every table exports to Excel, and every dashboard exports to PDF, exactly as you see it. Before you quote a figure, check the data as of date in the corner."
+  "t": "Need it for a meeting? Every table exports to Excel, and every dashboard exports to PDF, exactly as you see it. Before you quote a figure, check the data as of date in the corner.",
+  "mg": "export"
  },
  {
   "dash": null,
   "sec": "demo",
   "title": "Demo data",
   "sub": "Figures show how the report works, not actual usage",
-  "t": "Please note, the figures you see in this video are demo data. They show how the report works, not actual E D R M S usage."
+  "t": "Please note, the figures you see in this video are demo data. They show how the report works, not actual E D R M S usage.",
+  "mg": "demo"
  },
  {
   "dash": null,
   "sec": "outro",
   "title": "Thanks for watching",
   "sub": "EDRMS Utilization Report, Release 2026.4",
-  "t": "So, Bank-wide Oversight for the whole Bank, and Department Insights for a closer look at the departments you choose. Click any card to dig deeper, and always check the date. Thanks for watching."
+  "t": "So, Bank-wide Oversight for the whole Bank, and Department Insights for a closer look at the departments you choose. Click any card to dig deeper, and always check the date. Thanks for watching.",
+  "mg": "outro"
  }
 ]

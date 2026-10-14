@@ -6,7 +6,8 @@
   "sub": "Release 2026.4",
   "t": "Welcome. In the next four minutes, you'll learn what's in Release 2026.4 of the E D R M S Utilization Report, and how to read it.",
   "seconds": 9.891700680272109,
-  "rect": null
+  "rect": null,
+  "mg": "intro"
  },
  {
   "dash": null,
@@ -15,7 +16,8 @@
   "sub": "Documents, records and the people who declare them",
   "t": "In A D B, users can upload documents and files to E D R M S SharePoint sites, and declare them as records. They can also declare emails as records straight from Outlook, and those are saved in the E D R M S site they choose. Every declared record is then kept in the E D R M S database. This report shows whether people are actually using all of this. Are users uploading documents to E D R M S sites? Are they declaring them as records? And which departments need support?",
   "seconds": 31.997097505668933,
-  "rect": null
+  "rect": null,
+  "mg": "context"
  },
  {
   "dash": null,
@@ -24,7 +26,8 @@
   "sub": "Bank-wide Oversight and Department Insights",
   "t": "This release has two dashboards. Bank-wide Oversight, for the whole Bank. And Department Insights, for a closer look at the departments you choose.",
   "seconds": 8.962902494331066,
-  "rect": null
+  "rect": null,
+  "mg": "scope"
  },
  {
   "dash": null,
@@ -33,7 +36,8 @@
   "sub": "Document, record, physical counterpart",
   "t": "First, three words. A document is any file saved in E D R M S. A record is a document formally declared as the Bank's official version. And a physical counterpart is a record that also exists on paper.",
   "seconds": 14.953650793650795,
-  "rect": null
+  "rect": null,
+  "mg": "terms"
  },
  {
   "dash": "bw",
@@ -46,7 +50,8 @@
    "y": 12.5,
    "w": 1570,
    "h": 57.5
-  }
+  },
+  "mg": "bwIntro"
  },
  {
   "dash": "bw",
@@ -61,7 +66,8 @@
    "y": 80,
    "w": 1570,
    "h": 83.5546875
-  }
+  },
+  "mg": "cards"
  },
  {
   "dash": "bw",
@@ -76,7 +82,8 @@
    "y": 80,
    "w": 1174.375,
    "h": 83.5546875
-  }
+  },
+  "mg": "click"
  },
  {
   "dash": "bw",
@@ -89,7 +96,8 @@
    "y": 1161.97265625,
    "w": 860.25390625,
    "h": 534.375
-  }
+  },
+  "mg": "physical"
  },
  {
   "dash": "bw",
@@ -102,7 +110,8 @@
    "y": 2053.96484375,
    "w": 1517.5,
    "h": 702.5
-  }
+  },
+  "mg": "compare"
  },
  {
   "dash": "bw",
@@ -117,7 +126,8 @@
    "y": 3139.08203125,
    "w": 1570,
    "h": 669.375
-  }
+  },
+  "mg": "trend"
  },
  {
   "dash": "dp",
@@ -130,7 +140,8 @@
    "y": 12.5,
    "w": 1570,
    "h": 57.5
-  }
+  },
+  "mg": "dpIntro"
  },
  {
   "dash": "dp",
@@ -144,7 +155,8 @@
    "y": 80,
    "w": 1570,
    "h": 391.0546875
-  }
+  },
+  "mg": "profile"
  },
  {
   "dash": "dp",
@@ -157,7 +169,8 @@
    "y": 325,
    "w": 1517.5,
    "h": 112.3046875
-  }
+  },
+  "mg": "five"
  },
  {
   "dash": "dp",
@@ -170,7 +183,8 @@
    "y": 1651.171875,
    "w": 1517.5,
    "h": 1269.23828125
-  }
+  },
+  "mg": "library"
  },
  {
   "dash": "bw",
@@ -183,7 +197,8 @@
    "y": 21.25,
    "w": 386.03515625,
    "h": 40
-  }
+  },
+  "mg": "export"
  },
  {
   "dash": null,
@@ -192,7 +207,8 @@
   "sub": "Figures show how the report works, not actual usage",
   "t": "Please note, the figures you see in this video are demo data. They show how the report works, not actual E D R M S usage.",
   "seconds": 7.801904761904762,
-  "rect": null
+  "rect": null,
+  "mg": "demo"
  },
  {
   "dash": null,
@@ -201,6 +217,7 @@
   "sub": "EDRMS Utilization Report, Release 2026.4",
   "t": "So, Bank-wide Oversight for the whole Bank, and Department Insights for a closer look at the departments you choose. Click any card to dig deeper, and always check the date. Thanks for watching.",
   "seconds": 11.517097505668934,
-  "rect": null
+  "rect": null,
+  "mg": "outro"
  }
 ]
