@@ -375,11 +375,11 @@ const LibraryUsage: React.FC<{ data: IReportData; focus?: string }> = ({ data, f
   const cols: IColumn<ILibRow>[] = [
     { key: 'lib', label: 'Library', width: '22%', sortValue: l => l.lib, render: l => l.lib, className: 'strong' },
     { key: 'site', label: 'Site', width: '23%', sortValue: l => l.site, render: l => <span style={{ color: '#33475F' }}>{l.site}</span> },
-    { key: 'folders', label: 'Folders', numeric: true, sortValue: l => l.folders, render: l => F(l.folders) },
-    { key: 'docs', label: 'Documents', numeric: true, sortValue: l => l.docs, render: l => F(l.docs) },
-    { key: 'rec', label: 'Records', numeric: true, sortValue: l => l.rec, render: l => F(l.rec) },
-    { key: 'phys', label: 'Physical counterparts', numeric: true, sortValue: l => l.phys, render: l => F(l.phys) },
-    { key: 'users', label: 'Active users', numeric: true, sortValue: l => l.users, render: l => F(l.users) }
+    { key: 'folders', label: 'Folders', numeric: true, width: '10%', sortValue: l => l.folders, render: l => F(l.folders) },
+    { key: 'docs', label: 'Documents', numeric: true, width: '11%', sortValue: l => l.docs, render: l => F(l.docs) },
+    { key: 'rec', label: 'Records', numeric: true, width: '10%', sortValue: l => l.rec, render: l => F(l.rec) },
+    { key: 'phys', label: 'Physical counterparts', numeric: true, width: '13%', sortValue: l => l.phys, render: l => F(l.phys) },
+    { key: 'users', label: 'Active users', numeric: true, width: '11%', sortValue: l => l.users, render: l => F(l.users) }
   ];
   const tieChip = t.tie ? ({ folders: 'Folders', docs: 'Documents', rec: 'Records', phys: 'Physical Counterparts', users: 'Active users' }[mk]) + ': ' + t.tie : null;
   const chip = t.sel ? t.sel.split('||')[0] : tieChip;

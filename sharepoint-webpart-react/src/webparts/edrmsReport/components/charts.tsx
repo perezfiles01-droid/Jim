@@ -29,8 +29,43 @@ export const BarList: React.FC<{
   valueWidth?: number;
 }> = ({ items, selected, onSelect, color, more, valueWidth }) => {
   const max = Math.max(0.0001, ...items.map(i => i.value));
+  const ref = React.useRef<HTMLDivElement>(null);
+  // Beside a table, each bar lines up with a table row: same top, same height.
+  React.useLayoutEffect(() => {
+    const el = ref.current;
+    const split = el && el.closest('.split');
+    if (!el || !split) return undefined;
+    const sync = (): void => {
+      const bars = Array.prototype.slice.call(el.querySelectorAll(':scope > .hbar')) as HTMLElement[];
+      el.style.marginTop = '';
+      bars.forEach(b => { b.style.height = ''; b.style.marginTop = ''; });
+      const table = Array.prototype.slice.call(split.querySelectorAll('table')).filter((t: HTMLElement) => !t.contains(el))[0] as HTMLElement | undefined;
+      const rows = table ? Array.prototype.slice.call(table.querySelectorAll('tbody tr')) as HTMLElement[] : [];
+      if (!rows.length || !bars.length) return;
+      const tr = table!.getBoundingClientRect(), mr = el.getBoundingClientRect();
+      if (tr.left === mr.left || tr.right > mr.left && mr.right > tr.left) return; // stacked, not side by side
+      // Screen sizes include the Text size zoom; styles are set before it.
+      const z = bars[0].offsetHeight ? bars[0].getBoundingClientRect().height / bars[0].offsetHeight : 1;
+      const off = (rows[0].getBoundingClientRect().top - bars[0].getBoundingClientRect().top) / z;
+      if (off < 0) return;
+      bars.forEach((b, i) => { if (rows[i]) b.style.height = ((rows[i + 1] ? rows[i + 1].getBoundingClientRect().top : rows[i].getBoundingClientRect().bottom) - rows[i].getBoundingClientRect().top) / z + 'px'; });
+      // Setting heights can move the list, and heights snap to whole pixels, so
+      // nudge each bar onto its row in turn.
+      el.style.marginTop = off + 'px';
+      bars.forEach((b, i) => {
+        if (!rows[i]) return;
+        const d = (rows[i].getBoundingClientRect().top - b.getBoundingClientRect().top) / z;
+        if (Math.abs(d) >= 0.5) b.style.marginTop = (parseFloat(b.style.marginTop) || 0) + d + 'px';
+      });
+    };
+    sync();
+    const RO = (window as unknown as { ResizeObserver?: typeof ResizeObserver }).ResizeObserver;
+    const ro = RO ? new RO(() => sync()) : undefined;
+    if (ro) ro.observe(split);
+    return () => { if (ro) ro.disconnect(); };
+  });
   return (
-    <div className="hbars">
+    <div className="hbars" ref={ref}>
       {items.map(i => {
         const on = selected === i.key, dim = !!selected && !on;
         return (

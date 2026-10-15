@@ -392,7 +392,7 @@ const TrendPanel: React.FC<{ data: IReportData }> = ({ data }) => {
             <button type="button" className="btn" onClick={() => preset('12')}>Reset</button>
           </div>
         </div>
-        <div className="ctlG"><span className="ctlL" style={{ textAlign: 'right' }}>Show by</span>
+        <div className="ctlG"><span className="ctlL">Show by</span>
           <Segmented label="Show by" value={view} onChange={x => { setView(x); setYear(null); }} options={[{ key: 'y', text: 'Year' }, { key: 'm', text: 'Month' }]} /></div>
       </div>
       <p className="note">{mode === 'custom' ? 'Custom range in use. Choosing a preset clears it.' : 'Preset in use: ' + (PRESETS.find(p => p.key === mode) || PRESETS[2]).text + '. Applying a custom range clears it.'}</p>
