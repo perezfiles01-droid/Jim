@@ -65,6 +65,9 @@ html body #view .physical-donut-caption:after{font-size:14px!important}
 #view .tile.edrms-tile-i .tl{padding-right:24px!important}
 #view .tile.edrms-tile-i .tr-sub{display:none!important}
 #view .tile.edrms-tile-i:hover,#view .tile.edrms-tile-i:focus-within{z-index:30!important}
+#view .dh-k.edrms-tile-i{position:relative!important;overflow:visible!important}
+#view .dh-k.edrms-tile-i:hover,#view .dh-k.edrms-tile-i:focus-within{z-index:30!important}
+#view .dh-kpis,#view .tiles{overflow:visible!important}
 /* The (i): small, quiet, drawn not typed so it sits dead centre. */
 html body #view .edrms-has-i .edrms-i,html body #view [class] .edrms-i,html body #view .edrms-i{letter-spacing:0!important;text-transform:none!important;text-indent:0!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:13px!important;height:13px!important;padding:0!important;border:1px solid #d3dce6!important;color:#a3b1c0!important;background:transparent!important;box-shadow:none!important;line-height:1!important;font:700 10px/1 "Segoe UI",sans-serif!important}
 html body #view .edrms-i svg{width:5px!important;height:7px!important}
@@ -87,6 +90,15 @@ html body #view .edrms-i:hover::after,html body #view .edrms-i:focus::after{box-
     "declaration rate":"Records declared as a share of all documents stored in EDRMS.",
     "unique users declaring records":"The number of different people who have declared at least one record in EDRMS."
   };
+  /* 15 Oct 2026: physical counterparts and documents cards; their labels carry a changing month or year, so match the start. */
+  var TIPSTART=[
+    ["physical counterparts","Declared records that also exist on paper, for the Departments, Offices, RMs and ROs shown."],
+    ["share of records with a counterpart","Physical counterparts as a share of all records declared in EDRMS."],
+    ["total documents","All files stored in EDRMS sites at the end of the month shown."],
+    ["new documents","Files added to EDRMS sites in the period shown, net of files deleted."],
+    ["storage used","The space EDRMS sites use in SharePoint, in gigabytes, at the end of the month shown."]
+  ];
+  function tipFor(s){if(TIP[s])return TIP[s];for(var k=0;k<TIPSTART.length;k++)if(s.indexOf(TIPSTART[k][0])===0)return TIPSTART[k][1];return "";}
   function norm(t){return (t||"").replace(/\s+/g," ").trim().toLowerCase();}
   function mk(text){var i=document.createElement("span");i.className="edrms-i";i.innerHTML=SVG;i.setAttribute("tabindex","0");i.setAttribute("role","img");i.setAttribute("aria-label",text);i.setAttribute("data-tip",text);i.addEventListener("click",function(e){e.stopPropagation();i.focus();});return i;}
   function run(){
@@ -99,10 +111,10 @@ html body #view .edrms-i:hover::after,html body #view .edrms-i:focus::after{box-
       var lab=i.parentElement, t=lab?norm((lab.textContent||"")):"";
       if(KTIP[t]&&i.getAttribute("data-tip")!==KTIP[t]){i.setAttribute("data-tip",KTIP[t]);i.setAttribute("aria-label",KTIP[t]);}
     });
-    document.querySelectorAll("#view #bw-drill .tile").forEach(function(t){
+    document.querySelectorAll("#view .tile, #view .dh-k").forEach(function(t){
       if(t.querySelector(".edrms-i"))return;
-      var lab=t.querySelector(".tl");if(!lab)return;
-      var text=TIP[norm(lab.textContent)];if(!text)return;
+      var lab=t.querySelector(".tl, .l");if(!lab)return;
+      var text=tipFor(norm(lab.textContent));if(!text)return;
       lab.appendChild(mk(text));t.classList.add("edrms-has-i","edrms-tile-i");
     });
   }
