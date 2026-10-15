@@ -11,15 +11,16 @@ any difference can be checked number for number.
 
 ## Install (no build needed)
 
-1. Upload `sharepoint/solution/edrms-utilization-report-react.sppkg` to the
-   App Catalog and choose **Enable this app and add it to all sites**.
-2. Edit a page, add a **Full-width section**, add **EDRMS Utilization Report
-   (React)**, then Republish.
+1. Upload `sharepoint/solution/edrms-utilization-report.sppkg` to the
+   App Catalog (choose **Replace** if Util sample is already there).
+2. Edit a page, add a **Full-width section**, add **EDRMS Utilization Report**, then Republish.
 3. Web part settings: **Dashboard on this page**, **Show the report's own
    sidebar**, **Text size** (Large by default, as readers are often older).
 
-It has its own solution and web part IDs, so it can sit beside the existing
-"Util sample" web part while the two are compared.
+It keeps the solution ID, feature ID and web part ID of the earlier "Util
+sample" package (1.0.38 and before), so uploading it with **Replace**
+upgrades that app, and pages already using the web part switch to this
+version with their settings kept.
 
 ## Build
 
@@ -30,7 +31,7 @@ npm ci
 npm run build
 ```
 
-Output: `sharepoint/solution/edrms-utilization-report-react.sppkg`.
+Output: `sharepoint/solution/edrms-utilization-report.sppkg`.
 Bump `version` in `config/package-solution.json` before uploading over an
 earlier build.
 

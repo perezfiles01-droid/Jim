@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "1fb18572-fd3b-4a39-b8e9-15d1c899c0b8",
+  "id": "4903cf15-f177-44a3-a1c0-258649b555f1",
   "alias": "EdrmsReportWebPart",
   "componentType": "WebPart",
   "version": "*",
@@ -12,7 +12,7 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
     "group": { "default": "Advanced" },
-    "title": { "default": "EDRMS Utilization Report (React)" },
+    "title": { "default": "EDRMS Utilization Report" },
     "description": { "default": "ADB EDRMS Utilization Report: Bank-wide Oversight and Department Insights" },
     "officeFabricIconFontName": "BarChartVertical",
     "properties": {
