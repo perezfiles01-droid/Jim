@@ -1,0 +1,36 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "EDRMS Utilization Report (React)",
+    "id": "f5b0d21e-1ac6-453a-b0e6-80ea24f89d81",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.23.2"
+    },
+    "metadata": {
+      "shortDescription": { "default": "ADB EDRMS Utilization Report, React and Fluent UI" },
+      "longDescription": { "default": "ADB EDRMS Utilization Report: Bank-wide Oversight and Department Insights, built as React components with Fluent UI." },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "EDRMS Utilization Report (React)",
+        "description": "Adds the EDRMS Utilization Report (React) web part.",
+        "id": "8bb4b42f-cba5-4461-b7a5-b61317fdf896",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/edrms-utilization-report-react.sppkg"
+  }
+}
