@@ -17,7 +17,7 @@ const SER=()=>{
  const text=(tn,ox,oy)=>{const p=tn.parentElement,cs=getComputedStyle(p);if(cs.visibility==='hidden')return;const c=col(cs.color);if(!c)return;
   let s=tn.textContent;if(!s.trim())return;
   // a sort arrow in a header rides on the header's own text, so it stays beside it when Figma drops letter-spacing
-  const th=p.closest('th');let tail='';if(th){const tw=document.createTreeWalker(th,NodeFilter.SHOW_TEXT);const ns=[];let n;while((n=tw.nextNode()))if(n.textContent.trim())ns.push(n);if(ns[0]!==tn)return;tail=ns.slice(1).map(n=>n.textContent.trim()).join(' ');}const tt=cs.textTransform;
+  const th=p.closest('th, .cmpH button');let tail='';if(th){const tw=document.createTreeWalker(th,NodeFilter.SHOW_TEXT);const ns=[];let n;while((n=tw.nextNode()))if(n.textContent.trim())ns.push(n);if(ns[0]!==tn)return;tail=ns.slice(1).map(n=>n.textContent.trim()).join(' ');}const tt=cs.textTransform;
   const fs=parseFloat(cs.fontSize),fw=+cs.fontWeight>=650?700:+cs.fontWeight>=550?600:400,ls=parseFloat(cs.letterSpacing)||0;
   // group words into lines
   const rg=document.createRange(),words=[];const re=/\S+/g;let m;while((m=re.exec(s))){rg.setStart(tn,m.index);rg.setEnd(tn,m.index+m[0].length);const rr=rg.getClientRects()[0];if(rr&&rr.width)words.push({w:m[0],r:rr});}
