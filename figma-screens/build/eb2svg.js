@@ -15,13 +15,16 @@ const SER=()=>{
   if(lw>bw&&lc&&lc.a>0)out.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${lw}" height="${r.height.toFixed(1)}" rx="${Math.min(rad,2)}" fill="${lc.hex}"/>`);
  };
  const text=(tn,ox,oy)=>{const p=tn.parentElement,cs=getComputedStyle(p);if(cs.visibility==='hidden')return;const c=col(cs.color);if(!c)return;
-  let s=tn.textContent;if(!s.trim())return;const tt=cs.textTransform;
+  let s=tn.textContent;if(!s.trim())return;
+  // a sort arrow in a header rides on the header's own text, so it stays beside it when Figma drops letter-spacing
+  const th=p.closest('th');let tail='';if(th){const tw=document.createTreeWalker(th,NodeFilter.SHOW_TEXT);const ns=[];let n;while((n=tw.nextNode()))if(n.textContent.trim())ns.push(n);if(ns[0]!==tn)return;tail=ns.slice(1).map(n=>n.textContent.trim()).join(' ');}const tt=cs.textTransform;
   const fs=parseFloat(cs.fontSize),fw=+cs.fontWeight>=650?700:+cs.fontWeight>=550?600:400,ls=parseFloat(cs.letterSpacing)||0;
   // group words into lines
   const rg=document.createRange(),words=[];const re=/\S+/g;let m;while((m=re.exec(s))){rg.setStart(tn,m.index);rg.setEnd(tn,m.index+m[0].length);const rr=rg.getClientRects()[0];if(rr&&rr.width)words.push({w:m[0],r:rr});}
   const lines=[];words.forEach(w=>{const L=lines[lines.length-1];if(L&&Math.abs(L.top-w.r.top)<fs*0.5){L.t+=' '+w.w;L.rt=w.r.right;}else lines.push({top:w.r.top,h:w.r.height,x:w.r.left,t:w.w});lines[lines.length-1].rt=w.r.right;});
   let al='start';{let a=p;while(a&&a!==root){const ac=getComputedStyle(a);if(/^(table-cell|block|list-item)$/.test(ac.display)||a.tagName==='TD'||a.tagName==='TH'){const ta=ac.textAlign;al=(ta==='right'||ta==='end')?'end':ta==='center'?'middle':'start';break;}a=a.parentElement;}}
-  lines.forEach(L=>{let t=tt==='uppercase'?L.t.toUpperCase():L.t;const y=L.top+(L.h-fs)/2+fs*0.82-oy;
+  if(tail&&lines.length)lines[lines.length-1].tail=' '+tail;
+  lines.forEach(L=>{let t=(tt==='uppercase'?L.t.toUpperCase():L.t)+(L.tail||'');const y=L.top+(L.h-fs)/2+fs*0.82-oy;
    const ax=al==='end'?L.rt:al==='middle'?(L.x+L.rt)/2:L.x;
    out.push(`<text x="${(ax-ox).toFixed(1)}" y="${y.toFixed(1)}"${al!=='start'?` text-anchor="${al}"`:''} font-family="Inter" font-size="${fs}" font-weight="${fw}"${ls?` letter-spacing="${ls.toFixed(2)}"`:''} fill="${c.hex}">${esc(t)}</text>`);
    if(cs.textDecorationLine.indexOf('underline')>=0){rg.setStart(tn,0);rg.setEnd(tn,s.length);const rr=rg.getBoundingClientRect();out.push(`<rect x="${(rr.left-ox).toFixed(1)}" y="${(y+2.5).toFixed(1)}" width="${rr.width.toFixed(1)}" height="1" fill="${c.hex}"/>`);}});
