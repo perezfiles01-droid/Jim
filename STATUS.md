@@ -610,6 +610,7 @@ The `Verification tracker` sheet in the workbook has every one.
 | `SiteCreatedDate` | Graph `createdDateTime` | Returns on every site |
 | `UniqueViewersAllTime` | Graph `actorCount` | Returned 12 |
 | `FileSize` | Graph `size` | 1,506 to 2,338,767 bytes |
+| `FileCreatedDate` (all documents) | Graph driveItem `createdDateTime` | **15 Oct 2026**, Graph Explorer as JimTest, `org_csd_1.4testsite` AnnualMeet/Folder1012: 17 items (15 files, 2 folders), `createdDateTime` on every one. Files carry `file`, folders `folder`, so folders can be skipped. A copy gets a **new** date: `11111 Copy.eml` 2026-10-15 vs `11111.eml` 2026-10-12. Basis of the New documents count |
 | `UserPrincipalName` | `User Principal Name` | Activity CSV, 30 rows |
 | `LastActivityDate` (user) | `Last Activity Date` | 25 of 30 rows |
 | `ViewedOrEditedFileCount` | `Viewed Or Edited File Count` | **Only 8 of 30 above zero** |
