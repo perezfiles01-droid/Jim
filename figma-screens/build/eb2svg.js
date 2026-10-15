@@ -19,9 +19,11 @@ const SER=()=>{
   const fs=parseFloat(cs.fontSize),fw=+cs.fontWeight>=650?700:+cs.fontWeight>=550?600:400,ls=parseFloat(cs.letterSpacing)||0;
   // group words into lines
   const rg=document.createRange(),words=[];const re=/\S+/g;let m;while((m=re.exec(s))){rg.setStart(tn,m.index);rg.setEnd(tn,m.index+m[0].length);const rr=rg.getClientRects()[0];if(rr&&rr.width)words.push({w:m[0],r:rr});}
-  const lines=[];words.forEach(w=>{const L=lines[lines.length-1];if(L&&Math.abs(L.top-w.r.top)<fs*0.5){L.t+=' '+w.w;}else lines.push({top:w.r.top,h:w.r.height,x:w.r.left,t:w.w});});
+  const lines=[];words.forEach(w=>{const L=lines[lines.length-1];if(L&&Math.abs(L.top-w.r.top)<fs*0.5){L.t+=' '+w.w;L.rt=w.r.right;}else lines.push({top:w.r.top,h:w.r.height,x:w.r.left,t:w.w});lines[lines.length-1].rt=w.r.right;});
+  let al='start';{let a=p;while(a&&a!==root){const ac=getComputedStyle(a);if(/^(table-cell|block|list-item)$/.test(ac.display)||a.tagName==='TD'||a.tagName==='TH'){const ta=ac.textAlign;al=(ta==='right'||ta==='end')?'end':ta==='center'?'middle':'start';break;}a=a.parentElement;}}
   lines.forEach(L=>{let t=tt==='uppercase'?L.t.toUpperCase():L.t;const y=L.top+(L.h-fs)/2+fs*0.82-oy;
-   out.push(`<text x="${(L.x-ox).toFixed(1)}" y="${y.toFixed(1)}" font-family="Inter" font-size="${fs}" font-weight="${fw}"${ls?` letter-spacing="${ls.toFixed(2)}"`:''} fill="${c.hex}">${esc(t)}</text>`);
+   const ax=al==='end'?L.rt:al==='middle'?(L.x+L.rt)/2:L.x;
+   out.push(`<text x="${(ax-ox).toFixed(1)}" y="${y.toFixed(1)}"${al!=='start'?` text-anchor="${al}"`:''} font-family="Inter" font-size="${fs}" font-weight="${fw}"${ls?` letter-spacing="${ls.toFixed(2)}"`:''} fill="${c.hex}">${esc(t)}</text>`);
    if(cs.textDecorationLine.indexOf('underline')>=0){rg.setStart(tn,0);rg.setEnd(tn,s.length);const rr=rg.getBoundingClientRect();out.push(`<rect x="${(rr.left-ox).toFixed(1)}" y="${(y+2.5).toFixed(1)}" width="${rr.width.toFixed(1)}" height="1" fill="${c.hex}"/>`);}});
  };
  const field=(e,ox,oy)=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);let v=e.value||e.placeholder||'';if(e.type==='date'&&!e.value)v='mm/dd/yyyy';if(!v)return;const ph=!e.value;const fs=parseFloat(cs.fontSize);
