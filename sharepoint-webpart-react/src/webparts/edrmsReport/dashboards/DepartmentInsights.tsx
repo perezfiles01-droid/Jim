@@ -313,7 +313,7 @@ const VisitorsDrill: React.FC<{ sites: ISite[]; resetKey: string }> = ({ sites, 
   return (
     <Panel title="Site visitors" sub="Number of people who opened each site in the last 180 days. A person who visits many times is counted once.">
       <div className="sumRow" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
-        <SumCard label="Unique visitors" value={F(T)} hint="Last 180 days">
+        <SumCard label="Unique visitors" value={F(T)} info="The number of different people who opened at least one EDRMS site in the last 180 days. A person who opened several sites is counted once.">
           <div className="split2"><span style={{ width: (T ? TI / T * 100 : 0) + '%', background: '#0072BC' }} /><span style={{ width: (T ? TE / T * 100 : 0) + '%', background: '#D97706' }} /></div>
         </SumCard>
         <SumCard label="Internal visitors" swatch="#0072BC" value={<>{F(TI)}<small>{pct(TI, T)}</small></>} hint="People with an ADB account" />

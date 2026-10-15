@@ -52,7 +52,7 @@ export interface IKpi {
   key: string;
   label: string;
   value: string;
-  /** The description behind the (i), or the line under the figure on stacked cards. */
+  /** The description behind the (i). */
   info: string;
 }
 
@@ -67,9 +67,8 @@ export const KpiRow: React.FC<{ items: IKpi[]; open: string; onOpen: (k: string)
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(k.key); } }}>
           <div className="lab">{k.label}</div>
           <div className="val">{k.value}</div>
-          {stacked && <div className="sub">{k.info}</div>}
           <div className="tap">View breakdown <span aria-hidden="true">&#8250;</span></div>
-          {!stacked && <InfoIcon text={k.info} />}
+          <InfoIcon text={k.info} />
         </div>
       ))}
     </div>
@@ -94,8 +93,7 @@ export const SumCard: React.FC<{ label: string; value: React.ReactNode; hint?: s
       <span className="l">{swatch && <i style={{ background: swatch }} />}{label}</span>
       <span className="v">{value}</span>
       {children}
-      {hint && <span className="h">{hint}</span>}
-      {info && <InfoIcon text={info} />}
+      {(info || hint) && <InfoIcon text={(info || hint) as string} />}
     </div>
   );
 

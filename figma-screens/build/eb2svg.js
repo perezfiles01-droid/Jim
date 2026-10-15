@@ -9,10 +9,10 @@ const SER=()=>{
  const box=(e,ox,oy)=>{const cs=getComputedStyle(e);if(cs.visibility==='hidden'||cs.display==='none'||+cs.opacity===0)return;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return;
   const bg=col(cs.backgroundColor), bw=parseFloat(cs.borderTopWidth)||0, bc=col(cs.borderTopColor), lw=parseFloat(cs.borderLeftWidth)||0, lc=col(cs.borderLeftColor), bb=parseFloat(cs.borderBottomWidth)||0, bbc=col(cs.borderBottomColor);
   const rad=Math.min(parseFloat(cs.borderTopLeftRadius)||0,r.height/2);const x=r.left-ox,y=r.top-oy;
-  const uni=bw>0&&bc&&lw===bw&&bb===bw;
+  const uni=bw>0&&bc&&bb===bw;
   if(bg||uni){out.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${r.width.toFixed(1)}" height="${r.height.toFixed(1)}" rx="${rad}" fill="${bg?bg.hex:'none'}"${bg&&bg.a<1?` fill-opacity="${bg.a}"`:''}${uni?` stroke="${bc.hex}" stroke-width="${bw}"`:''}/>`);}
   if(!uni&&bb>0&&bbc)out.push(`<rect x="${x.toFixed(1)}" y="${(y+r.height-bb).toFixed(1)}" width="${r.width.toFixed(1)}" height="${bb}" fill="${bbc.hex}"/>`);
-  if(lw>bw&&lc)out.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${lw}" height="${r.height.toFixed(1)}" rx="${Math.min(rad,2)}" fill="${lc.hex}"/>`);
+  if(lw>bw&&lc&&lc.a>0)out.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${lw}" height="${r.height.toFixed(1)}" rx="${Math.min(rad,2)}" fill="${lc.hex}"/>`);
  };
  const text=(tn,ox,oy)=>{const p=tn.parentElement,cs=getComputedStyle(p);if(cs.visibility==='hidden')return;const c=col(cs.color);if(!c)return;
   let s=tn.textContent;if(!s.trim())return;const tt=cs.textTransform;
@@ -30,7 +30,7 @@ const SER=()=>{
   cl.setAttribute('x',(r.left-ox).toFixed(1));cl.setAttribute('y',(r.top-oy).toFixed(1));cl.setAttribute('width',r.width.toFixed(1));cl.setAttribute('height',r.height.toFixed(1));cl.removeAttribute('style');cl.removeAttribute('class');
   // computed fill/stroke onto every shape
   const src=[e,...e.querySelectorAll('*')],dst=[cl,...cl.querySelectorAll('*')];src.forEach((n,i)=>{if(n===e&&false)return;const k=getComputedStyle(n);const d=dst[i];
-   if(n.tagName!=='svg'){const f=col(k.fill),s=col(k.stroke);d.setAttribute('fill',f?f.hex:'none');if(s){d.setAttribute('stroke',s.hex);d.setAttribute('stroke-width',k.strokeWidth);d.setAttribute('stroke-linecap',k.strokeLinecap);d.setAttribute('stroke-linejoin',k.strokeLinejoin);}if(n.tagName==='text'){d.setAttribute('font-family','Inter');}}
+   if(n.tagName!=='svg'){const f=col(k.fill),s=col(k.stroke);d.setAttribute('fill',f?f.hex:'none');if(s){d.setAttribute('stroke',s.hex);d.setAttribute('stroke-width',k.strokeWidth);d.setAttribute('stroke-linecap',k.strokeLinecap);d.setAttribute('stroke-linejoin',k.strokeLinejoin);}if(n.tagName==='text'){d.setAttribute('font-family','Inter');d.removeAttribute('stroke');d.removeAttribute('stroke-width');d.removeAttribute('paint-order');d.removeAttribute('stroke-linecap');d.removeAttribute('stroke-linejoin');}}
    d.removeAttribute('class');});
   cl.querySelectorAll('title').forEach(t=>t.remove());
   out.push(new XMLSerializer().serializeToString(cl).replace(/ xmlns="[^"]*"/g,''));};

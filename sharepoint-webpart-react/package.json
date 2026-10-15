@@ -1,6 +1,6 @@
 {
   "name": "edrms-utilization-report-react",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "private": true,
   "engines": {
     "node": ">=22.14.0 < 23.0.0"
