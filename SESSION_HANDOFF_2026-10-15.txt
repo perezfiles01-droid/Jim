@@ -1,0 +1,121 @@
+SESSION HANDOFF - ADB EDRMS Utilization Report
+Date: 15 October 2026
+Owner: Jimwyl Perez (AvePoint)
+Repo: perezfiles01-droid/Jim (branch claude/charming-noether-hopf3n, always merged to main)
+Read first in any new session: STATUS.md, then BACKGROUND.md
+
+======================================================================
+1. PEOPLE
+======================================================================
+- Dane Duong      : developer. Rebuilding the report in React + Fluent UI 8
+                    as a SharePoint web part. Keeps his own code and will fix
+                    CSS. His FE peer wants Fluent UI Charts.
+- Ban Yaonan (Banna Ban), Banna.Ban@avepoint.com : designer (DL_Design,
+                    Designer II). Will polish the AI-built UI, based on the
+                    current design (not a new concept).
+- Wang Nan Warner : design request assignee ("assign to Warner Wang").
+- Mihal Le        : tenant/database contact.
+
+======================================================================
+2. KEY LINKS
+======================================================================
+- Approved sample site : https://7rkd12.sharepoint.com/sites/EDRMSUtilsample
+- Web prototype         : https://perezfiles01-droid.github.io/Jim/
+- Figma file            : https://www.figma.com/design/eRpOS5rhjvZiDnJ5Y9nh3z
+                          (screens 01-05 built; 06-09 never added, MCP limit)
+- Test tenant           : 7rkd12 (sign in as JimTest@7rkd12.onmicrosoft.com)
+- SharePoint admin      : https://7rkd12-admin.sharepoint.com
+
+======================================================================
+3. DELIVERABLES IN THE REPO (root)
+======================================================================
+- EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg
+      React web part, version 1.0.41.0, replaces "Util sample"
+      (same solution/feature/web part IDs, upload with Replace)
+- EDRMS_WebPart_React_Source_1.0.41.zip   source of the above
+- sharepoint-webpart-react/               source folder
+- EDRMS_Figma_Screens.zip + figma-screens/*.svg
+      9 editable SVG screens to drag into Figma
+      (delete old screens and re-drag after each update)
+
+======================================================================
+4. WHAT WAS DONE THIS SESSION
+======================================================================
+Web part (1.0.38 -> 1.0.41):
+- Info (i) icons on cards; card alignment fixes
+- React + Fluent UI rebuild that replaces Util sample
+- 1.0.41: Top 10 bar charts line up row-for-row with the table beside
+  them; "Show by" label left-aligned; even library table columns
+- Browser test: 16/16 checks pass
+
+Figma SVGs:
+- Donut fixed, trend counts restored, right-aligned table numbers,
+  sort arrows kept next to table AND comparison headers
+
+Data verification (recorded in STATUS.md section 5):
+- Microsoft Graph returns createdDateTime on every file. Verified
+  15 Oct 2026 in Graph Explorer as JimTest, org_csd_1.4testsite,
+  AnnualMeet/Folder1012: 17 items (15 files, 2 folders).
+  Files have "file", folders have "folder".
+  A copy gets a NEW created date (11111.eml 12 Oct, copy 15 Oct).
+
+Access:
+- Tenant external sharing already "Anyone"; site was shared with
+  Banna.Ban@avepoint.com (invite email sent). Should be Read, not
+  Full control.
+
+======================================================================
+5. DECISIONS ON "NEW DOCUMENTS" (agreed in this session)
+======================================================================
+- Total documents = files that exist NOW. Deleted files not counted.
+  Goes up and down.
+- New documents   = files ADDED in a month/year, by file created date.
+  Once a month ends its count is LOCKED. Deleted files still count as
+  new in the month they were added.
+- Picking one year: Total = everything up to end of that year,
+  New = only that year.
+- Picking All: New (all years) and Total can differ by the number of
+  deleted files. That is correct.
+- Source: Graph createdDateTime -> FileCreatedDate.
+  Do NOT use Records.CreatedDate (that is the DECLARATION date and the
+  Records table only has declared files).
+- Skip folders.
+- Copies/migrations count as new in the month they were copied.
+
+How Dane should build it (storing every file is too heavy for him):
+- Recommended: during the scan, read files per library using
+    GET /drives/{DriveId}/root/delta?$select=id,name,createdDateTime,file,folder,size
+  (EDRMSLibraries already has DriveId), count them by created month,
+  and store ONLY totals: LibraryId | Month | NewFiles.
+  Recalculate only the current month each refresh; past months locked.
+- Simplest fallback: save site File Count from the usage report each
+  month; new = difference. No history before go-live, net of deletes.
+- Graph search counts: possible, NOT tested.
+
+======================================================================
+6. OPEN ITEMS / NEXT STEPS
+======================================================================
+[ ] Tooltip on "New documents" card still says "net of files deleted".
+    Should become: "Files added to EDRMS sites in the period shown,
+    counted in the month they were created." (not yet changed)
+[ ] Sample data in the prototype makes New(all) != Total by 1,910,150;
+    could be adjusted so the gap is only deleted files (not yet done)
+[ ] Confirm Dane's choice: totals per library per month (option 2) vs
+    usage-report snapshot (option 1). Ask client if history before
+    go-live is needed.
+[ ] Ban: make sure she opened the invite and can see the site; send
+    brief + EDRMS_Figma_Screens.zip; offer 30 min walkthrough.
+[ ] Design request form (UX/UI list): Project Design, SharePoint Portal,
+    Industry Banking & Finance, assignee Warner Wang. Fill due date
+    (~3 weeks) and check Business Unit.
+[ ] Change Banna's site permission to Read if it was left at Full control.
+[ ] Optional: finish Figma screens 06-09 via MCP when limits allow.
+
+======================================================================
+7. STANDING RULES
+======================================================================
+- Every accepted change: commit, merge to main, push (no asking).
+- Run the browser test before committing index.html / web part changes.
+- Do not trust assumed column names or figures: verify against the
+  real tenant, or say it is unverified.
+- User prefers very simple explanations and copy-paste messages.
