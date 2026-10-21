@@ -1,0 +1,150 @@
+<title>Item 5 Location Type Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: ADB report shell, three stacked mockup frames, each annotated. */
+:root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--teal:#00A5A8;--orange:#E8763C;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--nav:#0E1F35;--note:#FFF6E5;--noteln:#E8A23C;--chip:#E6F1FA;
+--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E6EDF5;--ink2:#BCC8D6;--blue:#4DA6E8;--teal:#3CC6C8;--bg:#0D1826;--card:#14233A;--line:#2A3D57;--mut:#8C9BB0;--nav:#08111D;--note:#2E2614;--noteln:#C98A2C;--chip:#1A3552;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#E6EDF5;--ink2:#BCC8D6;--blue:#4DA6E8;--teal:#3CC6C8;--bg:#0D1826;--card:#14233A;--line:#2A3D57;--mut:#8C9BB0;--nav:#08111D;--note:#2E2614;--noteln:#C98A2C;--chip:#1A3552;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:28px}
+h1{font-family:var(--serif);font-size:24px;text-wrap:balance}
+.lead{color:var(--ink2);max-width:70ch;line-height:1.55;margin-top:6px}
+.frame{display:grid;gap:10px}
+.flab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.flab b{color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+.bar{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.g{display:grid;gap:6px;min-width:0}
+.lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{background:var(--card);color:var(--ink2);border:0;border-right:1px solid var(--line);padding:7px 14px;font:inherit;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.seg button:focus-visible,select:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:7px 10px;min-width:260px;max-width:100%}
+.note{background:var(--note);border-left:3px solid var(--noteln);padding:10px 12px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.note b{color:var(--ink)}
+.dd{border:1px solid var(--line);border-radius:4px;max-width:340px;background:var(--card);font-size:13px}
+.dd .sel{padding:8px 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.dd .grp{padding:8px 10px 4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:700;background:var(--bg)}
+.dd .opt{padding:5px 10px 5px 22px;color:var(--ink2)}
+.dd .opt.sub{padding-left:36px;font-size:12.5px}
+.dd .opt.on{background:var(--chip);color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);border-bottom:2px solid var(--line);padding:8px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:8px;white-space:nowrap}
+td.n,th.n{text-align:right}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--chip);color:var(--blue)}
+th.new{color:var(--blue)}
+.ptitle{font-family:var(--serif);font-size:16px;font-weight:700}
+.psub{color:var(--mut);font-size:12.5px;margin:2px 0 12px}
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.crumbs span{background:var(--chip);color:var(--ink);font-size:12px;padding:3px 9px;border-radius:12px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Item 5: one list, grouped by Department / Office and HQ / RM / RO</h1>
+    <p class="lead">RAC confirmed a single "Department / Office / RM / RO" list, with metadata so it can be grouped and filtered. These mockups add one attribute, <b>Location type</b> (HQ, RM or RO), to every entry in that list. Department names and figures below are illustrative.</p>
+  </header>
+
+  <section class="frame">
+    <div class="flab"><b>Frame 1</b> &middot; Filter bar on Bank-wide Oversight and Department Insights</div>
+    <div class="card">
+      <div class="bar">
+        <div class="g"><span class="lbl">Location type</span>
+          <div class="seg" id="seg">
+            <button type="button" data-v="all" aria-pressed="true">All</button>
+            <button type="button" data-v="HQ" aria-pressed="false">HQ</button>
+            <button type="button" data-v="RM" aria-pressed="false">RM</button>
+            <button type="button" data-v="RO" aria-pressed="false">RO</button>
+          </div></div>
+        <div class="g"><label class="lbl" for="dept">Department / Office / RM / RO</label>
+          <select id="dept"></select></div>
+      </div>
+    </div>
+    <div class="note"><b>New:</b> the Location type selector sits to the left of the existing department filter. Choosing RM narrows the department list to Resident Missions only. Click the buttons to try it; the table in Frame 3 follows.</div>
+  </section>
+
+  <section class="frame">
+    <div class="flab"><b>Frame 2</b> &middot; Department dropdown, opened, grouped by location</div>
+    <div class="two">
+      <div class="dd" aria-hidden="true">
+        <div class="sel"><span>All Departments / Offices / RMs / ROs</span><span>&#9662;</span></div>
+        <div class="grp">Headquarters (HQ)</div>
+        <div class="opt">Departments</div>
+        <div class="opt sub">CCSD &middot; Climate Change and Sustainable Development</div>
+        <div class="opt sub on">SARD &middot; South Asia Department</div>
+        <div class="opt sub">SERD &middot; Southeast Asia Department</div>
+        <div class="opt">Offices</div>
+        <div class="opt sub">OGC &middot; Office of the General Counsel</div>
+        <div class="opt sub">OSFG &middot; Office of the Secretary</div>
+        <div class="grp">Resident Missions (RM)</div>
+        <div class="opt">INRM &middot; India Resident Mission</div>
+        <div class="opt">IRM &middot; Indonesia Resident Mission</div>
+        <div class="opt">PRCM &middot; PRC Resident Mission</div>
+        <div class="grp">Representative Offices (RO)</div>
+        <div class="opt">ERO &middot; European Representative Office</div>
+        <div class="opt">JRO &middot; Japanese Representative Office</div>
+        <div class="opt">NARO &middot; North American Representative Office</div>
+      </div>
+      <div class="note"><b>Still one list.</b> The headers (HQ, RM, RO) and the Department / Office split under HQ come from metadata on each entry, not from separate lists. Picking a header row selects the whole group.<br><br><b>Needed from RAC:</b> the Location type, and for HQ entries whether it is a Department or an Office, against each row of the list received from sir Rotsen.</div>
+    </div>
+  </section>
+
+  <section class="frame">
+    <div class="flab"><b>Frame 3</b> &middot; Department tables gain a Location type column</div>
+    <div class="card">
+      <div class="ptitle">Sites by Department / Office / RM / RO</div>
+      <div class="psub">Sortable, and included in the Excel export.</div>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="scroll"><table>
+        <thead><tr><th>Department / Office / RM / RO</th><th class="new">Location type</th><th class="new">Group</th><th class="n">Number of EDRMS SharePoint sites</th></tr></thead>
+        <tbody id="tb"></tbody>
+      </table></div>
+    </div>
+    <div class="note"><b>New columns are in blue.</b> Group shows Department or Office for HQ entries and the parent region for RMs, so the table can be sorted or exported by either level.</div>
+  </section>
+</div>
+
+<script>
+const ROWS=[
+ ["CCSD","Climate Change and Sustainable Development","HQ","Department",64],
+ ["SARD","South Asia Department","HQ","Department",88],
+ ["SERD","Southeast Asia Department","HQ","Department",92],
+ ["OGC","Office of the General Counsel","HQ","Office",21],
+ ["OSFG","Office of the Secretary","HQ","Office",17],
+ ["INRM","India Resident Mission","RM","SARD",14],
+ ["IRM","Indonesia Resident Mission","RM","SERD",12],
+ ["PRCM","PRC Resident Mission","RM","EARD",11],
+ ["ERO","European Representative Office","RO","Representative Office",4],
+ ["JRO","Japanese Representative Office","RO","Representative Office",3],
+ ["NARO","North American Representative Office","RO","Representative Office",3]
+];
+const NAMES={HQ:"Headquarters (HQ)",RM:"Resident Missions (RM)",RO:"Representative Offices (RO)"};
+let loc="all";
+const seg=document.getElementById("seg"),dept=document.getElementById("dept"),tb=document.getElementById("tb"),cr=document.getElementById("crumbs");
+function fillDept(){
+  const keep=dept.value;
+  let h='<option value="all">All Departments / Offices / RMs / ROs</option>';
+  ["HQ","RM","RO"].filter(k=>loc==="all"||loc===k).forEach(k=>{
+    h+='<optgroup label="'+NAMES[k]+'">'+ROWS.filter(r=>r[2]===k).map(r=>'<option value="'+r[0]+'">'+r[0]+' · '+r[1]+'</option>').join("")+'</optgroup>';
+  });
+  dept.innerHTML=h;
+  dept.value=[...dept.options].some(o=>o.value===keep)?keep:"all";
+}
+function render(){
+  const rows=ROWS.filter(r=>(loc==="all"||r[2]===loc)&&(dept.value==="all"||r[0]===dept.value));
+  tb.innerHTML=rows.map(r=>'<tr><td>'+r[0]+' · '+r[1]+'</td><td><span class="pill">'+r[2]+'</span></td><td>'+r[3]+'</td><td class="n">'+r[4]+'</td></tr>').join("");
+  const c=[];if(loc!=="all")c.push("Location type: "+loc);if(dept.value!=="all")c.push("Department: "+dept.value);
+  cr.innerHTML=c.length?c.map(x=>'<span>'+x+'</span>').join(""):'<span>Showing all locations</span>';
+}
+seg.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;loc=b.dataset.v;
+  seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));fillDept();render();});
+dept.addEventListener("change",render);
+fillDept();render();
+</script>
