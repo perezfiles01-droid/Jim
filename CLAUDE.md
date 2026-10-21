@@ -45,6 +45,12 @@ Note that this repo's own comments quote the text of things that were removed,
 so grepping for a removed caption will still find it. Check whether the hit is
 inside a comment before concluding a removal did not land.
 
+## Data sources
+
+Every utilization data source, held or still missing, is registered in
+**`sources/README.md`**. New source files go in `sources/<tenant>/` and get a
+row there. Check it before saying a figure has a source or has none.
+
 ## Current deliverables
 
 | File | What it is |
