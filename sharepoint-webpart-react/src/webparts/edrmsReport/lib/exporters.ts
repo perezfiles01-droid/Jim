@@ -46,6 +46,57 @@ export async function exportTable(t: IExportTable): Promise<void> {
   XLSX.writeFile(wb, t.name + '.xlsx');
 }
 
+
+
+/**
+ * html2canvas draws neither placeholders, date fields nor a CSS background
+ * icon, so in its copy each text, search and date box becomes a plain box
+ * holding the same text and icon (22 Oct 2026).
+ */
+function flattenInputs(doc: Document, clone: HTMLElement): void {
+  const win = doc.defaultView;
+  if (!win) return;
+  Array.from(clone.querySelectorAll<HTMLInputElement>('input')).forEach(inp => {
+    const t = (inp.type || 'text').toLowerCase();
+    if (['text', 'search', 'date', ''].indexOf(t) < 0) return;
+    const cs = win.getComputedStyle(inp);
+    if (cs.display === 'none') return;
+    const box = doc.createElement('div');
+    ['width', 'height', 'boxSizing', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft', 'borderRadius', 'paddingTop', 'paddingBottom', 'paddingRight', 'backgroundColor',
+      'fontSize', 'fontFamily', 'fontWeight', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'flex', 'minWidth', 'maxWidth'].forEach(k => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (box.style as any)[k] = (cs as any)[k];
+    });
+    box.style.display = 'flex'; box.style.alignItems = 'center'; box.style.gap = '8px'; box.style.whiteSpace = 'nowrap'; box.style.overflow = 'hidden';
+    box.style.paddingLeft = t === 'search' ? '11px' : cs.paddingLeft;
+    // Icons drawn with borders, which html2canvas always paints (an image added here may not load in time).
+    const glass = (): HTMLElement => {
+      const g = doc.createElement('span'); g.style.cssText = 'position:relative;flex:none;width:14px;height:14px';
+      const c = doc.createElement('span'); c.style.cssText = 'position:absolute;left:1px;top:1px;width:8px;height:8px;border:2px solid #8A9AAB;border-radius:50%';
+      const h = doc.createElement('span'); h.style.cssText = 'position:absolute;left:10px;top:9px;width:2px;height:6px;background:#8A9AAB;border-radius:1px;transform:rotate(-45deg)';
+      g.appendChild(c); g.appendChild(h); return g;
+    };
+    const cal = (): HTMLElement => {
+      const g = doc.createElement('span'); g.style.cssText = 'position:relative;flex:none;width:14px;height:14px';
+      const b = doc.createElement('span'); b.style.cssText = 'position:absolute;left:1px;top:2px;width:10px;height:9px;border:1.5px solid #33475F;border-top-width:3px;border-radius:2px';
+      g.appendChild(b); return g;
+    };
+    if (t === 'search') box.appendChild(glass());
+    const txt = doc.createElement('span');
+    let value = inp.value, empty = !value;
+    if (t === 'date') {
+      if (value) { const d = new Date(value + 'T00:00:00'); value = ('0' + (d.getMonth() + 1)).slice(-2) + '/' + ('0' + d.getDate()).slice(-2) + '/' + d.getFullYear(); }
+      else { value = 'mm/dd/yyyy'; empty = true; }
+    } else if (!value) value = inp.placeholder || '';
+    txt.textContent = value;
+    txt.style.flex = '1 1 auto'; txt.style.overflow = 'hidden';
+    txt.style.color = empty ? '#8A9AAB' : cs.color;
+    box.appendChild(txt);
+    if (t === 'date') box.appendChild(cal());
+    if (inp.parentNode) inp.parentNode.replaceChild(box, inp);
+  });
+}
+
 /**
  * Draws the element as a picture and saves it as a landscape A4 PDF, page by
  * page. Pages break at the start of a section (a title band or panel), or else
@@ -58,11 +109,12 @@ export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
   ]);
   el.classList.add('edrms-printing');
   try {
-    let bands: number[] = [], starts: number[] = [], rows: number[] = [], boxW = 0;
+    let bands: number[] = [], starts: number[] = [], rows: number[] = [], spans: number[][] = [], boxW = 0;
     const canvas = await html2canvas(el, {
       scale: 1.5, backgroundColor: '#EEF2F6', useCORS: true, logging: false,
       // Measured in html2canvas's own copy, which is what the picture shows.
-      onclone: (_doc: Document, clone: HTMLElement) => {
+      onclone: (doc: Document, clone: HTMLElement) => {
+        flattenInputs(doc, clone);
         const box = clone.getBoundingClientRect();
         boxW = box.width;
         const at = (q: string, edge: 'top' | 'bottom'): number[] => Array.from(clone.querySelectorAll(q))
@@ -72,10 +124,15 @@ export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
         bands = at('.band', 'top').map(v => v - 8);
         starts = at('section.panel, .kpis, .panel table, .chart, .split > *, .strip', 'top').map(v => v - 8);
         rows = at('tbody tr, .hbar, .drow', 'bottom').map(v => v + 1);
+        // A chart beside a table must not be cut by a break between the table's rows.
+        spans = Array.from(clone.querySelectorAll('svg, .chart, canvas')).map(x => (x as HTMLElement).getBoundingClientRect())
+          .filter(r => r.height > 20).map(r => [r.top - box.top - 4, r.bottom - box.top + 4]);
       }
     });
     const k = boxW ? canvas.width / boxW : 1.5, px = (v: number[]): number[] => v.map(x => Math.round(x * k));
-    const sBands = px(bands), sStarts = px(starts), sRows = px(rows);
+    const sSpans = spans.map(px);
+    const clear = (v: number[]): number[] => v.filter(b => !sSpans.some(sp => b > sp[0] && b < sp[1]));
+    const sBands = clear(px(bands)), sStarts = clear(px(starts)), sRows = clear(px(rows));
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
     const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight(), m = 20;
     const w = pw - m * 2, scale = w / canvas.width, sliceH = Math.floor((ph - m * 2) / scale);
@@ -83,10 +140,15 @@ export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
     while (y < canvas.height) {
       let end = Math.min(canvas.height, y + sliceH);
       if (end < canvas.height) {
-        const fit = (list: number[]): number[] => list.filter(b => b > y + sliceH * 0.35 && b <= end);
-        // Best: before a section's title. Then: before a panel, table or chart. Last: between rows.
-        const ok = fit(sBands).length ? fit(sBands) : fit(sStarts).length ? fit(sStarts) : fit(sRows);
-        if (ok.length) end = ok[ok.length - 1];
+        const within = (list: number[], lo: number, hi: number): number[] => list.filter(b => b > y + sliceH * lo && b <= y + sliceH * hi);
+        // A section a little taller than a page (up to 30%) is kept whole and the
+        // page drawn slightly smaller, rather than broken or left half empty.
+        const whole = within(sBands, 0.7, 1.3).concat(canvas.height <= y + sliceH * 1.3 ? [canvas.height] : []);
+        // Otherwise: before a section's title (page at least half full), or a panel, table or
+        // chart (at least 70% full); last resort, between rows.
+        const ok = whole.length ? whole : within(sBands, 0.5, 1).length ? within(sBands, 0.5, 1) : within(sStarts, 0.7, 1).length ? within(sStarts, 0.7, 1)
+          : within(sRows, 0.35, 1).length ? within(sRows, 0.35, 1) : within(sBands.concat(sStarts), 0.35, 1).sort((x, z) => x - z);
+        if (ok.length) end = whole.length ? whole.reduce((best, b) => Math.abs(b - y - sliceH) < Math.abs(best - y - sliceH) ? b : best) : ok[ok.length - 1];
       }
       const part = document.createElement('canvas');
       part.width = canvas.width;
@@ -95,7 +157,8 @@ export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
       if (!ctx) break;
       ctx.drawImage(canvas, 0, y, canvas.width, part.height, 0, 0, canvas.width, part.height);
       if (page) pdf.addPage();
-      pdf.addImage(part.toDataURL('image/jpeg', 0.88), 'JPEG', m, m, w, part.height * scale);
+      const fitK = Math.min(1, (ph - m * 2) / (part.height * scale)), dw = w * fitK;
+      pdf.addImage(part.toDataURL('image/jpeg', 0.88), 'JPEG', m + (w - dw) / 2, m, dw, part.height * scale * fitK);
       y = end; page++;
     }
     pdf.save(name + '.pdf');
@@ -154,7 +217,7 @@ async function shoot(h2c: any, el: HTMLElement, title: string, on?: number): Pro
     scale, backgroundColor: '#FFFFFF', useCORS: true, logging: false,
     onclone: (doc: Document, clone: HTMLElement) => {
       const s = doc.createElement('style'); s.textContent = PPT_HIDE; doc.head.appendChild(s);
-      if (clone) measure(clone);
+      if (clone) { flattenInputs(doc, clone); measure(clone); }
     }
   });
   const k = boxW ? canvas.width / boxW : scale, px = (v: number[]): number[] => v.map(x => Math.round(x * k));
