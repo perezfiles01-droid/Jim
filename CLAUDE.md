@@ -45,6 +45,16 @@ Note that this repo's own comments quote the text of things that were removed,
 so grepping for a removed caption will still find it. Check whether the hit is
 inside a comment before concluding a removal did not land.
 
+## App Catalog link (where the .sppkg is uploaded)
+
+When the requester asks where to upload the web part, or for the App Catalog
+link, send exactly this one and no other:
+
+https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
+
+Upload the `.sppkg` there and choose **Replace**. (Set by the requester,
+22 Oct 2026. Do not send the `AppCatalog/Forms/AllItems.aspx` address.)
+
 ## Data sources
 
 Every utilization data source, held or still missing, is registered in
