@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './Report.module.scss';
 import { loadReportData } from '../lib/data';
-import { exportPdf } from '../lib/exporters';
+import { exportPdf, exportPptx } from '../lib/exporters';
 import { BankWide } from '../dashboards/BankWide';
 import { DepartmentInsights } from '../dashboards/DepartmentInsights';
 import { DownloadGlyph } from './ui';
@@ -61,23 +61,53 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
     setClosed(next);
     try { localStorage.setItem(SIDEBAR_KEY, next ? '1' : '0'); } catch { /* private window */ }
   };
-  const pdf = (): void => {
+  const [menu, setMenu] = React.useState(false);
+  const [busyText, setBusyText] = React.useState('');
+  React.useEffect(() => {
+    if (!menu) return;
+    const close = (): void => setMenu(false);
+    const key = (e: KeyboardEvent): void => { if (e.key === 'Escape') setMenu(false); };
+    document.addEventListener('click', close);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('click', close); document.removeEventListener('keydown', key); };
+  }, [menu]);
+  const name = dash === 'bw' ? 'Bank-wide Oversight' : 'Department Insights';
+  // The capture libraries do not understand CSS zoom, so the page is drawn at
+  // standard size and the text size is put back afterwards.
+  const run = (text: string, job: () => Promise<void>): void => {
     if (!page.current || busy) return;
-    setBusy(true);
-    // The PDF library does not understand CSS zoom, so the page is drawn at
-    // standard size and the text size is put back afterwards.
+    setMenu(false); setBusy(true); setBusyText(text);
     const r = root.current, zoom = r ? r.style.getPropertyValue('zoom') : '';
     if (r) r.style.setProperty('zoom', '1');
     const done = (): void => { if (r) r.style.setProperty('zoom', zoom); setBusy(false); };
-    exportPdf(page.current, dash === 'bw' ? 'Bank-wide Oversight' : 'Department Insights').then(done, done);
+    job().then(done, e => { console.error('[EDRMS export]', e); done(); });
   };
+  const pdf = (): void => run('Preparing PDF', () => exportPdf(page.current as HTMLElement, name));
+  /* RAC Item 8 (22 Oct 2026): PowerPoint, one slide per breakdown and section. */
+  const pptx = (): void => run('Preparing PowerPoint', () => {
+    const el = page.current as HTMLElement;
+    const pick = (q: string): string => ((el.querySelector(q) || {}).textContent || '').trim();
+    return exportPptx(el, {
+      name, desc: pick('.band .bd'), asOf: lastMonday(),
+      filter: dash === 'bw' ? 'All Departments / Offices / RMs / ROs' : 'Department: ' + pick('.deptBtn span') + '  \u00b7  Site: ' + pick('.picker .ms-Dropdown-title')
+    });
+  });
 
   const bandTools = (
     <>
       <span className="asof"><i />Data as of<b>{lastMonday()}</b></span>
-      <button type="button" className="pdfBtn" onClick={pdf} disabled={busy} data-html2canvas-ignore="true">
-        <DownloadGlyph />{busy ? 'Preparing PDF' : 'Export to PDF'}
-      </button>
+      <span className="xMenuWrap" data-html2canvas-ignore="true">
+        <button type="button" className="pdfBtn" disabled={busy} aria-haspopup="menu" aria-expanded={menu}
+          onClick={e => { e.stopPropagation(); setMenu(!menu); }}>
+          <DownloadGlyph />{busy ? busyText : 'Export'}{!busy && <span className="xCaret" aria-hidden="true">&#9662;</span>}
+        </button>
+        {menu && (
+          <div className="xMenu" role="menu" onClick={e => e.stopPropagation()}>
+            <button type="button" role="menuitem" onClick={pdf}><span className="xIc pdf">PDF</span><span><b>PDF</b><small>The dashboard as on screen</small></span></button>
+            <button type="button" role="menuitem" onClick={pptx}><span className="xIc ppt">PPT</span><span><b>PowerPoint</b><small>One slide per breakdown and section, editable title and key points</small></span></button>
+          </div>
+        )}
+      </span>
     </>
   );
 

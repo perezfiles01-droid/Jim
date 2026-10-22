@@ -68,6 +68,16 @@ $shadow: 0 1px 2px rgba(16, 36, 62, .06), 0 4px 14px rgba(16, 36, 62, .06);
     .asof b { color: $ink; font-weight: 600; margin-left: 4px; }
     .pdfBtn { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; border: 1px solid #BCD7EE; border-radius: 8px; background: rgba(255, 255, 255, .92); color: #0B4F82; font-size: 12.5px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(17, 58, 98, .1); }
     .pdfBtn:hover { border-color: $blue; }
+    .xMenuWrap { position: relative; display: inline-flex; }
+    .xCaret { font-size: 10px; margin-left: 2px; }
+    .xMenu { position: absolute; right: 0; top: 38px; z-index: 50; width: 300px; background: #fff; border: 1px solid #CFD8E3; border-radius: 10px; box-shadow: 0 10px 28px rgba(16, 48, 80, .18); padding: 6px; }
+    .xMenu button { display: flex; gap: 10px; align-items: flex-start; width: 100%; padding: 9px 10px; border: 0; border-radius: 7px; background: #fff; text-align: left; cursor: pointer; font: inherit; font-size: 13px; }
+    .xMenu button:hover, .xMenu button:focus-visible { background: #EAF3FB; outline: none; }
+    .xMenu .xIc { flex: 0 0 30px; height: 30px; border-radius: 6px; color: #fff; font-weight: 700; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+    .xMenu .xIc.pdf { background: #C0392B; }
+    .xMenu .xIc.ppt { background: #D35230; }
+    .xMenu b { display: block; color: $ink; font-weight: 600; }
+    .xMenu small { display: block; color: $mut; font-size: 12px; line-height: 1.35; margin-top: 1px; }
     .pdfBtn svg, .xpBtn svg, .fBtn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ---------- KPI cards ---------- */
