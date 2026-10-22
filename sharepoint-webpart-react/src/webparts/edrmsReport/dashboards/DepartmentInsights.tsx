@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
+import { Callout, DirectionalHint, Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
+import { UnitChecklist } from '../components/UnitChecklist';
 import {
   IReportData, IDept, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
 } from '../lib/data';
@@ -20,20 +21,35 @@ export interface IDepartmentInsightsProps extends IDashboardProps {
 
 /* ---------- pickers ---------- */
 
-/** Departments, several at once. An empty list means all of them. */
+/** Departments, several at once. An empty list means all of them. Grouped by
+ *  location with a search box, the same checklist as the table filters (RAC Item 5). */
 const DeptPicker: React.FC<{ depts: IDept[]; value: string[]; onChange: (v: string[]) => void; allName: string }> = ({ depts, value, onChange, allName }) => {
-  const options: IDropdownOption[] = [{ key: ALL, text: allName }, { key: 'div', text: '-', itemType: DropdownMenuItemType.Divider }]
-    .concat(depts.map(d => ({ key: d.code, text: d.code + ' - ' + d.name })));
-  const keys = value.length ? value : [ALL];
+  const [open, setOpen] = React.useState(false);
+  const [draft, setDraft] = React.useState<string[]>([]);
+  const btn = React.useRef<HTMLButtonElement>(null);
+  const all = depts.map(d => d.code);
+  const show = (): void => { setDraft(value.length ? value.slice() : all.slice()); setOpen(true); };
+  const apply = (): void => { onChange(draft.length === all.length ? [] : draft); setOpen(false); };
+  const title = !value.length ? allName : value.length <= 3 ? value.join(', ') : value.length + ' departments selected';
   return (
-    <Dropdown onRenderCaretDown={Caret} className="picker" multiSelect options={options} selectedKeys={keys} ariaLabel="Department / Office / RM / RO"
-      onRenderTitle={() => <span>{value.length ? value.join(', ') : allName}</span>}
-      onChange={(_, o) => {
-        if (!o) return;
-        if (o.key === ALL) { onChange([]); return; }
-        const next = o.selected ? value.concat(String(o.key)) : value.filter(c => c !== o.key);
-        onChange(next.length === depts.length ? [] : next);
-      }} />
+    <>
+      <button type="button" ref={btn} className="deptBtn" aria-haspopup="true" aria-expanded={open} aria-label="Department / Office / RM / RO"
+        onClick={() => (open ? setOpen(false) : show())}>
+        <span>{title}</span><Caret />
+      </button>
+      {open && (
+        <Callout target={btn} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomLeftEdge} gapSpace={6} setInitialFocus role="dialog" ariaLabel="Choose departments">
+          <div className="fPop">
+            <div className="fHead">Department / Office / RM / RO</div>
+            <UnitChecklist depts={depts} draft={draft} setDraft={setDraft} />
+            <div className="fBtns">
+              <button type="button" className="btn" onClick={() => { onChange([]); setOpen(false); }}>Reset</button>
+              <button type="button" className="btn primary" disabled={!draft.length} onClick={apply}>Apply</button>
+            </div>
+          </div>
+        </Callout>
+      )}
+    </>
   );
 };
 

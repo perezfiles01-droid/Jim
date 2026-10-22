@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Callout, Checkbox, DirectionalHint } from '@fluentui/react';
+import { Callout, DirectionalHint } from '@fluentui/react';
 import { IDept } from '../lib/data';
 import { FunnelGlyph } from './ui';
+import { UnitChecklist } from './UnitChecklist';
 
 /**
  * The Filter button on department tables: tick the departments to show, then
@@ -16,8 +17,6 @@ export const DeptFilter: React.FC<{ depts: IDept[]; selected: string[]; onApply:
     const all = sortedDepts.map(d => d.code);
 
     const show = (): void => { setDraft(selected.length ? selected.slice() : all.slice()); setOpen(true); };
-    const toggle = (code: string, on: boolean): void =>
-      setDraft(on ? draft.concat(code) : draft.filter(c => c !== code));
     const apply = (): void => { onApply(draft.length === all.length ? [] : draft); setOpen(false); };
     const reset = (): void => { onApply([]); setOpen(false); };
 
@@ -30,19 +29,8 @@ export const DeptFilter: React.FC<{ depts: IDept[]; selected: string[]; onApply:
         {open && (
           <Callout target={btn} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomRightEdge} gapSpace={6} setInitialFocus role="dialog" ariaLabel="Filter departments">
             <div className="fPop">
-              <div className="fAll">
-                <Checkbox label="All Departments / Offices / RMs / ROs" checked={draft.length === all.length}
-                  indeterminate={draft.length > 0 && draft.length < all.length}
-                  onChange={(_, on) => setDraft(on ? all.slice() : [])} />
-              </div>
-              <div className="fList">
-                {sortedDepts.map(d => (
-                  <div key={d.code}>
-                    <Checkbox checked={draft.indexOf(d.code) >= 0} onChange={(_, on) => toggle(d.code, !!on)}
-                      onRenderLabel={() => <span style={{ marginLeft: 8, fontSize: 13 }}><b>{d.code}</b> <span style={{ color: '#6B7A8C' }}>{d.name}</span></span>} />
-                  </div>
-                ))}
-              </div>
+              <div className="fHead">Department / Office / RM / RO</div>
+              <UnitChecklist depts={sortedDepts} draft={draft} setDraft={setDraft} />
               <div className="fBtns">
                 <button type="button" className="btn" onClick={reset}>Reset</button>
                 <button type="button" className="btn primary" disabled={!draft.length} onClick={apply}>Apply</button>

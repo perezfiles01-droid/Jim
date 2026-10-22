@@ -74,7 +74,7 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
 
   const bandTools = (
     <>
-      <span className="asof"><i />Data as of<b>{data.asOf}</b></span>
+      <span className="asof"><i />Data as of<b>{lastMonday()}</b></span>
       <button type="button" className="pdfBtn" onClick={pdf} disabled={busy} data-html2canvas-ignore="true">
         <DownloadGlyph />{busy ? 'Preparing PDF' : 'Export to PDF'}
       </button>
@@ -116,3 +116,13 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
     </div>
   );
 };
+
+/** RAC Item 11 (22 Oct 2026): one weekly refresh every Monday, so the stamp
+ *  names the most recent Monday, e.g. "Monday 19 Oct 2026". */
+function lastMonday(): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return 'Monday ' + ('0' + d.getDate()).slice(-2) + ' ' + m[d.getMonth()] + ' ' + d.getFullYear();
+}

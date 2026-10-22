@@ -12,7 +12,16 @@ ok('search finds FIN',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAll('
 await p.fill('.search >> nth=0','');
 // filter
 await p.click('.fBtn >> nth=0');await p.waitForTimeout(300);
-await p.click('text=All Departments / Offices / RMs / ROs');await p.click('.fList >> text=ITD');await p.click('.fList >> text=HRD');await p.click('.fBtns >> text=Apply');await p.waitForTimeout(200);
+// RAC Item 5: search, location buttons and groups inside the filter
+await p.fill('.fPop .ugQ','asia');await p.waitForTimeout(150);
+ok('filter search finds Asia units',(await p.$$eval('.fPop .ugI',r=>r.map(x=>x.textContent))).every(t=>/asia/i.test(t)));
+await p.fill('.fPop .ugQ','');await p.click('.ugSeg button:text-is("RM")');await p.waitForTimeout(150);
+ok('RM shows 3 resident missions',(await p.$$eval('.fPop .ugI',r=>r.length))===3);
+await p.click('.ugSeg button:text-is("RO")');await p.waitForTimeout(150);
+ok('RO shows NARO and ERO',(await p.$$eval('.fPop .ugI b',r=>r.map(x=>x.textContent).sort().join(',')))==='ERO,NARO');
+const nw=await p.$eval('.fPop .ugI b',b=>b.getBoundingClientRect().height);ok('code on one line ('+nw+'px)',nw<22);
+await p.click('.ugSeg button:text-is("All")');
+await p.click('.fAll >> text=Select all');await p.click('.fList >> text=ITD');await p.click('.fList >> text=HRD');await p.click('.fBtns >> text=Apply');await p.waitForTimeout(200);
 ok('filter shows 2',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAll('tbody tr').length))===2);
 ok('filter button counts',(await p.textContent('.fBtn >> nth=0')).includes('(2)'));
 // pager
@@ -28,7 +37,7 @@ await bars[bars.length-1].click();await p.waitForTimeout(200);ok('year drill cru
 await p.click('.cmpH >> text=Approximate headcount');ok('cmp sorted',(await p.textContent('.cmpH')).includes('↓'));
 // dept link -> DI
 await p.click('.tbl >> nth=0 >> tbody tr >> nth=0');await p.waitForTimeout(500);
-const title=await p.textContent('.band h2');const pick=await p.textContent('.picker >> nth=0');
+const title=await p.textContent('.band h2');const pick=await p.textContent('.deptBtn >> nth=0');
 ok('opens DI for PARD ('+pick+')',title.includes('Department insights')&&pick.includes('PARD'));
 ok('sites card 90',(await p.textContent('.kpi .val >> nth=0')).trim()==='90');
 // DI: year select + bar click
@@ -39,11 +48,14 @@ ok('bar selects one row',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAl
 // phys tie
 await p.click('.kpi >> nth=4');const more=await p.$('.more');if(more){await more.click();await p.waitForTimeout(200);ok('tie chip',!!(await p.$('.chip')));}
 // site picker
-await p.click('.picker >> nth=1');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item >> nth=2');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+await p.click('.picker >> nth=0');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item >> nth=2');await p.keyboard.press('Escape');await p.waitForTimeout(300);
 ok('site filter changes sites card',(await p.textContent('.kpi .val >> nth=0')).trim()==='1');
 // pdf
 const [pdf]=await Promise.all([p.waitForEvent('download',{timeout:60000}),p.click('.pdfBtn')]);ok('pdf '+pdf.suggestedFilename(),pdf.suggestedFilename().endsWith('.pdf'));
 await pdf.saveAs(__dirname+'/out/test.pdf');
+// band: description under title, Monday stamp
+const bb=await p.$eval('.band',e=>{const h=e.querySelector('h2').getBoundingClientRect(),d=e.querySelector('.bd').getBoundingClientRect();return d.top>=h.bottom-1;});ok('band text under title',bb);
+ok('data as of Monday',/Data as of\s*Monday \d\d [A-Z][a-z]{2} \d{4}/.test(await p.textContent('.asof')));
 // sidebar
 await p.click('.menuBtn');ok('sidebar closes',await p.$eval('.side',e=>e.classList.contains('closed')));
 console.log(errs.join('\n')||'no errors');await b.close();})();
