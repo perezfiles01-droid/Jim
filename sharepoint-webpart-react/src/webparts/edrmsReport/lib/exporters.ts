@@ -46,7 +46,11 @@ export async function exportTable(t: IExportTable): Promise<void> {
   XLSX.writeFile(wb, t.name + '.xlsx');
 }
 
-/** Draws the element as a picture and saves it as a landscape A4 PDF, page by page. */
+/**
+ * Draws the element as a picture and saves it as a landscape A4 PDF, page by
+ * page. Pages break at the start of a section (a title band or panel), or else
+ * between table rows, never through a panel or a row (22 Oct 2026).
+ */
 export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import(/* webpackChunkName: 'edrms-pdf' */ 'html2canvas'),
@@ -54,19 +58,45 @@ export async function exportPdf(el: HTMLElement, name: string): Promise<void> {
   ]);
   el.classList.add('edrms-printing');
   try {
-    const canvas = await html2canvas(el, { scale: 1.5, backgroundColor: '#EEF2F6', useCORS: true, logging: false });
+    let bands: number[] = [], starts: number[] = [], rows: number[] = [], boxW = 0;
+    const canvas = await html2canvas(el, {
+      scale: 1.5, backgroundColor: '#EEF2F6', useCORS: true, logging: false,
+      // Measured in html2canvas's own copy, which is what the picture shows.
+      onclone: (_doc: Document, clone: HTMLElement) => {
+        const box = clone.getBoundingClientRect();
+        boxW = box.width;
+        const at = (q: string, edge: 'top' | 'bottom'): number[] => Array.from(clone.querySelectorAll(q))
+          .map(x => (x as HTMLElement).getBoundingClientRect()).filter(r => r.height > 0)
+          .map(r => r[edge] - box.top).sort((x, y) => x - y);
+        // A section begins at its title band; a band left alone at a page foot is avoided by breaking above it.
+        bands = at('.band', 'top').map(v => v - 8);
+        starts = at('section.panel, .kpis, .panel table, .chart, .split > *, .strip', 'top').map(v => v - 8);
+        rows = at('tbody tr, .hbar, .drow', 'bottom').map(v => v + 1);
+      }
+    });
+    const k = boxW ? canvas.width / boxW : 1.5, px = (v: number[]): number[] => v.map(x => Math.round(x * k));
+    const sBands = px(bands), sStarts = px(starts), sRows = px(rows);
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
     const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight(), m = 20;
     const w = pw - m * 2, scale = w / canvas.width, sliceH = Math.floor((ph - m * 2) / scale);
-    for (let y = 0, page = 0; y < canvas.height; y += sliceH, page++) {
+    let y = 0, page = 0;
+    while (y < canvas.height) {
+      let end = Math.min(canvas.height, y + sliceH);
+      if (end < canvas.height) {
+        const fit = (list: number[]): number[] => list.filter(b => b > y + sliceH * 0.35 && b <= end);
+        // Best: before a section's title. Then: before a panel, table or chart. Last: between rows.
+        const ok = fit(sBands).length ? fit(sBands) : fit(sStarts).length ? fit(sStarts) : fit(sRows);
+        if (ok.length) end = ok[ok.length - 1];
+      }
       const part = document.createElement('canvas');
       part.width = canvas.width;
-      part.height = Math.min(sliceH, canvas.height - y);
+      part.height = end - y;
       const ctx = part.getContext('2d');
       if (!ctx) break;
       ctx.drawImage(canvas, 0, y, canvas.width, part.height, 0, 0, canvas.width, part.height);
       if (page) pdf.addPage();
       pdf.addImage(part.toDataURL('image/jpeg', 0.88), 'JPEG', m, m, w, part.height * scale);
+      y = end; page++;
     }
     pdf.save(name + '.pdf');
   } finally {
