@@ -37,7 +37,7 @@ await bars[bars.length-1].click();await p.waitForTimeout(200);ok('year drill cru
 await p.click('.cmpH >> text=Approximate headcount');ok('cmp sorted',(await p.textContent('.cmpH')).includes('↓'));
 // dept link -> DI
 await p.click('.tbl >> nth=0 >> tbody tr >> nth=0');await p.waitForTimeout(500);
-const title=await p.textContent('.band h2');const pick=await p.textContent('.deptBtn >> nth=0');
+const title=await p.textContent('.band h2');const pick=await p.textContent('.cgPick >> nth=1');
 ok('opens DI for PARD ('+pick+')',title.includes('Department insights')&&pick.includes('PARD'));
 ok('sites card 90',(await p.textContent('.kpi .val >> nth=0')).trim()==='90');
 // DI: year select + bar click
@@ -48,7 +48,7 @@ ok('bar selects one row',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAl
 // phys tie
 await p.click('.kpi >> nth=4');const more=await p.$('.more');if(more){await more.click();await p.waitForTimeout(200);ok('tie chip',!!(await p.$('.chip')));}
 // site picker
-await p.click('.picker >> nth=0');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item >> nth=2');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+await p.click('.cgG:has-text("Site") .picker');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item >> nth=2');await p.keyboard.press('Escape');await p.waitForTimeout(300);
 ok('site filter changes sites card',(await p.textContent('.kpi .val >> nth=0')).trim()==='1');
 // pdf
 await p.click('.pdfBtn');ok('export menu opens',!!(await p.$('.xMenu')));
@@ -58,6 +58,12 @@ await pdf.saveAs(__dirname+'/out/test.pdf');
 await p.waitForTimeout(500);await p.click('.pdfBtn');
 const [px]=await Promise.all([p.waitForEvent('download',{timeout:120000}),p.click('.xMenu button:has-text("PowerPoint")')]);
 ok('pptx '+px.suggestedFilename(),px.suggestedFilename().endsWith('.pptx'));await px.saveAs(__dirname+'/out/test.pptx');
+// category bar: Category RM narrows Sub-category to SARD and EARD, Sub-group to the missions
+await p.goto('file://'+__dirname+'/out/index.html?d=di');await p.waitForTimeout(700);
+await p.click('.cgPick >> nth=0');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item:has-text("RM")');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+await p.click('.cgPick >> nth=2');await p.waitForTimeout(300);
+ok('sub-group lists the RM missions',(await p.$$eval('.ms-Dropdown-item',x=>x.map(e=>e.textContent))).filter(t=>/INRM|SLRM|PRCM/.test(t)).length===3);await p.keyboard.press('Escape');
+ok('sites card follows RM',(await p.textContent('.kpi .val >> nth=0')).trim()!=='1,032');
 // band: description under title, Monday stamp
 const bb=await p.$eval('.band',e=>{const h=e.querySelector('h2').getBoundingClientRect(),d=e.querySelector('.bd').getBoundingClientRect();return d.top>=h.bottom-1;});ok('band text under title',bb);
 ok('data as of Monday',/Data as of\s*Monday \d\d [A-Z][a-z]{2} \d{4}/.test(await p.textContent('.asof')));

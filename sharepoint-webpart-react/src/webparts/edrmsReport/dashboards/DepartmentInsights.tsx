@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Callout, DirectionalHint, Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
-import { UnitChecklist } from '../components/UnitChecklist';
+import { Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
+import { CategoryBar } from '../components/CategoryBar';
 import {
-  IReportData, IDept, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
+  IReportData, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
 } from '../lib/data';
 import { F, pct, refreshIso } from '../lib/format';
 import { Band, Panel, KpiRow, IKpi, Search, Segmented, ExportButton, Chip, SumCard, Caret } from '../components/ui';
@@ -20,38 +20,6 @@ export interface IDepartmentInsightsProps extends IDashboardProps {
 }
 
 /* ---------- pickers ---------- */
-
-/** Departments, several at once. An empty list means all of them. Grouped by
- *  location with a search box, the same checklist as the table filters (RAC Item 5). */
-const DeptPicker: React.FC<{ depts: IDept[]; value: string[]; onChange: (v: string[]) => void; allName: string }> = ({ depts, value, onChange, allName }) => {
-  const [open, setOpen] = React.useState(false);
-  const [draft, setDraft] = React.useState<string[]>([]);
-  const btn = React.useRef<HTMLButtonElement>(null);
-  const all = depts.map(d => d.code);
-  const show = (): void => { setDraft(value.length ? value.slice() : all.slice()); setOpen(true); };
-  const apply = (): void => { onChange(draft.length === all.length ? [] : draft); setOpen(false); };
-  const title = !value.length ? allName : value.length <= 3 ? value.join(', ') : value.length + ' departments selected';
-  return (
-    <>
-      <button type="button" ref={btn} className="deptBtn" aria-haspopup="true" aria-expanded={open} aria-label="Department / Office / RM / RO"
-        onClick={() => (open ? setOpen(false) : show())}>
-        <span>{title}</span><Caret />
-      </button>
-      {open && (
-        <Callout target={btn} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomLeftEdge} gapSpace={6} setInitialFocus role="dialog" ariaLabel="Choose departments">
-          <div className="fPop">
-            <div className="fHead">Department / Office / RM / RO</div>
-            <UnitChecklist depts={depts} draft={draft} setDraft={setDraft} />
-            <div className="fBtns">
-              <button type="button" className="btn" onClick={() => { onChange([]); setOpen(false); }}>Reset</button>
-              <button type="button" className="btn primary" disabled={!draft.length} onClick={apply}>Apply</button>
-            </div>
-          </div>
-        </Callout>
-      )}
-    </>
-  );
-};
 
 /** Sites inside the chosen departments. An empty list means all of them. */
 const SitePicker: React.FC<{ sites: ISite[]; value: string[]; onChange: (v: string[]) => void }> = ({ sites, value, onChange }) => {
@@ -403,10 +371,8 @@ const LibraryUsage: React.FC<{ data: IReportData; focus?: string }> = ({ data, f
   return (
     <Panel title="Libraries by Department / Office / RM / RO">
       <div className="toolbar">
-        <span className="lbl">Department / Office / RM / RO</span>
-        <DeptPicker depts={data.depts} value={codes} allName={data.allName} onChange={v => { setCodes(v); setSiteSel([]); }} />
-        <span className="lbl" style={{ marginLeft: 8 }}>Site</span>
-        <SitePicker sites={deptSites} value={siteSel} onChange={setSiteSel} />
+        <CategoryBar depts={data.depts} codes={codes} onChange={v => { setCodes(v); setSiteSel([]); }}
+          site={<SitePicker sites={deptSites} value={siteSel} onChange={setSiteSel} />} />
       </div>
       <div className="sumRow" style={{ gridTemplateColumns: 'repeat(6, minmax(0, 1fr))' }}>
         <SumCard label="Libraries" value={F(libs.length)} hint="Document libraries in EDRMS sites" />
@@ -465,10 +431,8 @@ export const DepartmentInsights: React.FC<IDepartmentInsightsProps> = ({ data, b
       <Band title="Department insights" text="EDRMS use by department: sites, site visitors, documents, declared records and physical counterparts" tools={bandTools} />
       <Panel title="Department Profile">
         <div className="toolbar">
-          <span className="lbl">Department / Office / RM / RO</span>
-          <DeptPicker depts={data.depts} value={codes} allName={data.allName} onChange={v => { setCodes(v); setSiteSel([]); }} />
-          <span className="lbl" style={{ marginLeft: 8 }}>Site</span>
-          <SitePicker sites={deptSites} value={siteSel} onChange={setSiteSel} />
+          <CategoryBar depts={data.depts} codes={codes} onChange={v => { setCodes(v); setSiteSel([]); }}
+            site={<SitePicker sites={deptSites} value={siteSel} onChange={setSiteSel} />} />
         </div>
         <ProfileStrip codes={codes} />
         <div className="gh"><b>Open a breakdown</b><span>{kpis.length} cards, each opens the table beneath</span></div>

@@ -7,7 +7,7 @@
  * SAMPLE VALUES until the team's file arrives, in the agreed pattern:
  * Main = HQ / RM / RO, Sub = the department, Sub Sub = the resident mission.
  */
-export const CATEGORY_LABELS: [string, string, string] = ['Main Category', 'Sub Category', 'Sub Sub Category'];
+export const CATEGORY_LABELS: [string, string, string] = ['Category', 'Sub-category', 'Sub-group'];
 
 export interface ICategory { main: string; sub: string; subSub?: string }
 

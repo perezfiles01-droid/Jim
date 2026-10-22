@@ -253,6 +253,12 @@ $shadow: 0 1px 2px rgba(16, 36, 62, .06), 0 4px 14px rgba(16, 36, 62, .06);
     .crumb a { color: $blue; cursor: pointer; }
 
     .picker { min-width: 260px; }
+    /* Category > Sub-category > Sub-group > Site (RAC Item 5) */
+    .cgBar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 8px; width: 100%; }
+    .cgG { display: flex; flex-direction: column; gap: 5px; flex: 1 1 200px; min-width: 0; max-width: 320px; }
+    .cgL { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: $mut; font-weight: 600; }
+    .cgG .picker { min-width: 0; width: 100%; }
+    .cgA { color: #9DB8D2; font-size: 18px; padding-bottom: 6px; }
     .deptBtn { display: inline-flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 260px; max-width: 420px; height: 34px; padding: 0 10px 0 11px; border: 1px solid $line; border-radius: 8px; background: #fff; color: $ink; font: inherit; font-size: 13px; cursor: pointer; }
     .deptBtn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .deptBtn:hover, .deptBtn:focus { border-color: $blue; }
