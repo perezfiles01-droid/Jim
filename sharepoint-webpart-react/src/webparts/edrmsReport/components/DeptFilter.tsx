@@ -3,6 +3,7 @@ import { Callout, DirectionalHint } from '@fluentui/react';
 import { IDept } from '../lib/data';
 import { FunnelGlyph } from './ui';
 import { UnitChecklist } from './UnitChecklist';
+import { CATEGORY_LABELS } from '../lib/categories';
 
 /**
  * The Filter button on department tables: tick the departments to show, then
@@ -29,7 +30,7 @@ export const DeptFilter: React.FC<{ depts: IDept[]; selected: string[]; onApply:
         {open && (
           <Callout target={btn} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomRightEdge} gapSpace={6} setInitialFocus role="dialog" ariaLabel="Filter departments">
             <div className="fPop">
-              <div className="fHead">Department / Office / RM / RO</div>
+              <div className="fHead">{CATEGORY_LABELS.join(" \u203a ")}</div>
               <UnitChecklist depts={sortedDepts} draft={draft} setDraft={setDraft} />
               <div className="fBtns">
                 <button type="button" className="btn" onClick={reset}>Reset</button>
