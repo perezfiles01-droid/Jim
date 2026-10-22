@@ -26,3 +26,25 @@ export type SortDir = 'asc' | 'desc';
 export function compare(a: string | number, b: string | number): number {
   return typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b) : (a as number) - (b as number);
 }
+
+/**
+ * RAC Item 11 (22 Oct 2026): the data is refreshed once a week, every Monday.
+ * The refresh date is the most recent Monday; the "Data as of" stamp shows it,
+ * and no date picker lets a reader choose a day after it.
+ */
+export function refreshDate(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+/** The refresh date as yyyy-mm-dd, for a date field's max. */
+export const refreshIso = (): string => {
+  const d = refreshDate();
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+};
+/** The refresh date as "Monday 19 Oct 2026". */
+export const refreshLabel = (): string => {
+  const d = refreshDate(), m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return 'Monday ' + ('0' + d.getDate()).slice(-2) + ' ' + m[d.getMonth()] + ' ' + d.getFullYear();
+};

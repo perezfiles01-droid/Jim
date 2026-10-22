@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Dropdown, IDropdownOption } from '@fluentui/react';
 import { IReportData, IDept, approxHead, trainingDone, documentSeries, DOC_MONTHS, sum } from '../lib/data';
-import { F, short, pct } from '../lib/format';
+import { F, short, pct, refreshIso } from '../lib/format';
 import { Band, Panel, KpiRow, IKpi, Tiles, Search, Segmented, ExportButton, DeptCell, Pager, Caret } from '../components/ui';
 import { DataTable, IColumn } from '../components/DataTable';
 import { DeptFilter, filterDepts } from '../components/DeptFilter';
@@ -376,7 +376,8 @@ const TrendPanel: React.FC<{ data: IReportData }> = ({ data }) => {
   const total = sum(groups, g => g.value);
   const unit = gv === 'y' ? 'year' : 'month';
   const canDrill = gv === 'y' && !drill;
-  const today = t.to;
+  /* The last day a reader can pick is the data's refresh date, the date in "Data as of". */
+  const today = refreshIso();
 
   return (
     <Panel title="Records declared over time" sub="Records declared on EDRMS compliant sites, by declaration date.">

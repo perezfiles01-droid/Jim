@@ -2,6 +2,7 @@ import * as React from 'react';
 import styles from './Report.module.scss';
 import { loadReportData } from '../lib/data';
 import { exportPdf, exportPptx } from '../lib/exporters';
+import { refreshLabel } from '../lib/format';
 import { BankWide } from '../dashboards/BankWide';
 import { DepartmentInsights } from '../dashboards/DepartmentInsights';
 import { DownloadGlyph } from './ui';
@@ -88,14 +89,14 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
     const el = page.current as HTMLElement;
     const pick = (q: string): string => ((el.querySelector(q) || {}).textContent || '').trim();
     return exportPptx(el, {
-      name, desc: pick('.band .bd'), asOf: lastMonday(),
+      name, desc: pick('.band .bd'), asOf: refreshLabel(),
       filter: dash === 'bw' ? 'All Departments / Offices / RMs / ROs' : 'Department: ' + pick('.deptBtn span') + '  \u00b7  Site: ' + pick('.picker .ms-Dropdown-title')
     });
   });
 
   const bandTools = (
     <>
-      <span className="asof"><i />Data as of<b>{lastMonday()}</b></span>
+      <span className="asof"><i />Data as of<b>{refreshLabel()}</b></span>
       <span className="xMenuWrap" data-html2canvas-ignore="true">
         <button type="button" className="pdfBtn" disabled={busy} aria-haspopup="menu" aria-expanded={menu}
           onClick={e => { e.stopPropagation(); setMenu(!menu); }}>
@@ -147,12 +148,3 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
   );
 };
 
-/** RAC Item 11 (22 Oct 2026): one weekly refresh every Monday, so the stamp
- *  names the most recent Monday, e.g. "Monday 19 Oct 2026". */
-function lastMonday(): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-  const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return 'Monday ' + ('0' + d.getDate()).slice(-2) + ' ' + m[d.getMonth()] + ' ' + d.getFullYear();
-}

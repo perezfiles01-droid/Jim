@@ -4,7 +4,7 @@ import { UnitChecklist } from '../components/UnitChecklist';
 import {
   IReportData, IDept, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
 } from '../lib/data';
-import { F, pct } from '../lib/format';
+import { F, pct, refreshIso } from '../lib/format';
 import { Band, Panel, KpiRow, IKpi, Search, Segmented, ExportButton, Chip, SumCard, Caret } from '../components/ui';
 import { DataTable, IColumn } from '../components/DataTable';
 import { BarList, ColumnChart } from '../components/charts';
@@ -153,9 +153,9 @@ const SitesCreated: React.FC<{ sites: ISite[]; resetKey: string }> = ({ sites, r
             onChange={(_, o) => { if (o) { setYear(String(o.key)); setCustom(null); setDraft(['', '']); setPeriod(null); } }} /></div>
         <div className="ctlG"><span className="ctlL">Custom range</span>
           <div className="ctlRow">
-            <input className="date" type="date" aria-label="From" min="2024-01-01" value={draft[0]} onChange={e => setDraft([e.target.value, draft[1]])} />
+            <input className="date" type="date" aria-label="From" min="2024-01-01" max={refreshIso()} value={draft[0]} onChange={e => setDraft([e.target.value, draft[1]])} />
             <span style={{ fontSize: 12, color: '#6B7A8C' }}>to</span>
-            <input className="date" type="date" aria-label="To" min={draft[0] || '2024-01-01'} value={draft[1]} onChange={e => setDraft([draft[0], e.target.value])} />
+            <input className="date" type="date" aria-label="To" min={draft[0] || '2024-01-01'} max={refreshIso()} value={draft[1]} onChange={e => setDraft([draft[0], e.target.value])} />
             <button type="button" className="btn primary" disabled={!draft[0] && !draft[1]} onClick={() => { setCustom(draft); setYear('all'); setPeriod(null); }}>Apply</button>
             <button type="button" className="btn" onClick={() => { setYear('all'); setCustom(null); setDraft(['', '']); setPeriod(null); }}>Reset</button>
           </div>
