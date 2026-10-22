@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
+import { Callout, Checkbox, DirectionalHint } from '@fluentui/react';
 import { IDept } from '../lib/data';
 import { CATEGORY_LABELS, categoryOf, mainOrder } from '../lib/categories';
 import { Caret } from './ui';
@@ -10,29 +10,48 @@ import { Caret } from './ui';
  * (lib/categories.ts); an empty box means all. The chosen departments are
  * handed back as codes, as the department picker did before.
  */
-const ALL = '__all__';
-
 interface ISel { cat: string[]; sub: string[]; grp: string[] }
 
+/** A box like the other pickers whose list has a search field and ticks (22 Oct 2026). */
 const Multi: React.FC<{ label: string; values: string[]; value: string[]; allText: string; onChange: (v: string[]) => void; text?: (v: string) => string }> =
   ({ label, values, value, allText, onChange, text }) => {
-    const options: IDropdownOption[] = [{ key: ALL, text: allText }, { key: 'div', text: '-', itemType: DropdownMenuItemType.Divider }]
-      .concat(values.map(v => ({ key: v, text: text ? text(v) : v })));
+    const [open, setOpen] = React.useState(false);
+    const [q, setQ] = React.useState('');
+    const box = React.useRef<HTMLButtonElement>(null);
+    const show = (v: string): string => (text ? text(v) : v);
+    const term = q.trim().toLowerCase();
+    const shown = values.filter(v => !term || show(v).toLowerCase().indexOf(term) >= 0);
+    const toggle = (v: string): void => {
+      const cur = value.length ? value : [];
+      const next = cur.indexOf(v) >= 0 ? cur.filter(x => x !== v) : cur.concat(v);
+      onChange(next.length === values.length ? [] : next);
+    };
     return (
-      <Dropdown onRenderCaretDown={Caret} className="picker cgPick" multiSelect options={options} selectedKeys={value.length ? value : [ALL]} ariaLabel={label}
-        disabled={!values.length}
-        onRenderTitle={() => <span>{!values.length ? 'None' : value.length ? value.join(', ') : allText}</span>}
-        onChange={(_, o) => {
-          if (!o) return;
-          if (o.key === ALL) { onChange([]); return; }
-          const next = o.selected ? value.concat(String(o.key)) : value.filter(v => v !== o.key);
-          onChange(next.length === values.length ? [] : next);
-        }} />
+      <>
+        <button type="button" ref={box} className="cgBox picker cgPick" aria-label={label} aria-haspopup="listbox" aria-expanded={open}
+          disabled={!values.length} onClick={() => { setQ(''); setOpen(!open); }}>
+          <span className="cgT">{!values.length ? 'None' : value.length ? value.join(', ') : allText}</span><Caret />
+        </button>
+        {open && (
+          <Callout target={box} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomLeftEdge} gapSpace={4} isBeakVisible={false}
+            calloutWidth={box.current ? box.current.offsetWidth : 260} setInitialFocus role="listbox" ariaLabel={label}>
+            <div className="cgList">
+              <input type="search" className="cgQ" placeholder={'Search ' + label.toLowerCase()} aria-label={'Search ' + label}
+                value={q} onChange={e => setQ(e.target.value)} />
+              <div className="cgOpts">
+                {!term && <Checkbox className="cgAll" label={allText} checked={!value.length} onChange={() => onChange([])} />}
+                {shown.map(v => <Checkbox key={v} label={show(v)} checked={value.indexOf(v) >= 0} onChange={() => toggle(v)} />)}
+                {!shown.length && <div className="cgNone">Nothing matches.</div>}
+              </div>
+            </div>
+          </Callout>
+        )}
+      </>
     );
   };
 
-export const CategoryBar: React.FC<{ depts: IDept[]; codes: string[]; onChange: (codes: string[]) => void; site: React.ReactNode }> =
-  ({ depts, codes, onChange, site }) => {
+export const CategoryBar: React.FC<{ depts: IDept[]; codes: string[]; onChange: (codes: string[]) => void; site?: React.ReactNode; vertical?: boolean }> =
+  ({ depts, codes, onChange, site, vertical }) => {
     const [sel, setSel] = React.useState<ISel>({ cat: [], sub: [], grp: [] });
     const nameOf = (code: string): string => { const d = depts.filter(x => x.code === code)[0]; return d ? code + ' - ' + d.name : code; };
     const pass = (s: ISel): ((d: IDept) => boolean) => (d: IDept): boolean => {
@@ -74,7 +93,7 @@ export const CategoryBar: React.FC<{ depts: IDept[]; codes: string[]; onChange: 
     const scope = (v: string[], all: string): string => (v.length ? 'All in ' + v.join(', ') : all);
 
     return (
-      <div className="cgBar">
+      <div className={'cgBar' + (vertical ? ' cgV' : '')}>
         <div className="cgG"><span className="cgL">{CATEGORY_LABELS[0]}</span>
           <Multi label={CATEGORY_LABELS[0]} values={cats} value={sel.cat} allText="All" onChange={v => apply({ cat: v, sub: sel.sub, grp: sel.grp })} /></div>
         <span className="cgA" aria-hidden="true">&#8250;</span>
@@ -83,8 +102,8 @@ export const CategoryBar: React.FC<{ depts: IDept[]; codes: string[]; onChange: 
         <span className="cgA" aria-hidden="true">&#8250;</span>
         <div className="cgG"><span className="cgL">{CATEGORY_LABELS[2]}</span>
           <Multi label={CATEGORY_LABELS[2]} values={grps} value={sel.grp} allText={scope(sel.sub, 'All')} text={nameOf} onChange={v => apply({ cat: sel.cat, sub: sel.sub, grp: v })} /></div>
-        <span className="cgA" aria-hidden="true">&#8250;</span>
-        <div className="cgG"><span className="cgL">Site</span>{site}</div>
+        {site && <span className="cgA" aria-hidden="true">&#8250;</span>}
+        {site && <div className="cgG"><span className="cgL">Site</span>{site}</div>}
       </div>
     );
   };

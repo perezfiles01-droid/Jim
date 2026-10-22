@@ -10,18 +10,14 @@ await p.goto('file://'+__dirname+'/out/index.html');await p.waitForTimeout(600);
 await p.fill('.search >> nth=0','fin');await p.waitForTimeout(200);
 ok('search finds FIN',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAll('tbody tr').length))===1);
 await p.fill('.search >> nth=0','');
-// filter
+// filter: the popup holds Category > Sub-category > Sub-group (RAC Item 5)
 await p.click('.fBtn >> nth=0');await p.waitForTimeout(300);
-// RAC Item 5: search, location buttons and groups inside the filter
-await p.fill('.fPop .ugQ','asia');await p.waitForTimeout(150);
-ok('filter search finds Asia units',(await p.$$eval('.fPop .ugI',r=>r.map(x=>x.textContent))).every(t=>/asia/i.test(t)));
-await p.fill('.fPop .ugQ','');await p.click('.ugSeg button:text-is("RM")');await p.waitForTimeout(150);
-ok('RM shows 3 resident missions',(await p.$$eval('.fPop .ugI',r=>r.length))===3);
-await p.click('.ugSeg button:text-is("RO")');await p.waitForTimeout(150);
-ok('RO shows NARO and ERO',(await p.$$eval('.fPop .ugI b',r=>r.map(x=>x.textContent).sort().join(',')))==='ERO,NARO');
-const nw=await p.$eval('.fPop .ugI b',b=>b.getBoundingClientRect().height);ok('code on one line ('+nw+'px)',nw<22);
-await p.click('.ugSeg button:text-is("All")');
-await p.click('.fAll >> text=Select all');await p.click('.fList >> text=ITD');await p.click('.fList >> text=HRD');await p.click('.fBtns >> text=Apply');await p.waitForTimeout(200);
+ok('filter heading',(await p.textContent('.fPop .fHead')).includes('Filter Department / Office / RM / RO'));
+await p.click('.fPop .cgPick >> nth=0');await p.waitForTimeout(300);
+await p.fill('.cgQ','r');await p.waitForTimeout(150);ok('category search narrows the list',(await p.$$eval('.cgOpts .ms-Checkbox',x=>x.length))===2);
+await p.click('.cgOpts .ms-Checkbox:has-text("RO")');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+ok('popup stays open after choosing',!!(await p.$('.fPop')));
+await p.click('.fBtns >> text=Apply');await p.waitForTimeout(300);
 ok('filter shows 2',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAll('tbody tr').length))===2);
 ok('filter button counts',(await p.textContent('.fBtn >> nth=0')).includes('(2)'));
 // pager
@@ -60,9 +56,9 @@ const [px]=await Promise.all([p.waitForEvent('download',{timeout:120000}),p.clic
 ok('pptx '+px.suggestedFilename(),px.suggestedFilename().endsWith('.pptx'));await px.saveAs(__dirname+'/out/test.pptx');
 // category bar: Category RM narrows Sub-category to SARD and EARD, Sub-group to the missions
 await p.goto('file://'+__dirname+'/out/index.html?d=di');await p.waitForTimeout(700);
-await p.click('.cgPick >> nth=0');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item:has-text("RM")');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+await p.click('.cgPick >> nth=0');await p.waitForTimeout(300);await p.click('.cgOpts .ms-Checkbox:has-text("RM")');await p.keyboard.press('Escape');await p.waitForTimeout(300);
 await p.click('.cgPick >> nth=2');await p.waitForTimeout(300);
-ok('sub-group lists the RM missions',(await p.$$eval('.ms-Dropdown-item',x=>x.map(e=>e.textContent))).filter(t=>/INRM|SLRM|PRCM/.test(t)).length===3);await p.keyboard.press('Escape');
+ok('sub-group lists the RM missions',(await p.$$eval('.cgOpts .ms-Checkbox',x=>x.map(e=>e.textContent))).filter(t=>/INRM|SLRM|PRCM/.test(t)).length===3);await p.keyboard.press('Escape');
 ok('sites card follows RM',(await p.textContent('.kpi .val >> nth=0')).trim()!=='1,032');
 // band: description under title, Monday stamp
 const bb=await p.$eval('.band',e=>{const h=e.querySelector('h2').getBoundingClientRect(),d=e.querySelector('.bd').getBoundingClientRect();return d.top>=h.bottom-1;});ok('band text under title',bb);

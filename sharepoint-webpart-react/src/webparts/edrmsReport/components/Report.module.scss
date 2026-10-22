@@ -255,8 +255,8 @@ $shadow: 0 1px 2px rgba(16, 36, 62, .06), 0 4px 14px rgba(16, 36, 62, .06);
     .picker { min-width: 260px; }
     /* Category > Sub-category > Sub-group > Site (RAC Item 5) */
     .cgBar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 8px; width: 100%; }
-    .cgG { display: flex; flex-direction: column; gap: 5px; flex: 1 1 200px; min-width: 0; max-width: 320px; }
-    .cgL { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: $mut; font-weight: 600; }
+    .cgG { display: flex; flex-direction: column; gap: 0; flex: 1 1 200px; min-width: 0; max-width: 320px; }
+    .cgL { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: $mut; font-weight: 600; margin-bottom: 5px; }
     .cgG .picker { min-width: 0; width: 100%; }
     .cgA { color: #9DB8D2; font-size: 18px; padding-bottom: 6px; }
     .deptBtn { display: inline-flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 260px; max-width: 420px; height: 34px; padding: 0 10px 0 11px; border: 1px solid $line; border-radius: 8px; background: #fff; color: $ink; font: inherit; font-size: 13px; cursor: pointer; }
@@ -305,4 +305,34 @@ $shadow: 0 1px 2px rgba(16, 36, 62, .06), 0 4px 14px rgba(16, 36, 62, .06);
   .fPop .btn { height: 32px; padding: 0 16px; border-radius: 7px; border: 1px solid #CFD8E3; background: #fff; color: #1F2D3D; font: inherit; font-size: 13px; cursor: pointer; }
   .fPop .btn.primary { border-color: $adb; background: $adb; color: #fff; font-weight: 600; }
   .fPop .btn:disabled { opacity: .5; cursor: default; }
+}
+
+/* The category boxes stacked inside the Bank-wide Filter popup (Fluent draws it in a layer). */
+:global {
+  .fPop .cgBar.cgV { display: grid; gap: 10px; padding: 0 14px 12px; }
+  .fPop .cgV .cgA { display: none; }
+  .fPop .cgV .cgG { display: flex; flex-direction: column; gap: 0; max-width: none; }
+  .fPop .cgV .cgL { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6B7A8C; font-weight: 600; margin-bottom: 5px; }
+  .fPop .cgV .picker { min-width: 0; width: 100%; }
+  .fPop .cgV .picker .ms-Dropdown-title { height: 34px; line-height: 32px; border: 1px solid #D9E1EA; border-radius: 8px; font-size: 13px; padding-left: 11px; }
+  .fPop .cgV .picker .ms-Dropdown-caretDownWrapper { height: 34px; display: flex; align-items: center; right: 10px; }
+}
+
+/* Category boxes: a picker-style button and a list with a search field (22 Oct 2026). */
+:global {
+  .cgBox { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 34px; padding: 0 10px 0 11px; border: 1px solid #D9E1EA; border-radius: 8px; background: #fff;
+    font-family: $font; font-size: 13px; color: $ink; cursor: pointer; text-align: left; box-sizing: border-box; }
+  .cgBox:hover, .cgBox:focus-visible, .cgBox[aria-expanded="true"] { border-color: $blue; outline: none; }
+  .cgBox:disabled { color: $mut; cursor: default; background: #F7FAFD; }
+  .cgBox .cgT { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cgList { padding: 8px; font-family: $font; }
+  .cgQ { width: 100%; height: 32px; box-sizing: border-box; border: 1px solid #CFD8E3; border-radius: 7px; padding: 0 10px; font: inherit; font-size: 13px; margin-bottom: 6px; }
+  .cgQ:focus { outline: none; border-color: $blue; }
+  .cgOpts { max-height: 280px; overflow-y: auto; display: grid; gap: 2px; }
+  .cgOpts .ms-Checkbox { padding: 6px 4px; border-radius: 5px; }
+  /* The whole row is the click target, not only the box and its text. */
+  .cgOpts .ms-Checkbox-label { width: 100%; }
+  .cgOpts .ms-Checkbox:hover { background: #F2F7FB; }
+  .cgOpts .cgAll { border-bottom: 1px solid $line2; border-radius: 0; }
+  .cgNone { font-size: 12px; color: $mut; padding: 6px 4px; }
 }
