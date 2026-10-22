@@ -1,0 +1,205 @@
+<title>RAC Items 5 to 12 Mockups</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one column of item sections, each a mockup frame beside a short "what changes" note. ADB palette. */
+:root{--ink:#10243E;--ink2:#33475F;--blue:#0072BC;--teal:#00A5A8;--bg:#EEF2F6;--card:#fff;--line:#D9E1EA;--mut:#6B7A8C;--chip:#E6F1FA;--note:#FFF6E5;--noteln:#E8A23C;--off:#A9B4C2;--ok:#1E8E5A;
+--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--serif:Georgia,"Times New Roman",serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E6EDF5;--ink2:#BCC8D6;--blue:#4DA6E8;--teal:#3CC6C8;--bg:#0D1826;--card:#14233A;--line:#2A3D57;--mut:#8C9BB0;--chip:#1A3552;--note:#2E2614;--noteln:#C98A2C;--off:#55657A;--ok:#4CC28A;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#E6EDF5;--ink2:#BCC8D6;--blue:#4DA6E8;--teal:#3CC6C8;--bg:#0D1826;--card:#14233A;--line:#2A3D57;--mut:#8C9BB0;--chip:#1A3552;--note:#2E2614;--noteln:#C98A2C;--off:#55657A;--ok:#4CC28A;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:34px}
+h1{font-family:var(--serif);font-size:26px;margin:0;text-wrap:balance}
+h2{font-family:var(--serif);font-size:19px;margin:0;text-wrap:balance}
+.lead{color:var(--ink2);max-width:72ch;line-height:1.55;margin:8px 0 0}
+.item{display:grid;gap:12px}
+.tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--blue)}
+.rac{font-size:13px;color:var(--mut);margin:0}
+.row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.row{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.note{background:var(--note);border-left:3px solid var(--noteln);padding:12px 14px;font-size:13px;line-height:1.55;color:var(--ink2);min-width:0}
+.note b{color:var(--ink)}
+.note ul{margin:6px 0 0;padding-left:18px}
+.lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.scroll{overflow-x:auto}
+/* item 5 */
+.boxes{display:flex;flex-wrap:wrap;gap:12px}
+.bx{display:grid;gap:5px;min-width:0}
+.sel{border:1px solid var(--line);border-radius:4px;padding:7px 10px;min-width:150px;display:flex;justify-content:space-between;gap:10px;color:var(--ink);background:var(--card)}
+.sel.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.list{border:1px solid var(--line);border-radius:4px;margin-top:4px;max-width:260px;font-size:13px;background:var(--card)}
+.list .q{border-bottom:1px solid var(--line);padding:7px 10px;color:var(--mut)}
+.list .o{padding:6px 10px;display:flex;gap:8px;align-items:center}
+.cb{width:13px;height:13px;border:1px solid var(--mut);border-radius:2px;flex:none}
+.cb.x{background:var(--blue);border-color:var(--blue)}
+/* item 6 */
+.nav{display:grid;gap:4px;max-width:330px}
+.nav div{padding:8px 12px;border-radius:4px;display:flex;justify-content:space-between;gap:8px}
+.nav .act{background:var(--blue);color:#fff}
+.nav .dis{color:var(--off);cursor:not-allowed}
+.soon{font-size:11px;border:1px solid var(--off);border-radius:10px;padding:1px 8px}
+/* item 8 */
+.menu{border:1px solid var(--line);border-radius:4px;width:190px;font-size:13px;background:var(--card)}
+.menu div{padding:7px 12px;border-bottom:1px solid var(--line)}
+.menu div:last-child{border-bottom:0}
+.menu .new{color:var(--blue);font-weight:600}
+.slide{aspect-ratio:16/9;max-width:100%;border:1px solid var(--line);border-radius:4px;background:var(--card);display:grid;grid-template-rows:auto 1fr auto;padding:12px 14px;gap:8px;font-size:12px}
+.slide .t{font-family:var(--serif);font-size:15px;font-weight:700}
+.slide .b{display:grid;grid-template-columns:1.4fr 1fr;gap:10px;min-height:0}
+.bars{display:grid;gap:5px;align-content:center}
+.bars span{display:block;height:12px;background:var(--blue);border-radius:2px}
+.kp{border:1px solid var(--line);border-radius:4px;padding:8px;color:var(--ink2)}
+.foot{color:var(--mut);font-size:10.5px;border-top:1px solid var(--line);padding-top:5px}
+.flexw{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);border-bottom:2px solid var(--line);padding:7px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--line);padding:7px 8px;white-space:nowrap}
+.strike{color:var(--mut);text-decoration:line-through}
+.good{color:var(--ok);font-weight:600}
+/* item 9 tree */
+.tree{display:grid;gap:10px;min-width:640px}
+.lvl{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center}
+.node{border:1px solid var(--blue);background:var(--chip);border-radius:4px;padding:8px 10px;font-weight:600}
+.arrow{color:var(--mut);padding-left:60px;font-size:12px}
+.desc{color:var(--ink2);font-size:13px;line-height:1.45}
+/* item 11 */
+.stamp{display:inline-flex;gap:8px;align-items:center;background:var(--chip);border-radius:14px;padding:5px 12px;font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.dates{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.date{border:1px solid var(--line);border-radius:4px;padding:7px 10px;min-width:140px}
+/* item 12 */
+.kpis{display:flex;flex-wrap:wrap;gap:12px}
+.kpi{border:1px solid var(--line);border-radius:6px;padding:12px 14px;min-width:150px;display:grid;gap:4px}
+.kpi .v{font-family:var(--serif);font-size:24px;font-weight:700}
+.kpi.pend{border-style:dashed}
+.kpi.pend .v{font-size:15px;color:var(--mut);font-family:var(--sans);font-weight:600}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Utilization Report: mockups for RAC Items 5 to 12</h1>
+  <p class="lead">Release 2026.4. Each item shows RAC's response, how the report will look, and what changes. Names and figures are sample data for illustration only.</p>
+</header>
+
+<section class="item">
+  <div class="tag">Item 5 · Department / Office / RM / RO list</div>
+  <p class="rac">RAC: Confirmed. One list with metadata for organizational and site-level grouping, including HQ / RM / RO.</p>
+  <div class="row">
+    <div class="card">
+      <div class="boxes">
+        <div class="bx"><span class="lbl">Category</span><div class="sel"><span>HQ</span><span>&#9662;</span></div></div>
+        <div class="bx"><span class="lbl">Sub-category</span><div class="sel on"><span>SARD</span><span>&#9652;</span></div>
+          <div class="list"><div class="q">Search&hellip;</div>
+            <div class="o"><span class="cb"></span>EARD</div>
+            <div class="o"><span class="cb x"></span>SARD</div>
+            <div class="o"><span class="cb"></span>SERD</div>
+            <div class="o"><span class="cb"></span>OGC</div></div></div>
+        <div class="bx"><span class="lbl">Sub-group</span><div class="sel"><span>All</span><span>&#9662;</span></div></div>
+        <div class="bx"><span class="lbl">Site</span><div class="sel"><span>All</span><span>&#9662;</span></div></div>
+      </div>
+    </div>
+    <div class="note"><b>One list, four linked filters.</b> Category, Sub-category, Sub-group, then Site. Each box narrows the next and has a search field.
+      <ul><li>Category: HQ, RM, RO</li><li>Sub-category: e.g. SARD</li><li>Sub-group: e.g. INRM under SARD</li></ul>
+      The values come from three columns in the site list, filled by sir Rotsen's team, so new units appear without a report change.</div>
+  </div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 6 · Future dashboards</div>
+  <p class="rac">RAC: Confirmed. Keep visible but disabled. Wording refinements to follow.</p>
+  <div class="row">
+    <div class="card"><div class="nav">
+      <div class="act">Bank-wide Oversight</div>
+      <div>Department Insights</div>
+      <div class="dis">Project Insights <span class="soon">Coming soon</span></div>
+      <div class="dis">Institutional File Plan <span class="soon">Coming soon</span></div>
+    </div></div>
+    <div class="note"><b>Shown but not clickable.</b> Future dashboards are greyed out with a label. "Coming soon" is a placeholder and will be replaced with RAC's wording.</div>
+  </div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 7</div>
+  <p class="rac">RAC: Not yet final. Detailed comments to follow.</p>
+  <div class="note"><b>No change yet.</b> We will mock this up once RAC's comments are received.</div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 8 · Export options</div>
+  <p class="rac">RAC: Keep Excel and PDF. Confirm an editable format. No personal information such as email addresses.</p>
+  <div class="row">
+    <div class="card"><div class="flexw">
+      <div class="menu"><div>Export to Excel</div><div>Export to PDF</div><div class="new">Export to PowerPoint (new)</div></div>
+      <div class="slide" style="flex:1 1 300px">
+        <div class="t">Sites by Department</div>
+        <div class="b"><div class="bars"><span style="width:92%"></span><span style="width:74%"></span><span style="width:55%"></span><span style="width:31%"></span></div>
+          <div class="kp"><b>Key points</b><br>SERD holds the most sites.<br>Editable text box.</div></div>
+        <div class="foot">Asian Development Bank · Filters: HQ › SARD · Data as of Monday 19 Oct 2026</div>
+      </div>
+    </div></div>
+    <div class="note"><b>PowerPoint is added</b> as the editable format: one slide per breakdown with an editable title and key points. Charts come across as pictures, and Excel carries the editable figures.
+      <br><br><b>Word</b> is not native to Power BI. It would need a separate paginated report.</div>
+  </div>
+  <div class="row">
+    <div class="card scroll"><table>
+      <thead><tr><th>Site</th><th>Site owners</th></tr></thead>
+      <tbody><tr><td>SARD Knowledge Hub</td><td><span class="strike">j.cruz@adb.org</span> &nbsp;<span class="good">Juan Cruz</span></td></tr>
+      <tr><td>INRM Projects</td><td><span class="strike">a.rao@adb.org</span> &nbsp;<span class="good">Anita Rao</span></td></tr></tbody></table></div>
+    <div class="note"><b>No email addresses.</b> Site owners is the only column with emails. We propose showing names only. <b>For RAC to confirm:</b> names are acceptable, or remove the column.</div>
+  </div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 9 · Navigation map: filter and drill-down</div>
+  <p class="rac">RAC: Site selection follows the Department-to-Site hierarchy and applies across the dashboard. Provide a navigation map.</p>
+  <div class="card scroll"><div class="tree">
+    <div class="lvl"><div class="node">Bank-wide Oversight</div><div class="desc">All of ADB. "Filter Department / Office / RM / RO" opens the same four boxes.</div></div>
+    <div class="arrow">&#8595; click a department in any chart or table</div>
+    <div class="lvl"><div class="node">Category</div><div class="desc">HQ, RM or RO</div></div>
+    <div class="arrow">&#8595;</div>
+    <div class="lvl"><div class="node">Sub-category</div><div class="desc">Department or Office, e.g. SARD</div></div>
+    <div class="arrow">&#8595;</div>
+    <div class="lvl"><div class="node">Sub-group</div><div class="desc">e.g. a Resident Mission under its department</div></div>
+    <div class="arrow">&#8595;</div>
+    <div class="lvl"><div class="node">Site</div><div class="desc">One or more sites. Every KPI, chart, table and export on the page follows the selection.</div></div>
+  </div></div>
+  <div class="note"><b>Same rule everywhere.</b> Choosing a level narrows the levels below it. Clearing a level widens them again. The active filters are printed on every export.</div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 10 · Site name</div>
+  <p class="rac">RAC: Confirmed. Display the site name instead of the full URL.</p>
+  <div class="row">
+    <div class="card scroll"><table>
+      <thead><tr><th>Before</th><th>After</th></tr></thead>
+      <tbody><tr><td class="strike">https://adb.sharepoint.com/sites/SARD-KH-0142</td><td class="good">SARD Knowledge Hub</td></tr>
+      <tr><td class="strike">https://adb.sharepoint.com/sites/INRM-PRJ-0077</td><td class="good">INRM Projects</td></tr></tbody></table></div>
+    <div class="note">The site name is the site title in the AvePoint Cloud Governance site report.</div>
+  </div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 11 · Refresh schedule</div>
+  <p class="rac">RAC: One refresh for documents and records, available every Monday. Confirm it includes Records Declared.</p>
+  <div class="row">
+    <div class="card">
+      <span class="stamp"><span class="dot"></span>Data as of Monday 19 Oct 2026</span>
+      <div class="dates"><div class="date"><div class="lbl">From</div>01 Oct 2026</div><div class="date"><div class="lbl">To (latest allowed)</div>19 Oct 2026</div></div>
+    </div>
+    <div class="note"><b>Confirmed for all figures, including Records Declared.</b> Every dashboard shows the same Monday date, and the date filter cannot go past it.</div>
+  </div>
+</section>
+
+<section class="item">
+  <div class="tag">Item 12 · Folder count</div>
+  <p class="rac">RAC: Parked, pending AvePoint's confirmation of the data source.</p>
+  <div class="row">
+    <div class="card"><div class="kpis">
+      <div class="kpi"><span class="lbl">Sites</span><span class="v">1,032</span></div>
+      <div class="kpi"><span class="lbl">Libraries</span><span class="v">2,418</span></div>
+      <div class="kpi pend"><span class="lbl">Folders</span><span class="v">Pending source</span></div>
+    </div></div>
+    <div class="note"><b>Proposed source: Microsoft Graph.</b> The same weekly scan that lists documents also returns folders, each marked as a folder, so they can be counted per library and per site. This was tested on the test tenant on 15 Oct 2026. <b>For AvePoint to confirm</b> it can run in production. Until then, the card shows "Pending source".</div>
+  </div>
+</section>
+</div>
