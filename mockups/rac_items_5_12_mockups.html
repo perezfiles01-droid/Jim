@@ -23,7 +23,9 @@ h2{font-family:var(--serif);font-size:19px;margin:0;text-wrap:balance}
 .lbl{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);font-weight:600}
 .scroll{overflow-x:auto}
 /* item 5 */
-.boxes{display:flex;flex-wrap:wrap;gap:12px}
+.boxes{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.bx{width:150px}
+.bx .sel{min-width:0}
 .bx{display:grid;gap:5px;min-width:0}
 .sel{border:1px solid var(--line);border-radius:4px;padding:7px 10px;min-width:150px;display:flex;justify-content:space-between;gap:10px;color:var(--ink);background:var(--card)}
 .sel.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
@@ -84,22 +86,23 @@ td{border-bottom:1px solid var(--line);padding:7px 8px;white-space:nowrap}
 <section class="item">
   <div class="tag">Item 5 · Department / Office / RM / RO list</div>
   <p class="rac">RAC: Confirmed. One list with metadata for organizational and site-level grouping, including HQ / RM / RO.</p>
-  <div class="row">
+  <div class="row" style="grid-template-columns:1fr">
     <div class="card">
       <div class="boxes">
-        <div class="bx"><span class="lbl">Category</span><div class="sel"><span>HQ</span><span>&#9662;</span></div></div>
-        <div class="bx"><span class="lbl">Sub-category</span><div class="sel on"><span>SARD</span><span>&#9652;</span></div>
+        <div class="bx"><span class="lbl">Main Category</span><div class="sel"><span>HQ</span><span>&#9662;</span></div></div>
+        <div class="bx"><span class="lbl">Sub Category</span><div class="sel on"><span>SARD</span><span>&#9652;</span></div>
           <div class="list"><div class="q">Search&hellip;</div>
-            <div class="o"><span class="cb"></span>EARD</div>
-            <div class="o"><span class="cb x"></span>SARD</div>
-            <div class="o"><span class="cb"></span>SERD</div>
-            <div class="o"><span class="cb"></span>OGC</div></div></div>
-        <div class="bx"><span class="lbl">Sub-group</span><div class="sel"><span>All</span><span>&#9662;</span></div></div>
-        <div class="bx"><span class="lbl">Site</span><div class="sel"><span>All</span><span>&#9662;</span></div></div>
+            <div class="o"><span class="cb"></span>CWRD</div>
+            <div class="o"><span class="cb"></span>ITD</div>
+            <div class="o"><span class="cb"></span>OGC</div>
+            <div class="o"><span class="cb"></span>ORM</div>
+            <div class="o"><span class="cb x"></span>SARD</div></div></div>
+        <div class="bx"><span class="lbl">Sub Sub Category</span><div class="sel"><span>SAEN</span><span>&#9662;</span></div></div>
+        <div class="bx"><span class="lbl">Site</span><div class="sel"><span>sard_energy</span><span>&#9662;</span></div></div>
       </div>
     </div>
-    <div class="note"><b>One list, four linked filters.</b> Category, Sub-category, Sub-group, then Site. Each box narrows the next and has a search field.
-      <ul><li>Category: HQ, RM, RO</li><li>Sub-category: e.g. SARD</li><li>Sub-group: e.g. INRM under SARD</li></ul>
+    <div class="note"><b>One list, four linked filters.</b> Main Category, Sub Category, Sub Sub Category, then Site. Each box narrows the next and has a search field.
+      <ul><li>Main Category: HQ, RM, RO</li><li>Sub Category: e.g. SARD, CWRD</li><li>Sub Sub Category: e.g. SAEN, SLRM</li></ul>
       The values come from three columns in the site list, filled by sir Rotsen's team, so new units appear without a report change.</div>
   </div>
 </section>
