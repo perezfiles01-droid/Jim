@@ -287,6 +287,10 @@ $shadow: 0 1px 2px rgba(16, 36, 62, .06), 0 4px 14px rgba(16, 36, 62, .06);
   .fPop .ugH { margin: 10px 0 4px; }
   .fPop .ugH .ms-Checkbox-text { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: #0878C9; font-weight: 600; }
   .fPop .ugI { margin: 6px 0 6px 22px; }
+  .fPop .ugI.d2 { margin-left: 44px; }
+  .fPop .ugS { margin: 6px 0 4px 22px; }
+  .fPop .ugS .ms-Checkbox-text { font-size: 12px; font-weight: 600; color: $ink2; }
+  .fPop .ugSeg { flex-wrap: wrap; }
   .fPop .ugL { display: flex; gap: 8px; margin-left: 8px; font-size: 13px; min-width: 0; }
   .fPop .ugL b { flex: 0 0 auto; white-space: nowrap; }
   .fPop .ugL span { color: $mut; min-width: 0; }
