@@ -297,10 +297,10 @@ export async function exportPptx(dashEl: HTMLElement, meta: IPptMeta): Promise<v
     slices(sh.canvas, sh.breaks, sh.blocks, sh.tops, maxH).forEach((part, pi) => {
       const s = P.addSlide();
       s.background = { color: 'FFFFFF' };
-      s.addText(sh.title + (pi ? ' (continued)' : ''), { x: 0.5, y: 0.35, w: 8.6, h: 0.55, fontSize: 28, bold: true, color: '10243E', isTextBox: true, margin: 0 });
+      s.addText(sh.title + (pi ? ' (continued)' : ''), { x: 0.5, y: 0.35, w: 7, h: 0.55, fontSize: 28, bold: true, color: '10243E', isTextBox: true, margin: 0 });
       s.addText(meta.name + (meta.desc ? '  ·  ' + meta.desc : ''), { x: 0.5, y: 0.92, w: 8.6, h: 0.45, fontSize: 13, color: '33475F', valign: 'top', isTextBox: true, margin: 0 });
       s.addText([{ text: 'Data as of ', options: { color: '33475F' } }, { text: meta.asOf, options: { bold: true, color: '10243E', breakLine: true } }, { text: meta.filter, options: { color: '6B7A8C' } }],
-        { x: 9.2, y: 0.38, w: 3.63, h: 0.7, fontSize: 11, align: 'right', valign: 'top', isTextBox: true, margin: 0 });
+        { x: 7.6, y: 0.38, w: 5.23, h: 0.95, fontSize: 11, align: 'right', valign: 'top', isTextBox: true, margin: 0, fit: 'shrink' });
       if (sh.on !== undefined) {
         const gap = 0.2, cw = (12.33 - gap * (info.length - 1)) / info.length;
         info.forEach((k, i) => {

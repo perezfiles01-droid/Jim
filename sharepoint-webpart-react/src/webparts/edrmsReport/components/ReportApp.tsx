@@ -90,7 +90,10 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
     const pick = (q: string): string => ((el.querySelector(q) || {}).textContent || '').trim();
     return exportPptx(el, {
       name, desc: pick('.band .bd'), asOf: refreshLabel(),
-      filter: dash === 'bw' ? 'All Departments / Offices / RMs / ROs' : 'Department: ' + pick('.deptBtn span') + '  \u00b7  Site: ' + pick('.picker .ms-Dropdown-title')
+      // Each box of the category bar as on screen: "Category: RM, HQ  ·  Sub-category: ...".
+      filter: dash === 'bw' ? 'All Departments / Offices / RMs / ROs'
+        : Array.from(el.querySelectorAll('.dash-dp > .panel:first-of-type .cgG')).map(g =>
+          ((g.querySelector('.cgL') || {}).textContent || '') + ': ' + ((g.querySelector('.ms-Dropdown-title') || {}).textContent || '').trim()).join('  \u00b7  ')
     });
   });
 
