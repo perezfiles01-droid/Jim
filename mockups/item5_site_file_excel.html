@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><title>Item 5 Site File</title>
+<style>
+body{margin:0;padding:12px;background:#fff;font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:13px;color:#000}
+table{border-collapse:collapse}
+td,th{border:1px solid #D4D4D4;padding:3px 6px;white-space:nowrap;height:18px}
+.cl{background:#F3F3F3;color:#555;text-align:center;font-weight:normal}
+.rn{background:#F3F3F3;color:#555;text-align:center;width:22px}
+.h{font-weight:bold;text-align:left}
+.h::after{content:"\25BE";float:right;margin-left:8px;color:#777;font-size:10px;border:1px solid #bbb;padding:0 2px}
+.r{background:#FCE4DE}
+.r.v{color:#C00000;font-weight:bold}
+</style>
+<table id="t"></table>
+<script>
+const H=["Site","URL","Site Name","Department","Division","Production","Category","Sub-category","Sub-group"];
+const R=[
+["https://asiandevbank.sharepoint.com/sites/grp_edrms_sanitysite/Agreements","https://asiandevbank.sharepoint.com/sites/grp_edrms_sanitysite","grp_edrms_sanitysite","ITD","ITD","No","HQ","ITD",""],
+["https://asiandevbank.sharepoint.com/sites/sard_energy/AnnualMeet","https://asiandevbank.sharepoint.com/sites/sard_energy","sard_energy","SARD","SAEN","Yes","HQ","SARD","SAEN"],
+["https://asiandevbank.sharepoint.com/sites/cwrd_transport/CountryPlan","https://asiandevbank.sharepoint.com/sites/cwrd_transport","cwrd_transport","CWRD","CWTC","Yes","HQ","CWRD","CWTC"],
+["https://asiandevbank.sharepoint.com/sites/orm_riskmgmt/FinStatements","https://asiandevbank.sharepoint.com/sites/orm_riskmgmt","orm_riskmgmt","ORM","ORM","Yes","HQ","ORM",""],
+["https://asiandevbank.sharepoint.com/sites/ogc_legal/FinalDocs","https://asiandevbank.sharepoint.com/sites/ogc_legal","ogc_legal","OGC","OGC","Yes","HQ","OGC",""],
+["https://asiandevbank.sharepoint.com/sites/slrm_projects/Correspondence","https://asiandevbank.sharepoint.com/sites/slrm_projects","slrm_projects","SLRM","SLRM","Yes","RM","SARD","SLRM"],
+["https://asiandevbank.sharepoint.com/sites/urm_operations/EventsMajor","https://asiandevbank.sharepoint.com/sites/urm_operations","urm_operations","URM","URM","Yes","RM","CWRD","URM"],
+["https://asiandevbank.sharepoint.com/sites/naro_relations/BoardEngage","https://asiandevbank.sharepoint.com/sites/naro_relations","naro_relations","NARO","NARO","Yes","RO","NARO",""]];
+let h='<tr><th class="cl"></th>'+H.map((_,i)=>'<th class="cl">'+"ABCDEFGHI"[i]+'</th>').join('')+'</tr>';
+h+='<tr><td class="rn">1</td>'+H.map((x,i)=>'<td class="h'+(i>5?' r':'')+'">'+x+'</td>').join('')+'</tr>';
+R.forEach((r,j)=>h+='<tr><td class="rn">'+(j+2)+'</td>'+r.map((x,i)=>'<td class="'+(i>5?'r v':'')+'">'+x+'</td>').join('')+'</tr>');
+document.getElementById('t').innerHTML=h;
+</script>
