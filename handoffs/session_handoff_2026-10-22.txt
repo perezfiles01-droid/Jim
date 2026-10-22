@@ -1,0 +1,125 @@
+EDRMS UTILIZATION REPORT - SESSION HANDOFF
+Date: 22 Oct 2026
+Repo: perezfiles01-droid/Jim (branch claude/zen-thompson-xhh86j, everything merged to main)
+Full conversation (text only): handoffs/session_transcript_2026-10-22.txt
+
+Read first in any new session: CLAUDE.md, then STATUS.md, then this file.
+
+------------------------------------------------------------
+1. STANDING RULES FROM THE REQUESTER
+------------------------------------------------------------
+- Every accepted change is merged to main and pushed in the same turn. Never ask.
+- No em dashes in visible text.
+- Do not trust assumed column names or figures. Check the real file.
+- App Catalog link to send, exactly:
+  https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
+  Upload the .sppkg there and choose Replace. Never send the AppCatalog/Forms/AllItems.aspx address.
+- Deliver every new web part package named exactly
+  EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg (no "_1"), so it replaces the old one.
+- Send a source zip with every web part version (Dane Duong, developer, wants the code).
+- New data sources go in sources/<tenant>/ and get a row in sources/README.md.
+
+------------------------------------------------------------
+2. WHAT EXISTS NOW
+------------------------------------------------------------
+SharePoint web part (sharepoint-webpart-react/, SPFx 1.23, React 17, Fluent UI 8, Node 22)
+- Current version 1.0.51.0. Package in repo root: EDRMS_Utilization_Report_SharePoint_2026-10-22.sppkg
+- Source zip: EDRMS_WebPart_React_Source_1.0.51.zip
+- Build: npm run build. lib/ is gitignored, add with git add -f.
+- Tests: node test/build-test-page.js, then test/interaction-test.js (Playwright,
+  CHROMIUM_PATH=/opt/pw-browsers/chromium). 25/25 passed at 1.0.51.
+- Features added this period:
+  * Dynamic categories (lib/categories.ts): Category > Sub-category > Sub-group > Site,
+    four linked boxes with search (components/CategoryBar.tsx). Values come from the
+    Main Category / Sub Category / Sub Sub Category columns in sir Rotsen's site file.
+  * Bank-wide Filter pop-up "Filter Department / Office / RM / RO" uses the same boxes.
+  * Export menu: PDF and PowerPoint (lib/exporters.ts). PPT: one slide per breakdown,
+    Key points box, "Asian Development Bank" footer, tall pictures split onto
+    "(continued)" slides. PDF page breaks never cut through a chart.
+  * "Data as of Monday dd MMM yyyy" stamp; date picker max equals that Monday.
+  * Descriptions under each dashboard title.
+
+Floot app "EDRMS Reporting Suite" (projectId d7e7628e-eaf3-4858-8a43-8341612737b4)
+- Live: https://edrms-reporting-suite.floot.app (custom domain jimswork.com)
+- KNOWN BROKEN: Comparison and Records trend panels are empty. Half fixed; the
+  list.innerHTML=window.__edrmsUnitList(...) call (about line 3046 of pages/_index.tsx)
+  still needs the lazy upgrade. Blocked by the free plan limit (100 builds/day,
+  resets 00:00 UTC).
+
+Mockups (mockups/, all merged to main)
+- rac_items_5_12_mockups.html  -> https://claude.ai/artifact/QvBAUQpCDyLE8mXTQHCmvt
+- item5_category_filter_sample.html (interactive) -> https://claude.ai/artifact/Uw9qDG9ZKmJG3D8qEUGZVi
+  (still uses Category / Sub-category / Sub-group labels)
+- item5_filter_mockup.png: four boxes, labelled Main Category / Sub Category / Sub Sub Category
+- item5_site_file_excel.png: the sample site file in Excel style, red columns renamed
+  Category / Sub-category / Sub-group
+- Artifacts are private until shared from the page's Share menu.
+
+------------------------------------------------------------
+3. RAC EMAIL "[Release 2026.4] - Utilization Report" (Kate Del Rosario)
+   Our reply, items 5 to 12, as agreed with the requester (table format:
+   Item | RAC response | Our response | Mockup | For RAC Action)
+------------------------------------------------------------
+Item 5 - Department / Office / RM / RO list
+  Response: One list, filtered in four steps, each narrowing the next:
+  Category > Sub-category > Sub-group > Site (e.g. HQ > SARD > INRM > site).
+  Data comes from sir Rotsen's file; final updates are made there. Link: [to add]
+  RAC action:
+   1. Confirm that this matches your request.
+   2. Confirm or rename each level (Category, Sub-category, Sub-group).
+   3. Review the sample values: Category HQ, RM, RO; Sub-category e.g. ITD, SARD;
+      Sub-group e.g. NRM.
+   4. Provide, through the ADB BA Team, the final values for each category if the
+      samples are not correct.
+  Note: in the file, RMs sit under their parent department (RM > SARD > SLRM), so
+  Sub-category SARD returns both HQ and RM sites. One sample row is Production = No.
+
+Item 6 - Future dashboards: visible but disabled, "Coming soon" placeholder until
+  RAC's wording arrives.
+
+Item 7 - Awaiting RAC's detailed comments.
+
+Item 8 - Export options
+  Response: Excel and PDF retained. PowerPoint is feasible per initial assessment
+  (one slide per page, charts as images, editable figures via Excel); final approach
+  after further assessment. Word is not among Power BI's standard export options;
+  it would need a separate paginated report built and maintained alongside, subject
+  to further assessment (may need Premium/Fabric licence, check with ADB IT).
+  Recommend PowerPoint plus Excel. Site owners is the only field with emails;
+  propose owner names instead.
+  RAC action:
+   1. Confirm which format to support alongside PDF and Excel: PowerPoint
+      (recommended) or Word (subject to further assessment).
+   2. Confirm whether owner names are acceptable, or remove the Site owners column.
+
+Item 9 - Filter and drill-down
+  Captions: "Sample mockup: Clicking a Department / Office / RM / RO code (e.g. CWRD)
+  instantly opens Department Insights, filtered to that unit."
+  "Sample mockup: Upon clicking CWRD, Department Insights opens with the filters
+  already set to Category HQ, Sub-category CWRD, and Site All 55 sites."
+  RAC action:
+   1. Confirm that this is the intended behavior.
+   2. Confirm that the selected filters apply to all panels and exports on the page.
+
+Item 10 - Site name instead of URL; source is the site title (Name column) in the
+  Cloud Governance workspace report, join on URL. Not yet compared with the live
+  SharePoint title.
+
+Item 11 - One weekly refresh, data available every Monday, applies to all figures
+  including Records Declared.
+
+Item 12 - Folder count: propose Microsoft Graph via the same weekly scan
+  (driveItems carry a folder facet). Tested on one test-tenant folder on 15 Oct 2026
+  (STATUS.md). AvePoint to confirm production. Until then shown as "Pending source".
+
+------------------------------------------------------------
+4. PENDING / NEXT STEPS
+------------------------------------------------------------
+- Make label naming consistent across images (requester leaning to Category /
+  Sub-category / Sub-group; item5_filter_mockup.png still says Main/Sub/Sub Sub).
+- Add the real link to sir Rotsen's file in the Item 5 response.
+- Floot: finish the Comparison/trend fix and republish; port PPT tall-slide split,
+  category changes, date max fix.
+- Web part (optional): Site owners shown as names; search in Site box.
+- Await RAC: Items 1 to 4 data, Item 6 wording, Item 7 comments, confirmations above.
+- AvePoint: confirm Graph folder count in production.
