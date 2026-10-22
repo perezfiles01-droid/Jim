@@ -19,9 +19,9 @@ Rules:
 
 | File | Tenant | Exported | Rows | What it gives the report |
 |---|---|---|---|---|
-| `evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv` | Test (7rkd12) | 14 Aug 2026 | 1,209 | Site list and Department (1,133 filled). **Division 0 filled, Region 0 filled.** Geo Location is almost all "Asia-Pacific" |
-| `compliant_sites.csv` | Test | derived | 1,032 | The EDRMS sites filtered from the report above, with Department and storage. Derived, not raw |
-| `evidence_SharePointSiteUsageDetail_2026-08-12.csv` | Test | 12 Aug 2026 | 2,575 | Microsoft 365 site usage: storage, files, page views, last activity per site |
+| `evidence_CloudGovernance_WorkspaceReport_2026-08-14.csv` | Test (7rkd12) | 14 Aug 2026 | 1,209 | Site list and Department (1,133 filled). **Site name: `Name` is the site title, filled 1,209 of 1,209, differs from the URL name on 1,135; join on `URL`.** Not yet compared with the live SharePoint title. **Division 0 filled, Region 0 filled.** Geo Location is almost all "Asia-Pacific" |
+| `compliant_sites.csv` | Test | derived | 1,032 | The EDRMS sites filtered from the report above, with Department and storage. `SiteName` equals the Cloud Governance `Name` on 1,032 of 1,032. Derived, not raw |
+| `evidence_SharePointSiteUsageDetail_2026-08-12.csv` | Test | 12 Aug 2026 | 2,575 | Microsoft 365 site usage: storage, files, page views, last activity per site. **`Site URL` is empty on every row** (the tenant conceals site details in usage reports), so no site name and no URL join |
 | `evidence_SharePointActivityUserDetail_2026-08-12.csv` | Test | 12 Aug 2026 | 30 | Microsoft 365 per-user SharePoint activity |
 | `evidence_CG_UsersExport_2026-08-14.csv` | Test | 14 Aug 2026 | 286 | Users. **Department 0 filled**; Job title, Office, Country filled |
 | `evidence_CG_GroupsExport_2026-08-14.csv` | Test | 14 Aug 2026 | 676 | Microsoft 365 groups |
