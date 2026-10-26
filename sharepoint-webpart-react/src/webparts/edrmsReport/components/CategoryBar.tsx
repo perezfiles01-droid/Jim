@@ -13,8 +13,8 @@ import { Caret } from './ui';
 interface ISel { cat: string[]; sub: string[]; grp: string[] }
 
 /** A box like the other pickers whose list has a search field and ticks (22 Oct 2026). */
-const Multi: React.FC<{ label: string; values: string[]; value: string[]; allText: string; onChange: (v: string[]) => void; text?: (v: string) => string }> =
-  ({ label, values, value, allText, onChange, text }) => {
+export const Multi: React.FC<{ label: string; values: string[]; value: string[]; allText: string; onChange: (v: string[]) => void; text?: (v: string) => string; summary?: (v: string[]) => string }> =
+  ({ label, values, value, allText, onChange, text, summary }) => {
     const [open, setOpen] = React.useState(false);
     const [q, setQ] = React.useState('');
     const box = React.useRef<HTMLButtonElement>(null);
@@ -30,7 +30,7 @@ const Multi: React.FC<{ label: string; values: string[]; value: string[]; allTex
       <>
         <button type="button" ref={box} className="cgBox picker cgPick" aria-label={label} aria-haspopup="listbox" aria-expanded={open}
           disabled={!values.length} onClick={() => { setQ(''); setOpen(!open); }}>
-          <span className="cgT">{!values.length ? 'None' : value.length ? value.join(', ') : allText}</span><Caret />
+          <span className="cgT">{!values.length ? 'None' : value.length ? (summary ? summary(value) : value.join(', ')) : allText}</span><Caret />
         </button>
         {open && (
           <Callout target={box} onDismiss={() => setOpen(false)} directionalHint={DirectionalHint.bottomLeftEdge} gapSpace={4} isBeakVisible={false}

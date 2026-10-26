@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Dropdown, IDropdownOption, DropdownMenuItemType } from '@fluentui/react';
-import { CategoryBar } from '../components/CategoryBar';
+import { Dropdown } from '@fluentui/react';
+import { CategoryBar, Multi } from '../components/CategoryBar';
 import {
   IReportData, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
 } from '../lib/data';
@@ -10,7 +10,6 @@ import { DataTable, IColumn } from '../components/DataTable';
 import { BarList, ColumnChart } from '../components/charts';
 import { IDashboardProps } from './BankWide';
 
-const ALL = '__all';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const fmtDate = (d: Date): string => d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
 
@@ -21,21 +20,13 @@ export interface IDepartmentInsightsProps extends IDashboardProps {
 
 /* ---------- pickers ---------- */
 
-/** Sites inside the chosen departments. An empty list means all of them. */
-const SitePicker: React.FC<{ sites: ISite[]; value: string[]; onChange: (v: string[]) => void }> = ({ sites, value, onChange }) => {
-  const options: IDropdownOption[] = [{ key: ALL, text: 'All ' + F(sites.length) + ' sites' }, { key: 'div', text: '-', itemType: DropdownMenuItemType.Divider }]
-    .concat(sites.map(s => ({ key: s.name, text: s.name })));
-  return (
-    <Dropdown onRenderCaretDown={Caret} className="picker" multiSelect options={options} selectedKeys={value.length ? value : [ALL]} ariaLabel="Site"
-      styles={{ callout: { maxHeight: 360 } }}
-      onRenderTitle={() => <span>{value.length ? (value.length === 1 ? value[0] : F(value.length) + ' sites') : 'All ' + F(sites.length) + ' sites'}</span>}
-      onChange={(_, o) => {
-        if (!o) return;
-        if (o.key === ALL) { onChange([]); return; }
-        onChange(o.selected ? value.concat(String(o.key)) : value.filter(n => n !== o.key));
-      }} />
-  );
-};
+/** Sites inside the chosen departments. An empty list means all of them.
+ *  26 Oct 2026: the same box as Category / Sub-category / Sub-group, so the
+ *  1,032 site list has a search field too. */
+const SitePicker: React.FC<{ sites: ISite[]; value: string[]; onChange: (v: string[]) => void }> = ({ sites, value, onChange }) => (
+  <Multi label="Site" values={sites.map(s => s.name)} value={value} allText={'All ' + F(sites.length) + ' sites'} onChange={onChange}
+    summary={v => (v.length === 1 ? v[0] : F(v.length) + ' sites')} />
+);
 
 function sitesOf(data: IReportData, codes: string[]): ISite[] {
   const list = codes.length ? data.depts.filter(d => codes.indexOf(d.code) >= 0) : data.depts;

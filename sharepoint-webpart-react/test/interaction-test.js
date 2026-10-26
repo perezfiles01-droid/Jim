@@ -44,7 +44,10 @@ ok('bar selects one row',(await p.$$eval('.tbl >> nth=0',t=>t[0].querySelectorAl
 // phys tie
 await p.click('.kpi >> nth=4');const more=await p.$('.more');if(more){await more.click();await p.waitForTimeout(200);ok('tie chip',!!(await p.$('.chip')));}
 // site picker
-await p.click('.cgG:has-text("Site") .picker');await p.waitForTimeout(300);await p.click('.ms-Dropdown-item >> nth=2');await p.keyboard.press('Escape');await p.waitForTimeout(300);
+await p.click('.cgG:has-text("Site") .picker');await p.waitForTimeout(300);
+{const n0=await p.$$eval('.cgOpts .ms-Checkbox',e=>e.length);const first=(await p.textContent('.cgOpts .ms-Checkbox >> nth=1')).trim();await p.fill('.cgQ',first);await p.waitForTimeout(200);
+ok('site search narrows the list',(await p.$$eval('.cgOpts .ms-Checkbox',e=>e.length))<n0);await p.fill('.cgQ','');await p.waitForTimeout(200);}
+await p.click('.cgOpts .ms-Checkbox >> nth=1');await p.keyboard.press('Escape');await p.waitForTimeout(300);
 ok('site filter changes sites card',(await p.textContent('.kpi .val >> nth=0')).trim()==='1');
 // pdf
 await p.click('.pdfBtn');ok('export menu opens',!!(await p.$('.xMenu')));
