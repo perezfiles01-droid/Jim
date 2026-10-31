@@ -6,27 +6,27 @@ Like any large organization, A D B creates thousands of documents every day. Som
 
 This is where E D R M S comes in. E D R M S stands for Electronic Document and Records Management System. It is built by AvePoint on top of SharePoint and Microsoft 365, the tools A D B users already work in every day.
 
-Let us see how a user declares a record.
+So, how does a document become a record? It takes seven simple steps. Let us go through them one by one.
 
-First, the user opens an E D R M S compliant site. The menus at the top list the libraries. The user picks the library where the document belongs.
+Step one. Open an E D R M S compliant site. This is a SharePoint site that is set up for records. You can see the E D R M S logo at the top.
 
-Next, the user clicks Create or upload, and uploads the file. It can go straight into the library, or into any folder inside it.
+Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we use the library called Jim Test 2.
 
-The file now appears in the library. To declare it, the user clicks the three dots next to the file, and chooses Declare as record.
+Step three. Create or upload the document. Click Create or upload, and choose your file. A message confirms the upload, and the new file appears in the list.
 
-E D R M S then asks one question. Does the digital record have a physical counterpart? Choose Yes if a paper version of this record also exists. Choose No if the record exists only in electronic form. In this example, the answer is No.
+Step four. Make sure the document has a sensitivity label. A sensitivity label tells everyone how confidential a document is. Regular documents, such as Word or Excel files, need one before they are declared. Audiovisual files, such as images, videos, and email files, do not. Our example is an email file, so it does not need one.
 
-The user clicks Submit, and waits a moment while E D R M S declares the file. A message then confirms that the file has been successfully declared as a record.
+Step five. Physical counterpart. Click the three dots next to the file, and choose Declare as record. E D R M S asks one question. Does this record have a physical counterpart? Choose Yes if a paper copy of it also exists. Choose No if it exists only in electronic form. Here, the answer is No.
 
-Back in the library, the file now shows a lock icon. It is a record, and it can no longer be edited or deleted.
+Step six. Submit. Click Submit, and wait a moment while E D R M S declares the file. When the message says the file has been successfully declared as a record, you are done. Back in the library, the file now shows a lock icon. A record is protected, so it can no longer be edited or deleted.
 
-To see the record details, the user switches to the Record Management Review view.
+Step seven. Check the records. Switch the view to Record Management Review. Here you can check two important columns.
 
-Here, the record columns are filled in. First, the retention label. The retention label depends on the library. Each library is mapped to a retention label, such as five, seven or ten years, or permanent. In this example, the record is kept for ten years after declaration.
+First, the retention label. It tells E D R M S how long the record must be kept. The label depends on the library. Each library is mapped to a retention label, such as five years, seven years, ten years, or permanent. This library keeps records for ten years after declaration.
 
-Next, the date and time the label was applied, and the due date for disposal, based on that retention period. Then, has physical counterpart, No. The retention schedule, Long Term. And a unique document I D for the record.
+Second, the sensitivity label. For our email, it is blank, and that is expected, because audiovisual files do not need one. For a Word or Excel file, you would see its sensitivity label here.
 
-You may notice the sensitivity label is blank. That is expected. In E D R M S, emails are classified as audiovisual records, and audiovisual records do not need a sensitivity label. Regular documents, such as Word or Excel files, do.
+And that is it. Seven steps, and the document is now an official A D B record.
 
 The project is delivered as a series of releases. Each release adds one capability, is tested by A D B, and then goes live. This way, A D B gets value step by step, instead of waiting for one big launch.
 

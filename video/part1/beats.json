@@ -22,28 +22,19 @@
  {
   "mg": "howto",
   "vid": null,
-  "t": "Let us see how a user declares a record."
+  "t": "So, how does a document become a record? It takes seven simple steps. Let us go through them one by one."
  },
  {
   "mg": null,
   "vid": {
+   "step": 1,
+   "side": "site",
    "segs": [
     [
-     6.0,
-     10.0
-    ],
-    [
      2.0,
-     4.0
+     5.8
     ]
    ],
-   "c": [
-    450,
-    420
-   ],
-   "s": 1.35,
-   "step": 1,
-   "sec": "Open the library",
    "keys": [
     [
      0,
@@ -52,36 +43,122 @@
      1
     ],
     [
-     0.15,
-     330,
-     520,
-     1.7
-    ],
-    [
-     0.45,
-     600,
-     420,
-     1.7
-    ],
-    [
-     0.72,
-     862,
-     482,
-     1.1
+     0.35,
+     300,
+     200,
+     1.9
     ],
     [
      1,
-     862,
-     482,
-     1.1
+     300,
+     200,
+     1.9
     ]
+   ],
+   "hl": [
+    {
+     "a": 2.0,
+     "b": 6,
+     "box": [
+      57,
+      98,
+      310,
+      189
+     ],
+     "kind": "box",
+     "label": "EDRMS logo"
+    }
    ]
   },
-  "t": "First, the user opens an E D R M S compliant site. The menus at the top list the libraries. The user picks the library where the document belongs."
+  "t": "Step one. Open an E D R M S compliant site. This is a SharePoint site that is set up for records. You can see the E D R M S logo at the top."
  },
  {
   "mg": null,
   "vid": {
+   "step": 2,
+   "side": "cabinet",
+   "segs": [
+    [
+     6.0,
+     10.0
+    ],
+    [
+     10.0,
+     11.5
+    ]
+   ],
+   "keys": [
+    [
+     0,
+     500,
+     450,
+     1.5
+    ],
+    [
+     1,
+     500,
+     450,
+     1.5
+    ]
+   ],
+   "hl": [
+    {
+     "a": 6.0,
+     "b": 7.9,
+     "box": [
+      60,
+      295,
+      406,
+      871
+     ],
+     "kind": "box",
+     "label": "Libraries"
+    },
+    {
+     "a": 8.0,
+     "b": 9.9,
+     "box": [
+      360,
+      230,
+      620,
+      262
+     ],
+     "kind": "ring",
+     "label": "More libraries"
+    },
+    {
+     "a": 10.0,
+     "b": 11.5,
+     "box": [
+      140,
+      305,
+      350,
+      365
+     ],
+     "kind": "box",
+     "label": "Library: Jim Test 2"
+    },
+    {
+     "a": 10.6,
+     "b": 11.5,
+     "box": [
+      200,
+      570,
+      340,
+      615
+     ],
+     "kind": "box",
+     "label": "Folder"
+    }
+   ]
+  },
+  "t": "Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we use the library called Jim Test 2."
+ },
+ {
+  "mg": null,
+  "vid": {
+   "step": 3,
+   "side": "upload",
    "segs": [
     [
      0.0,
@@ -92,139 +169,238 @@
      20.5
     ]
    ],
-   "c": [
-    1150,
-    420
-   ],
-   "s": 1.2,
-   "step": 2,
-   "sec": "Upload",
    "keys": [
     [
      0,
-     1250,
-     480,
-     1.7
+     1300,
+     450,
+     1.6
     ],
     [
-     0.3,
-     1250,
-     480,
-     1.7
+     0.35,
+     1300,
+     450,
+     1.6
     ],
     [
-     0.45,
+     0.5,
      800,
      700,
-     1.35
+     1.3
     ],
     [
      1,
      800,
      700,
-     1.35
+     1.3
     ]
+   ],
+   "hl": [
+    {
+     "a": 0.0,
+     "b": 2.0,
+     "box": [
+      1430,
+      310,
+      1657,
+      362
+     ],
+     "kind": "click",
+     "label": "Create or upload"
+    },
+    {
+     "a": 0.6,
+     "b": 2.0,
+     "box": [
+      1130,
+      370,
+      1420,
+      412
+     ],
+     "kind": "ring",
+     "label": "Files upload"
+    },
+    {
+     "a": 16.0,
+     "b": 19.9,
+     "box": [
+      517,
+      814,
+      1099,
+      936
+     ],
+     "kind": "box",
+     "label": "Upload confirmed"
+    },
+    {
+     "a": 19.9,
+     "b": 20.5,
+     "box": [
+      200,
+      570,
+      1690,
+      615
+     ],
+     "kind": "box",
+     "label": "New file"
+    }
    ]
   },
-  "t": "Next, the user clicks Create or upload, and uploads the file. It can go straight into the library, or into any folder inside it."
+  "t": "Step three. Create or upload the document. Click Create or upload, and choose your file. A message confirms the upload, and the new file appears in the list."
  },
  {
   "mg": null,
   "vid": {
+   "step": 4,
+   "side": "sens",
    "segs": [
     [
      20.5,
-     22.0
-    ],
-    [
-     23.5,
-     27.8
+     23.0
     ]
    ],
-   "c": [
-    700,
-    560
-   ],
-   "s": 1.35,
-   "step": 3,
-   "sec": "Declare as record",
    "keys": [
     [
      0,
+     862,
+     560,
+     1.1
+    ],
+    [
+     0.2,
+     700,
+     600,
+     1.6
+    ],
+    [
+     1,
+     700,
+     600,
+     1.6
+    ]
+   ],
+   "hl": [
+    {
+     "a": 20.5,
+     "b": 23.0,
+     "box": [
+      200,
+      570,
+      900,
+      615
+     ],
+     "kind": "box",
+     "label": "Email file (.eml)"
+    }
+   ]
+  },
+  "t": "Step four. Make sure the document has a sensitivity label. A sensitivity label tells everyone how confidential a document is. Regular documents, such as Word or Excel files, need one before they are declared. Audiovisual files, such as images, videos, and email files, do not. Our example is an email file, so it does not need one."
+ },
+ {
+  "mg": null,
+  "vid": {
+   "step": 5,
+   "side": "pc",
+   "segs": [
+    [
+     23.5,
+     27.8
+    ],
+    [
+     29.6,
+     31.4
+    ]
+   ],
+   "keys": [
+    [
+     0,
+     620,
+     600,
+     1.9
+    ],
+    [
+     0.25,
      620,
      600,
      1.9
     ],
     [
      0.4,
-     620,
-     600,
-     1.9
-    ],
-    [
-     0.55,
      730,
-     520,
-     1.2
-    ],
-    [
-     0.8,
-     730,
-     800,
-     1.7
-    ],
-    [
-     1,
-     730,
-     800,
-     1.7
-    ]
-   ]
-  },
-  "t": "The file now appears in the library. To declare it, the user clicks the three dots next to the file, and chooses Declare as record."
- },
- {
-  "mg": null,
-  "vid": {
-   "segs": [
-    [
-     29.6,
-     31.4
-    ]
-   ],
-   "c": [
-    800,
-    440
-   ],
-   "s": 1.8,
-   "step": 4,
-   "sec": "Physical counterpart",
-   "keys": [
-    [
-     0,
-     800,
-     440,
+     700,
      1.3
     ],
     [
-     0.15,
+     0.5,
      800,
-     440,
-     2.0
+     450,
+     1.9
     ],
     [
      1,
      800,
-     440,
-     2.0
+     450,
+     1.9
     ]
+   ],
+   "hl": [
+    {
+     "a": 23.5,
+     "b": 25.3,
+     "box": [
+      545,
+      570,
+      595,
+      615
+     ],
+     "kind": "click",
+     "label": "Three dots"
+    },
+    {
+     "a": 26.6,
+     "b": 27.8,
+     "box": [
+      630,
+      918,
+      820,
+      955
+     ],
+     "kind": "click",
+     "label": "Declare as record"
+    },
+    {
+     "a": 29.6,
+     "b": 31.4,
+     "box": [
+      420,
+      395,
+      930,
+      435
+     ],
+     "kind": "box",
+     "label": "The question"
+    },
+    {
+     "a": 30.3,
+     "b": 31.4,
+     "box": [
+      515,
+      452,
+      600,
+      485
+     ],
+     "kind": "ring",
+     "label": "No"
+    }
    ]
   },
-  "t": "E D R M S then asks one question. Does the digital record have a physical counterpart? Choose Yes if a paper version of this record also exists. Choose No if the record exists only in electronic form. In this example, the answer is No."
+  "t": "Step five. Physical counterpart. Click the three dots next to the file, and choose Declare as record. E D R M S asks one question. Does this record have a physical counterpart? Choose Yes if a paper copy of it also exists. Choose No if it exists only in electronic form. Here, the answer is No."
  },
  {
   "mg": null,
   "vid": {
+   "step": 6,
+   "side": "submit",
    "segs": [
     [
      31.3,
@@ -233,74 +409,96 @@
     [
      35.0,
      35.7
-    ]
-   ],
-   "c": [
-    800,
-    440
-   ],
-   "s": 1.6,
-   "step": 5,
-   "sec": "Submit",
-   "keys": [
-    [
-     0,
-     800,
-     440,
-     1.9
     ],
-    [
-     1,
-     800,
-     440,
-     1.9
-    ]
-   ]
-  },
-  "t": "The user clicks Submit, and waits a moment while E D R M S declares the file. A message then confirms that the file has been successfully declared as a record."
- },
- {
-  "mg": null,
-  "vid": {
-   "segs": [
     [
      37.8,
      40.0
     ]
    ],
-   "c": [
-    620,
-    620
-   ],
-   "s": 1.6,
-   "step": 6,
-   "sec": "Locked as a record",
    "keys": [
     [
      0,
-     862,
-     482,
-     1
+     800,
+     450,
+     1.9
     ],
     [
-     0.25,
+     0.55,
+     800,
+     450,
+     1.9
+    ],
+    [
+     0.7,
      640,
      660,
-     2.0
+     1.9
     ],
     [
      1,
      640,
      660,
-     2.0
+     1.9
     ]
+   ],
+   "hl": [
+    {
+     "a": 31.3,
+     "b": 31.8,
+     "box": [
+      1085,
+      515,
+      1170,
+      555
+     ],
+     "kind": "click",
+     "label": "Submit"
+    },
+    {
+     "a": 35.0,
+     "b": 35.7,
+     "box": [
+      600,
+      420,
+      1020,
+      525
+     ],
+     "kind": "box",
+     "label": "Declared"
+    },
+    {
+     "a": 37.8,
+     "b": 40.0,
+     "box": [
+      585,
+      645,
+      640,
+      690
+     ],
+     "kind": "ring",
+     "label": "Lock"
+    },
+    {
+     "a": 38.4,
+     "b": 40.0,
+     "box": [
+      880,
+      645,
+      1060,
+      690
+     ],
+     "kind": "box",
+     "label": "Now managed by EDRMS"
+    }
    ]
   },
-  "t": "Back in the library, the file now shows a lock icon. It is a record, and it can no longer be edited or deleted."
+  "t": "Step six. Submit. Click Submit, and wait a moment while E D R M S declares the file. When the message says the file has been successfully declared as a record, you are done. Back in the library, the file now shows a lock icon. A record is protected, so it can no longer be edited or deleted."
  },
  {
   "mg": null,
   "vid": {
+   "step": 7,
+   "side": "check",
    "segs": [
     [
      44.5,
@@ -311,13 +509,6 @@
      53.5
     ]
    ],
-   "c": [
-    800,
-    520
-   ],
-   "s": 1.35,
-   "step": 7,
-   "sec": "Record Management Review",
    "keys": [
     [
      0,
@@ -333,123 +524,126 @@
     ],
     [
      0.7,
-     862,
-     560,
-     1.1
+     600,
+     500,
+     1.5
     ],
     [
      1,
-     862,
-     560,
-     1.1
+     600,
+     500,
+     1.5
     ]
+   ],
+   "hl": [
+    {
+     "a": 45.5,
+     "b": 46.6,
+     "box": [
+      470,
+      575,
+      790,
+      610
+     ],
+     "kind": "click",
+     "label": "Record Management Review"
+    },
+    {
+     "a": 51.6,
+     "b": 53.5,
+     "box": [
+      270,
+      410,
+      625,
+      450
+     ],
+     "kind": "box",
+     "label": "Current view"
+    }
    ]
   },
-  "t": "To see the record details, the user switches to the Record Management Review view."
+  "t": "Step seven. Check the records. Switch the view to Record Management Review. Here you can check two important columns."
  },
  {
   "mg": null,
   "vid": {
+   "step": 7,
+   "side": "ret",
    "segs": [
     [
      53.5,
      56.5
     ]
    ],
-   "c": [
-    1060,
-    660
-   ],
-   "s": 1.7,
-   "step": 7,
-   "sec": "Retention label",
    "keys": [
     [
      0,
-     862,
-     560,
-     1.1
-    ],
-    [
-     0.15,
-     1040,
-     700,
-     1.9
-    ],
-    [
-     1,
-     1040,
-     700,
-     1.9
-    ]
-   ]
-  },
-  "t": "Here, the record columns are filled in. First, the retention label. The retention label depends on the library. Each library is mapped to a retention label, such as five, seven or ten years, or permanent. In this example, the record is kept for ten years after declaration."
- },
- {
-  "mg": null,
-  "vid": {
-   "segs": [
-    [
-     56.5,
-     66.0
-    ]
-   ],
-   "c": [
-    1000,
-    720
-   ],
-   "s": 1.5,
-   "step": 7,
-   "sec": "Record columns",
-   "keys": [
-    [
-     0,
-     862,
-     720,
-     1.1
+     860,
+     600,
+     1.2
     ],
     [
      0.12,
-     900,
-     760,
-     1.5
+     960,
+     700,
+     1.8
     ],
     [
      1,
-     900,
-     760,
-     1.5
+     960,
+     700,
+     1.8
     ]
+   ],
+   "hl": [
+    {
+     "a": 53.5,
+     "b": 56.5,
+     "box": [
+      850,
+      500,
+      1250,
+      540
+     ],
+     "kind": "box",
+     "label": "Retention label"
+    },
+    {
+     "a": 53.5,
+     "b": 56.5,
+     "box": [
+      855,
+      650,
+      1010,
+      895
+     ],
+     "kind": "spot",
+     "label": ""
+    }
    ]
   },
-  "t": "Next, the date and time the label was applied, and the due date for disposal, based on that retention period. Then, has physical counterpart, No. The retention schedule, Long Term. And a unique document I D for the record."
+  "t": "First, the retention label. It tells E D R M S how long the record must be kept. The label depends on the library. Each library is mapped to a retention label, such as five years, seven years, ten years, or permanent. This library keeps records for ten years after declaration."
  },
  {
   "mg": null,
   "vid": {
+   "step": 7,
+   "side": "sensBlank",
    "segs": [
     [
      53.5,
      56.5
     ]
    ],
-   "c": [
-    740,
-    660
-   ],
-   "s": 1.7,
-   "step": 7,
-   "sec": "Sensitivity label",
    "keys": [
     [
      0,
-     862,
-     560,
-     1.1
+     960,
+     700,
+     1.8
     ],
     [
-     0.15,
+     0.12,
      720,
      700,
      2.0
@@ -460,9 +654,40 @@
      700,
      2.0
     ]
+   ],
+   "hl": [
+    {
+     "a": 53.5,
+     "b": 56.5,
+     "box": [
+      640,
+      500,
+      840,
+      540
+     ],
+     "kind": "box",
+     "label": "Sensitivity"
+    },
+    {
+     "a": 53.5,
+     "b": 56.5,
+     "box": [
+      650,
+      650,
+      835,
+      895
+     ],
+     "kind": "spot",
+     "label": "Blank, as expected"
+    }
    ]
   },
-  "t": "You may notice the sensitivity label is blank. That is expected. In E D R M S, emails are classified as audiovisual records, and audiovisual records do not need a sensitivity label. Regular documents, such as Word or Excel files, do."
+  "t": "Second, the sensitivity label. For our email, it is blank, and that is expected, because audiovisual files do not need one. For a Word or Excel file, you would see its sensitivity label here."
+ },
+ {
+  "mg": "recap",
+  "vid": null,
+  "t": "And that is it. Seven steps, and the document is now an official A D B record."
  },
  {
   "mg": "series",
