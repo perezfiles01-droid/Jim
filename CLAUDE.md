@@ -55,6 +55,12 @@ https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx
 Upload the `.sppkg` there and choose **Replace**. (Set by the requester,
 22 Oct 2026. Do not send the `AppCatalog/Forms/AllItems.aspx` address.)
 
+## KT video series
+
+For any work on the EDRMS knowledge transfer videos, read
+**`video/KT_SERIES_SESSION_HANDOFF.txt`** first and follow it exactly. Part 1
+(`video/EDRMS_KT_Part1_Introduction.mp4`) is the approved reference for every part.
+
 ## Data sources
 
 Every utilization data source, held or still missing, is registered in
