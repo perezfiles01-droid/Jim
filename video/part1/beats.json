@@ -32,7 +32,7 @@
    "segs": [
     [
      2.0,
-     5.8
+     5.2
     ]
    ],
    "keys": [
@@ -136,23 +136,11 @@
       365
      ],
      "kind": "box",
-     "label": "Library: Jim Test 2"
-    },
-    {
-     "a": 10.6,
-     "b": 11.5,
-     "box": [
-      200,
-      570,
-      340,
-      615
-     ],
-     "kind": "box",
-     "label": "Folder"
+     "label": "Folder: Jim Test 2"
     }
    ]
   },
-  "t": "Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we use the library called Jim Test 2."
+  "t": "Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we open the folder called Jim Test 2."
  },
  {
   "mg": null,

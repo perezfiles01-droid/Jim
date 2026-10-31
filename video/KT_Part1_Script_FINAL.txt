@@ -10,7 +10,7 @@ So, how does a document become a record? It takes seven simple steps. Let us go 
 
 Step one. Open an E D R M S compliant site. This is a SharePoint site that is set up for records. You can see the E D R M S logo at the top.
 
-Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we use the library called Jim Test 2.
+Step two. Choose a library, and a folder if you need one. The menus at the top list the libraries on this site. Think of a library as a filing cabinet, and a folder as a drawer inside it. In this example, we open the folder called Jim Test 2.
 
 Step three. Create or upload the document. Click Create or upload, and choose your file. A message confirms the upload, and the new file appears in the list.
 

@@ -419,7 +419,7 @@ const SIDE = {
             <rect x="100" y={48 + j * 72} width="40" height="10" rx="5" fill="white" /></g>)}</svg>
         <div style={{ fontWeight: 800 }}>Library = filing cabinet</div>
         <div style={{ color: TEAL, fontWeight: 800, opacity: dr }}>Folder = drawer</div></Card>
-      <Card k={pop(f, at('jim test 2'))} style={{ textAlign: 'center' }}>This example: <b>Jim Test 2</b></Card></SideCol>; },
+      <Card k={pop(f, at('jim test 2'))} style={{ textAlign: 'center' }}>This example: folder <b>Jim Test 2</b></Card></SideCol>; },
   upload: ({ f, at }) => { const up = ease(f, at('choose your file'), 25);
     return <SideCol>
       <Card k={pop(f, 4)} style={{ textAlign: 'center', height: 330, position: 'relative' }}>

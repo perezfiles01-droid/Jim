@@ -33,7 +33,9 @@ Working rhythm, every part (never skip a gate):
   e. Build exactly like Part 1 (sections 5, 7, 8). Render stills, look at them,
      fix, then render the full video.
   f. Send the MP4 with SendUserFile (display: attach). Commit and merge to main.
-  g. Update video/KT_VIDEO_HANDOFF.md and this file with any new ruling.
+  g. Update this file (and video/KT_VIDEO_HANDOFF.md) with every new ruling, then
+     ALSO SEND THIS UPDATED HANDOFF FILE with SendUserFile right after EVERY
+     generated video. Requester's standing rule, 31 Oct 2026.
 
 Repo rule (CLAUDE.md): every change is committed, merged to main and pushed in
 the same turn. Never ask whether to publish. A stop hook also blocks ending a
@@ -47,7 +49,7 @@ a yes/no question. Give clickable links. Say plainly what was and was not checke
 ======================================================================
 1. THE SERIES
 ======================================================================
-Part 1  Introduction                                      DONE, approved
+Part 1  Introduction                                      DONE, approved (v3, 31 Oct)
         ADB, EDRMS, declaring a record in 7 steps (with the requester's
         recording), RAC / ITD / AvePoint, the release journey.
         Files: video/part1/, video/EDRMS_KT_Part1_Introduction.mp4 (6:27)
@@ -110,6 +112,9 @@ Declaring a record (Part 1 rulings, reuse wherever it comes up):
   Retention label depends on the library mapping: 5, 7, 10 years or permanent.
   Emails are classified as audiovisual, so their sensitivity label is blank.
   After declaration explain only the retention label and the sensitivity label.
+  In the recording, "Jim Test 2" is a FOLDER inside a library, not a library.
+  The library list is what the site's top menus drop down. Never call a
+  breadcrumb item a library without checking.
 
 ======================================================================
 3. PART 3 CONTENT: THE DELIVERY PROCESS (corrected against the deck)
@@ -196,6 +201,9 @@ them and send it (SendUserFile) for the requester to approve.
     ffmpeg -i f/o_%02d.png -vf tile=3x3 f/sheet_%d.png
 - Map every script line to source time ranges. Cut all dead time (loading,
   mouse wandering, file pickers).
+- Check the LAST frames of every segment at 0.25 s steps. A segment must end
+  before the next action starts: Part 1's step 1 ran 0.3 s too long, so a menu
+  dropped open and froze on screen while the narration talked about the logo.
 - Rewrite the script lines to match what is really on screen: real button
   names, real messages, real column names. If what is shown contradicts the
   narration, flag it and ask (Part 1: the "audiovisual" example was an email).
