@@ -283,7 +283,7 @@
      27.8
     ],
     [
-     29.6,
+     30.3,
      31.4
     ]
    ],
@@ -295,19 +295,19 @@
      1.9
     ],
     [
-     0.25,
+     0.12,
      620,
      600,
      1.9
     ],
     [
-     0.4,
+     0.2,
      730,
      700,
      1.3
     ],
     [
-     0.5,
+     0.31,
      800,
      450,
      1.9
@@ -345,7 +345,7 @@
      "label": "Declare as record"
     },
     {
-     "a": 29.6,
+     "a": 30.3,
      "b": 31.4,
      "box": [
       420,
@@ -357,7 +357,7 @@
      "label": "The question"
     },
     {
-     "a": 30.3,
+     "a": 31.3,
      "b": 31.4,
      "box": [
       515,
@@ -368,6 +368,10 @@
      "kind": "ring",
      "label": ""
     }
+   ],
+   "w": [
+    0.3,
+    0.7
    ]
   },
   "t": "Step five. Physical counterpart. Click the three dots next to the file, and choose Declare as record. E D R M S asks one question. Does this record have a physical counterpart? Choose Yes if a paper copy of it also exists. Choose No if it exists only in electronic form. Here, the answer is No."
@@ -477,8 +481,8 @@
    "side": "check",
    "segs": [
     [
-     44.5,
-     46.6
+     46.6,
+     48.0
     ],
     [
      51.6,
@@ -488,33 +492,33 @@
    "keys": [
     [
      0,
-     680,
+     640,
      560,
      1.8
     ],
     [
      0.5,
-     680,
+     640,
      560,
      1.8
     ],
     [
-     0.7,
+     0.65,
      600,
-     500,
+     480,
      1.5
     ],
     [
      1,
      600,
-     500,
+     480,
      1.5
     ]
    ],
    "hl": [
     {
-     "a": 45.5,
-     "b": 46.6,
+     "a": 46.75,
+     "b": 48.0,
      "box": [
       470,
       575,
@@ -536,6 +540,10 @@
      "kind": "box",
      "label": "Current view"
     }
+   ],
+   "w": [
+    0.55,
+    0.45
    ]
   },
   "t": "Step seven. Check the records. Switch the view to Record Management Review. Here you can check two important columns."

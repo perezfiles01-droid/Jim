@@ -480,10 +480,10 @@ const SIDE = {
 /* ---------- the recording ---------- */
 const SRC_W = 1724, SRC_H = 964, VW = 1190, VH = Math.round(VW * SRC_H / SRC_W), VX = 40, VY = 150;
 const plan = (v, n) => {
-  const raw = v.segs.map(([a, b]) => b - a), tot = raw.reduce((x, y) => x + y, 0);
+  const raw = v.segs.map(([a, b]) => b - a), wt = v.w || raw, tot = wt.reduce((x, y) => x + y, 0);  // w: share of the beat per segment, set to match the narration
   let from = 0;
   return v.segs.map(([a, b], i) => {
-    const d = Math.round((raw[i] / tot) * n), rate = Math.max(0.45, Math.min(2, (b - a) * FPS / d)), play = Math.min(d, Math.floor((b - a) * FPS / rate));
+    const d = Math.round((wt[i] / tot) * n), rate = Math.max(0.45, Math.min(2, (b - a) * FPS / d)), play = Math.min(d, Math.floor((b - a) * FPS / rate));
     const s = { a, b, at: from, d, rate, play }; from += d; return s;
   });
 };

@@ -204,6 +204,12 @@ them and send it (SendUserFile) for the requester to approve.
 - Check the LAST frames of every segment at 0.25 s steps. A segment must end
   before the next action starts: Part 1's step 1 ran 0.3 s too long, so a menu
   dropped open and froze on screen while the narration talked about the logo.
+- Time each segment to the NARRATION, not to its raw length: give a "vid" a
+  "w" list (share of the beat per segment, e.g. "w": [0.3, 0.7]). Without it,
+  screen time follows raw clip length, and in Part 1 a long menu clip stayed up
+  while the narration had already moved on to the physical counterpart question.
+  Start a segment after any "Loading..." has finished, and time each highlight
+  (a, b) to when the narration names it.
 - Rewrite the script lines to match what is really on screen: real button
   names, real messages, real column names. If what is shown contradicts the
   narration, flag it and ask (Part 1: the "audiovisual" example was an email).
@@ -239,6 +245,7 @@ Beat format (partN/beats.json):
   { "mg": "intro", "vid": null, "t": "<narration>" }
   { "mg": null, "vid": { "step": 3, "side": "upload",
       "segs": [[0.0, 2.0], [16.0, 20.5]],              source seconds to play
+      "w": [0.3, 0.7],                                 share of the beat per segment
       "keys": [[0, 1300, 450, 1.6], [1, 800, 700, 1.3]],  [fraction, cx, cy, scale]
       "hl": [{ "a": 16.0, "b": 19.9, "box": [517, 814, 1099, 936],
                "kind": "box|ring|click|spot", "label": "Upload confirmed" }] },
