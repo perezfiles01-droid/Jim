@@ -25,6 +25,31 @@ Final narration: `video/KT_Release2026.4_Script_FINAL.txt`.
 5. Every change is committed, merged to `main` and pushed in the same turn
    (CLAUDE.md rule). Send the finished video with SendUserFile.
 
+## 0a. Voice and series (updated 31 October 2026, read this before section 2)
+
+- **Voice: Kokoro, `am_michael`, free and local.** The requester chose it over
+  ElevenLabs. No credits, so re-voicing is free. Script: `part1/narrate_kokoro.py`.
+  Model and voice download from Hugging Face into `part1/tts/` (gitignored):
+  `onnx-community/Kokoro-82M-v1.0-ONNX`, files `onnx/model_quantized.onnx` and
+  `voices/am_michael.bin`. Voicing 27 beats takes about 10 minutes on CPU.
+- **The KT is now a 5 part series**: 1 Introduction, 2 The release journey,
+  3 How a release is delivered (requirements to hypercare), 4 Release 2026.4
+  Utilization Report, 5 Files, tools and sites. Source deck for the releases:
+  the requester's "EDRMS Project Update, October 2026".
+- **Screen recordings from the requester**: they upload them as GitHub release
+  assets (normal upload caps at 25 MB), e.g.
+  `releases/download/scene5/scene.5.mp4`. Download, take frames every 2 s with
+  timestamps, map each script line to a time range, cut out the dead time, then
+  rewrite the script lines to match what is actually on screen.
+- **Part 1** lives in `part1/` (its own Remotion entry, `--public-dir=part1/public`).
+  Video beats carry `vid: {segs, c, s, step, sec}`: source time ranges, zoom
+  centre in source pixels, zoom scale. Render:
+  `npx remotion render part1/src/index.jsx Part1 out.mp4 --public-dir=part1/public --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell`
+- Requester's rulings for Part 1: no "Thanks for watching"; emails are classified
+  as audiovisual records so need no sensitivity label; retention label depends on
+  the library mapping (5, 7, 10 years or permanent); declared records are locked
+  and cannot be edited or deleted; no need to blur names.
+
 ---
 
 ## 1. Workflow, in order

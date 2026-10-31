@@ -1,0 +1,324 @@
+[
+ {
+  "mg": "intro",
+  "vid": null,
+  "t": "Welcome. This is part one of the E D R M S knowledge transfer series. In the next few minutes, you will learn what A D B is, what the E D R M S project is about, how a record is declared, who is involved, and the releases we have delivered so far.",
+  "seconds": 18.794666666666668
+ },
+ {
+  "mg": "adb",
+  "vid": null,
+  "t": "A D B is the Asian Development Bank. It is an international development bank based in Manila, with departments at headquarters, resident missions in its member countries, and representative offices around the world.",
+  "seconds": 14.4
+ },
+ {
+  "mg": "records",
+  "vid": null,
+  "t": "Like any large organization, A D B creates thousands of documents every day. Some of these are important enough to keep as official records. Records must be stored safely, kept for the right length of time, and disposed of when that time is over.",
+  "seconds": 16.768
+ },
+ {
+  "mg": "edrms",
+  "vid": null,
+  "t": "This is where E D R M S comes in. E D R M S stands for Electronic Document and Records Management System. It is built by AvePoint on top of SharePoint and Microsoft 365, the tools A D B users already work in every day.",
+  "seconds": 18.666666666666668
+ },
+ {
+  "mg": "howto",
+  "vid": null,
+  "t": "Let us see how a user declares a record.",
+  "seconds": 2.5813333333333333
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     6.0,
+     10.0
+    ],
+    [
+     2.0,
+     4.0
+    ]
+   ],
+   "c": [
+    450,
+    420
+   ],
+   "s": 1.35,
+   "step": 1,
+   "sec": "Open the library"
+  },
+  "t": "First, the user opens an E D R M S compliant site. The menus at the top list the libraries. The user picks the library where the document belongs.",
+  "seconds": 11.221333333333334
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     0.0,
+     2.0
+    ],
+    [
+     16.0,
+     20.5
+    ]
+   ],
+   "c": [
+    1150,
+    420
+   ],
+   "s": 1.2,
+   "step": 2,
+   "sec": "Upload"
+  },
+  "t": "Next, the user clicks Create or upload, and uploads the file. It can go straight into the library, or into any folder inside it.",
+  "seconds": 8.917333333333334
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     20.5,
+     22.0
+    ],
+    [
+     23.5,
+     27.8
+    ]
+   ],
+   "c": [
+    700,
+    560
+   ],
+   "s": 1.35,
+   "step": 3,
+   "sec": "Declare as record"
+  },
+  "t": "The file now appears in the library. To declare it, the user clicks the three dots next to the file, and chooses Declare as record.",
+  "seconds": 8.597333333333333
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     29.6,
+     31.4
+    ]
+   ],
+   "c": [
+    800,
+    440
+   ],
+   "s": 1.8,
+   "step": 4,
+   "sec": "Physical counterpart"
+  },
+  "t": "E D R M S then asks one question. Does the digital record have a physical counterpart? Choose Yes if a paper version of this record also exists. Choose No if the record exists only in electronic form. In this example, the answer is No.",
+  "seconds": 18.090666666666667
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     31.3,
+     33.0
+    ],
+    [
+     35.0,
+     35.7
+    ]
+   ],
+   "c": [
+    800,
+    440
+   ],
+   "s": 1.6,
+   "step": 5,
+   "sec": "Submit"
+  },
+  "t": "The user clicks Submit, and waits a moment while E D R M S declares the file. A message then confirms that the file has been successfully declared as a record.",
+  "seconds": 11.221333333333334
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     37.8,
+     40.0
+    ]
+   ],
+   "c": [
+    620,
+    620
+   ],
+   "s": 1.6,
+   "step": 6,
+   "sec": "Locked as a record"
+  },
+  "t": "Back in the library, the file now shows a lock icon. It is a record, and it can no longer be edited or deleted.",
+  "seconds": 7.978666666666666
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     45.5,
+     47.5
+    ],
+    [
+     51.6,
+     53.5
+    ]
+   ],
+   "c": [
+    800,
+    520
+   ],
+   "s": 1.35,
+   "step": 7,
+   "sec": "Record Management Review"
+  },
+  "t": "To see the record details, the user switches to the Record Management Review view.",
+  "seconds": 5.056
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     53.5,
+     56.5
+    ]
+   ],
+   "c": [
+    1060,
+    660
+   ],
+   "s": 1.7,
+   "step": 7,
+   "sec": "Retention label"
+  },
+  "t": "Here, the record columns are filled in. First, the retention label. The retention label depends on the library. Each library is mapped to a retention label, such as five, seven or ten years, or permanent. In this example, the record is kept for ten years after declaration.",
+  "seconds": 18.432
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     56.5,
+     66.0
+    ]
+   ],
+   "c": [
+    1000,
+    720
+   ],
+   "s": 1.5,
+   "step": 7,
+   "sec": "Record columns"
+  },
+  "t": "Next, the date and time the label was applied, and the due date for disposal, based on that retention period. Then, has physical counterpart, No. The retention schedule, Long Term. And a unique document I D for the record.",
+  "seconds": 15.253333333333334
+ },
+ {
+  "mg": null,
+  "vid": {
+   "segs": [
+    [
+     53.5,
+     56.5
+    ]
+   ],
+   "c": [
+    740,
+    660
+   ],
+   "s": 1.7,
+   "step": 7,
+   "sec": "Sensitivity label"
+  },
+  "t": "You may notice the sensitivity label is blank. That is expected. In E D R M S, emails are classified as audiovisual records, and audiovisual records do not need a sensitivity label. Regular documents, such as Word or Excel files, do.",
+  "seconds": 18.496
+ },
+ {
+  "mg": "series",
+  "vid": null,
+  "t": "The project is delivered as a series of releases. Each release adds one capability, is tested by A D B, and then goes live. This way, A D B gets value step by step, instead of waiting for one big launch.",
+  "seconds": 15.104
+ },
+ {
+  "mg": "groups",
+  "vid": null,
+  "t": "There are three main groups working on this project. The first is R A C, the records team at A D B. They own the requirements and confirm what each release must do.",
+  "seconds": 11.242666666666667
+ },
+ {
+  "mg": "groups",
+  "vid": null,
+  "t": "The second is I T D, the IT department at A D B. They support the rollout, and their T C S Q A team tests every release before it reaches users.",
+  "seconds": 11.178666666666667
+ },
+ {
+  "mg": "groups",
+  "vid": null,
+  "t": "The third is AvePoint, the delivery team. AvePoint business analysts gather and write the requirements, developers build each release, and AvePoint Q A tests it first.",
+  "seconds": 12.117333333333333
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "Now, let us look at the releases. The first release went live in April 2025. Release one point one delivered site and library creation and records declaration, together with the Cloud Governance setup.",
+  "seconds": 14.912
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "In November 2025, Release one point two point one added multimedia records declaration, and disabled the native retention label option, so labels are applied the E D R M S way.",
+  "seconds": 15.104
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "From 2026, releases are numbered by year. Release twenty twenty six point one, in January, added multiple records declaration. Users can now declare many documents at once.",
+  "seconds": 13.930666666666667
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "Release twenty twenty six point two, in March, added centralized records declaration. Records can be declared and kept in a central location, not only in the site where they were created.",
+  "seconds": 12.778666666666666
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "Release twenty twenty six point three, in June, added email records declaration from Outlook. Its enhancement, release twenty twenty six point three point one, is in progress now.",
+  "seconds": 12.992
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "The current release is twenty twenty six point four, the E D R M S Utilization Report. It shows how departments are using E D R M S, and is planned to go live in December 2026.",
+  "seconds": 14.826666666666666
+ },
+ {
+  "mg": "rel",
+  "vid": null,
+  "t": "After that comes physical records management, now on hold, followed by items on the roadmap such as retention label mapping, records disposition, and site renewal.",
+  "seconds": 11.690666666666667
+ },
+ {
+  "mg": "outro",
+  "vid": null,
+  "t": "That is the big picture. In part two, we will walk through each release in more detail, and what comes next.",
+  "seconds": 6.954666666666666
+ }
+]

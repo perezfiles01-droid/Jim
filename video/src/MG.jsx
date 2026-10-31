@@ -9,14 +9,14 @@ export const INK = '#10243E', BLUE = '#0072BC', TEAL = '#00A5A8', ADB = '#194F8E
 export const FONT = 'Segoe UI, Helvetica, Arial, sans-serif';
 const FPS = 30;
 
-const pop = (f, s, d = 14) => spring({ frame: f - s, fps: FPS, config: { damping: d, stiffness: 120 } });
-const ease = (f, s, len = 20) => interpolate(f, [s, s + len], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-const In = ({ k, children, y = 30, style }) => (
+export const pop = (f, s, d = 14) => spring({ frame: f - s, fps: FPS, config: { damping: d, stiffness: 120 } });
+export const ease = (f, s, len = 20) => interpolate(f, [s, s + len], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+export const In = ({ k, children, y = 30, style }) => (
   <div style={{ opacity: Math.min(1, k * 1.4), transform: `translateY(${(1 - k) * y}px) scale(${0.85 + 0.15 * k})`, ...style }}>{children}</div>
 );
 
 /* ---------- icons ---------- */
-const Doc = ({ s = 90, c = BLUE, lock, paper }) => (
+export const Doc = ({ s = 90, c = BLUE, lock, paper }) => (
   <svg width={s} height={s * 1.2} viewBox="0 0 100 120">
     {paper && <rect x="18" y="14" width="74" height="96" rx="6" fill={PAPER} transform="rotate(8 55 62)" />}
     <path d="M10 6h55l25 25v83a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V12a6 6 0 0 1 6-6z" fill="white" stroke={c} strokeWidth="5" />
@@ -26,35 +26,35 @@ const Doc = ({ s = 90, c = BLUE, lock, paper }) => (
       <path d="M-7 -3v-6a7 7 0 0 1 14 0v6" stroke="white" strokeWidth="4" fill="none" /></g>}
   </svg>
 );
-const User = ({ s = 80, c = TEAL }) => (
+export const User = ({ s = 80, c = TEAL }) => (
   <svg width={s} height={s} viewBox="0 0 100 100"><circle cx="50" cy="32" r="20" fill={c} /><path d="M12 92c4-24 20-34 38-34s34 10 38 34z" fill={c} /></svg>
 );
-const Site = ({ s = 130, c = BLUE }) => (
+export const Site = ({ s = 130, c = BLUE }) => (
   <svg width={s} height={s * 0.78} viewBox="0 0 130 100"><rect x="3" y="3" width="124" height="94" rx="10" fill="white" stroke={c} strokeWidth="5" />
     <rect x="3" y="3" width="124" height="22" rx="10" fill={c} />{[12, 22, 32].map(x => <circle key={x} cx={x} cy="14" r="3.5" fill="white" />)}
     <rect x="16" y="38" width="44" height="46" rx="5" fill={c} opacity=".25" /><rect x="70" y="40" width="44" height="7" rx="3" fill={c} opacity=".4" />
     <rect x="70" y="56" width="36" height="7" rx="3" fill={c} opacity=".4" /><rect x="70" y="72" width="40" height="7" rx="3" fill={c} opacity=".4" /></svg>
 );
-const DB = ({ s = 100, c = ADB }) => (
+export const DB = ({ s = 100, c = ADB }) => (
   <svg width={s} height={s * 1.15} viewBox="0 0 100 115">
     <path d="M8 18v80c0 9 19 15 42 15s42-6 42-15V18" fill={c} />
     {[45, 72].map(y => <path key={y} d={`M8 ${y}c0 9 19 15 42 15s42-6 42-15`} fill="none" stroke="white" strokeWidth="3" opacity=".5" />)}
     <ellipse cx="50" cy="18" rx="42" ry="15" fill="#3C74B8" /></svg>
 );
-const Mail = ({ s = 100, c = BLUE }) => (
+export const Mail = ({ s = 100, c = BLUE }) => (
   <svg width={s} height={s * 0.72} viewBox="0 0 100 72"><rect x="3" y="3" width="94" height="66" rx="8" fill="white" stroke={c} strokeWidth="5" />
     <path d="M6 8l44 34 44-34" fill="none" stroke={c} strokeWidth="5" /></svg>
 );
-const Bank = ({ s = 110, c = 'white' }) => (
+export const Bank = ({ s = 110, c = 'white' }) => (
   <svg width={s} height={s} viewBox="0 0 100 100"><path d="M50 6L6 28h88z" fill={c} />{[16, 34, 52, 70].map(x => <rect key={x} x={x} y="34" width="12" height="42" fill={c} />)}
     <rect x="6" y="80" width="88" height="12" fill={c} /></svg>
 );
-const Cal = ({ s = 70, c = BLUE }) => (
+export const Cal = ({ s = 70, c = BLUE }) => (
   <svg width={s} height={s} viewBox="0 0 100 100"><rect x="6" y="14" width="88" height="80" rx="10" fill="white" stroke={c} strokeWidth="5" />
     <rect x="6" y="14" width="88" height="22" rx="10" fill={c} /><rect x="24" y="4" width="8" height="20" rx="4" fill={c} /><rect x="68" y="4" width="8" height="20" rx="4" fill={c} />
     {[0, 1, 2, 3].map(i => [0, 1, 2].map(j => <rect key={i + '' + j} x={18 + i * 18} y={46 + j * 15} width="11" height="9" rx="2" fill={c} opacity={i === 2 && j === 1 ? 1 : .3} />))}</svg>
 );
-const Badge = ({ label, c, s = 120 }) => (
+export const Badge = ({ label, c, s = 120 }) => (
   <svg width={s} height={s * 1.2} viewBox="0 0 100 120"><path d="M10 4h58l26 26v82a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6V10a6 6 0 0 1 6-6z" fill="white" stroke={c} strokeWidth="5" />
     <rect x="-2" y="56" width="74" height="38" rx="6" fill={c} /><text x="35" y="83" fill="white" fontSize="24" fontWeight="800" textAnchor="middle" fontFamily={FONT}>{label}</text></svg>
 );
