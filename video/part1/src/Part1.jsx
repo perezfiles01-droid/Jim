@@ -2,7 +2,7 @@ import React from 'react';
 /* KT Part 1: Introduction. Full screen motion graphics for the story beats,
    and cut, zoomed clips of the declaration recording (public/scene5.mp4) for
    the step by step beats. Every beat lasts as long as its voiceover. */
-import { AbsoluteFill, Audio, Freeze, OffthreadVideo, Sequence, interpolate, spring,
+import { AbsoluteFill, Audio, Easing, Freeze, OffthreadVideo, Sequence, interpolate, spring,
   staticFile, useCurrentFrame } from 'remotion';
 import BEATS from './beats.gen.json';
 import { INK, BLUE, TEAL, ADB, GREEN, SOFT, PAPER, FONT, pop, ease, In,
@@ -15,9 +15,9 @@ export const TOTAL = START.at(-1) + len(BEATS.at(-1));
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' };
 
 /* ---------- shared pieces ---------- */
-const Back = ({ children }) => (
+const Back = ({ children, big = true }) => (
   <AbsoluteFill style={{ background: `radial-gradient(circle at 25% 15%, #1B3A63 0%, ${INK} 65%)`,
-    fontFamily: FONT, color: 'white' }}>{children}</AbsoluteFill>
+    fontFamily: FONT, color: 'white' }}><AbsoluteFill style={{ transform: `scale(${big ? 1.22 : 1})` }}>{children}</AbsoluteFill></AbsoluteFill>
 );
 const Title = ({ k, children, size = 64, color = 'white' }) => (
   <In k={k}><div style={{ fontSize: size, fontWeight: 700, color, textAlign: 'center' }}>{children}</div></In>
@@ -153,7 +153,7 @@ const RELS = [
 const Rel = ({ f, idx, first }) => {
   const col = s => s === 'done' ? GREEN : s === 'now' ? TEAL : PAPER;
   return (
-    <Back>
+    <Back big={false}>
       <div style={{ position: 'absolute', top: 70, width: '100%', textAlign: 'center' }}>
         <Title k={first ? pop(f, 0) : 1} size={64}>Releases so far</Title></div>
       <div style={{ position: 'absolute', left: 120, right: 120, top: 330, height: 6, background: 'rgba(255,255,255,.15)' }}>
@@ -194,14 +194,17 @@ const Outro = ({ f }) => (
 const FULL = { intro: Intro, adb: Adb, records: Records, edrms: Edrms, howto: HowTo, series: Series, groups: Groups, rel: Rel, outro: Outro };
 
 /* ---------- the recording ---------- */
-const VW = 1600, VH = Math.round(VW * 964 / 1724), VX = (W - VW) / 2, VY = 112, SRC_W = 1724, SRC_H = 964;
+const VW = 1760, VH = Math.round(VW * 964 / 1724), VX = (W - VW) / 2, VY = 96, SRC_W = 1724, SRC_H = 964;
 const Clip = ({ v, n }) => {
   const f = useCurrentFrame();
   const segs = v.segs, raw = segs.map(([a, b]) => b - a), tot = raw.reduce((a, b) => a + b, 0);
   const alloc = raw.map(r => Math.round((r / tot) * n));
   let from = 0;
-  const z = spring({ frame: f - 6, fps: FPS, config: { damping: 200 } }), s = 1 + (v.s - 1) * z;
-  const k = VW / SRC_W, cx = SRC_W / 2 + (v.c[0] - SRC_W / 2) * z, cy = SRC_H / 2 + (v.c[1] - SRC_H / 2) * z;
+  /* Camera: keyframes [fraction of beat, centre x, centre y, scale] in source pixels. */
+  const K = v.keys || [[0, SRC_W / 2, SRC_H / 2, 1], [0.12, ...v.c, v.s], [1, ...v.c, v.s]];
+  const t = K.map(k => k[0] * n), o = { ...clamp, easing: Easing.inOut(Easing.cubic) };
+  const cx = interpolate(f, t, K.map(k => k[1]), o), cy = interpolate(f, t, K.map(k => k[2]), o), s = interpolate(f, t, K.map(k => k[3]), o);
+  const k = VW / SRC_W;
   const tx = Math.min(0, Math.max(VW - SRC_W * k * s, VW / 2 - cx * k * s));
   const ty = Math.min(0, Math.max(VH - SRC_H * k * s, VH / 2 - cy * k * s));
   return (
@@ -272,7 +275,7 @@ export const Part1 = () => {
     <AbsoluteFill style={{ background: INK }}>
       <AbsoluteFill style={{ opacity: fade }}>
         {b.mg ? <Full f={lf} n={n} at={atFor(i)} idx={idx} first={!p || p.mg !== b.mg} />
-          : <Back><Sequence from={START[i]} durationInFrames={n} layout="none"><Clip v={b.vid} n={n} /></Sequence>
+          : <Back big={false}><Sequence from={START[i]} durationInFrames={n} layout="none"><Clip v={b.vid} n={n} /></Sequence>
             <StepChip v={b.vid} f={lf} fresh={!p || !p.vid || p.vid.sec !== b.vid.sec} /></Back>}
         <Subtitle text={b.t} f={lf} n={n} />
       </AbsoluteFill>

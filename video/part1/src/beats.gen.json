@@ -48,7 +48,39 @@
    ],
    "s": 1.35,
    "step": 1,
-   "sec": "Open the library"
+   "sec": "Open the library",
+   "keys": [
+    [
+     0,
+     862,
+     482,
+     1
+    ],
+    [
+     0.15,
+     330,
+     520,
+     1.7
+    ],
+    [
+     0.45,
+     600,
+     420,
+     1.7
+    ],
+    [
+     0.72,
+     862,
+     482,
+     1.1
+    ],
+    [
+     1,
+     862,
+     482,
+     1.1
+    ]
+   ]
   },
   "t": "First, the user opens an E D R M S compliant site. The menus at the top list the libraries. The user picks the library where the document belongs.",
   "seconds": 11.221333333333334
@@ -72,7 +104,33 @@
    ],
    "s": 1.2,
    "step": 2,
-   "sec": "Upload"
+   "sec": "Upload",
+   "keys": [
+    [
+     0,
+     1250,
+     480,
+     1.7
+    ],
+    [
+     0.3,
+     1250,
+     480,
+     1.7
+    ],
+    [
+     0.45,
+     800,
+     700,
+     1.35
+    ],
+    [
+     1,
+     800,
+     700,
+     1.35
+    ]
+   ]
   },
   "t": "Next, the user clicks Create or upload, and uploads the file. It can go straight into the library, or into any folder inside it.",
   "seconds": 8.917333333333334
@@ -96,7 +154,39 @@
    ],
    "s": 1.35,
    "step": 3,
-   "sec": "Declare as record"
+   "sec": "Declare as record",
+   "keys": [
+    [
+     0,
+     620,
+     600,
+     1.9
+    ],
+    [
+     0.4,
+     620,
+     600,
+     1.9
+    ],
+    [
+     0.55,
+     730,
+     520,
+     1.2
+    ],
+    [
+     0.8,
+     730,
+     800,
+     1.7
+    ],
+    [
+     1,
+     730,
+     800,
+     1.7
+    ]
+   ]
   },
   "t": "The file now appears in the library. To declare it, the user clicks the three dots next to the file, and chooses Declare as record.",
   "seconds": 8.597333333333333
@@ -116,7 +206,27 @@
    ],
    "s": 1.8,
    "step": 4,
-   "sec": "Physical counterpart"
+   "sec": "Physical counterpart",
+   "keys": [
+    [
+     0,
+     800,
+     440,
+     1.3
+    ],
+    [
+     0.15,
+     800,
+     440,
+     2.0
+    ],
+    [
+     1,
+     800,
+     440,
+     2.0
+    ]
+   ]
   },
   "t": "E D R M S then asks one question. Does the digital record have a physical counterpart? Choose Yes if a paper version of this record also exists. Choose No if the record exists only in electronic form. In this example, the answer is No.",
   "seconds": 18.090666666666667
@@ -140,7 +250,21 @@
    ],
    "s": 1.6,
    "step": 5,
-   "sec": "Submit"
+   "sec": "Submit",
+   "keys": [
+    [
+     0,
+     800,
+     440,
+     1.9
+    ],
+    [
+     1,
+     800,
+     440,
+     1.9
+    ]
+   ]
   },
   "t": "The user clicks Submit, and waits a moment while E D R M S declares the file. A message then confirms that the file has been successfully declared as a record.",
   "seconds": 11.221333333333334
@@ -160,7 +284,27 @@
    ],
    "s": 1.6,
    "step": 6,
-   "sec": "Locked as a record"
+   "sec": "Locked as a record",
+   "keys": [
+    [
+     0,
+     862,
+     482,
+     1
+    ],
+    [
+     0.25,
+     640,
+     660,
+     2.0
+    ],
+    [
+     1,
+     640,
+     660,
+     2.0
+    ]
+   ]
   },
   "t": "Back in the library, the file now shows a lock icon. It is a record, and it can no longer be edited or deleted.",
   "seconds": 7.978666666666666
@@ -170,8 +314,8 @@
   "vid": {
    "segs": [
     [
-     45.5,
-     47.5
+     44.5,
+     46.6
     ],
     [
      51.6,
@@ -184,7 +328,33 @@
    ],
    "s": 1.35,
    "step": 7,
-   "sec": "Record Management Review"
+   "sec": "Record Management Review",
+   "keys": [
+    [
+     0,
+     680,
+     560,
+     1.8
+    ],
+    [
+     0.5,
+     680,
+     560,
+     1.8
+    ],
+    [
+     0.7,
+     862,
+     560,
+     1.1
+    ],
+    [
+     1,
+     862,
+     560,
+     1.1
+    ]
+   ]
   },
   "t": "To see the record details, the user switches to the Record Management Review view.",
   "seconds": 5.056
@@ -204,7 +374,27 @@
    ],
    "s": 1.7,
    "step": 7,
-   "sec": "Retention label"
+   "sec": "Retention label",
+   "keys": [
+    [
+     0,
+     862,
+     560,
+     1.1
+    ],
+    [
+     0.15,
+     1040,
+     700,
+     1.9
+    ],
+    [
+     1,
+     1040,
+     700,
+     1.9
+    ]
+   ]
   },
   "t": "Here, the record columns are filled in. First, the retention label. The retention label depends on the library. Each library is mapped to a retention label, such as five, seven or ten years, or permanent. In this example, the record is kept for ten years after declaration.",
   "seconds": 18.432
@@ -224,7 +414,27 @@
    ],
    "s": 1.5,
    "step": 7,
-   "sec": "Record columns"
+   "sec": "Record columns",
+   "keys": [
+    [
+     0,
+     862,
+     720,
+     1.1
+    ],
+    [
+     0.12,
+     900,
+     760,
+     1.5
+    ],
+    [
+     1,
+     900,
+     760,
+     1.5
+    ]
+   ]
   },
   "t": "Next, the date and time the label was applied, and the due date for disposal, based on that retention period. Then, has physical counterpart, No. The retention schedule, Long Term. And a unique document I D for the record.",
   "seconds": 15.253333333333334
@@ -244,7 +454,27 @@
    ],
    "s": 1.7,
    "step": 7,
-   "sec": "Sensitivity label"
+   "sec": "Sensitivity label",
+   "keys": [
+    [
+     0,
+     862,
+     560,
+     1.1
+    ],
+    [
+     0.15,
+     720,
+     700,
+     2.0
+    ],
+    [
+     1,
+     720,
+     700,
+     2.0
+    ]
+   ]
   },
   "t": "You may notice the sensitivity label is blank. That is expected. In E D R M S, emails are classified as audiovisual records, and audiovisual records do not need a sensitivity label. Regular documents, such as Word or Excel files, do.",
   "seconds": 18.496
