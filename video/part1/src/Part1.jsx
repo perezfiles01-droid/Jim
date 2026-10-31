@@ -74,7 +74,6 @@ const Slam = ({ f, s, children, c = 'white', size = 120, rot = 0 }) => {
 };
 const Intro = ({ f, at }) => {
   const ans = at('that is what'), wel = at('welcome'), col = ease(f, ans, 14);
-  const cnt = Math.round(interpolate(f, [4, at('which')], [0, 4000], clamp));
   return (
     <Back big={false}>
       {Array.from({ length: 34 }, (_, i) => {
@@ -85,8 +84,8 @@ const Intro = ({ f, at }) => {
       })}
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', opacity: 1 - col }}>
         <div style={{ background: 'rgba(16,36,62,.85)', padding: '20px 50px', borderRadius: 24, textAlign: 'center', opacity: ease(f, 6, 10) }}>
-          <div style={{ fontSize: 120, fontWeight: 900, color: TEAL }}>{cnt.toLocaleString('en-US')}+</div>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>documents a day at ADB</div></div>
+          <div style={{ fontSize: 110, fontWeight: 900, color: TEAL, transform: `scale(${1 + 0.04 * Math.sin(f / 3)})` }}>Thousands</div>
+          <div style={{ fontSize: 40, fontWeight: 700 }}>of documents, every day, at ADB</div></div>
       </AbsoluteFill>
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', opacity: 1 - col }}>
         <div style={{ position: 'absolute', left: 170, top: 140 }}><Slam f={f} s={at('kept?')} c={AMBER} rot={-8}>Keep?</Slam></div>
@@ -324,9 +323,9 @@ const Stage = ({ i, f, at }) => {
         <Gear f={f} s={80} /><div style={{ fontSize: 28 }}>2026.3.1<br /><span style={{ color: TEAL, fontWeight: 800 }}>in progress</span></div></div></In></div>; }
   if (i === 5) { const g = ease(f, 20, 40);
     return <div style={box}><In k={k(0)}><div style={{ width: 640, height: 280, borderRadius: 18, background: 'white', padding: 22, display: 'flex', gap: 22 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>{[['Sites', 1032], ['Records', 21646]].map(([t, v]) =>
-        <div key={t} style={{ width: 170, padding: 14, borderRadius: 12, background: '#EAF3FB', color: INK }}>
-          <div style={{ fontSize: 20 }}>{t}</div><div style={{ fontSize: 38, fontWeight: 800, color: BLUE }}>{Math.round(v * g).toLocaleString('en-US')}</div></div>)}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>{['Sites', 'Documents', 'Records'].map((t, j) =>
+        <div key={t} style={{ width: 170, padding: 12, borderRadius: 12, background: '#EAF3FB', color: INK }}>
+          <div style={{ fontSize: 20 }}>{t}</div><div style={{ height: 12, marginTop: 8, borderRadius: 6, background: BLUE, width: `${(40 + j * 25) * g}%` }} /></div>)}</div>
       <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 14, borderBottom: '3px solid #C9D6E3' }}>
         {[0.5, 0.8, 0.35, 0.95, 0.6, 0.75].map((h, j) => <div key={j} style={{ flex: 1, height: `${h * 100 * ease(f, 24 + j * 5, 25)}%`,
           background: j === 3 ? TEAL : BLUE, borderRadius: '6px 6px 0 0' }} />)}</div></div></In>

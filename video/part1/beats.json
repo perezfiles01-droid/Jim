@@ -124,7 +124,7 @@
       262
      ],
      "kind": "ring",
-     "label": "More libraries"
+     "label": ""
     },
     {
      "a": 10.0,
@@ -207,18 +207,6 @@
      ],
      "kind": "click",
      "label": "Create or upload"
-    },
-    {
-     "a": 0.6,
-     "b": 2.0,
-     "box": [
-      1130,
-      370,
-      1420,
-      412
-     ],
-     "kind": "ring",
-     "label": "Files upload"
     },
     {
      "a": 16.0,
@@ -390,7 +378,7 @@
       485
      ],
      "kind": "ring",
-     "label": "No"
+     "label": ""
     }
    ]
   },
@@ -488,7 +476,7 @@
       690
      ],
      "kind": "box",
-     "label": "Now managed by EDRMS"
+     "label": "EDRMS"
     }
    ]
   },
