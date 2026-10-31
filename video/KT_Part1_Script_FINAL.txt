@@ -1,10 +1,10 @@
-Welcome. This is part one of the E D R M S knowledge transfer series. In the next few minutes, you will learn what A D B is, what the E D R M S project is about, how a record is declared, who is involved, and the releases we have delivered so far.
+Every day, A D B creates thousands of documents. Which ones must be kept? For how long? And how? That is what E D R M S is for. Welcome to part one of the E D R M S knowledge transfer series.
 
-A D B is the Asian Development Bank. It is an international development bank based in Manila, with departments at headquarters, resident missions in its member countries, and representative offices around the world.
+A D B is the Asian Development Bank, based in Manila, with resident missions and offices around the world.
 
-Like any large organization, A D B creates thousands of documents every day. Some of these are important enough to keep as official records. Records must be stored safely, kept for the right length of time, and disposed of when that time is over.
+Some of its documents are important enough to become official records. Records must be kept safe, kept for the right length of time, and disposed of when that time is over.
 
-This is where E D R M S comes in. E D R M S stands for Electronic Document and Records Management System. It is built by AvePoint on top of SharePoint and Microsoft 365, the tools A D B users already work in every day.
+E D R M S, the Electronic Document and Records Management System, does exactly that. It is built by AvePoint, on SharePoint and Microsoft 365, the tools A D B users already use every day.
 
 So, how does a document become a record? It takes seven simple steps. Let us go through them one by one.
 

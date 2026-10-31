@@ -25,30 +25,127 @@ Final narration: `video/KT_Release2026.4_Script_FINAL.txt`.
 5. Every change is committed, merged to `main` and pushed in the same turn
    (CLAUDE.md rule). Send the finished video with SendUserFile.
 
-## 0a. Voice and series (updated 31 October 2026, read this before section 2)
+## 0a. KT SERIES (from 31 October 2026). READ THIS BEFORE ANYTHING BELOW
 
-- **Voice: Kokoro, `am_michael`, free and local.** The requester chose it over
-  ElevenLabs. No credits, so re-voicing is free. Script: `part1/narrate_kokoro.py`.
-  Model and voice download from Hugging Face into `part1/tts/` (gitignored):
-  `onnx-community/Kokoro-82M-v1.0-ONNX`, files `onnx/model_quantized.onnx` and
-  `voices/am_michael.bin`. Voicing 27 beats takes about 10 minutes on CPU.
-- **The KT is now a 5 part series**: 1 Introduction, 2 The release journey,
-  3 How a release is delivered (requirements to hypercare), 4 Release 2026.4
-  Utilization Report, 5 Files, tools and sites. Source deck for the releases:
-  the requester's "EDRMS Project Update, October 2026".
-- **Screen recordings from the requester**: they upload them as GitHub release
-  assets (normal upload caps at 25 MB), e.g.
-  `releases/download/scene5/scene.5.mp4`. Download, take frames every 2 s with
-  timestamps, map each script line to a time range, cut out the dead time, then
-  rewrite the script lines to match what is actually on screen.
-- **Part 1** lives in `part1/` (its own Remotion entry, `--public-dir=part1/public`).
-  Video beats carry `vid: {segs, c, s, step, sec}`: source time ranges, zoom
-  centre in source pixels, zoom scale. Render:
-  `npx remotion render part1/src/index.jsx Part1 out.mp4 --public-dir=part1/public --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell`
-- Requester's rulings for Part 1: no "Thanks for watching"; emails are classified
-  as audiovisual records so need no sensitivity label; retention label depends on
-  the library mapping (5, 7, 10 years or permanent); declared records are locked
-  and cannot be edited or deleted; no need to blur names.
+Sections 1 onward describe the first (2026.4) video. Where they disagree with this
+section, **this section wins**. It holds every ruling the requester has given for
+the 5 part series.
+
+### The series
+
+| Part | Topic | State |
+| --- | --- | --- |
+| 1 | Introduction: ADB, EDRMS, declaring a record in 7 steps, RAC / ITD / AvePoint, releases | Built, `part1/`, `EDRMS_KT_Part1_Introduction.mp4` |
+| 2 | The release journey, each release in detail, and what comes next | Next |
+| 3 | How a release is delivered, requirements to hypercare (process below) | |
+| 4 | Release 2026.4, the Utilization Report (update of the first KT video) | |
+| 5 | Files, tools and sites we use | Requester to list the ADB-side sites |
+
+Source for releases and process: the requester's deck "EDRMS Project Update,
+October 2026" (80 slides; python-pptx cannot open it, read the slide XML from
+the zip directly). Releases: 1.1 Apr 2025, 1.1.1 hotfix, 1.2.1 Nov 2025, 2026.1
+Jan 2026 (+2026.1.1 hotfix), 2026.2 Mar 2026, 2026.3 Jun 2026, 2026.3.1 ongoing,
+2026.4 Utilization Report PROD 11 Dec 2026, 2026.5 physical records on hold, then
+the roadmap (retention label mapping, event triggered declaration, disposition,
+site renewal, MAS, project sites parked, RCHI on hold).
+
+Delivery process for Part 3, as corrected against the deck: initial requirements
+(RAC) > dev feasibility > Requirement Gathering Workshop (a Discovery Workshop when
+there are no initial requirements) > dev assessment > client confirmation
+(Requirements Reconfirmation workshop or email) > Product Backlog as ADO user
+stories > effort estimation > PBL sign-off > dev kickoff and development >
+AvePoint QA and test case write-up > SIT by ADB TCS QA, SIT sign-off > UAT by RAC
+(briefing, UAT guide, bug fixing), UAT sign-off > UAT Completion Report > CAB
+preparation > PROD deployment > sanity testing by TCS QA > hypercare.
+
+### Voice: Kokoro `am_michael`, free and local, with fixed pronunciations
+
+- `part1/narrate_kokoro.py` voices every beat; `python3 narrate_kokoro.py 0 1 2`
+  re-voices only those beats. About 1 minute per beat on CPU, so run it in the
+  background. Model and voice come from Hugging Face into `part1/tts/`
+  (gitignored): `onnx-community/Kokoro-82M-v1.0-ONNX`, files
+  `onnx/model_quantized.onnx` and `voices/am_michael.bin`.
+- **`part1/pronounce.py` is mandatory.** Kokoro reads the A in "A D B" and
+  "R A C" as a schwa (RAC came out as "RC") and AvePoint as "Ah-vay-point". The
+  file voices these from fixed IPA. Requester's rulings:
+  - ADB = "Ey-DB": soft Ey, D and B run together, no pause
+  - RAC = R-A-C, every letter. QA = Q A with an American "Ey"
+  - AvePoint = "Av-Point", never "Avi-point"
+  - live (went live / goes live) = "layv"
+  Add any new acronym there, then check it with
+  `k.tokenizer.phonemize(text, 'en-us')`: the IPA shows exactly what will be said.
+  Send the requester a short sample before voicing a whole part.
+- Keep acronyms spaced in the script text (`A D B`, `R A C`); the subtitles join them.
+
+### Script rules added for the series
+
+- No "Thanks for watching".
+- Keep the opening short and start with a hook. The requester found a calm,
+  list-like intro "too long and boring".
+- Engaging and plain enough for someone with **zero** knowledge. Use analogies
+  (library = filing cabinet, folder = drawer).
+- Declaring a record is **7 steps**, in the requester's words: 1 Open the EDRMS
+  compliant site, 2 Choose a library and/or folder, 3 Create or upload document,
+  4 Make sure the document has a sensitivity label (not needed for audiovisual
+  files: images, videos, email files), 5 Physical counterpart, 6 Submit,
+  7 Check the records.
+- After declaration, explain **only the retention label and the sensitivity
+  label**. Retention label depends on the library mapping (5, 7, 10 years or
+  permanent). Emails are classified as audiovisual, so their sensitivity label
+  is blank, and that is expected. Declared records are locked: cannot be edited
+  or deleted. Physical counterpart: Yes = a paper copy exists, No = electronic only.
+- No need to blur names in the recordings.
+
+### Screen recordings from the requester
+
+- They upload them as **GitHub release assets** (normal upload caps at 25 MB):
+  https://github.com/perezfiles01-droid/Jim/releases/new, any tag. Download with
+  curl from `releases/download/<tag>/<file>` into `video/src_clips/` (gitignored).
+- Take a frame every 2 s with the timestamp burned in, tile them 3x3, read every
+  sheet, and map each script line to source time ranges. Check 0.5 s frames
+  where a short message flashes (the success dialog lasted under a second).
+- Cut all dead time (loading, mouse wandering, the Windows file picker).
+- **Rewrite the script lines to match what is really on screen** (real button
+  names, real messages). Flag anything that contradicts the narration rather
+  than guess (the "audiovisual" example was an email, which the requester then
+  explained).
+
+### Visual rules for recordings (requester, 31 October 2026)
+
+- **Never just play the recording full screen.** Layout for a step: the cut
+  recording on the left (1190 px wide), an **animated explainer panel** on the
+  right that illustrates what the narrator is saying, and a **7 step tracker**
+  across the top with the current step lit and finished steps ticked.
+- **Highlight everything the narration names**: a pulsing amber ring plus click
+  ripple on what is clicked, a teal box with a label on what is shown (uploaded
+  file, success message, lock icon), and a spotlight that dims everything else
+  for a column being explained.
+- Camera keyframes zoom in and out within a step so the named thing is large.
+- Beat format in `part1/beats.json`: `vid: { step, side, segs, keys, hl }`.
+  `segs` source time ranges in seconds. `keys` camera keyframes
+  `[fraction of beat, centre x, centre y, scale]` in source pixels (1724 x 964).
+  `hl` highlights `{ a, b, box: [x1, y1, x2, y2], kind: box | ring | click | spot,
+  label }`, shown while the **source** time is between `a` and `b`, so they stay
+  locked to the recording however the clip is sped up or slowed down.
+  Box positions come from the frame sheets: source px = tile px x 1724 / tile width.
+- The release section must not be plain: Part 1 uses a winding road with a
+  travelling marker, DELIVERED stamps, a "2025 → 2026" flip, and a small
+  animation per release showing what it does.
+
+### Render
+
+```bash
+cd /home/user/Jim/video && npm ci        # once per container
+HS=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell
+npx remotion still part1/src/index.jsx Part1 part1/out/s.png --frame=1500 --public-dir=part1/public --browser-executable=$HS
+npx remotion render part1/src/index.jsx Part1 part1/out/part1_raw.mp4 --public-dir=part1/public --browser-executable=$HS --concurrency=4
+ffmpeg -i part1/out/part1_raw.mp4 -c:v libx264 -crf 26 -preset slow -c:a aac -b:a 128k -movflags +faststart EDRMS_KT_Part1_Introduction.mp4
+```
+The browser path changes between containers: find it with
+`find /opt/pw-browsers -name 'chrome-headless-shell'`. The recording must be at
+`part1/public/scene5.mp4` (gitignored; re-download it from the `scene5` release).
+Render stills first and look at them; a full render takes about 15 minutes.
+Commit and merge to main after every step (CLAUDE.md rule, and a stop hook enforces it).
 
 ---
 

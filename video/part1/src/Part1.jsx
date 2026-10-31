@@ -64,54 +64,122 @@ const Check = ({ s = 56, c = GREEN }) => (
 );
 
 /* ---------- full screen scenes ---------- */
-const Intro = ({ f, at }) => (
-  <Back><Col>
-    <Title k={pop(f, 0)} size={44} color={TEAL}>EDRMS Knowledge Transfer</Title>
-    <Title k={pop(f, 8)} size={96}>Part 1: Introduction</Title>
-    <div style={{ width: 220 * ease(f, 14), height: 6, background: TEAL }} />
-    <Row>{[['What ADB is', 'what a d b'], ['The EDRMS project', 'project'], ['Declaring a record', 'declared'],
-      ['Who is involved', 'involved'], ['Releases', 'releases']].map(([t, p]) =>
-      <Pill key={t} k={pop(f, at(p))}>{t}</Pill>)}</Row>
-  </Col></Back>
-);
-
-const Adb = ({ f, at }) => (
-  <Back><Col gap={34}>
-    <In k={pop(f, 0)}><Bank s={150} /></In>
-    <Title k={pop(f, 6)} size={80}>Asian Development Bank</Title>
-    <In k={pop(f, at('manila'))}><div style={{ fontSize: 40, color: SOFT }}>Headquarters in Manila</div></In>
-    <Row gap={36}>{[['Departments at headquarters', 'departments', BLUE], ['Resident missions', 'resident', TEAL],
-      ['Representative offices', 'representative', GREEN]].map(([t, p, c]) =>
-      <Pill key={t} k={pop(f, at(p))} c={c}>{t}</Pill>)}</Row>
-  </Col></Back>
-);
-
-const Records = ({ f, at }) => {
-  const r = at('some of these'), steps = [['Stored safely', 'stored'], ['Kept for the right time', 'right length'], ['Disposed of when due', 'disposed']];
+/* Intro: a hook. Documents pour in, three questions slam onto the screen,
+   then everything collapses into the EDRMS answer. */
+const rnd = i => { const x = Math.sin(i * 12.9898) * 43758.5453; return x - Math.floor(x); };
+const Slam = ({ f, s, children, c = 'white', size = 120, rot = 0 }) => {
+  const k = spring({ frame: f - s, fps: FPS, config: { damping: 9, stiffness: 160 } });
+  return <div style={{ fontSize: size, fontWeight: 900, color: c, opacity: f < s ? 0 : Math.min(1, k * 2),
+    transform: `scale(${f < s ? 3 : 3 - 2 * k}) rotate(${rot}deg)`, textShadow: '0 10px 40px rgba(0,0,0,.5)' }}>{children}</div>;
+};
+const Intro = ({ f, at }) => {
+  const ans = at('that is what'), wel = at('welcome'), col = ease(f, ans, 14);
+  const cnt = Math.round(interpolate(f, [4, at('which')], [0, 4000], clamp));
   return (
-    <Back><Col gap={60}>
-      <Row gap={22}>{Array.from({ length: 10 }, (_, i) =>
-        <In key={i} k={pop(f, 4 + i * 3)}><Doc s={92} c={i % 3 === 1 ? GREEN : BLUE} lock={i % 3 === 1 && f > r + i * 2} /></In>)}</Row>
-      <In k={pop(f, r)}><div style={{ fontSize: 46, fontWeight: 700 }}>
-        <span style={{ color: SOFT }}>Documents</span>  →  <span style={{ color: GREEN }}>Official records</span></div></In>
-      <Row gap={30}>{steps.map(([t, p], i) => <Pill key={t} k={pop(f, at(p))} c={[BLUE, TEAL, PAPER][i]}>{t}</Pill>)}</Row>
-    </Col></Back>
+    <Back big={false}>
+      {Array.from({ length: 34 }, (_, i) => {
+        const t0 = 2 + i * 1.6, k = spring({ frame: f - t0, fps: FPS, config: { damping: 12 } });
+        const x = 80 + rnd(i) * 1720, y = 60 + rnd(i + 99) * 860, r = (rnd(i + 7) - 0.5) * 50;
+        return <div key={i} style={{ position: 'absolute', left: x + (960 - x) * col, top: y + (480 - y) * col, opacity: f < t0 ? 0 : (1 - col) * 0.9,
+          transform: `scale(${k * (1 - col * 0.8)}) rotate(${r * (1 - k * 0.5)}deg)` }}><Doc s={70} c={i % 4 === 0 ? GREEN : BLUE} /></div>;
+      })}
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', opacity: 1 - col }}>
+        <div style={{ background: 'rgba(16,36,62,.85)', padding: '20px 50px', borderRadius: 24, textAlign: 'center', opacity: ease(f, 6, 10) }}>
+          <div style={{ fontSize: 120, fontWeight: 900, color: TEAL }}>{cnt.toLocaleString('en-US')}+</div>
+          <div style={{ fontSize: 40, fontWeight: 700 }}>documents a day at ADB</div></div>
+      </AbsoluteFill>
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', opacity: 1 - col }}>
+        <div style={{ position: 'absolute', left: 170, top: 140 }}><Slam f={f} s={at('kept?')} c={AMBER} rot={-8}>Keep?</Slam></div>
+        <div style={{ position: 'absolute', right: 150, top: 170 }}><Slam f={f} s={at('how long')} c={TEAL} rot={6}>How long?</Slam></div>
+        <div style={{ position: 'absolute', left: 760, bottom: 150 }}><Slam f={f} s={at('and how')} c="white" rot={-4}>How?</Slam></div>
+      </AbsoluteFill>
+      {f >= ans && <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: 200, border: `8px solid ${TEAL}`,
+          transform: `scale(${1 + (f - ans) / 6})`, opacity: Math.max(0, 1 - (f - ans) / 24) }} />
+        <Slam f={f} s={ans + 4} size={190} c="white">EDRMS</Slam>
+        <div style={{ height: 6, width: 300 * ease(f, ans + 12, 12), background: TEAL, margin: '18px 0' }} />
+        <In k={pop(f, wel)}><div style={{ fontSize: 50, fontWeight: 700, color: SOFT, textAlign: 'center' }}>Knowledge Transfer
+          <div style={{ fontSize: 76, color: 'white', fontWeight: 900 }}>Part 1: Introduction</div></div></In>
+      </AbsoluteFill>}
+    </Back>
   );
 };
 
-const Edrms = ({ f, at }) => {
-  const layer = (t, c, p, w) => (
-    <In key={t} k={pop(f, at(p))} y={-40}><div style={{ width: w, padding: '22px 0', borderRadius: 14, background: c,
-      fontSize: 38, fontWeight: 700, textAlign: 'center', boxShadow: '0 12px 30px rgba(0,0,0,.35)' }}>{t}</div></In>
-  );
+/* ADB: a globe with Manila pinned, then the missions pop up around it. */
+const Adb = ({ f, at }) => {
+  const m = at('manila'), r = at('resident');
+  const pins = [[-170, -60], [150, -110], [210, 60], [-90, 130], [60, 160], [-230, 40], [260, -20]];
   return (
-    <Back><Col gap={30}>
-      <Title k={pop(f, 0)} size={120}>EDRMS</Title>
-      <In k={pop(f, at('electronic'))}><div style={{ fontSize: 40, color: SOFT }}>Electronic Document and Records Management System</div></In>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 20 }}>
-        {layer('EDRMS by AvePoint', TEAL, 'avepoint', 620)}
-        {layer('SharePoint', BLUE, 'sharepoint', 780)}
-        {layer('Microsoft 365', ADB, 'microsoft', 940)}
+    <Back big={false}><AbsoluteFill style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 90, paddingBottom: 80 }}>
+      <div style={{ position: 'relative', width: 560, height: 560, transform: `scale(${pop(f, 0)})` }}>
+        <div style={{ position: 'absolute', inset: 0, borderRadius: 300, background: `radial-gradient(circle at 35% 30%, #2D6CB0, ${ADB} 70%)`,
+          boxShadow: `0 0 80px ${BLUE}88` }} />
+        {[0, 1, 2, 3].map(j => <div key={j} style={{ position: 'absolute', left: 280 - 280 * Math.cos(((j + f / 60) % 4) / 4 * Math.PI), top: 0, bottom: 0,
+          width: 560 * Math.cos(((j + f / 60) % 4) / 4 * Math.PI) || 1, borderRadius: '50%', border: '2px solid rgba(255,255,255,.18)' }} />)}
+        {[0.3, 0.5, 0.7].map(y => <div key={y} style={{ position: 'absolute', left: 0, right: 0, top: `${y * 100}%`, borderTop: '2px solid rgba(255,255,255,.15)' }} />)}
+        {pins.map(([x, y], j) => <div key={j} style={{ position: 'absolute', left: 280 + x - 9, top: 280 + y - 9, width: 18, height: 18, borderRadius: 9,
+          background: TEAL, boxShadow: `0 0 16px ${TEAL}`, transform: `scale(${pop(f, r + j * 4)})` }} />)}
+        {pins.map(([x, y], j) => <svg key={'l' + j} width="560" height="560" style={{ position: 'absolute', inset: 0 }}>
+          <line x1="300" y1="250" x2={280 + x} y2={280 + y} stroke={TEAL} strokeWidth="2" strokeDasharray="6 6" opacity={ease(f, r + j * 4, 10) * 0.7} /></svg>)}
+        <div style={{ position: 'absolute', left: 300 - 22, top: 250 - 58, transform: `translateY(${(1 - pop(f, m)) * -200}px)`, opacity: f > m ? 1 : 0 }}>
+          <svg width="44" height="58" viewBox="0 0 44 58"><path d="M22 56C22 56 2 32 2 20a20 20 0 0 1 40 0c0 12-20 36-20 36z" fill={AMBER} /><circle cx="22" cy="20" r="8" fill="white" /></svg></div>
+        <div style={{ position: 'absolute', left: 330, top: 200, fontSize: 30, fontWeight: 800, opacity: ease(f, m + 6, 10) }}>Manila</div>
+      </div>
+      <div style={{ width: 640 }}>
+        <In k={pop(f, 4)}><div style={{ fontSize: 120, fontWeight: 900 }}>ADB</div></In>
+        <In k={pop(f, 10)}><div style={{ fontSize: 52, fontWeight: 700, color: SOFT }}>Asian Development Bank</div></In>
+        <div style={{ marginTop: 30, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Pill k={pop(f, m)} c={AMBER}>Headquarters in Manila</Pill>
+          <Pill k={pop(f, r)}>Resident missions and offices worldwide</Pill></div>
+      </div>
+    </AbsoluteFill></Back>
+  );
+};
+
+/* Records: a conveyor of documents; the important ones get stamped RECORD. */
+const Records = ({ f, at }) => {
+  const st = at('official'), safe = at('kept safe'), time = at('right length'), disp = at('disposed');
+  return (
+    <Back big={false}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 380, height: 16, background: '#2A4A72' }} />
+      {Array.from({ length: 12 }, (_, i) => {
+        const x = ((i * 190 + f * 6) % 2280) - 180, rec = i % 3 === 0, stamped = rec && f > st + (i % 4) * 3;
+        return <div key={i} style={{ position: 'absolute', left: x, top: 240, transform: `scale(${stamped ? 1.12 : 1})` }}>
+          <Doc s={100} c={stamped ? GREEN : BLUE} lock={stamped} />
+          {stamped && <div style={{ position: 'absolute', left: -6, top: 30, transform: 'rotate(-14deg)', border: `4px solid ${RED}`, color: RED,
+            fontWeight: 900, fontSize: 22, padding: '0 6px', background: 'rgba(255,255,255,.9)', borderRadius: 4 }}>RECORD</div>}</div>;
+      })}
+      <div style={{ position: 'absolute', top: 90, width: '100%', textAlign: 'center' }}>
+        <Title k={pop(f, st)} size={68}>Documents → <span style={{ color: GREEN }}>Official records</span></Title></div>
+      <div style={{ position: 'absolute', top: 520, width: '100%' }}><Row gap={40}>
+        {[['Kept safe', safe, BLUE, <Lock s={70} c={BLUE} />], ['For the right time', time, TEAL, <Cal s={70} c={TEAL} />],
+          ['Disposed when due', disp, PAPER, <svg width="70" height="70" viewBox="0 0 50 50"><rect x="12" y="14" width="26" height="32" rx="3" fill={PAPER} />
+            <rect x="8" y="8" width="34" height="5" rx="2" fill={PAPER} /><rect x="20" y="3" width="10" height="5" rx="2" fill={PAPER} /></svg>]].map(([t, s0, c, ic]) =>
+          <In key={t} k={pop(f, s0)}><div style={{ width: 360, padding: 26, borderRadius: 20, background: 'rgba(255,255,255,.07)', border: `3px solid ${c}`,
+            display: 'flex', alignItems: 'center', gap: 20, fontSize: 34, fontWeight: 800 }}>{ic}{t}</div></In>)}
+      </Row></div>
+    </Back>
+  );
+};
+
+/* EDRMS: five letters fly in and unfold into their words, then the stack drops. */
+const Edrms = ({ f, at }) => {
+  const un = at('electronic'), words = ['Electronic', 'Document', 'and Records', 'Management', 'System'];
+  const layer = (t, c, p, w) => { const k = spring({ frame: f - at(p), fps: FPS, config: { damping: 10, stiffness: 140 } });
+    return <div key={t} style={{ width: w, padding: '20px 0', borderRadius: 14, background: c, fontSize: 36, fontWeight: 800, textAlign: 'center',
+      boxShadow: '0 12px 30px rgba(0,0,0,.35)', opacity: f > at(p) ? 1 : 0, transform: `translateY(${(1 - k) * -300}px)` }}>{t}</div>; };
+  return (
+    <Back big={false}><Col gap={30}>
+      <div style={{ display: 'flex', gap: 22, alignItems: 'flex-end' }}>{'EDRMS'.split('').map((L, i) => {
+        const k = spring({ frame: f - i * 4, fps: FPS, config: { damping: 11 } }), u = ease(f, un + i * 6, 12);
+        return <div key={i} style={{ textAlign: 'center', transform: `translateY(${(1 - k) * 400}px) rotate(${(1 - k) * (i % 2 ? 40 : -40)}deg)` }}>
+          <div style={{ fontSize: 170 - 60 * u, fontWeight: 900, color: i % 2 ? TEAL : 'white', lineHeight: 1 }}>{L}</div>
+          <div style={{ fontSize: 30, color: SOFT, fontWeight: 700, opacity: u, maxWidth: 260 * u, overflow: 'hidden', whiteSpace: 'nowrap' }}>{words[i]}</div></div>;
+      })}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginTop: 30 }}>
+        {layer('Built by AvePoint', TEAL, 'avepoint', 600)}
+        {layer('on SharePoint', BLUE, 'sharepoint', 760)}
+        {layer('and Microsoft 365', ADB, 'microsoft', 920)}
       </div>
     </Col></Back>
   );
