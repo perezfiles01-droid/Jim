@@ -24,9 +24,9 @@ const R = [
   ['2026.1', 'Jan 2026', 'Multiple records declaration, plus hotfix 2026.1.1', 'done'],
   ['2026.2', 'Mar 2026', 'Centralized records declaration', 'done'],
   ['2026.3', 'Jun 2026', 'Email records declaration from Outlook (alpha)', 'done'],
-  ['2026.3.1', 'In progress', 'Email records enhancement', 'prog', 1],
-  ['2026.4', 'Current', 'EDRMS Utilization Report', 'now'],
-  ['2026.5', 'On hold', 'Physical records management', 'hold'],
+  ['2026.3.1', '2026', 'Email records enhancement', 'prog', 2],
+  ['2026.4', '2026', 'EDRMS Utilization Report', 'now'],
+  ['2026.5', 'TBC', 'Physical records management', 'hold'],
 ];
 const COL = { done: GREEN, prog: TEAL, now: TEAL, hold: PAPER };
 const LABEL = { done: 'DELIVERED', prog: 'IN PROGRESS', now: 'CURRENT RELEASE', hold: 'ON HOLD' };
@@ -149,7 +149,7 @@ const STAGE = {
         {Array.from({ length: 10 }, (_, j) => { const locked = (f > one && f < all && j < Math.floor((f - one) / 12)) || f > all + j;
           return <div key={j} style={{ transform: `scale(${f > all + j ? 1 + 0.15 * Math.max(0, 1 - (f - all - j) / 10) : 1})` }}><Doc s={84} c={locked ? GREEN : BLUE} lock={locked} /></div>; })}</div>
       <In k={pop(f, one)} style={{ position: 'absolute', left: 620, top: 40 }}><div style={{ fontSize: 30, color: SOFT, fontWeight: 700, textDecoration: f > all ? 'line-through' : 'none' }}>One by one</div></In>
-      <In k={pop(f, all)} style={{ position: 'absolute', left: 620, top: 110 }}><div style={{ fontSize: 70, fontWeight: 900, color: GREEN }}>All at once</div></In>
+      <In k={pop(f, all)} style={{ position: 'absolute', left: 620, top: 110 }}><div style={{ fontSize: 54, fontWeight: 900, color: GREEN, whiteSpace: 'nowrap' }}>All at once</div></In>
       <div style={{ position: 'absolute', left: 620, top: 250, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <Badge k={pop(f, at('on schedule'))} icon={<Check s={34} />}>On schedule</Badge>
         <Badge k={pop(f, at('hotfix'))} c={AMBER} icon={<Wrench s={34} />}>Hotfix 2026.1.1, 23 Jan</Badge></div>
@@ -219,7 +219,7 @@ const RelScene = ({ b, f, at, prev }) => {
     <div style={{ position: 'absolute', left: 70, top: 420, width: 640, padding: '30px 34px', borderRadius: 22, background: 'rgba(255,255,255,.07)', borderLeft: `12px solid ${COL[s]}`,
       opacity: k, transform: `translateX(${(1 - k) * -80}px)` }}>
       <div style={{ fontSize: 24, color: COL[s], fontWeight: 900, letterSpacing: 1 }}>{LABEL[s]} · {d}</div>
-      <div style={{ fontSize: 64, fontWeight: 900, margin: '6px 0 10px' }}>{R[b.r][4] ? 'Hotfix ' : 'Release '}{n}</div>
+      <div style={{ fontSize: 64, fontWeight: 900, margin: '6px 0 10px' }}>{R[b.r][4] === 1 ? 'Hotfix ' : 'Release '}{n}</div>
       <div style={{ fontSize: 32, color: '#DCE6F0', lineHeight: 1.3 }}>{t}</div></div>
     <div style={{ position: 'absolute', left: 780, top: 400 }}><S f={f} at={at} /></div>
   </Back>;
@@ -328,10 +328,9 @@ const Outro = ({ f, at }) => {
 /* ---------- timeline, subtitles, audio ---------- */
 const Subtitle = ({ text, f, n }) => {
   const parts = text.replace(/E D R M S/g, 'EDRMS').replace(/A D B/g, 'ADB').replace(/R A C/g, 'RAC').replace(/M A S/g, 'MAS').replace(/R C H I/g, 'RCHI')
-    .replace(/[Rr]elease(s?) one point one/g, (m, s) => `${m[0]}elease${s} 1.1`).replace(/hotfix one point one point one/g, 'hotfix 1.1.1')
-    .replace(/one point two point one/g, '1.2.1').replace(/one point two/g, '1.2').replace(/one point one/g, '1.1')
     .replace(/twenty twenty six point three point one/g, '2026.3.1').replace(/twenty twenty six point one point one/g, '2026.1.1')
     .replace(/twenty twenty six point (\w+)/g, (m, d) => '2026.' + ({ one: 1, two: 2, three: 3, four: 4, five: 5 })[d])
+    .replace(/one point one point one/g, '1.1.1').replace(/one point two point one/g, '1.2.1').replace(/one point two/g, '1.2').replace(/one point one/g, '1.1')
     .match(/(?:[^.?!,:]|[.,](?=\d))+[.?!,:]*/g).map(s => s.trim()).filter(Boolean);
   const merged = parts.reduce((a, s) => (a.length && (a.at(-1).length + s.length < 70) ? [...a.slice(0, -1), a.at(-1) + ' ' + s] : [...a, s]), []);
   const tot = merged.reduce((a, s) => a + s.length, 0), span = n - LEAD - TAIL;

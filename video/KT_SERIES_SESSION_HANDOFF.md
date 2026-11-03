@@ -53,11 +53,14 @@ Part 1  Introduction                                      DONE, approved (v3, 31
         ADB, EDRMS, declaring a record in 7 steps (with the requester's
         recording), RAC / ITD / AvePoint, the release journey.
         Files: video/part1/, video/EDRMS_KT_Part1_Introduction.mp4 (6:27)
-Part 2  The release journey in detail                     NEXT (script drafted in chat 3 Nov, not yet final;
-        open questions: what MAS stands for, 1.2 and 1.2.1 together, 2026.3.1 timing)
-        Each release from 1.1 to today: what it does, why it matters, when it
-        went live, then what comes next (2026.5 and the roadmap). Hotfixes
-        1.1.1 and 2026.1.1 belong here (left out of Part 1).
+Part 2  The release journey                               BUILT 3 Nov 2026 (awaiting review)
+        Road of every release with a travelling marker, one animation per release,
+        story badges, roadmap signposts, "running alongside" lanes.
+        Files: video/part2/ (Part2.jsx), video/KT_Part2_Script_FINAL.txt,
+        video/EDRMS_KT_Part2_The_Release_Journey.mp4
+        Requester's cuts (3 Nov): no "not in place", no 2026.3.1 sign-off date,
+        no hotfix count in the ending, no 2026.4 UAT or go-live dates. Ending:
+        "Five releases delivered, two in progress" (2026.3.1 and 2026.4).
 Part 3  How a release is delivered                        BUILT 3 Nov 2026 (awaiting review)
         17 steps in 4 stages (Plan, Build, Test, Go live), house analogy,
         2026.4 as the running example. Fully animated, no recording.
@@ -282,6 +285,12 @@ the recording however the clip is sped up or slowed.
 Add partN/tts/, partN/out/ and the recording to video/.gitignore.
 Long jobs (voicing, render ~15 min) go in the background. If the container
 restarts, re-run them; check that the recording and node_modules are still there.
+
+Render the compressed video to part<N>/out first and MOVE it into place only when
+ffmpeg succeeds: a restart mid-render once left a 1:45 partial MP4 in the repo.
+Subtitle number conversion: replace the longest spoken forms first
+("twenty twenty six point one point one" before "one point one"), or the
+subtitle shows "2026. undefined.1". Check one still for every release number.
 
 Illustrative content (example needs, example user story, example UAT guide
 steps) is fine in animated parts, but must read as an example, never as a real
