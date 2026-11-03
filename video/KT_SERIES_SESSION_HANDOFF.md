@@ -11,7 +11,9 @@ project. Part 1 is finished and approved. It is THE REFERENCE for every later
 part: same look, same voice, same structure, same working method. Do not
 redesign anything that Part 1 already does. Reuse its code.
 
-Repository: perezfiles01-droid/Jim (cloned at /home/user/Jim).
+Repository: perezfiles01-droid/Jim (cloned at /home/user/Jim). The new session
+MUST have this repository attached; everything (code, voice clips, recordings
+list, rulings) lives there. If /home/user/Jim is missing, attach the repo first.
 Before anything else, read, in this order:
   1. /home/user/Jim/CLAUDE.md          (repo rules: merge every change to main)
   2. /home/user/Jim/video/KT_VIDEO_HANDOFF.md, section "0a. KT SERIES" first
@@ -33,6 +35,7 @@ Working rhythm, every part (never skip a gate):
   e. Build exactly like Part 1 (sections 5, 7, 8). Render stills, look at them,
      fix, then render the full video.
   f. Send the MP4 with SendUserFile (display: attach). Commit and merge to main.
+  f2. Deliver BOTH a 1080p and a 1440p MP4 of every finished part (section 8).
   g. Update this file (and video/KT_VIDEO_HANDOFF.md) with every new ruling, then
      ALSO SEND THIS UPDATED HANDOFF FILE with SendUserFile right after EVERY
      generated video. Requester's standing rule, 31 Oct 2026.
@@ -46,14 +49,20 @@ Never put a model name in commits or files. No em dashes in visible text.
 Talking to the requester: plain, short, simple sentences. Yes/No first when asked
 a yes/no question. Give clickable links. Say plainly what was and was not checked.
 
+What this file can and cannot guarantee: it reproduces the METHOD, look, voice,
+pronunciations and rules exactly. Each new part still needs its own script
+approval, its own scenes, and the requester's review; expect a round or two
+of small fixes per part, as Parts 1 to 3 had. Always render stills and look
+at them before the full render.
+
 ======================================================================
 1. THE SERIES
 ======================================================================
-Part 1  Introduction                                      DONE, approved (v3, 31 Oct)
+Part 1  Introduction                                      DONE, approved (v3, 31 Oct; 1440p 3 Nov)
         ADB, EDRMS, declaring a record in 7 steps (with the requester's
         recording), RAC / ITD / AvePoint, the release journey.
         Files: video/part1/, video/EDRMS_KT_Part1_Introduction.mp4 (6:27)
-Part 2  The release journey                               BUILT 3 Nov 2026 (awaiting review)
+Part 2  The release journey                               BUILT v3 3 Nov 2026, 1080p and 1440p
         Road of every release with a travelling marker, one animation per release,
         story badges, roadmap signposts, "running alongside" lanes.
         Files: video/part2/ (Part2.jsx), video/KT_Part2_Script_FINAL.txt,
@@ -62,7 +71,10 @@ Part 2  The release journey                               BUILT 3 Nov 2026 (awai
         no hotfix count in the ending, no 2026.4 UAT or go-live dates. NO HOTFIXES at all
         (no 1.1.1, no 2026.1.1, no "hotfix" in the release definition). Ending:
         "Five releases delivered, two in progress" (2026.3.1 and 2026.4).
-Part 3  How a release is delivered                        BUILT 3 Nov 2026 (awaiting review)
+Part 3  How a release is delivered                        BUILT 3 Nov 2026, 1080p and 1440p
+        OPEN: step 17 still says "A small fix ... becomes a hotfix" with a
+        "Small fix = hotfix" tag. Requester asked to drop hotfixes from Part 2;
+        ASK whether Part 3 step 17 should lose it too before re-rendering.
         17 steps in 4 stages (Plan, Build, Test, Go live), house analogy,
         2026.4 as the running example. Fully animated, no recording.
         Files: video/part3/ (Part3.jsx), video/KT_Part3_Script_FINAL.txt,
@@ -93,7 +105,7 @@ Releases (from that deck):
   1.1       Apr 2025  Site and library creation, records declaration, Cloud Governance setup
   (1.1.1 and 2026.1.1 hotfixes exist but the requester wants NO hotfix mentioned in the videos)
   1.2.1     Nov 2025  Multimedia records declaration; native retention label application disabled
-  2026.1    Jan 2026  Multiple records declaration (+ 2026.1.1 hotfix, 23 Jan)
+  2026.1    Jan 2026  Multiple records declaration (its hotfix is NOT narrated)
   2026.2    Mar 2026  Centralized (not-in-place) records declaration (SIT extended for one
                       critical bug; UAT rescheduled at RAC request)
   2026.3    Jun 2026  Email records declaration (alpha); slipped from April
@@ -273,9 +285,13 @@ the recording however the clip is sped up or slowed.
 ======================================================================
   cd /home/user/Jim/video && npm ci            (once per container)
   mkdir -p partN/src partN/public/vo partN/out
-  cp part1/pronounce.py part1/narrate_kokoro.py partN/
-  cp part1/src/index.jsx partN/src/            (rename Part1 -> PartN inside)
-  cp part1/src/Part1.jsx partN/src/PartN.jsx   (keep shared pieces, write new scenes)
+  cp part2/pronounce.py part2/narrate_kokoro.py partN/   (part2 has the fullest pronunciation list)
+  ln -sfn ../part1/tts partN/tts               (the Kokoro model, if part1/tts exists)
+  Pick the TEMPLATE that matches the part:
+   - with a screen recording   -> copy part1/src/Part1.jsx (Clip, Mark highlights, side panel, tracker)
+   - fully animated, a process -> copy part3/src/Part3.jsx (stage tracker, step scenes, stamps, gates)
+   - fully animated, a timeline-> copy part2/src/Part2.jsx (road, per item animation, badges)
+  cp partX/src/index.jsx partN/src/            (rename PartX -> PartN inside)
   cp public/music.mp3 partN/public/
   copy any recording to partN/public/<name>.mp4 (gitignore it like scene5.mp4)
   write partN/beats.json, voice it, then:
