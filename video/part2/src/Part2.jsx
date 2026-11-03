@@ -68,7 +68,7 @@ const FileIcon = ({ ext, c, s = 86 }) => (
 );
 const Badge = ({ k, children, c = GREEN, icon }) => (
   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '10px 18px', borderRadius: 14, background: 'rgba(255,255,255,.07)', border: `3px solid ${c}`,
-    fontSize: 26, fontWeight: 800, opacity: Math.min(1, k * 1.5), transform: `scale(${0.6 + 0.4 * k}) translateX(${(1 - k) * 40}px)` }}>{icon}{children}</div>
+    fontSize: 26, fontWeight: 800, opacity: Math.min(1, k * 1.5), transform: `scale(${0.6 + 0.4 * k}) translateX(${(1 - k) * 40}px)`, transformOrigin: 'left center' }}>{icon}{children}</div>
 );
 const Moon = ({ s = 50 }) => <div style={{ width: s, height: s, borderRadius: s, boxShadow: `-${s * 0.25}px ${s * 0.1}px 0 0 ${AMBER}` }} />;
 const Pause = ({ s = 50, c = PAPER }) => <div style={{ display: 'flex', gap: s * 0.18 }}><div style={{ width: s * 0.3, height: s, background: c, borderRadius: 4 }} />
@@ -154,18 +154,20 @@ const STAGE = {
         <Badge k={pop(f, mv)} c={AMBER} icon={<Cal s={34} />}>UAT moved at RAC's request</Badge>
         <Badge k={pop(f, night)} c={TEAL} icon={<Moon s={30} />}>Live 27 Mar, outside office hours</Badge></div>
     </div>; },
-  4: ({ f, at }) => { const o = interpolate(f, [at('declare an email'), at('declare an email') + 25], [0, 1], clamp), fix = at('add in button');
+  4: ({ f, at }) => { const o = interpolate(f, [at('declare an email'), at('saved in') + 10], [0, 1], { ...clamp, easing: t => t * t * (3 - 2 * t) }), fix = at('add in button');
     return <div style={box}>
-      <div style={{ position: 'absolute', left: 20, top: 20, width: 300, padding: 16, borderRadius: 14, background: '#0F6CBD', fontSize: 24, fontWeight: 800 }}>Outlook
-        <div style={{ marginTop: 10, position: 'relative', height: 160 }}><Mail s={150} />
-          <div style={{ position: 'absolute', left: 50, top: 20 - o * 110, opacity: o }}><Doc s={70} c={GREEN} lock={o > 0.9} /></div></div></div>
-      <div style={{ position: 'absolute', left: 340, top: 90, fontSize: 60, color: TEAL, opacity: ease(f, at('saved in'), 8) }}>→</div>
-      <In k={pop(f, at('saved in'))} style={{ position: 'absolute', left: 420, top: 50 }}><div style={{ textAlign: 'center' }}><Site s={130} /><div style={{ fontSize: 22, fontWeight: 800 }}>EDRMS site you choose</div></div></In>
-      <div style={{ position: 'absolute', left: 620, top: 10, display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <Badge k={pop(f, at('planned for april'))} c={SOFT} icon={<Cal s={34} />}>Planned: April</Badge>
-        <Badge k={pop(f, fix)} c={AMBER} icon={<Wrench s={34} f={f} />}>Add-in button fixed first</Badge>
-        <Badge k={pop(f, at('reset'))} c={BLUE} icon={<Check s={34} c={BLUE} />}>Testing reset</Badge>
-        <Badge k={pop(f, at('eighteenth'))} icon={<Check s={34} />}>Live 18 Jun 2026, alpha</Badge></div>
+      <div style={{ position: 'absolute', left: 0, top: 10, width: 230, borderRadius: 14, background: '#0F6CBD', overflow: 'hidden' }}>
+        <div style={{ padding: '10px 16px', fontSize: 24, fontWeight: 900, background: '#0A5AA0' }}>Outlook</div>
+        <div style={{ padding: '18px 0 14px', display: 'flex', justifyContent: 'center' }}><Mail s={150} /></div></div>
+      <div style={{ position: 'absolute', left: 260, top: 100, fontSize: 56, color: TEAL, opacity: ease(f, at('declare an email'), 8) }}>→</div>
+      <In k={pop(f, at('declare an email'))} style={{ position: 'absolute', left: 330, top: 10 }}><div style={{ width: 200, textAlign: 'center' }}><Site s={150} />
+        <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, lineHeight: 1.2 }}>EDRMS site<br />you choose</div></div></In>
+      <div style={{ position: 'absolute', left: 75 + o * 320, top: 58 - 40 * o - Math.sin(o * Math.PI) * 60, opacity: o > 0 && o < 1 ? 1 : o >= 1 ? 1 : 0, transform: `scale(${0.8 + 0.2 * o})` }}>
+        <Doc s={74} c={GREEN} lock={o > 0.95} /></div>
+      <div style={{ position: 'absolute', left: 580, top: 0, display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'flex-start' }}>
+        {[[at('planned for april'), SOFT, <Cal s={34} />, 'Planned: April'], [fix, AMBER, <Wrench s={34} f={f} />, 'Add-in button fixed first'],
+          [at('reset'), BLUE, <Check s={34} c={BLUE} />, 'Testing reset'], [at('eighteenth'), GREEN, <Check s={34} />, 'Live 18 Jun 2026, alpha']].map(([s0, c, ic, t]) =>
+          <div key={t} style={{ transformOrigin: 'left center' }}><Badge k={pop(f, s0)} c={c} icon={ic}><span style={{ whiteSpace: 'nowrap', fontSize: 24 }}>{t}</span></Badge></div>)}</div>
     </div>; },
   5: ({ f }) => <div style={box}>
     <div style={{ position: 'absolute', left: 120, top: 40, display: 'flex', alignItems: 'center', gap: 40 }}>
