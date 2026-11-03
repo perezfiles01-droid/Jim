@@ -15,6 +15,7 @@ IPA = {
     'I T D\'s': 'ˈaɪ tˈiː dˈiːz',
     'A D B\'s': 'eɪdˈiːbiːz',
     'R A C\'s': 'ˈɑːɹ ˈeɪ sˈiːz',
+    'M A S': 'ˈɛm ˈeɪ ˈɛs',
     'A D O': 'ˈeɪ dˈiː ˈoʊ',           # Azure DevOps
     'U A T': 'jˈuː ˈeɪ tˈiː',
     'C A B': 'sˈiː ˈeɪ bˈiː',           # Change Advisory Board
