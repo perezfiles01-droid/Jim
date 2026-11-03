@@ -12,6 +12,13 @@ IPA = {
     'AvePoint': 'ˈævpɔɪnt',            # Av-Point
     'live': 'lˈaɪv',                    # went live / goes live = "layv"
     'I D': 'ˈaɪ dˈiː',
+    'I T D\'s': 'ˈaɪ tˈiː dˈiːz',
+    'A D B\'s': 'eɪdˈiːbiːz',
+    'R A C\'s': 'ˈɑːɹ ˈeɪ sˈiːz',
+    'A D O': 'ˈeɪ dˈiː ˈoʊ',           # Azure DevOps
+    'U A T': 'jˈuː ˈeɪ tˈiː',
+    'C A B': 'sˈiː ˈeɪ bˈiː',           # Change Advisory Board
+    'S I T': 'ˈɛs ˈaɪ tˈiː',
 }
 PAT = re.compile(r'(?<![A-Za-z])(' + '|'.join(sorted(map(re.escape, IPA), key=len, reverse=True)) + r')(?![A-Za-z])')
 

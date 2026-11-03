@@ -1,0 +1,132 @@
+[
+ {
+  "mg": "hook",
+  "t": "Every E D R M S release, from the first idea to go live, passes through the same seventeen steps. Skip one, and things break in production. Follow them all, and users get something that simply works. Welcome to part three of the E D R M S knowledge transfer series: how a release is delivered."
+ },
+ {
+  "mg": "house",
+  "t": "Think of it like building a house. First you agree on the plan. Then you build. Then it is inspected. And only then do people move in. Our seventeen steps fall into the same four stages: plan, build, test, and go live. We will follow the current release, twenty twenty six point four, the Utilization Report, as our example."
+ },
+ {
+  "mg": "stage",
+  "stage": 1,
+  "t": "Stage one. Plan."
+ },
+ {
+  "mg": "step",
+  "n": 1,
+  "t": "Step one. Initial requirements. It starts with R A C, the records team at A D B. They tell us what they need, in their own words."
+ },
+ {
+  "mg": "step",
+  "n": 2,
+  "t": "Step two. Feasibility. The AvePoint developers check whether it can be built, and how. It is better to find a blocker now than halfway through."
+ },
+ {
+  "mg": "step",
+  "n": 3,
+  "date": "Jul to Aug 2026",
+  "t": "Step three. The requirement gathering workshop. AvePoint and R A C sit down together and go through every need in detail. If there are no initial requirements yet, this becomes a discovery workshop, where we work them out from scratch. For the Utilization Report, requirement gathering ran from July to the end of August 2026."
+ },
+ {
+  "mg": "step",
+  "n": 4,
+  "t": "Step four. Dev assessment. The developers review everything gathered in the workshop, and flag anything unclear or risky."
+ },
+ {
+  "mg": "step",
+  "n": 5,
+  "t": "Step five. Confirmation. R A C confirms the requirements, either in a reconfirmation workshop, or by email. Nothing moves forward until the client agrees."
+ },
+ {
+  "mg": "step",
+  "n": 6,
+  "t": "Step six. The product backlog. The business analysts turn the confirmed requirements into user stories in A D O, Azure DevOps. A user story is one small need, written from the user's point of view. Together, the stories make up the product backlog."
+ },
+ {
+  "mg": "step",
+  "n": 7,
+  "t": "Step seven. Effort estimation. The developers estimate how much work each story will take. This tells everyone how long the release will need."
+ },
+ {
+  "mg": "step",
+  "n": 8,
+  "date": "Mid Sep 2026",
+  "t": "Step eight. Backlog sign off. R A C reviews the backlog and signs it off. This is the agreed plan for the release. For the Utilization Report, the backlog was refined and signed off by mid September."
+ },
+ {
+  "mg": "stage",
+  "stage": 2,
+  "t": "Stage two. Build."
+ },
+ {
+  "mg": "step",
+  "n": 9,
+  "date": "Sep to Oct 2026",
+  "t": "Step nine. Dev kickoff and development. The developers start building, story by story. For the Utilization Report, development ran from mid September to early October."
+ },
+ {
+  "mg": "step",
+  "n": 10,
+  "t": "Step ten. AvePoint Q A. Before anyone at A D B sees it, AvePoint's own Q A team tests the release, and writes the test cases that A D B will use next."
+ },
+ {
+  "mg": "stage",
+  "stage": 3,
+  "t": "Stage three. Test."
+ },
+ {
+  "mg": "step",
+  "n": 11,
+  "t": "Step eleven. S I T, or system integration testing. Now A D B's own T C S Q A team tests the release. Every defect they find is logged in A D O, fixed by the developers, and tested again. When they are satisfied, they give the S I T sign off. Only then can the release move on."
+ },
+ {
+  "mg": "step",
+  "n": 12,
+  "date": "24 Nov to 4 Dec 2026",
+  "t": "Step twelve. U A T, or user acceptance testing. This is where R A C tests the release as real users would. It starts with a U A T briefing, and R A C follows a U A T guide, step by step. Any bugs found during U A T are fixed along the way. It ends with the U A T sign off. For the Utilization Report, U A T runs from the twenty fourth of November to the fourth of December 2026."
+ },
+ {
+  "mg": "step",
+  "n": 13,
+  "t": "Step thirteen. The U A T completion report. This records what was tested, what was found, and what was fixed. It is the proof that the release is ready."
+ },
+ {
+  "mg": "stage",
+  "stage": 4,
+  "t": "Stage four. Go live."
+ },
+ {
+  "mg": "step",
+  "n": 14,
+  "t": "Step fourteen. C A B preparation. C A B stands for Change Advisory Board. Before anything changes in production, the release is presented to the board for approval."
+ },
+ {
+  "mg": "step",
+  "n": 15,
+  "date": "11 Dec 2026",
+  "t": "Step fifteen. Production deployment. The release goes live for every user. Where needed, this happens outside office hours, so nobody is disrupted. For the Utilization Report, go live is planned for the eleventh of December 2026."
+ },
+ {
+  "mg": "step",
+  "n": 16,
+  "t": "Step sixteen. Sanity testing. Right after deployment, the T C S Q A team runs quick checks in production, to confirm everything works as it did in testing. They then give the Q A sign off."
+ },
+ {
+  "mg": "step",
+  "n": 17,
+  "t": "Step seventeen. Hypercare. For a period after go live, the team watches closely for any issues, and fixes them fast. A small fix shipped in this period becomes a hotfix."
+ },
+ {
+  "mg": "who",
+  "t": "So who does what? R A C sets the requirements, signs off the backlog, and runs U A T. AvePoint gathers and writes the requirements, builds the release, and tests it first. And I T D's T C S Q A team runs S I T and the sanity tests. Three groups, one release."
+ },
+ {
+  "mg": "gates",
+  "t": "Notice the sign offs along the way. Requirements confirmed. Backlog signed off. S I T signed off. U A T signed off. Change board approved. Q A signed off. Each one is a gate. A release only moves forward when the gate before it is closed."
+ },
+ {
+  "mg": "outro",
+  "t": "That is how every release is delivered. Plan, build, test, and go live, in seventeen steps."
+ }
+]
