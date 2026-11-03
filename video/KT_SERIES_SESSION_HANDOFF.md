@@ -59,7 +59,8 @@ Part 2  The release journey                               BUILT 3 Nov 2026 (awai
         Files: video/part2/ (Part2.jsx), video/KT_Part2_Script_FINAL.txt,
         video/EDRMS_KT_Part2_The_Release_Journey.mp4
         Requester's cuts (3 Nov): no "not in place", no 2026.3.1 sign-off date,
-        no hotfix count in the ending, no 2026.4 UAT or go-live dates. Ending:
+        no hotfix count in the ending, no 2026.4 UAT or go-live dates. NO HOTFIXES at all
+        (no 1.1.1, no 2026.1.1, no "hotfix" in the release definition). Ending:
         "Five releases delivered, two in progress" (2026.3.1 and 2026.4).
 Part 3  How a release is delivered                        BUILT 3 Nov 2026 (awaiting review)
         17 steps in 4 stages (Plan, Build, Test, Go live), house analogy,
@@ -90,7 +91,7 @@ read ppt/slides/slideN.xml text runs (<a:t>) directly.
 
 Releases (from that deck):
   1.1       Apr 2025  Site and library creation, records declaration, Cloud Governance setup
-  1.1.1     May 2025  Hotfix: error message change
+  (1.1.1 and 2026.1.1 hotfixes exist but the requester wants NO hotfix mentioned in the videos)
   1.2.1     Nov 2025  Multimedia records declaration; native retention label application disabled
   2026.1    Jan 2026  Multiple records declaration (+ 2026.1.1 hotfix, 23 Jan)
   2026.2    Mar 2026  Centralized (not-in-place) records declaration (SIT extended for one

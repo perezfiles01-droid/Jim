@@ -6,8 +6,8 @@
  },
  {
   "mg": "whatis",
-  "t": "First, what is a release? A release is one package of new capability. It is built, tested by A D B, and then goes live. In 2025, releases were numbered one point one, one point two, and so on. From 2026, they are numbered by year, like twenty twenty six point one. And when a small fix is needed after go live, it ships as a hotfix, with one more number at the end.",
-  "seconds": 25.578666666666667
+  "t": "First, what is a release? A release is one package of new capability. It is built, tested by A D B, and then goes live. In 2025, releases were numbered one point one, one point two, and so on. From 2026, they are numbered by year, like twenty twenty six point one.",
+  "seconds": 20.48
  },
  {
   "mg": "begin",
@@ -23,42 +23,36 @@
  {
   "mg": "rel",
   "r": 1,
-  "t": "Two weeks later, on the twelfth of May, hotfix one point one point one changed an error message. Small, but it shows how the team responds after go live.",
-  "seconds": 10.944
- },
- {
-  "mg": "rel",
-  "r": 2,
   "t": "Next came multimedia. In November 2025, releases one point two and one point two point one let users declare multimedia files, such as images, videos and audio, as records. They also disabled SharePoint's native retention label option. That means retention labels are now applied only the E D R M S way, based on the library, so users cannot pick the wrong one by hand.",
   "seconds": 27.712
  },
  {
   "mg": "rel",
-  "r": 3,
-  "t": "Then, 2026. Release twenty twenty six point one, in January, brought multiple records declaration. Instead of declaring files one by one, users can now select many documents and declare them all at once. It went live on schedule, on the fifteenth and sixteenth of January. A small hotfix, twenty twenty six point one point one, followed on the twenty third.",
-  "seconds": 25.109333333333332
+  "r": 2,
+  "t": "Then, 2026. Release twenty twenty six point one, in January, brought multiple records declaration. Instead of declaring files one by one, users can now select many documents and declare them all at once. It went live on schedule, on the fifteenth and sixteenth of January.",
+  "seconds": 20.501333333333335
  },
  {
   "mg": "rel",
-  "r": 4,
+  "r": 3,
   "t": "In March, release twenty twenty six point two delivered centralized records declaration. Records can be declared and kept in a central location, not only in the site where they were created. This one had a bumpy ride. Testing was extended to fix one critical bug, and user acceptance testing was moved at R A C's request. It went live on the twenty seventh of March, outside office hours, so users were not disrupted.",
   "seconds": 27.946666666666665
  },
  {
   "mg": "rel",
-  "r": 5,
+  "r": 4,
   "t": "Then, email. Release twenty twenty six point three added email records declaration from Outlook. Users can declare an email as a record without leaving their inbox, and it is saved in the E D R M S site they choose. It was planned for April, but a fix to the Outlook add in button was needed first. Testing was reset, and it went live on the eighteenth of June 2026, as an alpha version.",
   "seconds": 26.602666666666668
  },
  {
   "mg": "rel",
-  "r": 6,
+  "r": 5,
   "t": "Its enhancement, release twenty twenty six point three point one, is in progress now.",
   "seconds": 5.76
  },
  {
   "mg": "rel",
-  "r": 7,
+  "r": 6,
   "t": "And that brings us to today. The current release is twenty twenty six point four, the E D R M S Utilization Report. For the first time, A D B can see how departments are actually using E D R M S. Requirements have been gathered, and development is under way.",
   "seconds": 18.922666666666668
  },
@@ -69,7 +63,7 @@
  },
  {
   "mg": "rel",
-  "r": 8,
+  "r": 7,
   "t": "Release twenty twenty six point five will bring physical records management, for records that also exist on paper. It is on hold for now, at A D B's request. A discovery workshop will start once the Utilization Report requirements are final.",
   "seconds": 16.896
  },

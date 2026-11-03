@@ -16,12 +16,11 @@ const AMBER = '#F2A900';
 const rnd = i => { const x = Math.sin(i * 12.9898) * 43758.5453; return x - Math.floor(x); };
 const bounce = (f, s) => spring({ frame: f - s, fps: FPS, config: { damping: 9, stiffness: 150 } });
 
-/* [number, date, title, status, hotfix?] status: done | prog | now | hold */
+/* [number, date, title, status, small dot?] status: done | prog | now | hold */
 const R = [
   ['1.1', 'Apr 2025', 'The foundation: Cloud Governance and records declaration', 'done'],
-  ['1.1.1', 'May 2025', 'Hotfix: an error message changed', 'done', 1],
   ['1.2 / 1.2.1', 'Nov 2025', 'Multimedia records, native retention label option disabled', 'done'],
-  ['2026.1', 'Jan 2026', 'Multiple records declaration, plus hotfix 2026.1.1', 'done'],
+  ['2026.1', 'Jan 2026', 'Multiple records declaration', 'done'],
   ['2026.2', 'Mar 2026', 'Centralized records declaration', 'done'],
   ['2026.3', 'Jun 2026', 'Email records declaration from Outlook (alpha)', 'done'],
   ['2026.3.1', '2026', 'Email records enhancement', 'prog', 2],
@@ -81,7 +80,7 @@ const mx = i => RX0 + (i / (R.length - 1)) * (RX1 - RX0);
 const Road = ({ r, f, travelFrom }) => {
   const t = ease(f, 0, 32), from = travelFrom ?? r, x = mx(from) + (mx(r) - mx(from)) * t;
   const pts = Array.from({ length: 70 }, (_, j) => { const xx = RX0 + (j / 69) * (RX1 - RX0); return `${xx},${roadY(xx)}`; }).join(' ');
-  const yr = (mx(2) + mx(3)) / 2;
+  const yr = (mx(1) + mx(2)) / 2;
   return <>
     <svg width={W} height={420} style={{ position: 'absolute', top: 0, left: 0 }}>
       <polyline points={pts} fill="none" stroke="#2A4A72" strokeWidth="30" strokeLinecap="round" />
@@ -118,18 +117,7 @@ const STAGE = {
         <Doc s={110} c={BLUE} /><div style={{ fontSize: 60, color: TEAL }}>→</div><div style={{ transform: `scale(${bounce(f, wf + 20)})` }}><Doc s={130} c={GREEN} lock /></div></div>
       <In k={pop(f, at('official record'))} style={{ position: 'absolute', left: 560, top: 330 }}><div style={{ fontSize: 34, fontWeight: 900, color: GREEN }}>Document → official record</div></In>
     </div>; },
-  1: ({ f, at }) => { const ch = at('changed');
-    return <div style={box}>
-      <div style={{ position: 'absolute', left: 60, top: 40, width: 560, padding: 26, borderRadius: 16, background: 'white', color: INK, boxShadow: '0 20px 40px rgba(0,0,0,.4)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 26, fontWeight: 900, color: f > ch + 20 ? TEAL : RED }}>
-          <div style={{ width: 34, height: 34, borderRadius: 17, background: f > ch + 20 ? TEAL : RED, color: 'white', display: 'grid', placeItems: 'center' }}>!</div>Message</div>
-        <div style={{ height: 18, borderRadius: 9, background: '#C9D6E3', margin: '22px 0 12px', width: f > ch + 20 ? '92%' : '70%' }} />
-        <div style={{ height: 18, borderRadius: 9, background: '#C9D6E3', width: f > ch + 20 ? '60%' : '85%' }} /></div>
-      <div style={{ position: 'absolute', left: 560, top: 10, opacity: f > ch && f < ch + 30 ? 1 : 0 }}><Wrench s={100} f={f} /></div>
-      <In k={pop(f, ch + 20)} style={{ position: 'absolute', left: 90, top: 300 }}><Badge k={1} c={AMBER} icon={<Wrench s={34} />}>Hotfix 1.1.1, two weeks after go live</Badge></In>
-      <In k={pop(f, at('responds'))} style={{ position: 'absolute', left: 90, top: 390 }}><div style={{ fontSize: 30, color: SOFT, fontWeight: 700 }}>Small fixes ship fast after go live</div></In>
-    </div>; },
-  2: ({ f, at }) => { const off = at('disabled'), lib = at('based on the library');
+  1: ({ f, at }) => { const off = at('disabled'), lib = at('based on the library');
     return <div style={box}>
       {[['IMG', BLUE, 'images'], ['MP4', RED, 'videos'], ['MP3', PAPER, 'audio']].map(([e, c, p], j) => { const s = at(p);
         return <div key={e} style={{ position: 'absolute', left: 20 + j * 140, top: 40, opacity: ease(f, s - 4, 8), transform: `translateY(${(1 - bounce(f, s - 4)) * 150}px)` }}>
@@ -143,7 +131,7 @@ const STAGE = {
         background: 'rgba(62,155,58,.15)', border: `3px solid ${GREEN}`, fontSize: 30, fontWeight: 800 }}>Library <span style={{ color: TEAL, fontSize: 40 }}>→</span> retention label, the EDRMS way</div></In>
       <In k={pop(f, at('wrong one'))} style={{ position: 'absolute', left: 60, top: 420 }}><div style={{ fontSize: 28, color: SOFT, fontWeight: 700 }}>No more picking the wrong label by hand</div></In>
     </div>; },
-  3: ({ f, at }) => { const one = at('one by one'), all = at('all at once');
+  2: ({ f, at }) => { const one = at('one by one'), all = at('all at once');
     return <div style={box}>
       <div style={{ position: 'absolute', left: 20, top: 20, width: 560, display: 'flex', flexWrap: 'wrap', gap: 14 }}>
         {Array.from({ length: 10 }, (_, j) => { const locked = (f > one && f < all && j < Math.floor((f - one) / 12)) || f > all + j;
@@ -152,9 +140,9 @@ const STAGE = {
       <In k={pop(f, all)} style={{ position: 'absolute', left: 620, top: 110 }}><div style={{ fontSize: 54, fontWeight: 900, color: GREEN, whiteSpace: 'nowrap' }}>All at once</div></In>
       <div style={{ position: 'absolute', left: 620, top: 250, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <Badge k={pop(f, at('on schedule'))} icon={<Check s={34} />}>On schedule</Badge>
-        <Badge k={pop(f, at('hotfix'))} c={AMBER} icon={<Wrench s={34} />}>Hotfix 2026.1.1, 23 Jan</Badge></div>
+</div>
     </div>; },
-  4: ({ f, at }) => { const c = at('central location'), bug = at('critical bug'), mv = at('was moved'), night = at('outside office');
+  3: ({ f, at }) => { const c = at('central location'), bug = at('critical bug'), mv = at('was moved'), night = at('outside office');
     return <div style={box}>
       <div style={{ position: 'absolute', left: 10, top: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>{[0, 1, 2].map(i => <In key={i} k={pop(f, 4 + i * 5)}><Site s={100} /></In>)}</div>
       {[0, 1, 2].map(j => { const t = interpolate(f, [c + j * 8, c + 26 + j * 8], [0, 1], clamp);
@@ -166,7 +154,7 @@ const STAGE = {
         <Badge k={pop(f, mv)} c={AMBER} icon={<Cal s={34} />}>UAT moved at RAC's request</Badge>
         <Badge k={pop(f, night)} c={TEAL} icon={<Moon s={30} />}>Live 27 Mar, outside office hours</Badge></div>
     </div>; },
-  5: ({ f, at }) => { const o = interpolate(f, [at('declare an email'), at('declare an email') + 25], [0, 1], clamp), fix = at('add in button');
+  4: ({ f, at }) => { const o = interpolate(f, [at('declare an email'), at('declare an email') + 25], [0, 1], clamp), fix = at('add in button');
     return <div style={box}>
       <div style={{ position: 'absolute', left: 20, top: 20, width: 300, padding: 16, borderRadius: 14, background: '#0F6CBD', fontSize: 24, fontWeight: 800 }}>Outlook
         <div style={{ marginTop: 10, position: 'relative', height: 160 }}><Mail s={150} />
@@ -179,14 +167,14 @@ const STAGE = {
         <Badge k={pop(f, at('reset'))} c={BLUE} icon={<Check s={34} c={BLUE} />}>Testing reset</Badge>
         <Badge k={pop(f, at('eighteenth'))} icon={<Check s={34} />}>Live 18 Jun 2026, alpha</Badge></div>
     </div>; },
-  6: ({ f }) => <div style={box}>
+  5: ({ f }) => <div style={box}>
     <div style={{ position: 'absolute', left: 120, top: 40, display: 'flex', alignItems: 'center', gap: 40 }}>
       <div style={{ position: 'relative' }}><Mail s={200} /><div style={{ position: 'absolute', right: -40, top: -40 }}><Gear f={f} s={110} /></div></div>
       <div><div style={{ fontSize: 60, fontWeight: 900 }}>2026.3.1</div><div style={{ fontSize: 34, color: TEAL, fontWeight: 800 }}>Email enhancement</div>
         <div style={{ marginTop: 20, width: 380, height: 20, borderRadius: 10, background: 'rgba(255,255,255,.12)', overflow: 'hidden' }}>
           <div style={{ width: '40%', height: '100%', borderRadius: 10, background: TEAL, transform: `translateX(${((f * 6) % 600) - 160}px)` }} /></div>
         <div style={{ fontSize: 28, fontWeight: 800, marginTop: 12 }}>In progress</div></div></div></div>,
-  7: ({ f, at }) => { const g = ease(f, at('for the first time'), 40);
+  6: ({ f, at }) => { const g = ease(f, at('for the first time'), 40);
     return <div style={box}>
       <div style={{ position: 'absolute', left: 10, top: 20, width: 560, height: 300, borderRadius: 18, background: 'white', padding: 20, display: 'flex', gap: 18, opacity: ease(f, 4, 10) }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{['Sites', 'Documents', 'Records'].map((t, j) => <div key={t} style={{ width: 150, padding: 12, borderRadius: 12, background: '#EAF3FB', color: INK }}>
@@ -198,7 +186,7 @@ const STAGE = {
         <Badge k={pop(f, at('requirements have been gathered'))} icon={<Check s={34} />}>Requirements gathered</Badge>
         <Badge k={pop(f, at('development is under way'))} c={TEAL} icon={<Gear f={f} s={34} />}>Development under way</Badge></div>
     </div>; },
-  8: ({ f, at }) => <div style={box}>
+  7: ({ f, at }) => <div style={box}>
     <div style={{ position: 'absolute', left: 30, top: 20, width: 360, height: 300, borderRadius: 16, background: '#8B6A3E', boxShadow: '0 20px 40px rgba(0,0,0,.4)', opacity: ease(f, 4, 10) }}>
       <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 60, background: '#A9824D', borderRadius: '16px 16px 0 0' }} />
       {[0, 1, 2].map(i => <div key={i} style={{ position: 'absolute', left: 60 + i * 80, top: 90 - i * 10, transform: `rotate(${(i - 1) * 8}deg)` }}><Doc s={90} c={PAPER} paper /></div>)}
@@ -219,7 +207,7 @@ const RelScene = ({ b, f, at, prev }) => {
     <div style={{ position: 'absolute', left: 70, top: 420, width: 640, padding: '30px 34px', borderRadius: 22, background: 'rgba(255,255,255,.07)', borderLeft: `12px solid ${COL[s]}`,
       opacity: k, transform: `translateX(${(1 - k) * -80}px)` }}>
       <div style={{ fontSize: 24, color: COL[s], fontWeight: 900, letterSpacing: 1 }}>{LABEL[s]} · {d}</div>
-      <div style={{ fontSize: 64, fontWeight: 900, margin: '6px 0 10px' }}>{R[b.r][4] === 1 ? 'Hotfix ' : 'Release '}{n}</div>
+      <div style={{ fontSize: 64, fontWeight: 900, margin: '6px 0 10px' }}>Release {n}</div>
       <div style={{ fontSize: 32, color: '#DCE6F0', lineHeight: 1.3 }}>{t}</div></div>
     <div style={{ position: 'absolute', left: 780, top: 400 }}><S f={f} at={at} /></div>
   </Back>;
@@ -250,7 +238,7 @@ const Hook = ({ f, at }) => {
 
 const WhatIs = ({ f, at }) => {
   const pkg = at('one package'), steps = [['Built', TEAL, 'built'], ['Tested by ADB', AMBER, 'tested'], ['Live', GREEN, 'goes live']];
-  const yr = at('from 2026'), hf = at('hotfix'), num = f > yr ? '2026.1' : f > at('one point two') ? '1.2' : '1.1';
+  const yr = at('from 2026'), num = f > yr ? '2026.1' : f > at('one point two') ? '1.2' : '1.1';
   return <Back>
     <div style={{ position: 'absolute', top: 60, width: '100%' }}><Title k={pop(f, 0)} size={70}>What is a release?</Title></div>
     <div style={{ position: 'absolute', left: 130, top: 220, transform: `scale(${bounce(f, pkg)})`, opacity: f > pkg ? 1 : 0 }}>
@@ -265,16 +253,13 @@ const WhatIs = ({ f, at }) => {
       <div style={{ padding: '20px 40px', borderRadius: 18, background: 'white', color: INK, fontSize: 80, fontWeight: 900, minWidth: 320, textAlign: 'center',
         transform: `perspective(600px) rotateX(${f > yr ? (1 - ease(f, yr, 14)) * 90 : 0}deg)` }}>{num}</div>
       {f > yr && <In k={pop(f, yr + 10)}><div style={{ fontSize: 30, color: TEAL, fontWeight: 800 }}>numbered by year</div></In>}</div>
-    <In k={pop(f, hf)} style={{ position: 'absolute', left: 520, top: 690 }}><div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '18px 26px', borderRadius: 16,
-      background: 'rgba(242,169,0,.15)', border: `3px solid ${AMBER}` }}><Wrench s={50} f={f} /><div style={{ fontSize: 34, fontWeight: 900 }}>Hotfix: 2026.1<span style={{ color: AMBER }}>.1</span></div>
-      <div style={{ fontSize: 26, color: SOFT, fontWeight: 700 }}>one more number</div></div></In>
   </Back>;
 };
 
 const Begin = ({ f }) => <Back><Road r={0} f={f} travelFrom={-0.4} />
   <div style={{ position: 'absolute', left: 0, right: 0, top: 560, textAlign: 'center', fontSize: 90, fontWeight: 900, transform: `scale(${bounce(f, 6)})` }}>Let's start at the beginning</div></Back>;
 
-const Next = ({ f }) => <Back><Road r={7} f={f + 60} />
+const Next = ({ f }) => <Back><Road r={6} f={f + 60} />
   <div style={{ position: 'absolute', left: 0, right: 0, top: 520, textAlign: 'center' }}>
     <div style={{ fontSize: 120, fontWeight: 900, color: TEAL, transform: `scale(${3 - 2 * bounce(f, 4)})`, opacity: ease(f, 4, 6) }}>What comes next?</div></div></Back>;
 
@@ -315,7 +300,7 @@ const Lanes = ({ f, at }) => {
 
 const Outro = ({ f, at }) => {
   const n5 = Math.round(interpolate(f, [at('five'), at('five') + 20], [0, 5], clamp)), n2 = Math.round(interpolate(f, [at('two in progress'), at('two in progress') + 14], [0, 2], clamp));
-  return <Back><Road r={8} f={f + 60} />
+  return <Back><Road r={7} f={f + 60} />
     <div style={{ position: 'absolute', left: 0, right: 0, top: 480, display: 'flex', justifyContent: 'center', gap: 60 }}>
       {[[n5, 'releases delivered', GREEN, 'five'], [n2, 'in progress', TEAL, 'two in progress']].map(([v, t, c, p]) => <In key={t} k={pop(f, at(p))}>
         <div style={{ width: 380, padding: 30, borderRadius: 24, background: 'rgba(255,255,255,.07)', border: `4px solid ${c}`, textAlign: 'center' }}>
@@ -350,7 +335,7 @@ export const Part2 = () => {
   const i = START.findLastIndex(s => s <= f), b = BEATS[i], lf = f - START[i], n = len(b), p = BEATS[i - 1], nx = BEATS[i + 1];
   const roadish = x => x && ['rel', 'begin', 'next'].includes(x.mg);
   const fade = Math.min(roadish(p) && roadish(b) ? 1 : interpolate(lf, [0, 12], [0, 1], clamp), roadish(b) && roadish(nx) ? 1 : interpolate(lf, [n - 12, n], [1, 0], clamp));
-  const at = atFor(i), prevR = p && p.mg === 'rel' ? p.r : p && p.mg === 'next' ? 7 : p && p.mg === 'begin' ? 0 : undefined;
+  const at = atFor(i), prevR = p && p.mg === 'rel' ? p.r : p && p.mg === 'next' ? 6 : p && p.mg === 'begin' ? 0 : undefined;
   return (
     <AbsoluteFill style={{ background: INK }}>
       <AbsoluteFill style={{ opacity: fade }}>
