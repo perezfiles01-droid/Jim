@@ -53,12 +53,18 @@ Part 1  Introduction                                      DONE, approved (v3, 31
         ADB, EDRMS, declaring a record in 7 steps (with the requester's
         recording), RAC / ITD / AvePoint, the release journey.
         Files: video/part1/, video/EDRMS_KT_Part1_Introduction.mp4 (6:27)
-Part 2  The release journey in detail                     NEXT
+Part 2  The release journey in detail                     NEXT (script drafted in chat 3 Nov, not yet final;
+        open questions: what MAS stands for, 1.2 and 1.2.1 together, 2026.3.1 timing)
         Each release from 1.1 to today: what it does, why it matters, when it
         went live, then what comes next (2026.5 and the roadmap). Hotfixes
         1.1.1 and 2026.1.1 belong here (left out of Part 1).
-Part 3  How a release is delivered                        TODO
-        The lifecycle, step by step, with who does each step (section 3).
+Part 3  How a release is delivered                        BUILT 3 Nov 2026 (awaiting review)
+        17 steps in 4 stages (Plan, Build, Test, Go live), house analogy,
+        2026.4 as the running example. Fully animated, no recording.
+        Files: video/part3/ (Part3.jsx), video/KT_Part3_Script_FINAL.txt,
+        video/EDRMS_KT_Part3_How_A_Release_Is_Delivered.mp4
+        Template for any fully animated part: stage tracker + step dots on top,
+        step scene left, house/owner/date/gate chips right, Stamp for sign-offs.
 Part 4  Release 2026.4, the EDRMS Utilization Report      TODO
         Refresh of the first KT video (video/KT_Release2026.4_Script_FINAL.txt)
         in the new Part 1 style, with the LATEST web part screens.
@@ -159,7 +165,10 @@ CAB 7 to 11 Dec, PROD 11 Dec 2026.
   C A B, A D O, B A. Subtitles join them back (Subtitle in Part1.jsx; add any new
   acronym to its replace list).
 - Write release numbers as words: "twenty twenty six point one". Subtitles convert.
-- End each part by pointing to the next part.
+- End each part by pointing to the next part, UNLESS the requester removes it
+  (Part 3 ends without pointing to Part 4, requester's ruling 3 Nov 2026).
+- Parts may be made out of order (Part 3 was made before Part 2). Do not make
+  an ending promise the order may break.
 
 ======================================================================
 5. VOICE: KOKORO am_michael, FREE AND LOCAL
@@ -180,6 +189,8 @@ Requester's rulings:
   QA       = Q A, American "Ey"                                          kjˈuː ˈeɪ
   AvePoint = "Av-Point", never "Avi-point" or "Ah-vay-point"            ˈævpɔɪnt
   live     = "layv" (went live, goes live)                               lˈaɪv
+  Also fixed in pronounce.py (Part 3): A D O, S I T, U A T, C A B, and the
+  possessives R A C's, A D B's, I T D's (the regex otherwise splits off "'s").
 Kokoro reads a lone capital A as a schwa. For every NEW acronym or name, check it
 before voicing:  k.tokenizer.phonemize("P B L", "en-us")  and read the IPA. If a
 letter A shows as ɐ, or a word looks wrong, add it to pronounce.py.
@@ -271,6 +282,10 @@ the recording however the clip is sped up or slowed.
 Add partN/tts/, partN/out/ and the recording to video/.gitignore.
 Long jobs (voicing, render ~15 min) go in the background. If the container
 restarts, re-run them; check that the recording and node_modules are still there.
+
+Illustrative content (example needs, example user story, example UAT guide
+steps) is fine in animated parts, but must read as an example, never as a real
+ADB requirement or figure. Part 3 labels its sample needs "for illustration".
 
 Checking before sending: render about 15 stills across every scene, tile them,
 LOOK at them, and check: highlights land on the right element, labels are not

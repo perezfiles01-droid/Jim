@@ -244,10 +244,10 @@ const SCENES = {
     <div style={{ position: 'absolute', left: 60, top: 30, fontSize: 40, fontWeight: 900 }}>
       {'CAB'.split('').map((L, i) => <span key={i} style={{ color: TEAL }}>{L}<span style={{ color: 'white', fontSize: 30, opacity: ease(f, at('stands for') + i * 8, 10) }}>
         {['hange ', 'dvisory ', 'oard'][i]}</span></span>)}</div>
-    <div style={{ position: 'absolute', left: 160, top: 170, width: 760, height: 60, borderRadius: 30, background: '#7A5634' }} />
-    {[0, 1, 2, 3].map(i => <div key={i} style={{ position: 'absolute', left: 180 + i * 190, top: 60 }}><User s={110} c={PAPER} />
+    <div style={{ position: 'absolute', left: 160, top: 250, width: 760, height: 60, borderRadius: 30, background: '#7A5634' }} />
+    {[0, 1, 2, 3].map(i => <div key={i} style={{ position: 'absolute', left: 180 + i * 190, top: 140 }}><User s={110} c={PAPER} />
       {f > at('for approval') + i * 8 && <div style={{ position: 'absolute', left: 30, top: -50, transform: `scale(${bounce(f, at('for approval') + i * 8)})` }}><Check s={56} /></div>}</div>)}
-    <In k={pop(f, at('presented'))} style={{ position: 'absolute', left: 420, top: 260 }}><Doc s={110} c={BLUE} /></In>
+    <In k={pop(f, at('presented'))} style={{ position: 'absolute', left: 980, top: 140 }}><Doc s={110} c={BLUE} /></In>
     <div style={{ position: 'absolute', left: 340, top: 410 }}><Stamp f={f} s={at('for approval') + 36} text="APPROVED" size={60} /></div></Box>,
   15: ({ f, at }) => { const go = at('goes live'), t = ease(f, go, 30), night = at('outside office');
     return <Box><div style={{ position: 'absolute', inset: 0, borderRadius: 30, background: `rgba(0,0,0,${0.35 * ease(f, night, 20)})` }} />
