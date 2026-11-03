@@ -283,6 +283,12 @@ the recording however the clip is sped up or slowed.
   npx remotion still partN/src/index.jsx PartN partN/out/s.png --frame=1500 --public-dir=partN/public --browser-executable=$HS
   npx remotion render partN/src/index.jsx PartN partN/out/raw.mp4 --public-dir=partN/public --browser-executable=$HS --concurrency=4
   ffmpeg -i partN/out/raw.mp4 -c:v libx264 -crf 26 -preset slow -c:a aac -b:a 128k -movflags +faststart EDRMS_KT_PartN_<Title>.mp4
+1440p (requester's preference from 3 Nov 2026, deliver it for every part, keep the
+1080p too): --scale=1.3333 FAILS (1080 x 1.3333 is not a whole number). Render at
+1.5x and downscale:
+  npx remotion render partN/src/index.jsx PartN partN/out/raw1620.mp4 --public-dir=partN/public --browser-executable=$HS --concurrency=4 --scale=1.5 --crf=16
+  ffmpeg -i partN/out/raw1620.mp4 -vf scale=2560:1440:flags=lanczos -c:v libx264 -crf 22 -preset slow -c:a aac -b:a 160k -movflags +faststart EDRMS_KT_PartN_<Title>_1440p.mp4
+About 30 to 35 minutes per part.
 Add partN/tts/, partN/out/ and the recording to video/.gitignore.
 Long jobs (voicing, render ~15 min) go in the background. If the container
 restarts, re-run them; check that the recording and node_modules are still there.
