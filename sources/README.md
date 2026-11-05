@@ -31,6 +31,12 @@ Rules:
 | `evidence_CG_GuestUserReport_2026-08-14.csv` | Test | 14 Aug 2026 | 9 | Guest users |
 | `EDRMS_Merged_Site_CSV_Assessment.xlsx` | Production | n/a | n/a | **Our assessment only, not the data.** Measures the merged file below |
 
+## Received, deliberately not in the repo (personal data)
+
+| File | Tenant | Received | Rows | What it gives the report |
+|---|---|---|---|---|
+| `AP_All_Users_Staff_Consultants_Contractors.xlsx` | Production (ADB) | 5 Nov 2026, from the requester | 12,630 people (pivot, sheet `AP`, Grand Total 12,715) | Excel pivot of active accounts: Organization, Department, Division, Unit, Display Name, Email Id, Office Location. Values are only on the first row of each group (fill down), with 1,609 "Total" rows. **Not committed: it lists names and emails, and this repo serves a public site.** Counted 5 Nov: 12,577 unique ADB mailboxes after dropping 44 non-ADB or blank accounts and 9 repeats. Staff type from the email: 5,497 Staff, 4,477 `.consultant`, 2,603 `.contractor`. 53 Department codes, which include SD1, SD2, SD3, CCSD and CSD, not in the report's unit list. Office Location carries the RM and RO codes (INRM 217, SLRM 72, NARO 11). Proposed as the People tab of the single import template, giving headcount per unit and staff type |
+
 ## Missing: known to exist, not in the repo
 
 | Source | Who has it | What it would give | Status |

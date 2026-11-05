@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#eef2f6;color:#172b4d}
+.frame{width:1500px;padding:22px 26px;box-sizing:border-box}
+.cap{font-size:16px;font-weight:600;color:#194F8E;margin:0 0 4px}.sub{font-size:13.5px;color:#33475f;margin:0 0 10px;line-height:1.5}
+.xl{background:#fff;border:1px solid #c8d1db;border-radius:8px;overflow:hidden;margin-bottom:8px}
+.bar{background:#217346;color:#fff;font-size:13px;padding:6px 12px}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #e1e5ea;padding:5px 7px;text-align:left;white-space:nowrap;font-size:12.5px}
+th{background:#f3f3f3;font-weight:600}.n{background:#f3f3f3;color:#777;width:24px;text-align:center}
+.a{background:#eef7ee;color:#1d6b33}.r{background:#fde9e7;color:#b42318}.b{background:#e8f3ff;color:#194F8E}
+.tabs{display:flex;gap:2px;background:#f3f3f3;border-top:1px solid #c8d1db;padding:0 8px}
+.tab{padding:6px 14px;font-size:13px;color:#555}.tab.on{background:#fff;color:#217346;font-weight:600;border-bottom:3px solid #217346}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:#fff;border:1px solid #dbe3ec;border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.5}
+.card h4{margin:0 0 6px;color:#194F8E;font-size:15px}
+.card table td,.card table th{font-size:12.5px}
+</style></head><body>
+<div class="frame" id="v1">
+<p class="cap">Tab 1 of 3: Sites &nbsp;<span style="font-weight:400;color:#5b6b7d">one row per library, sir Rotsen's site file as it is</span></p>
+<div class="xl"><div class="bar">EDRMS_Utilization_Manual_Data.xlsx</div>
+<table><tr><th class="n"></th><th>Site</th><th>URL</th><th>Site Name</th><th>Department</th><th>Division</th><th>Production</th><th class="r">Category</th><th class="r">Sub-category</th><th class="r">Sub-group</th></tr>
+<tr><td class="n">2</td><td>.../sites/sard_energy/AnnualMeet</td><td>.../sites/sard_energy</td><td>sard_energy</td><td>SARD</td><td>SAEN</td><td>Yes</td><td>HQ</td><td>SARD</td><td>SAEN</td></tr>
+<tr><td class="n">3</td><td>.../sites/slrm_projects/Correspondence</td><td>.../sites/slrm_projects</td><td>slrm_projects</td><td>SLRM</td><td>SLRM</td><td>Yes</td><td>RM</td><td>SARD</td><td>SLRM</td></tr></table>
+<div class="tabs"><span class="tab">Instructions</span><span class="tab on">Sites</span><span class="tab">People</span><span class="tab">Departments</span><span class="tab">Valid values</span></div></div>
+
+<p class="cap" style="margin-top:16px">Tab 2 of 3: People &nbsp;<span style="font-weight:400;color:#5b6b7d">one row per person: the AP All Users export, flattened, plus one training column</span></p>
+<div class="xl"><table><tr><th class="n"></th><th class="a">Email</th><th class="a">Display Name</th><th class="a">Department</th><th class="a">Division</th><th class="a">Unit</th><th class="a">Office Location</th><th class="b">Staff type</th><th class="b">Completed EDRMS training</th></tr>
+<tr><td class="n">2</td><td>jdelacruz@adb.org</td><td>Juan Dela Cruz</td><td>SARD</td><td>SAEN</td><td>(blank)</td><td>ADB HQ</td><td>Staff</td><td>Yes</td></tr>
+<tr><td class="n">3</td><td>mlee.consultant@adb.org</td><td>Mina Lee</td><td>SARD</td><td>SAEN</td><td>(blank)</td><td>ADB HQ</td><td>Consultant</td><td>No</td></tr>
+<tr><td class="n">4</td><td>rperera@adb.org</td><td>Ravi Perera</td><td>SARD</td><td>SLRM</td><td>(blank)</td><td>SLRM</td><td>Staff</td><td>Yes</td></tr>
+<tr><td class="n">5</td><td>tkim.contractor@adb.org</td><td>Tae Kim</td><td>ITD</td><td>ITID</td><td>(blank)</td><td>ADB HQ</td><td>Contractor</td><td></td></tr></table></div>
+<p class="sub"><b class="a" style="padding:1px 6px">Green</b> copied straight from the AP export (Organization column dropped, it repeats Division). <b class="b" style="padding:1px 6px">Blue</b> Staff type is filled in for you from the email (.consultant, .contractor, otherwise Staff); Completed EDRMS training is the only thing RAC types: Yes, No or blank.</p>
+
+<p class="cap" style="margin-top:16px">Tab 3 of 3: Departments &nbsp;<span style="font-weight:400;color:#5b6b7d">one row per Department / Office / RM / RO, only the two things that cannot be derived</span></p>
+<div class="xl"><table><tr><th class="n"></th><th>Unit code</th><th>Go-Live date</th><th>Site convention link</th></tr>
+<tr><td class="n">2</td><td>SARD</td><td>2024-03-18</td><td>https://asiandevbank.sharepoint.com/sites/sard_energy/SitePages/Convention.aspx</td></tr>
+<tr><td class="n">3</td><td>SLRM</td><td>2025-01-13</td><td></td></tr></table></div>
+</div>
+
+<div class="frame" id="v2">
+<p class="cap">What the import works out, so nobody types a headcount or a training count</p>
+<div class="grid">
+<div class="card"><h4>Headcount and Completed training, counted from People</h4>
+A person counts towards their RM or RO when Office Location is one (SLRM, INRM, NARO...), otherwise towards their Department. Checked against your file:
+<table style="margin-top:8px"><tr><th>Unit</th><th>Headcount</th><th>Staff</th><th>Consultants</th><th>Contractors</th></tr>
+<tr><td>ITD</td><td>1,803</td><td>358</td><td>34</td><td>1,411</td></tr>
+<tr><td>CWRD</td><td>146</td><td>47</td><td>91</td><td>8</td></tr>
+<tr><td>SARD</td><td>96</td><td>38</td><td>57</td><td>1</td></tr>
+<tr><td>INRM</td><td>217</td><td>142</td><td>27</td><td>48</td></tr>
+<tr><td>SLRM</td><td>72</td><td>45</td><td>11</td><td>16</td></tr>
+<tr><td><b>All ADB</b></td><td><b>12,577</b></td><td><b>5,497</b></td><td><b>4,477</b></td><td><b>2,603</b></td></tr></table></div>
+<div class="card"><h4>Rules for the People tab (whole file refused if broken)</h4>
+<ul style="margin:0;padding-left:18px">
+<li>Email required, a real address, each person once.</li>
+<li>Only ADB mailboxes count (adb.org, adbi.org, afe.adb.org). Service and test accounts in your file (44, e.g. onmicrosoft.com, no email) are skipped and listed, not counted.</li>
+<li>Department required; Office Location required.</li>
+<li>Staff type: Staff, Consultant or Contractor.</li>
+<li>Completed EDRMS training: Yes, No or blank (blank counts as No).</li>
+<li>Pasting the raw AP pivot is accepted too: blank cells are filled down from the row above and "Total" rows are dropped automatically.</li>
+</ul>
+<h4 style="margin-top:10px">Across the tabs</h4>
+<ul style="margin:0;padding-left:18px">
+<li>Every unit on Departments must appear on Sites or People.</li>
+<li>Sites rules stay as in the earlier mockup.</li>
+</ul></div>
+</div></div>
+</body></html>
