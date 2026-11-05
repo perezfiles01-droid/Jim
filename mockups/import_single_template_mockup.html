@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#eef2f6;color:#172b4d}
+.frame{width:1500px;padding:22px 26px;box-sizing:border-box}
+.cap{font-size:15px;font-weight:600;color:#194F8E;margin:0 0 10px}.cap span{font-weight:400;color:#5b6b7d}
+.xl{background:#fff;border:1px solid #c8d1db;border-radius:8px;overflow:hidden}
+.bar{background:#217346;color:#fff;font-size:14px;padding:7px 12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border:1px solid #e1e5ea;padding:5px 6px;text-align:left;white-space:nowrap;font-size:12px}th{white-space:normal}
+th{background:#f3f3f3;font-weight:600}.n{background:#f3f3f3;color:#777;width:26px;text-align:center}
+.r{background:#fde9e7;color:#b42318}.g{background:#e8f3ff;color:#194F8E}
+.tabs{display:flex;gap:2px;background:#f3f3f3;border-top:1px solid #c8d1db;padding:0 8px}
+.tab{padding:6px 14px;font-size:13px;color:#555}.tab.on{background:#fff;color:#217346;font-weight:600;border-bottom:3px solid #217346}
+.key{font-size:13px;color:#33475f;margin-top:10px}.key b{padding:1px 8px;border-radius:4px}
+.panel{width:600px;background:#fff;border:1px solid #d0d9e3;border-radius:12px;padding:20px 22px;box-shadow:0 6px 20px rgba(14,31,53,.1)}
+.pt{font-size:22px;font-weight:600}.who{font-size:13px;color:#5b6b7d;margin:4px 0 14px}
+.step{border:1px solid #e3e9f0;border-radius:10px;padding:12px 14px;margin-bottom:12px}.step h4{margin:0 0 8px;font-size:15px;color:#194F8E}
+.b2{display:inline-block;font-size:14px;font-weight:600;border-radius:8px;padding:7px 14px;margin-right:6px}.pri{background:#194F8E;color:#fff}.out{border:1px solid #194F8E;color:#194F8E}
+.drop{border:2px dashed #b8c7d8;border-radius:10px;padding:12px;text-align:center;font-size:14px}
+.good{background:#f1fbf3;border:1px solid #a8dbb5;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;color:#14532d}
+.small{font-size:13px;color:#5b6b7d;line-height:1.45;margin-top:8px}
+</style></head><body>
+<div class="frame" id="t1">
+<p class="cap">One template: EDRMS_Utilization_Manual_Data.xlsx <span>(one row per site; the sheet RAC fills in)</span></p>
+<div class="xl"><div class="bar">EDRMS_Utilization_Manual_Data.xlsx</div>
+<table><tr><th class="n"></th><th>A Site</th><th>B URL</th><th>C Site Name</th><th>D Department</th><th>E Division</th><th>F Production</th><th class="r">G Category</th><th class="r">H Sub-category</th><th class="r">I Sub-group</th><th class="g">J Headcount</th><th class="g">K Completed training</th><th class="g">L Go-Live date</th><th class="g">M Site convention link</th></tr>
+<tr><td class="n">2</td><td>.../sard_energy/AnnualMeet</td><td>.../sites/sard_energy</td><td>sard_energy</td><td>SARD</td><td>SAEN</td><td>Yes</td><td>HQ</td><td>SARD</td><td>SAEN</td><td>1200</td><td>950</td><td>2024-03-18</td><td>.../Convention.aspx</td></tr>
+<tr><td class="n">3</td><td>.../sard_agri/Contracts</td><td>.../sites/sard_agri</td><td>sard_agri</td><td>SARD</td><td>SAER</td><td>Yes</td><td>HQ</td><td>SARD</td><td>SAER</td><td>1200</td><td>950</td><td>2024-03-18</td><td>.../Convention.aspx</td></tr>
+<tr><td class="n">4</td><td>.../cwrd_transport/CountryPlan</td><td>.../sites/cwrd_transport</td><td>cwrd_transport</td><td>CWRD</td><td>CWTC</td><td>Yes</td><td>HQ</td><td>CWRD</td><td>CWTC</td><td>650</td><td>480</td><td>2024-06-03</td><td></td></tr>
+<tr><td class="n">5</td><td>.../slrm_projects/Correspondence</td><td>.../sites/slrm_projects</td><td>slrm_projects</td><td>SLRM</td><td>SLRM</td><td>Yes</td><td>RM</td><td>SARD</td><td>SLRM</td><td>45</td><td>30</td><td>2025-01-13</td><td></td></tr>
+<tr><td class="n">6</td><td>.../naro_relations/BoardEngage</td><td>.../sites/naro_relations</td><td>naro_relations</td><td>NARO</td><td>NARO</td><td>Yes</td><td>RO</td><td>NARO</td><td></td><td>12</td><td>12</td><td></td><td></td></tr></table>
+<div class="tabs"><span class="tab">Instructions</span><span class="tab on">Manual data</span><span class="tab">Example</span><span class="tab">Valid values</span></div></div>
+<p class="key"><b class="r">A to I</b> sir Rotsen's site file, unchanged (red columns renamed Category / Sub-category / Sub-group). &nbsp; <b class="g">J to M</b> the four RAC items, added at the end. They belong to the Department, so every row of the same Department must carry the same four values; the import refuses a file where they differ.</p>
+</div>
+<div class="frame" id="t2">
+<p class="cap">The panel becomes three steps with no choice to make</p>
+<div class="panel"><div class="pt">Import manual data</div><div class="who">Signed in as Jim Test · Site owner (Full control)</div>
+<div class="step"><h4>1. Download the template</h4><span class="b2 pri">Excel template</span><span class="b2 out">CSV template</span><div class="small">One file covers the site list and the four RAC items. Pre-filled with what is loaded now.</div></div>
+<div class="step"><h4>2. Upload and check</h4><div class="drop">EDRMS_Utilization_Manual_Data.xlsx</div>
+<div class="good"><b>All checks passed.</b> 1,032 sites in 41 Departments / Offices / RMs / ROs.<br><br><span class="b2 pri">Import</span><span class="b2 out">Cancel</span></div></div>
+<div class="small">The whole site list is replaced in one go. If any row breaks a rule, nothing is loaded.</div></div>
+</div></body></html>
