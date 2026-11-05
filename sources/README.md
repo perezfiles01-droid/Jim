@@ -44,10 +44,11 @@ Rules:
 |---|---|---|---|
 | `EDRMS_Declared_Records_MergedVLOOKUP_SITE.csv` (the "merged file") | RAC / requester | Production tenant. 92 sites (38 production) with **Department (16) and Division (27)** and library paths. Per the assessment: 943 data rows, 6,203 empty padding rows | **Needed.** Save to `sources/production/` |
 | Department / Office / RM / RO list (sir Rotsen) | RAC | The single grouping list confirmed in RAC Item 5 | Needed |
-| HQ / RM / RO classification per list entry | RAC | Location type grouping (Item 5). No system holds it | Needed, manual |
-| Approximate headcount per department | RAC | Item 1 | Needed, manual |
-| Completed training list per department | RAC | Item 2 | Needed, manual |
+| HQ / RM / RO classification per list entry | RAC | Location type grouping (Item 5). No system holds it | Needed: Category / Sub-category / Sub-group columns in sir Rotsen's file. Until then derived (web part 1.0.57) |
+| Approximate headcount per department | RAC | Item 1 | **Covered** by the AP All Users export (People tab, counted). Needs the code mapping below |
+| Completed training list per department | RAC | Item 2 | Needed, manual. Per person (People tab) or a count per unit (Departments tab); RAC to say which |
 | Go-Live date per department | RAC | Item 3 | Needed, manual |
 | Site convention link per department | RAC | Item 4 | Needed |
 | `public."Records"` export from `drm-npr` | ITD / AvePoint | Declared records (about 1,990 in UAT) | See `STATUS.md` section 1 |
+| HR code mapping (SD1, SD2, SD3, CCSD, CSD and about 80 more) | RAC / BA team | Which report unit each AP Department or office code counts towards (Code mapping tab) | Needed |
 | Folder count per library | AvePoint | Item 12 | Source not yet identified |
