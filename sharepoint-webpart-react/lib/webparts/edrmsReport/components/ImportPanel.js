@@ -101,6 +101,24 @@ export var ImportPanel = function (props) {
     var _f = React.useState(null), hist = _f[0], setHist = _f[1];
     var _g = React.useState(false), drag = _g[0], setDrag = _g[1];
     var input = React.useRef(null);
+    var shade = React.useRef(null);
+    // Start below SharePoint's own top bar, which sits above the page and would
+    // otherwise cover the panel's title and close button. The report is drawn
+    // with CSS zoom (text size), so the offset is given in zoomed pixels.
+    React.useLayoutEffect(function () {
+        var place = function () {
+            var el = shade.current;
+            if (!el)
+                return;
+            var bars = Array.prototype.slice.call(document.querySelectorAll('#SuiteNavWrapper, #SuiteNavPlaceHolder, #O365_NavHeader, [data-automationid="SuiteNav"], #spSiteHeader ~ div[role="banner"]'));
+            var bottom = bars.reduce(function (a, b) { var r = b.getBoundingClientRect(); return r.height > 0 && r.top < 5 ? Math.max(a, r.bottom) : a; }, 0);
+            var zoom = parseFloat(getComputedStyle(el.parentElement || el).getPropertyValue('zoom')) || 1;
+            el.style.top = Math.max(0, bottom) / zoom + 'px';
+        };
+        place();
+        window.addEventListener('resize', place);
+        return function () { return window.removeEventListener('resize', place); };
+    }, []);
     React.useEffect(function () { props.store.history().then(setHist, function () { return setHist([]); }); }, []);
     React.useEffect(function () {
         var k = function (e) { if (e.key === 'Escape' && !busy)
@@ -180,7 +198,7 @@ export var ImportPanel = function (props) {
     }); };
     var last = hist && hist.find(function (h) { return h.status === 'loaded'; });
     var issues = result ? result.issues : [];
-    return (React.createElement("div", { className: "impShade", onClick: function () { if (!busy)
+    return (React.createElement("div", { ref: shade, className: "impShade", onClick: function () { if (!busy)
             props.onClose(); }, "data-html2canvas-ignore": "true" },
         React.createElement("aside", { className: "impPanel", role: "dialog", "aria-modal": "true", "aria-label": "Import manual data", onClick: function (e) { return e.stopPropagation(); } },
             React.createElement("div", { className: "impHead" },
@@ -194,8 +212,7 @@ export var ImportPanel = function (props) {
                 React.createElement("button", { type: "button", className: "impX", "aria-label": "Close", title: "Close", disabled: !!busy, onClick: props.onClose }, "\u2715")),
             React.createElement("section", { className: "impStep" },
                 React.createElement("h3", null, "1. Download the template"),
-                React.createElement("button", { type: "button", className: "impBtn pri", onClick: function () { downloadTemplate(props.current, props.knownUnits).catch(function (e) { return setProblem('The template could not be created: ' + e); }); } }, "Download Excel template"),
-                React.createElement("p", { className: "impSmall" }, "One file for everything: Sites, People (the AP All Users export, plus Completed EDRMS training) and Departments (Go-Live date, site convention link). The Instructions tab lists every rule. Sites and Departments come pre-filled with what is loaded now.")),
+                React.createElement("button", { type: "button", className: "impBtn pri", onClick: function () { downloadTemplate(props.current, props.knownUnits).catch(function (e) { return setProblem('The template could not be created: ' + e); }); } }, "Download Excel template")),
             React.createElement("section", { className: "impStep" },
                 React.createElement("h3", null, "2. Upload and check"),
                 React.createElement("label", { className: 'impDrop' + (drag ? ' on' : ''), onDragOver: function (e) { e.preventDefault(); setDrag(true); }, onDragLeave: function () { return setDrag(false); }, onDrop: function (e) { e.preventDefault(); setDrag(false); check(e.dataTransfer.files[0] || null).catch(function () { return undefined; }); } },

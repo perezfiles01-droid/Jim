@@ -83,6 +83,24 @@ export const ImportPanel: React.FC<IImportPanelProps> = props => {
   const [hist, setHist] = React.useState<IHistoryEntry[] | null>(null);
   const [drag, setDrag] = React.useState(false);
   const input = React.useRef<HTMLInputElement>(null);
+  const shade = React.useRef<HTMLDivElement>(null);
+
+  // Start below SharePoint's own top bar, which sits above the page and would
+  // otherwise cover the panel's title and close button. The report is drawn
+  // with CSS zoom (text size), so the offset is given in zoomed pixels.
+  React.useLayoutEffect(() => {
+    const place = (): void => {
+      const el = shade.current;
+      if (!el) return;
+      const bars = Array.prototype.slice.call(document.querySelectorAll('#SuiteNavWrapper, #SuiteNavPlaceHolder, #O365_NavHeader, [data-automationid="SuiteNav"], #spSiteHeader ~ div[role="banner"]')) as HTMLElement[];
+      const bottom = bars.reduce((a, b) => { const r = b.getBoundingClientRect(); return r.height > 0 && r.top < 5 ? Math.max(a, r.bottom) : a; }, 0);
+      const zoom = parseFloat(getComputedStyle(el.parentElement || el).getPropertyValue('zoom')) || 1;
+      el.style.top = Math.max(0, bottom) / zoom + 'px';
+    };
+    place();
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, []);
 
   React.useEffect(() => { props.store.history().then(setHist, () => setHist([])); }, []);
   React.useEffect(() => {
@@ -128,7 +146,7 @@ export const ImportPanel: React.FC<IImportPanelProps> = props => {
   const issues = result ? result.issues : [];
 
   return (
-    <div className="impShade" onClick={() => { if (!busy) props.onClose(); }} data-html2canvas-ignore="true">
+    <div ref={shade} className="impShade" onClick={() => { if (!busy) props.onClose(); }} data-html2canvas-ignore="true">
       <aside className="impPanel" role="dialog" aria-modal="true" aria-label="Import manual data" onClick={e => e.stopPropagation()}>
         <div className="impHead">
           <div><h2>Import manual data</h2><div className="impWho">Signed in as {props.user} · {props.role}</div></div>
@@ -138,7 +156,6 @@ export const ImportPanel: React.FC<IImportPanelProps> = props => {
         <section className="impStep">
           <h3>1. Download the template</h3>
           <button type="button" className="impBtn pri" onClick={() => { downloadTemplate(props.current, props.knownUnits).catch(e => setProblem('The template could not be created: ' + e)); }}>Download Excel template</button>
-          <p className="impSmall">One file for everything: Sites, People (the AP All Users export, plus Completed EDRMS training) and Departments (Go-Live date, site convention link). The Instructions tab lists every rule. Sites and Departments come pre-filled with what is loaded now.</p>
         </section>
 
         <section className="impStep">
