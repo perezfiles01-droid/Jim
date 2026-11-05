@@ -415,3 +415,25 @@ Advice given
   container (no browser access to floot.app); Purview behaviour not
   verified in the real tenant.
 - Next step: wait for the user's next request and follow sections 1 and 2.
+
+======================================================================
+5 NOV 2026: DATA IMPORT IN THE FLOOT APP (Owner / Admin only)
+======================================================================
+Floot project d7e7628e (EDRMS Reporting Suite) now has a Postgres database.
+- Page: https://edrms-reporting-suite.floot.app/import (pages/import.tsx)
+- Sign in: user "owner" (password given to the requester in chat, not stored here).
+  Accounts live in table admin_user (roles owner/admin, scrypt hashes).
+  Readers never see the "Import data" button; every import endpoint returns 403
+  without an Owner/Admin session.
+- Templates (Excel with Instructions + Example sheets, or CSV):
+  1. Department inputs: Unit code, Approximate headcount, Completed training,
+     Go-Live date, Site convention link (RAC items 1 to 4). Upsert by unit.
+  2. Site directory: Site, URL, Site Name, Department, Division, Production,
+     Main Category, Sub Category, Sub Sub Category (sir Rotsen's file). Full replace.
+- Rules: helpers/importRules.tsx, run in the browser and again on the server.
+  Any broken rule rejects the whole file; rejections are logged in import_batch.
+- Report: endpoints/manual/data_GET feeds window.__edrmsApplyManual, which sets
+  head, trained, goLive, convUrl on DEPTS (training column, Go-Live chip,
+  View guide link). Units without imported values keep sample figures.
+- Not done: SharePoint web part (would gate on SPPermission.manageWeb) and
+  GitHub Pages (synced only on request).
