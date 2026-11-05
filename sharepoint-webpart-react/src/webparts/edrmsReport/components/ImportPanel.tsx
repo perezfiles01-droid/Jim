@@ -5,7 +5,7 @@
  * anything is saved. A file with any problem is refused whole.
  */
 import * as React from 'react';
-import { validate, IValidation, TABS, COLUMNS, POLICIES, IManualData, Sheet } from '../lib/importRules';
+import { validate, IValidation, TABS, COLUMNS, IManualData, Sheet } from '../lib/importRules';
 import { IManualStore, IHistoryEntry } from '../lib/manualStore';
 
 export interface IImportPanelProps {
@@ -27,25 +27,13 @@ async function downloadTemplate(current: IManualData | null, knownUnits: string[
   const X = await xlsx();
   const wb = X.utils.book_new();
   const headStyle = { font: { bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '194F8E' } }, alignment: { vertical: 'center', wrapText: true } };
-  const titleStyle = { font: { bold: true, sz: 14, color: { rgb: '194F8E' } } };
-  const sheet = (rows: (string | number)[][], widths: number[], styleHead = true): unknown => {
+  const sheet = (rows: (string | number)[][], widths: number[]): unknown => {
     const ws = X.utils.aoa_to_sheet(rows);
     ws['!cols'] = widths.map(w => ({ wch: w }));
-    if (styleHead && rows.length) rows[0].forEach((_, c) => { const a = X.utils.encode_cell({ r: 0, c }); if (ws[a]) ws[a].s = headStyle; });
+    if (rows.length) rows[0].forEach((_, c) => { const a = X.utils.encode_cell({ r: 0, c }); if (ws[a]) ws[a].s = headStyle; });
     return ws;
   };
 
-  const instr: (string | number)[][] = [['EDRMS Utilization Report: manual data template'], [],
-    ['Fill in the Sites, People and Departments tabs, save, then use Import data in the report. Code mapping is optional.'], [],
-    ['Rules (if any is broken, nothing is loaded)'], ...POLICIES.map((p, i) => [(i + 1) + '. ' + p]), []];
-  ([['sites', TABS.sites], ['people', TABS.people], ['departments', TABS.departments], ['mapping', TABS.mapping]] as [keyof typeof COLUMNS, string][]).forEach(([k, t]) => {
-    instr.push([t + ' tab'], ['Column', 'Required', 'Rule']);
-    COLUMNS[k].forEach(c => instr.push([c.name, c.req ? 'Yes' : 'No', c.rule]));
-    instr.push([]);
-  });
-  const wsI = sheet(instr, [30, 10, 110], false) as Record<string, { s?: unknown }>;
-  ['A1'].forEach(a => { if (wsI[a]) wsI[a].s = titleStyle; });
-  X.utils.book_append_sheet(wb, wsI, 'Instructions');
 
   // Sites and Departments come pre-filled with what is loaded now, so a file can be corrected in place.
   const sites = (current ? current.sites : []).map(s => [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.category, s.subCategory, s.subGroup || '']);

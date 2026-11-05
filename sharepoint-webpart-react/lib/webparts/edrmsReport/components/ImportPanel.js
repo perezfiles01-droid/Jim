@@ -6,7 +6,7 @@ import { __awaiter, __generator, __spreadArray } from "tslib";
  * anything is saved. A file with any problem is refused whole.
  */
 import * as React from 'react';
-import { validate, TABS, COLUMNS, POLICIES } from '../lib/importRules';
+import { validate, TABS, COLUMNS } from '../lib/importRules';
 var MAX_BYTES = 10 * 1024 * 1024;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function xlsx() {
@@ -16,7 +16,7 @@ function xlsx() {
 }
 function downloadTemplate(current, knownUnits) {
     return __awaiter(this, void 0, void 0, function () {
-        var X, wb, headStyle, titleStyle, sheet, instr, wsI, sites, units;
+        var X, wb, headStyle, sheet, sites, units;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, xlsx()];
@@ -24,29 +24,14 @@ function downloadTemplate(current, knownUnits) {
                     X = _a.sent();
                     wb = X.utils.book_new();
                     headStyle = { font: { bold: true, color: { rgb: 'FFFFFF' } }, fill: { fgColor: { rgb: '194F8E' } }, alignment: { vertical: 'center', wrapText: true } };
-                    titleStyle = { font: { bold: true, sz: 14, color: { rgb: '194F8E' } } };
-                    sheet = function (rows, widths, styleHead) {
-                        if (styleHead === void 0) { styleHead = true; }
+                    sheet = function (rows, widths) {
                         var ws = X.utils.aoa_to_sheet(rows);
                         ws['!cols'] = widths.map(function (w) { return ({ wch: w }); });
-                        if (styleHead && rows.length)
+                        if (rows.length)
                             rows[0].forEach(function (_, c) { var a = X.utils.encode_cell({ r: 0, c: c }); if (ws[a])
                                 ws[a].s = headStyle; });
                         return ws;
                     };
-                    instr = __spreadArray(__spreadArray([['EDRMS Utilization Report: manual data template'], [],
-                        ['Fill in the Sites, People and Departments tabs, save, then use Import data in the report. Code mapping is optional.'], [],
-                        ['Rules (if any is broken, nothing is loaded)']], POLICIES.map(function (p, i) { return [(i + 1) + '. ' + p]; }), true), [[]], false);
-                    [['sites', TABS.sites], ['people', TABS.people], ['departments', TABS.departments], ['mapping', TABS.mapping]].forEach(function (_a) {
-                        var k = _a[0], t = _a[1];
-                        instr.push([t + ' tab'], ['Column', 'Required', 'Rule']);
-                        COLUMNS[k].forEach(function (c) { return instr.push([c.name, c.req ? 'Yes' : 'No', c.rule]); });
-                        instr.push([]);
-                    });
-                    wsI = sheet(instr, [30, 10, 110], false);
-                    ['A1'].forEach(function (a) { if (wsI[a])
-                        wsI[a].s = titleStyle; });
-                    X.utils.book_append_sheet(wb, wsI, 'Instructions');
                     sites = (current ? current.sites : []).map(function (s) { return [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.category, s.subCategory, s.subGroup || '']; });
                     X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.sites.map(function (c) { return c.name; })], sites, true), [60, 48, 24, 13, 11, 11, 11, 13, 12]), TABS.sites);
                     X.utils.book_append_sheet(wb, sheet([COLUMNS.people.map(function (c) { return c.name; })], [34, 26, 13, 11, 10, 16, 13, 24]), TABS.people);
