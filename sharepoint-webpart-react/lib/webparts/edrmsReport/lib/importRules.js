@@ -45,7 +45,8 @@ export var COLUMNS = {
     departments: [
         { name: 'Unit code', req: true, rule: 'A unit that appears on Sites or People. Each unit once.' },
         { name: 'Go-Live date', req: false, rule: 'YYYY-MM-DD (an Excel date also works), from 2015-01-01 up to today. Blank if not live yet.' },
-        { name: 'Site convention link', req: false, rule: 'https:// link on a sharepoint.com address. Blank if not provided yet.' }
+        { name: 'Site convention link', req: false, rule: 'https:// link on a sharepoint.com address. Blank if not provided yet.' },
+        { name: 'Completed training (count)', req: false, rule: 'Only when RAC gives a number per unit instead of a list of people. Whole number from 0 up to the unit\'s headcount counted from People. Leave blank when People already marks who completed training; giving both for the same unit is refused.' }
     ],
     mapping: [
         { name: 'Code in People', req: true, rule: 'A Department or Office Location code used on People.' },
@@ -289,7 +290,7 @@ export function validate(book, fileName, importedBy) {
     var units = {};
     var unit = function (c) { return units[c] || (units[c] = { headcount: 0, staff: 0, consultant: 0, contractor: 0, trained: 0, goLive: null, convUrl: null }); };
     var peopleT = readTab(TABS.people, find(TABS.people), COLUMNS.people, issues, { required: true, maxRows: 30000, pivot: true, ignore: ['Organization', 'Count of User Name'] });
-    var people = 0, skippedDomain = 0, repeats = 0, trainedAll = 0, noDept = 0;
+    var people = 0, skippedDomain = 0, repeats = 0, trainedAll = 0, noDept = 0, countUnits = 0;
     if (peopleT) {
         var seen = {};
         var _loop_5 = function (r) {
@@ -362,8 +363,6 @@ export function validate(book, fileName, importedBy) {
             notes.push(repeats + ' repeated email(s) counted once.');
         if (noDept)
             notes.push(noDept + ' person(s) with no Department or office, counted under UNASSIGNED.');
-        if (people > 0 && trainedAll === 0)
-            notes.push('No one is marked Yes in Completed EDRMS training, so Completed training will show 0 for every unit. Fill that column if this is not intended.');
         if (people === 0)
             push(TABS.people, 0, '(tab)', 'No people could be counted. Check the Email column.');
     }
@@ -373,7 +372,7 @@ export function validate(book, fileName, importedBy) {
         var seen = {}, now = today();
         var _loop_6 = function (r) {
             var P = function (c, m) { return push(TABS.departments, r.line, c, m); };
-            var code = r.get('Unit code').toUpperCase(), d = r.get('Go-Live date'), link = r.get('Site convention link');
+            var code = r.get('Unit code').toUpperCase(), d = r.get('Go-Live date'), link = r.get('Site convention link'), cnt = r.get('Completed training (count)');
             if (!code) {
                 P('Unit code', 'Required. This cell is empty.');
                 return "continue";
@@ -404,12 +403,32 @@ export function validate(book, fileName, importedBy) {
             var u = unit(code);
             u.goLive = date;
             u.convUrl = link || null;
+            if (cnt) {
+                var t = cnt.replace(/,/g, '');
+                if (!/^\d+$/.test(t))
+                    P('Completed training (count)', '"' + cnt + '" is not a whole number.');
+                else if (u.headcount === 0)
+                    P('Completed training (count)', code + ' has no people on the People tab, so there is no headcount to count against.');
+                else if (+t > u.headcount)
+                    P('Completed training (count)', t + ' is more than ' + code + '\'s headcount (' + u.headcount + ').');
+                else if (u.trained > 0)
+                    P('Completed training (count)', code + ' already has ' + u.trained + ' people marked Yes on the People tab. Use one or the other, not both.');
+                else {
+                    u.trained = +t;
+                    countUnits++;
+                }
+            }
         };
         for (var _f = 0, _g = deptT.rows; _f < _g.length; _f++) {
             var r = _g[_f];
             _loop_6(r);
         }
     }
+    if (countUnits)
+        notes.push('Completed training taken as a number for ' + countUnits + ' unit(s) from the Departments tab.');
+    trainedAll = Object.keys(units).reduce(function (a, k) { return a + units[k].trained; }, 0);
+    if (people > 0 && trainedAll === 0)
+        notes.push('No completed training given (no Yes on People, no count on Departments), so Completed training will show 0 for every unit.');
     var noSites = Object.keys(units).filter(function (c) { return units[c].headcount > 0 && !known.has(c); });
     if (noSites.length)
         notes.push(noSites.length + ' unit(s) have people but no EDRMS site: ' + noSites.slice(0, 12).join(', ') + (noSites.length > 12 ? ', ...' : '') + '. Map them on Code mapping if they belong to another unit.');

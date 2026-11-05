@@ -51,7 +51,7 @@ function downloadTemplate(current, knownUnits) {
                     X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.sites.map(function (c) { return c.name; })], sites, true), [60, 48, 24, 13, 11, 11, 11, 13, 12]), TABS.sites);
                     X.utils.book_append_sheet(wb, sheet([COLUMNS.people.map(function (c) { return c.name; })], [34, 26, 13, 11, 10, 16, 13, 24]), TABS.people);
                     units = current ? Object.keys(current.units).filter(function (k) { return current.units[k].goLive || current.units[k].convUrl; }).sort() : [];
-                    X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.departments.map(function (c) { return c.name; })], units.map(function (k) { return [k, current.units[k].goLive || '', current.units[k].convUrl || '']; }), true), [12, 14, 80]), TABS.departments);
+                    X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.departments.map(function (c) { return c.name; })], units.map(function (k) { return [k, current.units[k].goLive || '', current.units[k].convUrl || '', '']; }), true), [12, 14, 80, 24]), TABS.departments);
                     X.utils.book_append_sheet(wb, sheet([COLUMNS.mapping.map(function (c) { return c.name; })], [18, 16]), TABS.mapping);
                     X.utils.book_append_sheet(wb, sheet(__spreadArray(__spreadArray([['Units the report knows']], knownUnits.slice().sort().map(function (u) { return [u]; }), true), [[], ['Category'], ['HQ'], ['RM'], ['RO'], [], ['Production'], ['Yes'], ['No'], [], ['Staff type'], ['Staff'], ['Consultant'], ['Contractor'], [], ['Completed EDRMS training'], ['Yes'], ['No']], false), [28]), 'Valid values');
                     X.writeFile(wb, 'EDRMS_Utilization_Manual_Data.xlsx');

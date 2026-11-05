@@ -52,7 +52,7 @@ async function downloadTemplate(current: IManualData | null, knownUnits: string[
   X.utils.book_append_sheet(wb, sheet([COLUMNS.sites.map(c => c.name), ...sites], [60, 48, 24, 13, 11, 11, 11, 13, 12]), TABS.sites);
   X.utils.book_append_sheet(wb, sheet([COLUMNS.people.map(c => c.name)], [34, 26, 13, 11, 10, 16, 13, 24]), TABS.people);
   const units = current ? Object.keys(current.units).filter(k => current.units[k].goLive || current.units[k].convUrl).sort() : [];
-  X.utils.book_append_sheet(wb, sheet([COLUMNS.departments.map(c => c.name), ...units.map(k => [k, current!.units[k].goLive || '', current!.units[k].convUrl || ''])], [12, 14, 80]), TABS.departments);
+  X.utils.book_append_sheet(wb, sheet([COLUMNS.departments.map(c => c.name), ...units.map(k => [k, current!.units[k].goLive || '', current!.units[k].convUrl || '', '']) ], [12, 14, 80, 24]), TABS.departments);
   X.utils.book_append_sheet(wb, sheet([COLUMNS.mapping.map(c => c.name)], [18, 16]), TABS.mapping);
   X.utils.book_append_sheet(wb, sheet([['Units the report knows'], ...knownUnits.slice().sort().map(u => [u]), [], ['Category'], ['HQ'], ['RM'], ['RO'], [], ['Production'], ['Yes'], ['No'], [], ['Staff type'], ['Staff'], ['Consultant'], ['Contractor'], [], ['Completed EDRMS training'], ['Yes'], ['No']], [28]), 'Valid values');
   X.writeFile(wb, 'EDRMS_Utilization_Manual_Data.xlsx');
