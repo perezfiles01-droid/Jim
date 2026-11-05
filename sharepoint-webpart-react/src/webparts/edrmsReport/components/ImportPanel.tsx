@@ -36,8 +36,8 @@ async function downloadTemplate(current: IManualData | null, knownUnits: string[
 
 
   // Sites and Departments come pre-filled with what is loaded now, so a file can be corrected in place.
-  const sites = (current ? current.sites : []).map(s => [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.category, s.subCategory, s.subGroup || '']);
-  X.utils.book_append_sheet(wb, sheet([COLUMNS.sites.map(c => c.name), ...sites], [60, 48, 24, 13, 11, 11, 11, 13, 12]), TABS.sites);
+  const sites = (current ? current.sites : []).map(s => [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.fullName || '', s.category, s.subCategory, s.subGroup || '']);
+  X.utils.book_append_sheet(wb, sheet([COLUMNS.sites.map(c => c.name), ...sites], [60, 48, 24, 13, 11, 11, 40, 11, 13, 12]), TABS.sites);
   X.utils.book_append_sheet(wb, sheet([COLUMNS.people.map(c => c.name)], [34, 26, 13, 11, 10, 16, 13, 24]), TABS.people);
   const units = current ? Object.keys(current.units).filter(k => current.units[k].goLive || current.units[k].convUrl).sort() : [];
   X.utils.book_append_sheet(wb, sheet([COLUMNS.departments.map(c => c.name), ...units.map(k => [k, current!.units[k].goLive || '', current!.units[k].convUrl || '', '']) ], [12, 14, 80, 24]), TABS.departments);

@@ -32,8 +32,8 @@ function downloadTemplate(current, knownUnits) {
                                 ws[a].s = headStyle; });
                         return ws;
                     };
-                    sites = (current ? current.sites : []).map(function (s) { return [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.category, s.subCategory, s.subGroup || '']; });
-                    X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.sites.map(function (c) { return c.name; })], sites, true), [60, 48, 24, 13, 11, 11, 11, 13, 12]), TABS.sites);
+                    sites = (current ? current.sites : []).map(function (s) { return [s.site, s.url, s.siteName, s.department, s.division, s.production ? 'Yes' : 'No', s.fullName || '', s.category, s.subCategory, s.subGroup || '']; });
+                    X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.sites.map(function (c) { return c.name; })], sites, true), [60, 48, 24, 13, 11, 11, 40, 11, 13, 12]), TABS.sites);
                     X.utils.book_append_sheet(wb, sheet([COLUMNS.people.map(function (c) { return c.name; })], [34, 26, 13, 11, 10, 16, 13, 24]), TABS.people);
                     units = current ? Object.keys(current.units).filter(function (k) { return current.units[k].goLive || current.units[k].convUrl; }).sort() : [];
                     X.utils.book_append_sheet(wb, sheet(__spreadArray([COLUMNS.departments.map(function (c) { return c.name; })], units.map(function (k) { return [k, current.units[k].goLive || '', current.units[k].convUrl || '', '']; }), true), [12, 14, 80, 24]), TABS.departments);

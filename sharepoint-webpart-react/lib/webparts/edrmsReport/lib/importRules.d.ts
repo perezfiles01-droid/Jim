@@ -25,6 +25,8 @@ export interface ISiteRow {
     category: string;
     subCategory: string;
     subGroup: string | null;
+    /** The unit's full name (VLOOKUP SITE "Full Name"), if given. */
+    fullName?: string;
 }
 export interface IManualData {
     version: 2;

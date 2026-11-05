@@ -22,15 +22,17 @@
 export var TABS = { sites: 'Sites', people: 'People', departments: 'Departments', mapping: 'Code mapping' };
 export var COLUMNS = {
     sites: [
-        { name: 'Site', req: true, rule: 'Full link to the library. Must start with the URL on the same row followed by /. Each Site once.' },
-        { name: 'URL', req: true, rule: 'https://<tenant>.sharepoint.com/sites/<name>, nothing after the site name.' },
-        { name: 'Site Name', req: true, rule: 'Must equal the <name> at the end of the URL.' },
-        { name: 'Department', req: true, rule: 'Unit code (capital letters and digits). Must equal the Sub-category or the Sub-group.' },
-        { name: 'Division', req: true, rule: 'Division code (capital letters and digits).' },
+        /* Same order as the VLOOKUP SITE tab of EDRMS Declared Records Merged, so it can be pasted as it is. */
+        { name: 'Site', req: true, rule: 'Full link to the library (or the site itself). Must start with the URL on the same row. Repeated identical rows are counted once.' },
+        { name: 'URL', req: true, rule: 'https://<tenant>.sharepoint.com/sites/<name> or /teams/<name>, nothing after the site name.' },
+        { name: 'Site Name', req: true, rule: 'The site title, e.g. sard_energy or (Demo) SLRM.' },
+        { name: 'Department', req: true, rule: 'Unit code (letters, digits, hyphen).' },
+        { name: 'Division', req: true, rule: 'Division code, e.g. SAEN, INRM, CSRS-Admin.' },
         { name: 'Production', req: true, rule: 'Yes or No.' },
-        { name: 'Category', req: true, rule: 'HQ, RM or RO.' },
-        { name: 'Sub-category', req: true, rule: 'Unit code.' },
-        { name: 'Sub-group', req: false, rule: 'Unit code, or blank.' }
+        { name: 'Full Name', req: false, rule: 'The Department\'s full name. Optional.' },
+        { name: 'Category', req: false, rule: 'HQ, RM or RO. Blank: RM or RO when the Division (or Department) is an RM / RO office on the People tab, otherwise HQ.' },
+        { name: 'Sub-category', req: false, rule: 'Unit code. Blank: the Department.' },
+        { name: 'Sub-group', req: false, rule: 'Unit code, or blank. Blank: the Division when it differs from the Department.' }
     ],
     people: [
         { name: 'Email', req: true, rule: 'The person\'s email. Each person once (repeats are counted once). Only adb.org, adbi.org and afe.adb.org mailboxes are counted; others are skipped as service or test accounts.' },
@@ -70,7 +72,7 @@ export var POLICIES = [
 var CODE = /^[A-Z][A-Z0-9-]{1,11}$/;
 /* People codes come from HR as they are, e.g. "VAN PCO" or "MYRM-YGN". */
 var PCODE = /^[A-Z][A-Z0-9 -]{1,15}$/;
-var SITE_URL = /^https:\/\/[a-z0-9-]+\.sharepoint\.com\/sites\/([A-Za-z0-9_.-]+)$/i;
+var SITE_URL = /^https:\/\/[a-z0-9-]+\.sharepoint\.com\/(?:sites|teams)\/([A-Za-z0-9_.-]+)$/i;
 var EMAIL = /^[a-z0-9._%+'-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 var ADB_DOMAINS = ['adb.org', 'adbi.org', 'afe.adb.org'];
 var HQ = ['', 'adb hq', '(blank)', 'hq'];
@@ -92,6 +94,11 @@ function isSpLink(s) {
     if (/\s/.test(s))
         return false;
     var m = /^https:\/\/([^/?#]+)(\/|$)/i.exec(s);
+    return !!m && /(^|\.)sharepoint\.com$/i.test(m[1]);
+}
+/** A library link: spaces are allowed after the host (e.g. ".../Shared Documents"). */
+function isSpPath(s) {
+    var m = /^https:\/\/([^/?#\s]+)(\/[^\t\n\r]*)?$/i.exec(s);
     return !!m && /(^|\.)sharepoint\.com$/i.test(m[1]);
 }
 function parseDate(s) {
@@ -209,30 +216,37 @@ export function validate(book, fileName, importedBy) {
     var sitesT = readTab(TABS.sites, find(TABS.sites), COLUMNS.sites, issues, { required: true, maxRows: 5000 });
     var sites = [];
     var known = new Set();
+    var derive = [];
+    var siteRepeats = 0;
     if (sitesT) {
         var seen = {}, siteSig = {};
         var _loop_4 = function (r) {
             var P = function (c, m) { return push(TABS.sites, r.line, c, m); };
             var site = r.get('Site'), url = r.get('URL'), nm = r.get('Site Name');
             var dept = r.get('Department').toUpperCase(), div = r.get('Division').toUpperCase(), prodRaw = r.get('Production');
-            var cat = r.get('Category').toUpperCase(), sub = r.get('Sub-category').toUpperCase(), grp = r.get('Sub-group').toUpperCase();
+            var cat = r.get('Category').toUpperCase(), sub = r.get('Sub-category').toUpperCase(), grp = r.get('Sub-group').toUpperCase(), full = r.get('Full Name');
             COLUMNS.sites.forEach(function (c) { if (c.req && !r.get(c.name))
                 P(c.name, 'Required. This cell is empty.'); });
             var m = SITE_URL.exec(url);
             if (url && !m)
-                P('URL', 'Must look like https://<tenant>.sharepoint.com/sites/<name>, with nothing after the site name.');
-            if (m && nm && nm.toLowerCase() !== m[1].toLowerCase())
-                P('Site Name', 'Must equal "' + m[1] + '", the name in the URL.');
+                P('URL', 'Must look like https://<tenant>.sharepoint.com/sites/<name> (or /teams/<name>), with nothing after the site name.');
+            var rowSig = [site, url, nm, dept, div, prodRaw, cat, sub, grp].join('|').toLowerCase();
             if (site) {
-                if (!isSpLink(site))
+                var k = site.toLowerCase().replace(/\/$/, ''), base = url.toLowerCase().replace(/\/$/, '');
+                if (!isSpPath(site))
                     P('Site', 'Must be a full https:// link on a sharepoint.com address.');
-                else if (url && site.toLowerCase().indexOf(url.toLowerCase().replace(/\/$/, '') + '/') !== 0)
-                    P('Site', 'Must start with the URL on the same row followed by /.');
-                var k = site.toLowerCase().replace(/\/$/, '');
-                if (seen[k])
-                    P('Site', 'Repeated (first on row ' + seen[k] + ').');
+                else if (url && k !== base && k.indexOf(base + '/') !== 0)
+                    P('Site', 'Must start with the URL on the same row.');
+                if (seen[k]) {
+                    // The merged file lists a few sites more than once with the same details: counted once.
+                    if (seen[k].sig === rowSig) {
+                        siteRepeats++;
+                        return "continue";
+                    }
+                    P('Site', 'Repeated (first on row ' + seen[k].line + ') with different details.');
+                }
                 else
-                    seen[k] = r.line;
+                    seen[k] = { line: r.line, sig: rowSig };
             }
             [['Department', dept], ['Division', div], ['Sub-category', sub], ['Sub-group', grp]].forEach(function (_a) {
                 var c = _a[0], v = _a[1];
@@ -244,7 +258,7 @@ export function validate(book, fileName, importedBy) {
                 P('Production', '"' + prodRaw + '" must be Yes or No.');
             if (cat && ['HQ', 'RM', 'RO'].indexOf(cat) < 0)
                 P('Category', '"' + cat + '" must be HQ, RM or RO.');
-            if (dept && sub && dept !== sub && dept !== grp)
+            if (dept && sub && grp && dept !== sub && dept !== grp)
                 P('Department', '"' + dept + '" must equal the Sub-category (' + sub + ')' + (grp ? ' or the Sub-group (' + grp + ')' : '') + '.');
             if (m) {
                 var sig = [dept, div, prod, cat, sub, grp].join('|'), prev = siteSig[url.toLowerCase()];
@@ -253,18 +267,20 @@ export function validate(book, fileName, importedBy) {
                 else if (!prev)
                     siteSig[url.toLowerCase()] = { line: r.line, sig: sig };
             }
-            if (dept)
-                known.add(dept);
-            if (sub)
-                known.add(sub);
-            if (grp)
-                known.add(grp);
-            sites.push({ site: site.replace(/\/$/, ''), url: url, siteName: nm, department: dept, division: div, production: prod === 'yes', category: cat, subCategory: sub, subGroup: grp || null });
+            if (dept && sub && !grp && dept !== sub)
+                P('Department', '"' + dept + '" must equal the Sub-category (' + sub + ') or be given as the Sub-group.');
+            var row = { site: site.replace(/\/$/, ''), url: url, siteName: nm, department: dept, division: div, production: prod === 'yes',
+                category: cat, subCategory: sub || dept, subGroup: grp || (!sub && div && div !== dept ? div : null), fullName: full || undefined };
+            if (!cat || !sub)
+                derive.push({ row: row, cat: !cat, sub: !sub, grp: !grp && !sub });
+            sites.push(row);
         };
         for (var _i = 0, _a = sitesT.rows; _i < _a.length; _i++) {
             var r = _a[_i];
             _loop_4(r);
         }
+        if (siteRepeats)
+            notes.push(siteRepeats + ' repeated Site row(s) with identical details counted once.');
     }
     /* ---------- Code mapping (optional) ---------- */
     var map = {};
@@ -290,6 +306,7 @@ export function validate(book, fileName, importedBy) {
     var units = {};
     var unit = function (c) { return units[c] || (units[c] = { headcount: 0, staff: 0, consultant: 0, contractor: 0, trained: 0, goLive: null, convUrl: null }); };
     var peopleT = readTab(TABS.people, find(TABS.people), COLUMNS.people, issues, { required: true, maxRows: 30000, pivot: true, ignore: ['Organization', 'Count of User Name'] });
+    var offices = new Set();
     var people = 0, skippedDomain = 0, repeats = 0, trainedAll = 0, noDept = 0, countUnits = 0;
     if (peopleT) {
         var seen = {};
@@ -333,6 +350,8 @@ export function validate(book, fileName, importedBy) {
                 return "continue";
             }
             var office = officeRaw.toUpperCase();
+            if (HQ.indexOf(officeRaw.toLowerCase()) < 0)
+                offices.add(office);
             var code = HQ.indexOf(officeRaw.toLowerCase()) >= 0 ? (dept && dept !== '(BLANK)' ? dept : 'UNASSIGNED') : office;
             code = map[code] || code;
             if (!PCODE.test(code)) {
@@ -366,6 +385,15 @@ export function validate(book, fileName, importedBy) {
         if (people === 0)
             push(TABS.people, 0, '(tab)', 'No people could be counted. Check the Email column.');
     }
+    /* ---------- Sites: categories not given in the file ---------- */
+    if (derive.length) {
+        var ro_1 = function (c) { return (c && offices.has(c) ? (/RO$/.test(c) ? 'RO' : 'RM') : null); };
+        derive.forEach(function (d) { if (d.cat)
+            d.row.category = ro_1(d.row.subGroup) || ro_1(d.row.department) || 'HQ'; });
+        notes.push('Category, Sub-category or Sub-group filled in for ' + derive.length + ' site row(s): Sub-category = Department, Sub-group = Division, Category = RM or RO when that code is an RM / RO office on the People tab, otherwise HQ. Fill the columns to set them yourself.');
+    }
+    sites.forEach(function (s) { known.add(s.department); known.add(s.subCategory); if (s.subGroup)
+        known.add(s.subGroup); });
     /* ---------- Departments ---------- */
     var deptT = readTab(TABS.departments, find(TABS.departments), COLUMNS.departments, issues, { required: false, maxRows: 500 });
     if (deptT) {
