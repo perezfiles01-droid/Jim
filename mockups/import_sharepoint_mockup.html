@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#eef2f6;color:#172b4d}
+.frame{width:1500px;padding:22px 26px;box-sizing:border-box}
+.cap{font-size:15px;font-weight:600;color:#194F8E;margin:0 0 10px}
+.cap span{font-weight:400;color:#5b6b7d}
+.hdr{background:#f3f7fb;border:1px solid #dfe8f1;border-radius:14px;padding:18px 26px;display:flex;justify-content:space-between;align-items:flex-start}
+.t{font-size:26px;font-weight:500}.s{font-size:17px;color:#33475f;margin-top:10px}
+.r{display:flex;align-items:center;gap:14px}
+.asof{font-size:17px;color:#33475f}.asof b{color:#172b4d}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#3fb24f;margin-right:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #cfe0f0;border-radius:10px;padding:10px 18px;font-size:17px;font-weight:600;color:#194F8E;box-shadow:0 2px 6px rgba(17,58,98,.08)}
+.btn.imp{border:2px solid #194F8E}
+.hl{outline:3px dashed #e8590c;outline-offset:5px;border-radius:12px}
+.tag{font-size:12px;background:#fff4e6;color:#b4500a;border:1px solid #f5c08a;border-radius:999px;padding:3px 10px;margin-left:6px}
+.wrap{display:flex;gap:0;margin-top:14px}
+.page{flex:1;background:#fff;border:1px solid #dfe8f1;border-radius:14px;height:560px;opacity:.55;padding:20px}
+.ph{height:110px;border-radius:12px;background:#eef3f9;margin-bottom:14px}
+.panel{width:600px;background:#fff;border-left:1px solid #d0d9e3;box-shadow:-8px 0 24px rgba(14,31,53,.12);padding:22px 24px;box-sizing:border-box;margin-left:-160px;position:relative}
+.ptitle{font-size:22px;font-weight:600;display:flex;justify-content:space-between}
+.who{font-size:13px;color:#5b6b7d;margin:4px 0 16px}
+.step{border:1px solid #e3e9f0;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.step h4{margin:0 0 8px;font-size:15px;color:#194F8E}
+.opts{display:flex;gap:8px}.opt{flex:1;border:1px solid #cfd8e3;border-radius:8px;padding:8px 10px;font-size:13px}.opt.on{border:2px solid #194F8E;background:#eaf3fb}
+.opt b{display:block;font-size:14px}
+.small{font-size:13px;color:#5b6b7d;line-height:1.45}
+.b2{display:inline-block;font-size:14px;font-weight:600;border-radius:8px;padding:7px 14px;margin-right:6px}
+.pri{background:#194F8E;color:#fff}.out{border:1px solid #194F8E;color:#194F8E}
+.drop{border:2px dashed #b8c7d8;border-radius:10px;padding:12px;text-align:center;font-size:14px;color:#33475f}
+.bad{background:#fff5f4;border:1px solid #f1b8b2;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;color:#8a1c12}
+.good{background:#f1fbf3;border:1px solid #a8dbb5;border-radius:8px;padding:10px;margin-top:10px;font-size:13px;color:#14532d}
+table{width:100%;border-collapse:collapse;margin-top:6px}td,th{border-bottom:1px solid #f0d4d0;padding:4px 6px;text-align:left;font-size:12.5px}
+.note{font-size:14px;color:#33475f;margin-top:10px}
+</style></head><body>
+
+<div class="frame" id="f1">
+<p class="cap">A. Site Owner or Site Collection Admin <span>(SharePoint "Full control"): Import data appears beside Export</span></p>
+<div class="hdr"><div><div class="t">Bank-wide oversight</div><div class="s">EDRMS adoption across ADB: sites, users, documents and declared records</div></div>
+<div class="r"><span class="asof"><span class="dot"></span>Data as of <b>Monday 02 Nov 2026</b></span>
+<span class="hl"><span class="btn imp">&#8679; Import data</span></span><span class="btn">&#10515; Export &#9662;</span></div></div>
+</div>
+
+<div class="frame" id="f2">
+<p class="cap">B. Members and Visitors <span>(Edit, Read): no Import button at all, exactly as today</span></p>
+<div class="hdr"><div><div class="t">Bank-wide oversight</div><div class="s">EDRMS adoption across ADB: sites, users, documents and declared records</div></div>
+<div class="r"><span class="asof"><span class="dot"></span>Data as of <b>Monday 02 Nov 2026</b></span><span class="btn">&#10515; Export &#9662;</span></div></div>
+</div>
+
+<div class="frame" id="f3">
+<p class="cap">C. Owner clicks Import data: a side panel opens over the report <span>(the report stays where it is)</span></p>
+<div class="wrap"><div class="page"><div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div></div>
+<div class="panel">
+<div class="ptitle">Import manual data <span>&#10005;</span></div>
+<div class="who">Signed in as Jim Test · Site owner (Full control)</div>
+<div class="step"><h4>1. What are you importing?</h4><div class="opts">
+<div class="opt on"><b>Department inputs</b>Headcount, completed training, Go-Live date, site convention link</div>
+<div class="opt"><b>Site directory</b>Department / Office / RM / RO list (Category, Sub-category, Sub-group)</div></div></div>
+<div class="step"><h4>2. Download the template</h4><span class="b2 pri">Excel template</span><span class="b2 out">CSV template</span>
+<div class="small" style="margin-top:8px">Includes an Instructions sheet with every rule, an Example sheet (never loaded) and the valid unit codes. Pre-filled with the values already loaded.</div></div>
+<div class="step"><h4>3. Upload and check</h4><div class="drop">Drop the filled template here, or <u>browse</u> (.xlsx or .csv, up to 2 MB)</div>
+<div class="bad"><b>Not loaded. 3 problems found. Nothing was changed.</b>
+<table><tr><th>Row</th><th>Column</th><th>Problem</th></tr>
+<tr><td>4</td><td>Completed training</td><td>1,300 is more than the headcount (1,200).</td></tr>
+<tr><td>7</td><td>Unit code</td><td>"ZZZ" is not a known unit.</td></tr>
+<tr><td>9</td><td>Go-Live date</td><td>2026-02-30 is not a real date.</td></tr></table></div></div>
+<div class="small">Last import: 03 Nov 2026 by Jim Test · Loaded 16 rows · <u>View history</u></div>
+</div></div>
+</div>
+
+<div class="frame" id="f4">
+<p class="cap">D. A file that passes every check <span>(one click loads it; readers see the new figures on their next refresh)</span></p>
+<div style="width:600px"><div class="step" style="background:#fff"><h4>3. Upload and check</h4><div class="drop">EDRMS_Import_Department_Inputs.xlsx</div>
+<div class="good"><b>All checks passed. 16 rows ready to import.</b><br><br><span class="b2 pri">Import 16 rows</span><span class="b2 out">Cancel</span></div></div></div>
+</div>
+</body></html>
