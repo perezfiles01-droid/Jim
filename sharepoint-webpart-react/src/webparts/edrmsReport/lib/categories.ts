@@ -11,7 +11,7 @@ export const CATEGORY_LABELS: [string, string, string] = ['Category', 'Sub-categ
 
 export interface ICategory { main: string; sub: string; subSub?: string }
 
-const C: Record<string, [string, string, string?]> = {
+let C: Record<string, [string, string, string?]> = {
   ITD: ['HQ', 'ITD'], SARD: ['HQ', 'SARD'], OSFG: ['HQ', 'OSFG'], FIN: ['HQ', 'FIN'], PARD: ['HQ', 'PARD'],
   HRD: ['HQ', 'HRD'], SERD: ['HQ', 'SERD'], EARD: ['HQ', 'EARD'], CWRD: ['HQ', 'CWRD'], OGC: ['HQ', 'OGC'], SPD: ['HQ', 'SPD'],
   SLRM: ['RM', 'SARD', 'SLRM'], INRM: ['RM', 'SARD', 'INRM'], PRCM: ['RM', 'EARD', 'PRCM'],
@@ -29,4 +29,9 @@ export function mainOrder(): string[] {
   const seen: string[] = [];
   Object.keys(C).forEach(k => { if (seen.indexOf(C[k][0]) < 0) seen.push(C[k][0]); });
   return seen;
+}
+
+/** Replaces the sample rows with the imported site list's categories (Import data). */
+export function setCategoryRows(rows: Record<string, [string, string, string?]>): void {
+  C = { ...C, ...rows };
 }

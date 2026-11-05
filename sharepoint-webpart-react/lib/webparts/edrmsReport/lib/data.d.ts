@@ -1,3 +1,4 @@
+import { IManualData, IUnitFigures } from './importRules';
 export interface IDept {
     code: string;
     name: string;
@@ -75,9 +76,18 @@ export interface IReportData {
     allName: string;
 }
 export declare function loadReportData(): IReportData;
+/** The imported figures for a unit, if any. */
+export declare function manualFor(code: string): IUnitFigures | undefined;
+/**
+ * Returns the report data with imported values in place of the sample ones:
+ * headcount (counted from People) and, through manualFor(), completed training,
+ * Go-Live date and site convention link. The site list sets the categories.
+ * Units with nothing imported keep their sample figures.
+ */
+export declare function applyManual(base: IReportData, m: IManualData | null): IReportData;
 /** Headcount is shown rounded to the nearest hundred. */
 export declare const approxHead: (d: IDept) => number;
-/** People who completed EDRMS training (sample figure until RAC supplies it). */
+/** People who completed EDRMS training: imported (People tab), else a sample figure. */
 export declare function trainingDone(d: IDept): number;
 /** Internal and external visitors of a site. */
 export declare function visitorSplit(s: ISite): {

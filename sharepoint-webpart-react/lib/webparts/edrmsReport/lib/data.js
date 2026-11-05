@@ -5,10 +5,39 @@
 // the two can be compared number for number. To connect the real reporting
 // database, replace loadReportData() with a call to the API and return the
 // same shapes; no component needs to change.
+import { __assign } from "tslib";
+import { setCategoryRows } from './categories';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 var SAMPLE = require('../data/sampleData.json');
 export function loadReportData() {
     return SAMPLE;
+}
+/* ---------- imported manual data (Import data, Owners only, 5 Nov 2026) ---------- */
+var MANUAL = {};
+/** The imported figures for a unit, if any. */
+export function manualFor(code) { return MANUAL[code]; }
+/**
+ * Returns the report data with imported values in place of the sample ones:
+ * headcount (counted from People) and, through manualFor(), completed training,
+ * Go-Live date and site convention link. The site list sets the categories.
+ * Units with nothing imported keep their sample figures.
+ */
+export function applyManual(base, m) {
+    MANUAL = {};
+    if (!m || !m.units)
+        return base;
+    MANUAL = m.units;
+    if (m.sites && m.sites.length) {
+        var rows_1 = {};
+        m.sites.forEach(function (s) { if (!rows_1[s.department])
+            rows_1[s.department] = [s.category, s.subCategory, s.subGroup || undefined]; });
+        setCategoryRows(rows_1);
+    }
+    var depts = base.depts.map(function (d) {
+        var u = m.units[d.code];
+        return u && u.headcount > 0 ? __assign(__assign({}, d), { head: u.headcount }) : d;
+    });
+    return __assign(__assign({}, base), { depts: depts, totals: __assign(__assign({}, base.totals), { headcount: depts.reduce(function (a, d) { return a + d.head; }, 0) }) });
 }
 /* ---------- derived figures (the same formulas as the prototype) ---------- */
 /** Headcount is shown rounded to the nearest hundred. */
@@ -19,8 +48,11 @@ function seed(text, mul, mod) {
         h = (h * mul + text.charCodeAt(i)) % mod;
     return h;
 }
-/** People who completed EDRMS training (sample figure until RAC supplies it). */
+/** People who completed EDRMS training: imported (People tab), else a sample figure. */
 export function trainingDone(d) {
+    var u = manualFor(d.code);
+    if (u && u.headcount > 0)
+        return Math.min(u.trained, d.head);
     var rate = 0.6 + 0.35 * (seed(d.code, 37, 997) / 997);
     return Math.round(d.head * rate);
 }

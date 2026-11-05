@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Dropdown } from '@fluentui/react';
 import { CategoryBar, Multi } from '../components/CategoryBar';
 import {
-  IReportData, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras
+  IReportData, ISite, ILibrary, sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras, manualFor
 } from '../lib/data';
 import { F, pct, refreshIso } from '../lib/format';
 import { Band, Panel, KpiRow, IKpi, Search, Segmented, ExportButton, Chip, SumCard, Caret } from '../components/ui';
@@ -43,6 +43,10 @@ const ProfileStrip: React.FC<{ codes: string[] }> = ({ codes }) => {
     for (let i = 0; i < one.length; i++) s = (s * 31 + one.charCodeAt(i)) % 997;
     date = (1 + (s % 28)) + ' ' + MONTHS[s % 12] + ' ' + (2024 + (s % 2));
   }
+  /* Imported through Import data (Departments tab) replaces the sample date and link. */
+  const u = one ? manualFor(one) : undefined;
+  if (u) date = u.goLive ? (+u.goLive.slice(8, 10)) + ' ' + MONTHS[+u.goLive.slice(5, 7) - 1] + ' ' + u.goLive.slice(0, 4) : 'Not yet provided';
+  const guide = u && u.convUrl && /^https:\/\/[^\s"'<>]+$/.test(u.convUrl) ? u.convUrl : null;
   return (
     <div className="strip">
       <div className="chipCard">
@@ -53,7 +57,9 @@ const ProfileStrip: React.FC<{ codes: string[] }> = ({ codes }) => {
         <div className="ic"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" /><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" /></svg></div>
         <div><div className="k">Site convention</div>
           {one
-            ? <><a href="#" onClick={e => e.preventDefault()} title="Link to be provided by RAC">View guide &#8599;</a><div className="h">Approved naming for sites, libraries and folders</div></>
+            ? <>{guide
+              ? <a href={guide} target="_blank" rel="noopener noreferrer" title="Open the approved site guide">View guide &#8599;</a>
+              : <a href="#" onClick={e => e.preventDefault()} title="Link to be provided by RAC">View guide &#8599;</a>}<div className="h">Approved naming for sites, libraries and folders</div></>
             : <><div className="v muted">Select a department</div><div className="h">Each department has its own approved guide</div></>}
         </div>
       </div>

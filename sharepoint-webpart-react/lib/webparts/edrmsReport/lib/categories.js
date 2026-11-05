@@ -1,3 +1,4 @@
+import { __assign } from "tslib";
 /*
  * RAC Item 5 (22 Oct 2026): dynamic categories. Each department code carries a
  * Main, Sub and Sub Sub Category, read from the merged site file (columns G to
@@ -25,5 +26,9 @@ export function mainOrder() {
     Object.keys(C).forEach(function (k) { if (seen.indexOf(C[k][0]) < 0)
         seen.push(C[k][0]); });
     return seen;
+}
+/** Replaces the sample rows with the imported site list's categories (Import data). */
+export function setCategoryRows(rows) {
+    C = __assign(__assign({}, C), rows);
 }
 //# sourceMappingURL=categories.js.map

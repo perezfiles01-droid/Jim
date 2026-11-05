@@ -61,6 +61,26 @@ src/webparts/edrmsReport/
   data/sampleData.json         the approved prototype's sample figures
 ```
 
+## Import data (1.0.53, 5 Nov 2026)
+
+An **Import data** button sits beside Export, shown only to people who can
+manage the site (`SPPermission.manageWeb`: Owners with Full Control and site
+collection admins). Members and Visitors never see it.
+
+- One template, `EDRMS_Utilization_Manual_Data.xlsx`, downloaded from the
+  panel: tabs Sites, People, Departments, Code mapping (optional), plus
+  Instructions and Valid values. Rules: `lib/importRules.ts`.
+- People is the AP All Users export (the raw pivot can be pasted as it is)
+  plus a Completed EDRMS training column. Headcount, staff type and training
+  are counted from it; only counts per unit are saved, never names or emails.
+- Saved to a hidden library **EDRMS Manual Data** on the site
+  (`current.json`, `history.json`; `lib/manualStore.ts`). It is created on
+  the first import with its own permissions: Members are set to Read, so only
+  Owners can change it.
+- Any broken rule refuses the whole file and lists every problem.
+- Test: `node test/build-test-page.js`, then `node test/import-test.js`
+  (`AP_FILE=<path>` runs it with the real AP export).
+
 ## Connecting the real data
 
 Everything on screen is read through `IReportData` in `lib/data.ts`.

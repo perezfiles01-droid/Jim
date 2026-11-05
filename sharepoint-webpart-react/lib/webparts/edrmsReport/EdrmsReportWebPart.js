@@ -4,6 +4,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import { PropertyPaneDropdown, PropertyPaneToggle } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { SPPermission } from '@microsoft/sp-page-context';
+import { createManualStore } from './lib/manualStore';
 import * as strings from 'EdrmsReportWebPartStrings';
 import { ReportApp } from './components/ReportApp';
 var EdrmsReportWebPart = /** @class */ (function (_super) {
@@ -12,10 +14,22 @@ var EdrmsReportWebPart = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     EdrmsReportWebPart.prototype.render = function () {
+        var web = this.context.pageContext.web;
+        if (!this._store)
+            this._store = createManualStore(this.context.spHttpClient, web.absoluteUrl, web.serverRelativeUrl);
+        // Import data is offered only to people who can manage this site: Owners
+        // (Full Control) and site collection admins. Members and Visitors never see it,
+        // and the data library refuses their writes anyway (lib/manualStore.ts).
+        var canImport = !!web.permissions && web.permissions.hasPermission(SPPermission.manageWeb);
+        var isAdmin = !!this.context.pageContext.legacyPageContext && !!this.context.pageContext.legacyPageContext.isSiteAdmin;
         var element = React.createElement(ReportApp, {
             dashboard: this.properties.dashboard || 'bw',
             showSidebar: this.properties.showSidebar !== false,
-            textSize: this.properties.textSize || 'large'
+            textSize: this.properties.textSize || 'large',
+            store: this._store,
+            canImport: canImport,
+            userName: this.context.pageContext.user.displayName,
+            roleLabel: isAdmin ? 'Site collection admin' : 'Site owner (Full control)'
         });
         ReactDom.render(element, this.domElement);
     };

@@ -8,6 +8,7 @@ export interface IEdrmsReportWebPartProps {
     textSize: TextSize;
 }
 export default class EdrmsReportWebPart extends BaseClientSideWebPart<IEdrmsReportWebPartProps> {
+    private _store;
     render(): void;
     protected onDispose(): void;
     protected get dataVersion(): Version;

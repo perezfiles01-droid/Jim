@@ -1,6 +1,9 @@
 import * as React from 'react';
 import styles from './Report.module.scss';
-import { loadReportData } from '../lib/data';
+import { loadReportData, applyManual } from '../lib/data';
+import { IManualData } from '../lib/importRules';
+import { IManualStore } from '../lib/manualStore';
+import { ImportPanel } from './ImportPanel';
 import { exportPdf, exportPptx } from '../lib/exporters';
 import { refreshLabel } from '../lib/format';
 import { BankWide } from '../dashboards/BankWide';
@@ -14,6 +17,12 @@ export interface IReportAppProps {
   dashboard: Dashboard;
   showSidebar: boolean;
   textSize: TextSize;
+  /** Where imported manual data is read from and saved to. */
+  store?: IManualStore;
+  /** True only for people who can manage the site (Owners, site collection admins). */
+  canImport?: boolean;
+  userName?: string;
+  roleLabel?: string;
 }
 
 /* Text size: Large is the default, as readers are often older. */
@@ -41,7 +50,12 @@ function readClosed(): boolean {
 }
 
 export const ReportApp: React.FC<IReportAppProps> = props => {
-  const data = React.useMemo(loadReportData, []);
+  const base = React.useMemo(loadReportData, []);
+  // Imported manual data (Import data) replaces sample figures for every reader.
+  const [manual, setManual] = React.useState<IManualData | null>(null);
+  const [importing, setImporting] = React.useState(false);
+  React.useEffect(() => { if (props.store) props.store.load().then(setManual, () => setManual(null)); }, [props.store]);
+  const data = React.useMemo(() => applyManual(base, manual), [base, manual]);
   const [dash, setDash] = React.useState<Dashboard>(props.dashboard);
   const [focus, setFocus] = React.useState<string | undefined>(undefined);
   const [closed, setClosed] = React.useState<boolean>(readClosed);
@@ -100,6 +114,12 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
   const bandTools = (
     <>
       <span className="asof"><i />Data as of<b>{refreshLabel()}</b></span>
+      {props.canImport && props.store && (
+        <button type="button" className="pdfBtn impOpen" data-html2canvas-ignore="true" onClick={() => setImporting(true)}
+          title="Owners and admins: load the manual data template">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11V2M4.5 5.5 8 2l3.5 3.5M2.5 10.5v3h11v-3" /></svg>Import data
+        </button>
+      )}
       <span className="xMenuWrap" data-html2canvas-ignore="true">
         <button type="button" className="pdfBtn" disabled={busy} aria-haspopup="menu" aria-expanded={menu}
           onClick={e => { e.stopPropagation(); setMenu(!menu); }}>
@@ -147,6 +167,11 @@ export const ReportApp: React.FC<IReportAppProps> = props => {
           ? <BankWide data={data} openDept={openDept} bandTools={bandTools} />
           : <DepartmentInsights data={data} openDept={openDept} bandTools={bandTools} focus={focus} />}
       </div>
+      {importing && props.canImport && props.store && (
+        <ImportPanel store={props.store} user={props.userName || 'Site owner'} role={props.roleLabel || 'Site owner'}
+          current={manual} knownUnits={base.depts.map(d => d.code)}
+          onClose={() => setImporting(false)} onLoaded={setManual} />
+      )}
     </div>
   );
 };

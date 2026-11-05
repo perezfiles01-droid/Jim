@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './Report.module.scss';
-import { loadReportData } from '../lib/data';
+import { loadReportData, applyManual } from '../lib/data';
+import { ImportPanel } from './ImportPanel';
 import { exportPdf, exportPptx } from '../lib/exporters';
 import { refreshLabel } from '../lib/format';
 import { BankWide } from '../dashboards/BankWide';
@@ -44,11 +45,17 @@ function readClosed() {
     }
 }
 export var ReportApp = function (props) {
-    var data = React.useMemo(loadReportData, []);
-    var _a = React.useState(props.dashboard), dash = _a[0], setDash = _a[1];
-    var _b = React.useState(undefined), focus = _b[0], setFocus = _b[1];
-    var _c = React.useState(readClosed), closed = _c[0], setClosed = _c[1];
-    var _d = React.useState(false), busy = _d[0], setBusy = _d[1];
+    var base = React.useMemo(loadReportData, []);
+    // Imported manual data (Import data) replaces sample figures for every reader.
+    var _a = React.useState(null), manual = _a[0], setManual = _a[1];
+    var _b = React.useState(false), importing = _b[0], setImporting = _b[1];
+    React.useEffect(function () { if (props.store)
+        props.store.load().then(setManual, function () { return setManual(null); }); }, [props.store]);
+    var data = React.useMemo(function () { return applyManual(base, manual); }, [base, manual]);
+    var _c = React.useState(props.dashboard), dash = _c[0], setDash = _c[1];
+    var _d = React.useState(undefined), focus = _d[0], setFocus = _d[1];
+    var _e = React.useState(readClosed), closed = _e[0], setClosed = _e[1];
+    var _f = React.useState(false), busy = _f[0], setBusy = _f[1];
     var page = React.useRef(null);
     var root = React.useRef(null);
     React.useEffect(function () { return setDash(props.dashboard); }, [props.dashboard]);
@@ -68,8 +75,8 @@ export var ReportApp = function (props) {
         }
         catch ( /* private window */_a) { /* private window */ }
     };
-    var _e = React.useState(false), menu = _e[0], setMenu = _e[1];
-    var _f = React.useState(''), busyText = _f[0], setBusyText = _f[1];
+    var _g = React.useState(false), menu = _g[0], setMenu = _g[1];
+    var _h = React.useState(''), busyText = _h[0], setBusyText = _h[1];
     React.useEffect(function () {
         if (!menu)
             return;
@@ -116,6 +123,10 @@ export var ReportApp = function (props) {
             React.createElement("i", null),
             "Data as of",
             React.createElement("b", null, refreshLabel())),
+        props.canImport && props.store && (React.createElement("button", { type: "button", className: "pdfBtn impOpen", "data-html2canvas-ignore": "true", onClick: function () { return setImporting(true); }, title: "Owners and admins: load the manual data template" },
+            React.createElement("svg", { viewBox: "0 0 16 16", "aria-hidden": "true" },
+                React.createElement("path", { d: "M8 11V2M4.5 5.5 8 2l3.5 3.5M2.5 10.5v3h11v-3" })),
+            "Import data")),
         React.createElement("span", { className: "xMenuWrap", "data-html2canvas-ignore": "true" },
             React.createElement("button", { type: "button", className: "pdfBtn", disabled: busy, "aria-haspopup": "menu", "aria-expanded": menu, onClick: function (e) { e.stopPropagation(); setMenu(!menu); } },
                 React.createElement(DownloadGlyph, null),
@@ -153,6 +164,7 @@ export var ReportApp = function (props) {
                 React.createElement("span", { className: "navTx" }, f.text))); }))),
         React.createElement("div", { className: "main", ref: page }, dash === 'bw'
             ? React.createElement(BankWide, { data: data, openDept: openDept, bandTools: bandTools })
-            : React.createElement(DepartmentInsights, { data: data, openDept: openDept, bandTools: bandTools, focus: focus }))));
+            : React.createElement(DepartmentInsights, { data: data, openDept: openDept, bandTools: bandTools, focus: focus })),
+        importing && props.canImport && props.store && (React.createElement(ImportPanel, { store: props.store, user: props.userName || 'Site owner', role: props.roleLabel || 'Site owner', current: manual, knownUnits: base.depts.map(function (d) { return d.code; }), onClose: function () { return setImporting(false); }, onLoaded: setManual }))));
 };
 //# sourceMappingURL=ReportApp.js.map

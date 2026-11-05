@@ -6,6 +6,9 @@
 // database, replace loadReportData() with a call to the API and return the
 // same shapes; no component needs to change.
 
+import { IManualData, IUnitFigures } from './importRules';
+import { setCategoryRows } from './categories';
+
 export interface IDept {
   code: string;
   name: string;
@@ -91,6 +94,36 @@ export function loadReportData(): IReportData {
   return SAMPLE;
 }
 
+/* ---------- imported manual data (Import data, Owners only, 5 Nov 2026) ---------- */
+
+
+let MANUAL: { [code: string]: IUnitFigures } = {};
+
+/** The imported figures for a unit, if any. */
+export function manualFor(code: string): IUnitFigures | undefined { return MANUAL[code]; }
+
+/**
+ * Returns the report data with imported values in place of the sample ones:
+ * headcount (counted from People) and, through manualFor(), completed training,
+ * Go-Live date and site convention link. The site list sets the categories.
+ * Units with nothing imported keep their sample figures.
+ */
+export function applyManual(base: IReportData, m: IManualData | null): IReportData {
+  MANUAL = {};
+  if (!m || !m.units) return base;
+  MANUAL = m.units;
+  if (m.sites && m.sites.length) {
+    const rows: { [code: string]: [string, string, string?] } = {};
+    m.sites.forEach(s => { if (!rows[s.department]) rows[s.department] = [s.category, s.subCategory, s.subGroup || undefined]; });
+    setCategoryRows(rows);
+  }
+  const depts = base.depts.map(d => {
+    const u = m.units[d.code];
+    return u && u.headcount > 0 ? { ...d, head: u.headcount } : d;
+  });
+  return { ...base, depts, totals: { ...base.totals, headcount: depts.reduce((a, d) => a + d.head, 0) } };
+}
+
 /* ---------- derived figures (the same formulas as the prototype) ---------- */
 
 /** Headcount is shown rounded to the nearest hundred. */
@@ -102,8 +135,10 @@ function seed(text: string, mul: number, mod: number): number {
   return h;
 }
 
-/** People who completed EDRMS training (sample figure until RAC supplies it). */
+/** People who completed EDRMS training: imported (People tab), else a sample figure. */
 export function trainingDone(d: IDept): number {
+  const u = manualFor(d.code);
+  if (u && u.headcount > 0) return Math.min(u.trained, d.head);
   const rate = 0.6 + 0.35 * (seed(d.code, 37, 997) / 997);
   return Math.round(d.head * rate);
 }

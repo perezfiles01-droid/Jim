@@ -2,7 +2,7 @@ import { __assign, __spreadArray } from "tslib";
 import * as React from 'react';
 import { Dropdown } from '@fluentui/react';
 import { CategoryBar, Multi } from '../components/CategoryBar';
-import { sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras } from '../lib/data';
+import { sum, visitorSplit, siteCreated, ownerName, ownerInitials, libraryExtras, manualFor } from '../lib/data';
 import { F, pct, refreshIso } from '../lib/format';
 import { Band, Panel, KpiRow, Search, Segmented, ExportButton, Chip, SumCard, Caret } from '../components/ui';
 import { DataTable } from '../components/DataTable';
@@ -32,6 +32,11 @@ var ProfileStrip = function (_a) {
             s = (s * 31 + one.charCodeAt(i)) % 997;
         date = (1 + (s % 28)) + ' ' + MONTHS[s % 12] + ' ' + (2024 + (s % 2));
     }
+    /* Imported through Import data (Departments tab) replaces the sample date and link. */
+    var u = one ? manualFor(one) : undefined;
+    if (u)
+        date = u.goLive ? (+u.goLive.slice(8, 10)) + ' ' + MONTHS[+u.goLive.slice(5, 7) - 1] + ' ' + u.goLive.slice(0, 4) : 'Not yet provided';
+    var guide = u && u.convUrl && /^https:\/\/[^\s"'<>]+$/.test(u.convUrl) ? u.convUrl : null;
     return (React.createElement("div", { className: "strip" },
         React.createElement("div", { className: "chipCard" },
             React.createElement("div", { className: "ic" },
@@ -51,7 +56,9 @@ var ProfileStrip = function (_a) {
                 React.createElement("div", { className: "k" }, "Site convention"),
                 one
                     ? React.createElement(React.Fragment, null,
-                        React.createElement("a", { href: "#", onClick: function (e) { return e.preventDefault(); }, title: "Link to be provided by RAC" }, "View guide \u2197"),
+                        guide
+                            ? React.createElement("a", { href: guide, target: "_blank", rel: "noopener noreferrer", title: "Open the approved site guide" }, "View guide \u2197")
+                            : React.createElement("a", { href: "#", onClick: function (e) { return e.preventDefault(); }, title: "Link to be provided by RAC" }, "View guide \u2197"),
                         React.createElement("div", { className: "h" }, "Approved naming for sites, libraries and folders"))
                     : React.createElement(React.Fragment, null,
                         React.createElement("div", { className: "v muted" }, "Select a department"),
