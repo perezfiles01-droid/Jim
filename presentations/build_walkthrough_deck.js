@@ -165,6 +165,9 @@ SPEC.push({ type: 'custom', key: 'howto', section });
   // sample decision box
   decisionBox(s, 'F-00', 8.2, 2.3, 4.5, 2.0, { mark: 1, comment: 'Show the top 15 instead of the top 10.' });
   s.addText('Example of a filled-in decision box', { x: 8.2, y: 4.6, w: 4.5, h: 0.3, fontSize: 11, color: '6B7B8C', align: 'center', margin: 0, isTextBox: true });
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.2, y: 5.05, w: 4.5, h: 1.8, rectRadius: 0.1, fill: { color: 'EEF3F9' }, line: { color: 'D6E1EC', width: 1 }, objectName: 'Mockup note' });
+  s.addText('Please note', { x: 8.4, y: 5.15, w: 4.1, h: 0.3, fontSize: 14, bold: true, color: C.accent1, margin: 0, isTextBox: true });
+  s.addText('The screens shown are from the current prototype of the web part. Layout, wording and colours are still subject to minor changes when it is implemented in the final system. What we ask you to confirm is the function: what each part shows and what each click does.', { x: 8.4, y: 5.47, w: 4.1, h: 1.3, fontSize: 12, color: C.text1, margin: 0, valign: 'top', isTextBox: true });
 }
 
 SPEC.push({ type: 'custom', key: 'glance', section });

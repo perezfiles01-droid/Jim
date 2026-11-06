@@ -276,6 +276,9 @@ def howto():
         text(s, 1.35, y + 0.36, 5.9, 0.75, b, size=13)
     decision(s, 'F-00', 7.9, 2.3, 4.9, 1.4, example={'mark': 1, 'comment': 'Show the top 15 instead of the top 10.'})
     text(s, 7.9, 3.8, 4.9, 0.3, 'Example of a filled-in decision box', size=11, color=EYEBROW, align=PP_ALIGN.CENTER)
+    box(s, 7.9, 4.3, 4.9, 1.75, CARD, CARD_LINE, name='Mockup note')
+    text(s, 8.1, 4.42, 4.5, 0.28, 'Please note', size=13, bold=True, color=NAVY)
+    text(s, 8.1, 4.74, 4.5, 1.25, 'The screens shown are from the current prototype of the web part. Layout, wording and colours are still subject to minor changes when it is implemented in the final system. What we ask you to confirm is the function: what each part shows and what each click does.', size=12)
 
 
 def glance():
