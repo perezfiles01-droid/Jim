@@ -66,7 +66,9 @@ var SitesDrill = function (_a) {
 };
 /* ---------- EDRMS users ---------- */
 var UsersDrill = function (_a) {
-    var depts = _a.depts, openDept = _a.openDept;
+    var all = _a.depts, openDept = _a.openDept;
+    /* 6 Nov 2026: Search and Filter, as on every other Bank-wide table; the six figures follow them. */
+    var f = useDeptQuery(all), depts = f.rows;
     var H = roundedHead(depts), U = sum(depts, function (d) { return d.users; }), T = sum(depts, trainingDone), rawH = sum(depts, function (d) { return d.head; });
     var noAccess = function (d) { return Math.max(0, approxHead(d) - d.users); };
     var rate = function (d) { return trainingDone(d) / d.head; };
@@ -90,29 +92,34 @@ var UsersDrill = function (_a) {
                 { label: 'Completed training', value: F(T), info: TIP.trained },
                 { label: 'Training completion', value: pct(T, rawH), info: TIP.trainRate }
             ] }),
-        React.createElement("div", { className: "toolbar", style: { justifyContent: 'flex-end' } },
+        React.createElement("div", { className: "toolbar" },
+            React.createElement(Search, { value: f.q, onChange: f.setQ, placeholder: "Search by department / office / RM / RO" }),
+            React.createElement(DeptFilter, { depts: all, selected: f.sel, onApply: f.setSel }),
             React.createElement(ExportButton, { table: function () { return ({
                     name: 'EDRMS users by department', head: cols.map(function (c) { return c.label; }),
                     rows: depts.map(function (d) { return [d.code + ' - ' + d.name, approxHead(d), d.users, noAccess(d), trainingDone(d), pct(trainingDone(d), d.head)]; })
                 }); } })),
-        React.createElement(DataTable, { columns: cols, rows: depts, rowKey: function (d) { return d.code; }, noun: "departments", onRowClick: function (d) { return openDept(d.code); } })));
+        React.createElement(DataTable, { columns: cols, rows: depts, rowKey: function (d) { return d.code; }, noun: "departments", resetKey: f.key, onRowClick: function (d) { return openDept(d.code); }, emptyText: "No department matches the search or filter." })));
 };
 var axisShort = function (v) { return (v >= 1e6 ? (v / 1e6).toFixed(2) + 'M' : v >= 1000 ? Math.round(v / 1000) + 'k' : String(v)); };
 var TileCard = function (t) { return React.createElement(Tiles, { items: [t] }); };
 /* ---------- Documents in EDRMS: documents over time ---------- */
 var DocumentsDrill = function (_a) {
-    var depts = _a.depts, openDept = _a.openDept, asOf = _a.asOf;
+    var all = _a.depts, openDept = _a.openDept, asOf = _a.asOf;
+    /* 6 Nov 2026: the single unit drop-down is replaced by Search and Filter (Category >
+       Sub-category > Sub-group), as on every other Bank-wide table. Chart, figures and table
+       all follow the units chosen. */
+    var f = useDeptQuery(all), depts = f.rows, narrowed = depts.length !== all.length;
     var _b = React.useState('all'), year = _b[0], setYear = _b[1];
     var _c = React.useState('y'), by = _c[0], setBy = _c[1];
     var _d = React.useState('t'), show = _d[0], setShow = _d[1];
-    var _e = React.useState('all'), dept = _e[0], setDept = _e[1];
     var series = React.useMemo(function () {
         var o = {};
-        depts.forEach(function (d) { o[d.code] = documentSeries(d); });
+        all.forEach(function (d) { o[d.code] = documentSeries(d); });
         return o;
-    }, [depts]);
+    }, [all]);
     var idx = DOC_MONTHS.map(function (m, i) { return i; }).filter(function (i) { return year === 'all' || DOC_MONTHS[i].y === +year; });
-    var list = dept === 'all' ? depts : depts.filter(function (d) { return d.code === dept; });
+    var list = depts;
     var heldAt = function (i) { return sum(list, function (d) { return (i < 0 ? series[d.code].start : series[d.code].held[i]); }); };
     var groups = [];
     idx.forEach(function (i) {
@@ -137,9 +144,8 @@ var DocumentsDrill = function (_a) {
         { key: 'new', label: 'New documents', numeric: true, sortValue: function (r) { return r.end - r.start; }, render: function (r) { return F(r.end - r.start); } },
         { key: 'gb', label: 'Storage used (GB)', numeric: true, sortValue: function (r) { return r.d.gb; }, render: function (r) { return r.d.gb.toFixed(1); } }
     ];
+    var totalLabel = narrowed ? 'Total, ' + depts.length + ' shown' : 'All Departments / Offices / RMs / ROs';
     var tS = sum(rows, function (r) { return r.start; }), tE = sum(rows, function (r) { return r.end; }), tGb = Math.round(sum(depts, function (d) { return d.gb; }));
-    var deptOptions = [{ key: 'all', text: 'All Departments / Offices / RMs / ROs' }]
-        .concat(depts.slice().sort(function (a, b) { return a.code.localeCompare(b.code); }).map(function (d) { return ({ key: d.code, text: d.code + ' - ' + d.name }); }));
     return (React.createElement(Panel, { title: "Documents over time", sub: "How many documents are stored in EDRMS, and how many new documents were added, by Department / Office / RM / RO." },
         React.createElement("div", { className: "ctl" },
             React.createElement("div", { className: "ctlG" },
@@ -150,10 +156,7 @@ var DocumentsDrill = function (_a) {
                 React.createElement(Segmented, { label: "Show by", value: by, onChange: setBy, options: [{ key: 'y', text: 'Year' }, { key: 'm', text: 'Month' }] })),
             React.createElement("div", { className: "ctlG" },
                 React.createElement("span", { className: "ctlL" }, "View"),
-                React.createElement(Segmented, { label: "View", value: show, onChange: setShow, options: [{ key: 't', text: 'Total documents' }, { key: 'a', text: 'New documents' }] })),
-            React.createElement("div", { className: "ctlG" },
-                React.createElement("span", { className: "ctlL" }, "Department / Office / RM / RO"),
-                React.createElement(Dropdown, { onRenderCaretDown: Caret, className: "picker", selectedKey: dept, options: deptOptions, onChange: function (_, o) { return o && setDept(String(o.key)); }, ariaLabel: "Department / Office / RM / RO" }))),
+                React.createElement(Segmented, { label: "View", value: show, onChange: setShow, options: [{ key: 't', text: 'Total documents' }, { key: 'a', text: 'New documents' }] }))),
         React.createElement("div", { className: "tiles", style: { gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' } }, [
             { label: 'Total documents as of ' + endLab, value: F(endHeld), info: TIP.totalDocs },
             { label: 'New documents in ' + period, value: F(added), info: TIP.newDocs },
@@ -164,18 +167,24 @@ var DocumentsDrill = function (_a) {
                 React.createElement("i", { style: { background: '#0072BC' } }),
                 (show === 't' ? 'Total documents at the end of each ' : 'New documents in each ') + (by === 'y' ? 'year' : 'month') + ', ' + period)),
         React.createElement(ColumnChart, { items: items, height: 260, valueLabel: axisShort, showValues: items.length <= 12, ariaLabel: "Documents in EDRMS by period" }),
-        React.createElement("div", { className: "toolbar", style: { justifyContent: 'flex-end', marginTop: 8 } },
+        React.createElement("div", { className: "toolbar", style: { marginTop: 8 } },
+            React.createElement(Search, { value: f.q, onChange: f.setQ, placeholder: "Search by department / office / RM / RO" }),
+            React.createElement(DeptFilter, { depts: all, selected: f.sel, onApply: f.setSel }),
             React.createElement(ExportButton, { table: function () { return ({
                     name: 'Documents over time', head: cols.map(function (c) { return c.label; }),
                     rows: rows.map(function (r) { return [r.d.code + ' - ' + r.d.name, r.start, r.end, r.end - r.start, r.d.gb]; }),
-                    total: ['All Departments / Offices / RMs / ROs', tS, tE, tE - tS, tGb]
+                    total: [totalLabel, tS, tE, tE - tS, tGb]
                 }); } })),
-        React.createElement(DataTable, { columns: cols, rows: rows, rowKey: function (r) { return r.d.code; }, noun: "departments", defaultSort: "end", defaultDir: "desc", onRowClick: function (r) { return openDept(r.d.code); }, highlight: function (r) { return r.d.code === dept; }, jumpTo: function (sorted) { return (dept === 'all' ? undefined : Math.floor(sorted.findIndex(function (r) { return r.d.code === dept; }) / 10) + 1); }, totalRow: ['All Departments / Offices / RMs / ROs', F(tS), F(tE), F(tE - tS), F(tGb)] })));
+        React.createElement(DataTable, { columns: cols, rows: rows, rowKey: function (r) { return r.d.code; }, noun: "departments", defaultSort: "end", defaultDir: "desc", resetKey: f.key, onRowClick: function (r) { return openDept(r.d.code); }, emptyText: "No department matches the search or filter.", totalRow: [totalLabel, F(tS), F(tE), F(tE - tS), F(tGb)] })));
 };
 /* ---------- Records declared in EDRMS ---------- */
 var RecordsDrill = function (_a) {
-    var depts = _a.depts, openDept = _a.openDept, usersDeclaring = _a.usersDeclaring;
+    var all = _a.depts, openDept = _a.openDept, usersDeclaring = _a.usersDeclaring;
+    /* 6 Nov 2026: Search and Filter; the four figures follow them. A person can declare in
+       several units, so the narrowed count of people is capped at the bank-wide distinct count. */
+    var f = useDeptQuery(all), depts = f.rows, narrowed = depts.length !== all.length;
     var D = sum(depts, function (d) { return d.docs; }), R = sum(depts, function (d) { return d.rec; });
+    var declaring = narrowed ? Math.min(usersDeclaring, sum(depts, function (d) { return d.declaring; })) : usersDeclaring;
     var cols = [
         deptColumn('26%'),
         num('docs', 'Documents', function (d) { return d.docs; }),
@@ -188,11 +197,13 @@ var RecordsDrill = function (_a) {
                 { label: 'Documents', value: F(D), info: TIP.docs },
                 { label: 'Records declared', value: F(R), info: TIP.rec },
                 { label: 'Declaration rate', value: pct(R, D, 2), info: TIP.declRate },
-                { label: 'Unique users declaring records', value: F(usersDeclaring), info: TIP.declUsers }
+                { label: 'Unique users declaring records', value: F(declaring), info: TIP.declUsers }
             ] }),
-        React.createElement("div", { className: "toolbar", style: { justifyContent: 'flex-end' } },
+        React.createElement("div", { className: "toolbar" },
+            React.createElement(Search, { value: f.q, onChange: f.setQ, placeholder: "Search by department / office / RM / RO" }),
+            React.createElement(DeptFilter, { depts: all, selected: f.sel, onApply: f.setSel }),
             React.createElement(ExportButton, { table: function () { return ({ name: 'Records declared by department', head: cols.map(function (c) { return c.label; }), rows: depts.map(function (d) { return [d.code + ' - ' + d.name, d.docs, d.rec, pct(d.rec, d.docs, 2), d.declaring]; }) }); } })),
-        React.createElement(DataTable, { columns: cols, rows: depts, rowKey: function (d) { return d.code; }, noun: "departments", onRowClick: function (d) { return openDept(d.code); } })));
+        React.createElement(DataTable, { columns: cols, rows: depts, rowKey: function (d) { return d.code; }, noun: "departments", resetKey: f.key, onRowClick: function (d) { return openDept(d.code); }, emptyText: "No department matches the search or filter." })));
 };
 /* ---------- Physical counterparts ---------- */
 var PhysicalPanel = function (_a) {

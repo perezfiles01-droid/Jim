@@ -269,18 +269,18 @@ feature({ id: 'F-13', title: 'Active EDRMS sites breakdown', shot: '05_sites_dri
 feature({ id: 'F-14', title: 'EDRMS users breakdown', shot: '13_users_drill',
   what: 'Six figures: Approximate Headcount, Users active in the last 180 days, No access in 180 days (Approx), units in the list, Completed training and Training completion %. The table gives the same per unit.',
   whatH: 1.3,
-  clicks: ['Hover (i): definition of each figure.', 'Sort any column; Export table downloads all six columns.', 'A row opens Department Insights for that unit.'],
+  clicks: ['Search or Filter (F-06, F-07): the table and all six figures follow the units chosen.', 'Sort any column; Export table downloads all six columns.', 'A row opens Department Insights for that unit.'],
   data: 'Headcount and training are imported (F-50). No access = headcount minus active users.' });
 feature({ id: 'F-15', title: 'Documents in EDRMS breakdown', shot: '14_docs_drill',
-  what: 'Documents held over time with three choices: Year (2024, 2025, 2026, All), Show by (Year or Month) and View (Total documents or New documents), plus a unit picker.',
+  what: 'Documents held over time with three choices: Year (2024, 2025, 2026, All), Show by (Year or Month) and View (Total documents or New documents), plus Search and Filter for the units.',
   whatH: 1.3,
-  clicks: ['Change Year / Show by / View: the chart, the three figures and the table update.', 'Unit picker: shows one unit; its row is highlighted in the table.', 'Table: total at start, total now, new documents and storage (GB) per unit.'] });
-feature({ id: 'F-16', title: 'Documents: by month, new documents only', shot: '15_docs_month_new',
-  what: 'The same panel set to 2025, by Month, New documents: how many documents each month added.',
-  clicks: ['Year 2025 + Month + New documents: one column per month of 2025.', 'Switch back to Total documents: the columns show documents held at each month end.'] });
+  clicks: ['Change Year / Show by / View: the chart, the three figures and the table update.', 'Search or Filter (Category > Sub-category > Sub-group): the chart, figures and table add up only the units chosen.', 'Table: total at start, total now, new documents and storage (GB) per unit, with a total row.'] });
+feature({ id: 'F-16', title: 'Documents: by month, new documents, filtered', shot: '15_docs_month_new',
+  what: 'The same panel set to 2025, by Month, New documents, and filtered to Category RM: how many documents the Resident Missions added each month.',
+  clicks: ['Year 2025 + Month + New documents: one column per month of 2025.', 'Filter, Category RM, Apply: only PRCM, INRM and SLRM are counted; the button shows Filter (3).', 'Switch back to Total documents: the columns show documents held at each month end.'] });
 feature({ id: 'F-17', title: 'Records declared breakdown', shot: '16_records_drill',
   what: 'Documents, Records declared, Declaration rate (records as a share of documents) and Unique users declaring records, overall and per unit.',
-  clicks: ['Sort, page and Export table as in F-08 to F-10.', 'A row opens Department Insights for that unit.'] });
+  clicks: ['Search or Filter: the table and the four figures follow the units chosen.', 'Sort, page and Export table as in F-08 to F-10.', 'A row opens Department Insights for that unit.'] });
 feature({ id: 'F-18', title: 'Physical counterparts', shot: '17_physical',
   what: 'Declared records that also exist on paper: total, records declared, and the share of records with a counterpart, with a table and a donut per unit.',
   clicks: ['Search, Filter, sort, page and Export table as in F-06 to F-10.', 'Filter also updates the three figures and the donut.', 'A row opens Department Insights for that unit.'] });

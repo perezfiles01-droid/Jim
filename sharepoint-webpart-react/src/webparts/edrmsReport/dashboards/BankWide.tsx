@@ -91,7 +91,9 @@ const SitesDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void }> = 
 
 /* ---------- EDRMS users ---------- */
 
-const UsersDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void }> = ({ depts, openDept }) => {
+const UsersDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void }> = ({ depts: all, openDept }) => {
+  /* 6 Nov 2026: Search and Filter, as on every other Bank-wide table; the six figures follow them. */
+  const f = useDeptQuery(all), depts = f.rows;
   const H = roundedHead(depts), U = sum(depts, d => d.users), T = sum(depts, trainingDone), rawH = sum(depts, d => d.head);
   const noAccess = (d: IDept): number => Math.max(0, approxHead(d) - d.users);
   const rate = (d: IDept): number => trainingDone(d) / d.head;
@@ -114,13 +116,16 @@ const UsersDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void }> = 
         { label: 'Completed training', value: F(T), info: TIP.trained },
         { label: 'Training completion', value: pct(T, rawH), info: TIP.trainRate }
       ]} />
-      <div className="toolbar" style={{ justifyContent: 'flex-end' }}>
+      <div className="toolbar">
+        <Search value={f.q} onChange={f.setQ} placeholder="Search by department / office / RM / RO" />
+        <DeptFilter depts={all} selected={f.sel} onApply={f.setSel} />
         <ExportButton table={() => ({
           name: 'EDRMS users by department', head: cols.map(c => c.label),
           rows: depts.map(d => [d.code + ' - ' + d.name, approxHead(d), d.users, noAccess(d), trainingDone(d), pct(trainingDone(d), d.head)])
         })} />
       </div>
-      <DataTable columns={cols} rows={depts} rowKey={d => d.code} noun="departments" onRowClick={d => openDept(d.code)} />
+      <DataTable columns={cols} rows={depts} rowKey={d => d.code} noun="departments" resetKey={f.key}
+        onRowClick={d => openDept(d.code)} emptyText="No department matches the search or filter." />
     </Panel>
   );
 };
@@ -131,19 +136,22 @@ const TileCard: React.FC<{ label: string; value: string; info: string }> = t => 
 
 /* ---------- Documents in EDRMS: documents over time ---------- */
 
-const DocumentsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; asOf: string }> = ({ depts, openDept, asOf }) => {
+const DocumentsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; asOf: string }> = ({ depts: all, openDept, asOf }) => {
+  /* 6 Nov 2026: the single unit drop-down is replaced by Search and Filter (Category >
+     Sub-category > Sub-group), as on every other Bank-wide table. Chart, figures and table
+     all follow the units chosen. */
+  const f = useDeptQuery(all), depts = f.rows, narrowed = depts.length !== all.length;
   const [year, setYear] = React.useState<'2024' | '2025' | '2026' | 'all'>('all');
   const [by, setBy] = React.useState<'y' | 'm'>('y');
   const [show, setShow] = React.useState<'t' | 'a'>('t');
-  const [dept, setDept] = React.useState('all');
 
   const series = React.useMemo(() => {
     const o: { [c: string]: { start: number; held: number[] } } = {};
-    depts.forEach(d => { o[d.code] = documentSeries(d); });
+    all.forEach(d => { o[d.code] = documentSeries(d); });
     return o;
-  }, [depts]);
+  }, [all]);
   const idx = DOC_MONTHS.map((m, i) => i).filter(i => year === 'all' || DOC_MONTHS[i].y === +year);
-  const list = dept === 'all' ? depts : depts.filter(d => d.code === dept);
+  const list = depts;
   const heldAt = (i: number): number => sum(list, d => (i < 0 ? series[d.code].start : series[d.code].held[i]));
 
   const groups: { key: string; lab: string; first: number; last: number }[] = [];
@@ -168,9 +176,8 @@ const DocumentsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; 
     { key: 'new', label: 'New documents', numeric: true, sortValue: r => r.end - r.start, render: r => F(r.end - r.start) },
     { key: 'gb', label: 'Storage used (GB)', numeric: true, sortValue: r => r.d.gb, render: r => r.d.gb.toFixed(1) }
   ];
+  const totalLabel = narrowed ? 'Total, ' + depts.length + ' shown' : 'All Departments / Offices / RMs / ROs';
   const tS = sum(rows, r => r.start), tE = sum(rows, r => r.end), tGb = Math.round(sum(depts, d => d.gb));
-  const deptOptions: IDropdownOption[] = [{ key: 'all', text: 'All Departments / Offices / RMs / ROs' }]
-    .concat(depts.slice().sort((a, b) => a.code.localeCompare(b.code)).map(d => ({ key: d.code, text: d.code + ' - ' + d.name })));
 
   return (
     <Panel title="Documents over time" sub="How many documents are stored in EDRMS, and how many new documents were added, by Department / Office / RM / RO.">
@@ -181,8 +188,6 @@ const DocumentsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; 
           <Segmented label="Show by" value={by} onChange={setBy} options={[{ key: 'y', text: 'Year' }, { key: 'm', text: 'Month' }]} /></div>
         <div className="ctlG"><span className="ctlL">View</span>
           <Segmented label="View" value={show} onChange={setShow} options={[{ key: 't', text: 'Total documents' }, { key: 'a', text: 'New documents' }]} /></div>
-        <div className="ctlG"><span className="ctlL">Department / Office / RM / RO</span>
-          <Dropdown onRenderCaretDown={Caret} className="picker" selectedKey={dept} options={deptOptions} onChange={(_, o) => o && setDept(String(o.key))} ariaLabel="Department / Office / RM / RO" /></div>
       </div>
       <div className="tiles" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
         {[
@@ -193,24 +198,29 @@ const DocumentsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; 
       </div>
       <div className="legend"><span><i style={{ background: '#0072BC' }} />{(show === 't' ? 'Total documents at the end of each ' : 'New documents in each ') + (by === 'y' ? 'year' : 'month') + ', ' + period}</span></div>
       <ColumnChart items={items} height={260} valueLabel={axisShort} showValues={items.length <= 12} ariaLabel="Documents in EDRMS by period" />
-      <div className="toolbar" style={{ justifyContent: 'flex-end', marginTop: 8 }}>
+      <div className="toolbar" style={{ marginTop: 8 }}>
+        <Search value={f.q} onChange={f.setQ} placeholder="Search by department / office / RM / RO" />
+        <DeptFilter depts={all} selected={f.sel} onApply={f.setSel} />
         <ExportButton table={() => ({
           name: 'Documents over time', head: cols.map(c => c.label),
           rows: rows.map(r => [r.d.code + ' - ' + r.d.name, r.start, r.end, r.end - r.start, r.d.gb]),
-          total: ['All Departments / Offices / RMs / ROs', tS, tE, tE - tS, tGb]
+          total: [totalLabel, tS, tE, tE - tS, tGb]
         })} />
       </div>
       <DataTable columns={cols} rows={rows} rowKey={r => r.d.code} noun="departments" defaultSort="end" defaultDir="desc"
-        onRowClick={r => openDept(r.d.code)} highlight={r => r.d.code === dept}
-        jumpTo={sorted => (dept === 'all' ? undefined : Math.floor(sorted.findIndex(r => r.d.code === dept) / 10) + 1)}
-        totalRow={['All Departments / Offices / RMs / ROs', F(tS), F(tE), F(tE - tS), F(tGb)]} />
+        resetKey={f.key} onRowClick={r => openDept(r.d.code)} emptyText="No department matches the search or filter."
+        totalRow={[totalLabel, F(tS), F(tE), F(tE - tS), F(tGb)]} />
     </Panel>
   );
 };
 /* ---------- Records declared in EDRMS ---------- */
 
-const RecordsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; usersDeclaring: number }> = ({ depts, openDept, usersDeclaring }) => {
+const RecordsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; usersDeclaring: number }> = ({ depts: all, openDept, usersDeclaring }) => {
+  /* 6 Nov 2026: Search and Filter; the four figures follow them. A person can declare in
+     several units, so the narrowed count of people is capped at the bank-wide distinct count. */
+  const f = useDeptQuery(all), depts = f.rows, narrowed = depts.length !== all.length;
   const D = sum(depts, d => d.docs), R = sum(depts, d => d.rec);
+  const declaring = narrowed ? Math.min(usersDeclaring, sum(depts, d => d.declaring)) : usersDeclaring;
   const cols: IColumn<IDept>[] = [
     deptColumn('26%'),
     num('docs', 'Documents', d => d.docs),
@@ -224,12 +234,15 @@ const RecordsDrill: React.FC<{ depts: IDept[]; openDept: (c: string) => void; us
         { label: 'Documents', value: F(D), info: TIP.docs },
         { label: 'Records declared', value: F(R), info: TIP.rec },
         { label: 'Declaration rate', value: pct(R, D, 2), info: TIP.declRate },
-        { label: 'Unique users declaring records', value: F(usersDeclaring), info: TIP.declUsers }
+        { label: 'Unique users declaring records', value: F(declaring), info: TIP.declUsers }
       ]} />
-      <div className="toolbar" style={{ justifyContent: 'flex-end' }}>
+      <div className="toolbar">
+        <Search value={f.q} onChange={f.setQ} placeholder="Search by department / office / RM / RO" />
+        <DeptFilter depts={all} selected={f.sel} onApply={f.setSel} />
         <ExportButton table={() => ({ name: 'Records declared by department', head: cols.map(c => c.label), rows: depts.map(d => [d.code + ' - ' + d.name, d.docs, d.rec, pct(d.rec, d.docs, 2), d.declaring]) })} />
       </div>
-      <DataTable columns={cols} rows={depts} rowKey={d => d.code} noun="departments" onRowClick={d => openDept(d.code)} />
+      <DataTable columns={cols} rows={depts} rowKey={d => d.code} noun="departments" resetKey={f.key}
+        onRowClick={d => openDept(d.code)} emptyText="No department matches the search or filter." />
     </Panel>
   );
 };
