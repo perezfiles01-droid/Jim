@@ -87,6 +87,8 @@ function decisionBox(s, id, X, Y, W, H, example) {
 
 let section = '';
 const REGISTER = [];
+// Slide order and content, written out for build_walkthrough_adb.py (ADB template version).
+const SPEC = [];
 
 function cover() {
   const s = pres.addSlide({ masterName: 'COVER', sectionTitle: section });
@@ -95,6 +97,7 @@ function cover() {
   s.addNotes('Purpose: walk RAC through every screen and every click of the Utilization Report, and collect a decision on each function: keep it, change it, or remove it.');
 }
 function divider(title, text, notes) {
+  SPEC.push({ type: 'divider', title, text });
   section = title;
   pres.addSection({ title });
   const s = pres.addSlide({ masterName: 'SECTION', sectionTitle: section });
@@ -108,6 +111,7 @@ function divider(title, text, notes) {
  * f = { id, title, shot, shot2?, what, clicks: [..], data?, notes? }
  */
 function feature(f) {
+  SPEC.push(Object.assign({ type: 'feature', section }, f));
   REGISTER.push({ id: f.id, title: f.title, area: section });
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText([{ text: f.id + '  ', options: { color: C.accent3 } }, { text: f.title }], { placeholder: 'title' });
@@ -138,8 +142,10 @@ function feature(f) {
    ===================================================================== */
 section = 'Introduction';
 pres.addSection({ title: section });
+SPEC.push({ type: 'custom', key: 'cover' });
 cover();
 
+SPEC.push({ type: 'custom', key: 'howto', section });
 { // How to use this deck
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('How to read and comment on this deck', { placeholder: 'title' });
@@ -161,6 +167,7 @@ cover();
   s.addText('Example of a filled-in decision box', { x: 8.2, y: 4.6, w: 4.5, h: 0.3, fontSize: 11, color: '6B7B8C', align: 'center', margin: 0, isTextBox: true });
 }
 
+SPEC.push({ type: 'custom', key: 'glance', section });
 { // Report at a glance
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('The report at a glance', { placeholder: 'title' });
@@ -179,6 +186,7 @@ cover();
   });
 }
 
+SPEC.push({ type: 'custom', key: 'who', section });
 { // Who sees what
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('Who sees what', { placeholder: 'title' });
@@ -238,6 +246,7 @@ feature({ id: 'F-11', title: 'Click a department code to open Department Insight
   what: 'Department codes in the tables are underlined links. They take you straight to that unit\'s details (RAC Item 9).',
   clicks: ['Click a code (e.g. CWRD) or its row: Department Insights opens, already filtered to that unit.', 'The Category, Sub-category and Site boxes are set for that unit, so every panel and export on the page shows only that unit.'] });
 
+SPEC.push({ type: 'custom', key: 'settings', section });
 { // Web part settings for page editors
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   REGISTER.push({ id: 'F-24', title: 'Web part settings (page editors)', area: section });
@@ -359,6 +368,7 @@ feature({ id: 'F-50', title: 'Import data button and panel', shot: '51_owner_hea
   what: 'Site Owners and admins see Import data beside Export. Members and Visitors do not see it at all; SharePoint decides from the person\'s site permission.',
   clicks: ['Import data: a side panel opens over the report.', 'Download Excel template: one file with the tabs Sites, People, Departments, Code mapping and Valid values, pre-filled with what is loaded now.', 'Close (X) or Esc: closes the panel.'],
   data: 'Saved in a library on the site that only Owners can change. No names or emails are stored.' });
+SPEC.push({ type: 'custom', key: 'template', section });
 { // Template tabs
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   REGISTER.push({ id: 'F-51', title: 'The manual data template', area: section });
@@ -388,6 +398,7 @@ feature({ id: 'F-53', title: 'A file that passes is loaded in one click', shot: 
 /* ---------- E. Data and decisions ---------- */
 divider('E. Data behind the figures, and your decisions', 'Where each figure comes from, what RAC still needs to provide, and the decision register.');
 
+SPEC.push({ type: 'custom', key: 'sources', section });
 { // Data sources
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('Where each figure comes from', { placeholder: 'title' });
@@ -406,6 +417,7 @@ divider('E. Data behind the figures, and your decisions', 'Where each figure com
   s.addTable([[H('Figure'), H('Source'), H('How it arrives')]].concat(rows.map(r => r.map(c => ({ text: c })))),
     { x: 0.5, y: 1.3, w: 12.3, colW: [4.3, 4.6, 3.4], fontSize: 13, color: '172B4D', border: { type: 'solid', color: 'D6E1EC', pt: 0.75 }, margin: 0.08, rowH: 0.5 });
 }
+SPEC.push({ type: 'custom', key: 'asks', section });
 { // What RAC still needs to provide
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('What we still need from RAC', { placeholder: 'title' });
@@ -424,6 +436,7 @@ divider('E. Data behind the figures, and your decisions', 'Where each figure com
     s.addText(a[1], { x: 1.5, y: y + 0.4, w: 11, h: 0.5, fontSize: 14, color: C.text1, margin: 0, isTextBox: true });
   });
 }
+SPEC.push({ type: 'custom', key: 'register', section });
 { // Decision register (auto-paged table)
   const H = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF', fill: { color: THEME.colors.dk2 } } });
   const rows = [[H('ID'), H('Function'), H('Area'), H('Keep (X)'), H('Change (X)'), H('Remove (X)'), H('Comments')]]
@@ -435,6 +448,7 @@ divider('E. Data behind the figures, and your decisions', 'Where each figure com
     autoPageSlideStartY: 1.25, autoPageCharWeight: -0.5, autoPageLineWeight: 0.3, newSlideStartY: 1.25 });
   (s.newAutoPagedSlides || []).forEach(ns => ns.addText('Decision register (continued)', { placeholder: 'title' }));
 }
+SPEC.push({ type: 'custom', key: 'close', section });
 { // Close
   pres.addSection({ title: 'Next steps' });
   const s = pres.addSlide({ masterName: 'SECTION', sectionTitle: 'Next steps' });
@@ -443,6 +457,7 @@ divider('E. Data behind the figures, and your decisions', 'Where each figure com
 }
 
 (async () => {
+  fs.writeFileSync(path.join(__dirname, 'walkthrough_content.json'), JSON.stringify({ spec: SPEC, register: REGISTER.slice().sort((a, b) => a.id.localeCompare(b.id)) }, null, 1));
   await pres.writeFile({ fileName: OUT });
   await applyTheme(OUT, THEME);
   console.log('wrote', OUT, 'functions', REGISTER.length);

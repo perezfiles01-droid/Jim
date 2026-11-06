@@ -1,0 +1,802 @@
+{
+ "spec": [
+  {
+   "type": "custom",
+   "key": "cover"
+  },
+  {
+   "type": "custom",
+   "key": "howto",
+   "section": "Introduction"
+  },
+  {
+   "type": "custom",
+   "key": "glance",
+   "section": "Introduction"
+  },
+  {
+   "type": "custom",
+   "key": "who",
+   "section": "Introduction"
+  },
+  {
+   "type": "divider",
+   "title": "A. Navigation and common tools",
+   "text": "Controls that work the same way on every dashboard: the menu, the information icons, export, search, filter, sorting, paging and table export."
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-01",
+   "title": "Dashboard menu",
+   "shot": "01_bw_full",
+   "what": "The left menu lists the two live dashboards under Key Views and the four planned ones under For Future Release.",
+   "clicks": [
+    "Bank-wide Oversight or Department Insights: the page switches to that dashboard and scrolls to the top.",
+    "A For Future Release item: nothing opens. It is greyed out until that dashboard is built (RAC Item 6)."
+   ],
+   "data": "None. Menu labels can be renamed."
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-02",
+   "title": "Collapse and expand the menu",
+   "shot": "02_sidebar_closed",
+   "what": "The menu button (three lines) at the top of the menu hides the menu so the dashboard uses the full width.",
+   "clicks": [
+    "Menu button: the menu shrinks to icons only; the dashboard widens.",
+    "Menu button again: the full menu returns.",
+    "The choice is remembered on that browser the next time the report opens."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-03",
+   "title": "Information icons (i)",
+   "shot": "03_tooltip",
+   "what": "Every card has a small (i) icon. It explains in one sentence what the figure counts and over which period.",
+   "clicks": [
+    "Point at or tap the (i): a tooltip shows the definition.",
+    "Move away: it closes. Nothing else changes."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-04",
+   "title": "Data as of",
+   "shot": "51_owner_header",
+   "what": "The green dot and date beside the dashboard title show when the data was last refreshed: the Monday of the latest weekly refresh (RAC Item 11).",
+   "clicks": [
+    "Not clickable. It updates on its own every week.",
+    "Date pickers in the report cannot go past this date."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-05",
+   "title": "Export the dashboard (PDF or PowerPoint)",
+   "shot": "04_export_menu",
+   "what": "The Export button beside the title exports the whole dashboard as it is on screen, including open breakdowns and the filters in use (RAC Item 8).",
+   "clicks": [
+    "Export: a menu opens with PDF and PowerPoint.",
+    "PDF: downloads the dashboard as a PDF. Page breaks never cut through a chart.",
+    "PowerPoint: downloads one slide per breakdown and section, with an editable title, a Key points box, the filter line and the Data as of date. Tall sections continue on a \"(continued)\" slide."
+   ],
+   "data": "Excel is per table (F-10). Word is not offered (not a standard Power BI export)."
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-06",
+   "title": "Search in a table",
+   "shot": "05_sites_drill",
+   "shot2": "06_search",
+   "what": "Department tables have a search box. It matches the code or the name of the Department / Office / RM / RO.",
+   "clicks": [
+    "Type in the box: the table narrows as you type (here \"SA\" finds SARD, ERO, NARO and others).",
+    "Clear the box: all rows return.",
+    "Counts under the table (\"Showing 1 to 10 of N\") follow the search."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-07",
+   "title": "Filter Department / Office / RM / RO",
+   "shot": "07_filter_popup",
+   "shot2": "09_filter_applied",
+   "what": "The Filter button opens three linked boxes: Category (HQ, RM, RO), Sub-category (the department) and Sub-group (e.g. a Resident Mission). Each box narrows the next (RAC Item 5).",
+   "clicks": [
+    "Filter: the pop-up opens.",
+    "Pick one or more values in each box (each box has its own search). The pop-up stays open while you choose.",
+    "Apply: the table shows only the matching units. Reset: clears all three boxes."
+   ],
+   "data": "Category values come from the Sites tab of the manual data template (F-50)."
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-08",
+   "title": "Sort a table",
+   "shot": "10_sort",
+   "what": "Every column heading in every table can be sorted. The arrow beside the heading shows the current order.",
+   "clicks": [
+    "Click a heading: the table sorts by it (numbers largest first, names A to Z).",
+    "Click the same heading again: the order reverses.",
+    "Sorting returns the table to page 1."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-09",
+   "title": "Page through a table",
+   "shot": "11_pager_p2",
+   "what": "Tables show 10 rows at a time with a pager under them, and say which rows are shown out of how many.",
+   "clicks": [
+    "Next / Prev: moves one page.",
+    "A page number: jumps to that page.",
+    "Search, filter and sort all go back to page 1."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-10",
+   "title": "Export a table to Excel",
+   "shot": "05_sites_drill",
+   "what": "Export table, beside each table, downloads that table to Excel with the rows currently shown by the search and filter.",
+   "clicks": [
+    "Export table: an .xlsx file downloads at once (e.g. \"Sites by department.xlsx\").",
+    "The file has the same columns as the screen, formatted headings and a filter on each column."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "A. Navigation and common tools",
+   "id": "F-11",
+   "title": "Click a department code to open Department Insights",
+   "shot": "05_sites_drill",
+   "shot2": "24_click_dept_to_di",
+   "what": "Department codes in the tables are underlined links. They take you straight to that unit's details (RAC Item 9).",
+   "clicks": [
+    "Click a code (e.g. CWRD) or its row: Department Insights opens, already filtered to that unit.",
+    "The Category, Sub-category and Site boxes are set for that unit, so every panel and export on the page shows only that unit."
+   ]
+  },
+  {
+   "type": "custom",
+   "key": "settings",
+   "section": "A. Navigation and common tools"
+  },
+  {
+   "type": "divider",
+   "title": "B. Bank-wide Oversight",
+   "text": "EDRMS adoption across ADB: four summary cards, each opening a breakdown, then physical counterparts, the comparison and the records declaration trend."
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-12",
+   "title": "The four summary cards",
+   "shot": "01_bw_full",
+   "what": "Active EDRMS sites, EDRMS users (approximate headcount), Documents in EDRMS and Records declared in EDRMS, for all of ADB.",
+   "clicks": [
+    "Click a card (or View breakdown): its breakdown opens under the cards; the card is highlighted.",
+    "Only one breakdown is open at a time. Active EDRMS sites is open when the page loads."
+   ],
+   "data": "Sites: Cloud Governance. Headcount: AP All Users export (manual). Documents: M365 usage. Records: EDRMS records table."
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-13",
+   "title": "Active EDRMS sites breakdown",
+   "shot": "05_sites_drill",
+   "what": "Left: the Top 10 units by number of sites as bars. Right: every unit with its number of sites.",
+   "clicks": [
+    "Hover a bar: shows the unit's full name and site count.",
+    "Table: search (F-06), filter (F-07), sort (F-08), page (F-09), Export table (F-10).",
+    "A code or row opens Department Insights for that unit (F-11)."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-14",
+   "title": "EDRMS users breakdown",
+   "shot": "13_users_drill",
+   "what": "Six figures: Approximate Headcount, Users active in the last 180 days, No access in 180 days (Approx), units in the list, Completed training and Training completion %. The table gives the same per unit.",
+   "whatH": 1.3,
+   "clicks": [
+    "Search or Filter (F-06, F-07): the table and all six figures follow the units chosen.",
+    "Sort any column; Export table downloads all six columns.",
+    "A row opens Department Insights for that unit."
+   ],
+   "data": "Headcount and training are imported (F-50). No access = headcount minus active users."
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-15",
+   "title": "Documents in EDRMS breakdown",
+   "shot": "14_docs_drill",
+   "what": "Documents held over time with three choices: Year (2024, 2025, 2026, All), Show by (Year or Month) and View (Total documents or New documents), plus Search and Filter for the units.",
+   "whatH": 1.3,
+   "clicks": [
+    "Change Year / Show by / View: the chart, the three figures and the table update.",
+    "Search or Filter (Category > Sub-category > Sub-group): the chart, figures and table add up only the units chosen.",
+    "Table: total at start, total now, new documents and storage (GB) per unit, with a total row."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-16",
+   "title": "Documents: by month, new documents, filtered",
+   "shot": "15_docs_month_new",
+   "what": "The same panel set to 2025, by Month, New documents, and filtered to Category RM: how many documents the Resident Missions added each month.",
+   "clicks": [
+    "Year 2025 + Month + New documents: one column per month of 2025.",
+    "Filter, Category RM, Apply: only PRCM, INRM and SLRM are counted; the button shows Filter (3).",
+    "Switch back to Total documents: the columns show documents held at each month end."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-17",
+   "title": "Records declared breakdown",
+   "shot": "16_records_drill",
+   "what": "Documents, Records declared, Declaration rate (records as a share of documents) and Unique users declaring records, overall and per unit.",
+   "clicks": [
+    "Search or Filter: the table and the four figures follow the units chosen.",
+    "Sort, page and Export table as in F-08 to F-10.",
+    "A row opens Department Insights for that unit."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-18",
+   "title": "Physical counterparts",
+   "shot": "17_physical",
+   "what": "Declared records that also exist on paper: total, records declared, and the share of records with a counterpart, with a table and a donut per unit.",
+   "clicks": [
+    "Search, Filter, sort, page and Export table as in F-06 to F-10.",
+    "Filter also updates the three figures and the donut.",
+    "A row opens Department Insights for that unit."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-19",
+   "title": "Comparison: headcount against documents",
+   "shot": "18_comparison",
+   "what": "Each unit's approximate headcount (green) beside its documents (blue). Each column has its own scale, so bars compare within a column.",
+   "clicks": [
+    "Compare: choose Documents in EDRMS or Records declared in EDRMS.",
+    "Click a column heading: sort by it; again to reverse.",
+    "Search and Filter narrow the units; bar scales stay fixed so they do not jump.",
+    "Click a unit: opens Department Insights."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-20",
+   "title": "Comparison: headcount against records declared",
+   "shot": "19_comparison_records",
+   "what": "The same panel with Compare set to Records declared in EDRMS (green bars change to records).",
+   "clicks": [
+    "Compare drop-down: switch between documents and records.",
+    "Hover a bar: exact figure."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-21",
+   "title": "Records declaration trend",
+   "shot": "20_trend",
+   "what": "Records declared per month (bars, left axis) and the running total (line, right axis) for a chosen period.",
+   "clicks": [
+    "Preset: Last 3 / 6 / 12 months, Year to date, All time. Last 12 months on opening.",
+    "Custom range: pick From and To, then Apply. Reset goes back to Last 12 months.",
+    "Show by: Year or Month."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-22",
+   "title": "Trend: drill from years into months",
+   "shot": "21_trend_all_years",
+   "shot2": "22_trend_drill_year",
+   "what": "Shown by Year, each year's bar can be opened to see its months.",
+   "clicks": [
+    "Click a year's bar: the chart shows that year by month; the figure becomes \"Records declared in <year>\".",
+    "Click \"All years\" in the path above the chart: back to years."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "B. Bank-wide Oversight",
+   "id": "F-23",
+   "title": "Trend: custom date range",
+   "shot": "23_trend_custom",
+   "what": "Any From and To date up to the Data as of date. Here January to June 2026.",
+   "clicks": [
+    "Pick From and To, then Apply: the chart and the total use that range; the preset is cleared.",
+    "Reset: returns to Last 12 months."
+   ]
+  },
+  {
+   "type": "divider",
+   "title": "C. Department Insights",
+   "text": "One or more Departments, Offices, RMs or ROs in detail: the profile, five cards with their breakdowns, and library usage."
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-30",
+   "title": "Department Profile and the four filter boxes",
+   "shot": "30_di_full",
+   "what": "Category, Sub-category, Sub-group and Site at the top decide which units and sites every panel on the page shows. Opens on All.",
+   "clicks": [
+    "Pick values in any box: every card, breakdown and export below follows.",
+    "Each box narrows the next (Category > Sub-category > Sub-group > Site).",
+    "Several values can be ticked in each box."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-31",
+   "title": "Category and Sub-category boxes",
+   "shot": "31_di_category_open",
+   "shot2": "32_di_subcategory_open",
+   "what": "Category lists HQ, RM and RO. Sub-category lists the departments in the chosen category; Sub-group the missions or groups under them.",
+   "clicks": [
+    "Open a box: tick one or more values; \"All\" clears the box.",
+    "Type in the box's search to find a value.",
+    "Values and labels come from the site list and can be renamed (RAC Item 5)."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-32",
+   "title": "Site box with search",
+   "shot": "33_di_site_search",
+   "what": "Lists the sites under the chosen units (\"All 1,032 sites\" when nothing is chosen).",
+   "clicks": [
+    "Type part of a name: the list narrows.",
+    "Tick one or more sites: the cards and breakdowns show only those sites.",
+    "Changing the unit boxes resets the site choice."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-33",
+   "title": "Go-Live date and site convention",
+   "shot": "34_di_one_dept",
+   "what": "Two chips under the filters: the date the unit started using EDRMS, and a link to its approved site naming guide (RAC Items 3 and 4).",
+   "clicks": [
+    "With one unit chosen: shows its Go-Live date (\"Not yet provided\" if blank).",
+    "View guide: opens the unit's guide in a new tab. With several units: \"Varies by department\" / \"Select a department\"."
+   ],
+   "data": "Imported from the Departments tab of the manual data template (F-50)."
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-34",
+   "title": "The five cards",
+   "shot": "30_di_full",
+   "what": "Sites, Site visitors, Documents, Records declared and Physical Counterparts for the chosen units and sites.",
+   "clicks": [
+    "Click a card: its breakdown opens beneath the cards. Sites is open on loading.",
+    "The cards follow the four filter boxes."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-35",
+   "title": "EDRMS sites breakdown",
+   "shot": "35_di_sites_panel",
+   "what": "Each site, its owner and when it was created (RAC Item 10: site names, not URLs; owners by name, not email).",
+   "clicks": [
+    "Year: all years or one year. Or choose a custom From / To, then Apply.",
+    "Search a site or owner; sort; page; Export table.",
+    "Hover an owner: shows the owner's email."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-36",
+   "title": "Site visitors breakdown",
+   "shot": "36_di_visitors",
+   "what": "Unique visitors in the last 180 days, split into internal (ADB accounts) and external (guests), per site, plus the 10 most visited sites.",
+   "clicks": [
+    "All / Internal / External: changes the top 10 chart.",
+    "Click a bar: finds that site in the table and highlights it.",
+    "Search a site; sort; page; Export table."
+   ],
+   "data": "A visitor opened anything on the site; counted once per site (Purview audit log)."
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-37",
+   "title": "Site visitors: external only",
+   "shot": "37_di_visitors_external",
+   "what": "The same panel with External chosen: the sites most visited by guests.",
+   "clicks": [
+    "External: the chart ranks sites by external visitors.",
+    "All: back to all visitors."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-38",
+   "title": "Documents breakdown",
+   "shot": "38_di_docs",
+   "shot2": "38_di_docs_alt",
+   "what": "Files and storage per site, with the total storage in the panel title.",
+   "clicks": [
+    "Measure Documents / Storage: the top 10 chart ranks by that measure.",
+    "Click a bar: finds the site in the table.",
+    "Search; sort; page; Export table."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-39",
+   "title": "Records declared breakdown",
+   "shot": "39_di_records",
+   "shot2": "39_di_records_alt",
+   "what": "Records declared per site and the number of people who declared them.",
+   "clicks": [
+    "Measure Records / People: the chart ranks by records or by people declaring.",
+    "Click a bar: finds the site in the table.",
+    "Search; sort; page; Export table."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-40",
+   "title": "Physical counterparts breakdown",
+   "shot": "40_di_physical",
+   "shot2": "40_di_physical_alt",
+   "what": "Records with a paper version per site, and their share of the site's records.",
+   "clicks": [
+    "Measure Count / Share: the chart ranks by number or by share.",
+    "Click a bar: finds the site in the table.",
+    "Search; sort; page; Export table."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-41",
+   "title": "Library usage",
+   "shot": "42_library",
+   "what": "Every document library in the chosen sites: folders, documents, records, physical counterparts and active users, with its own four filter boxes.",
+   "clicks": [
+    "Category / Sub-category / Sub-group / Site boxes: narrow the libraries.",
+    "Six summary figures update with the boxes.",
+    "Search a library or site; sort; page; Export table."
+   ],
+   "data": "Folder count: Microsoft Graph weekly scan, pending AvePoint confirmation (Item 12)."
+  },
+  {
+   "type": "feature",
+   "section": "C. Department Insights",
+   "id": "F-42",
+   "title": "Library usage: most used libraries",
+   "shot": "43_library_users",
+   "what": "The top 10 libraries by the chosen measure. Here Users: people who opened or edited files in the library in the last 180 days.",
+   "clicks": [
+    "Measure Folders / Documents / Records / Counterparts / Users: re-ranks the chart.",
+    "Click a bar: finds the library in the table.",
+    "\"+ N more libraries with ...\" lists ties beyond the top 10."
+   ],
+   "data": "Active users are counted per library (Purview audit log, file actions only)."
+  },
+  {
+   "type": "divider",
+   "title": "D. Import data (Owners and admins only)",
+   "text": "How the manual data RAC provides gets into the report: one template, checked in full before anything is saved."
+  },
+  {
+   "type": "feature",
+   "section": "D. Import data (Owners and admins only)",
+   "id": "F-50",
+   "title": "Import data button and panel",
+   "shot": "51_owner_header",
+   "shot2": "52_import_panel",
+   "what": "Site Owners and admins see Import data beside Export. Members and Visitors do not see it at all; SharePoint decides from the person's site permission.",
+   "clicks": [
+    "Import data: a side panel opens over the report.",
+    "Download Excel template: one file with the tabs Sites, People, Departments, Code mapping and Valid values, pre-filled with what is loaded now.",
+    "Close (X) or Esc: closes the panel."
+   ],
+   "data": "Saved in a library on the site that only Owners can change. No names or emails are stored."
+  },
+  {
+   "type": "custom",
+   "key": "template",
+   "section": "D. Import data (Owners and admins only)"
+  },
+  {
+   "type": "feature",
+   "section": "D. Import data (Owners and admins only)",
+   "id": "F-52",
+   "title": "A file with problems is refused",
+   "shot": "import_refused",
+   "what": "Uploading a file checks every row first. Any problem means nothing is loaded, and every problem is listed.",
+   "clicks": [
+    "Drop the file in the panel or browse to it.",
+    "The list shows each problem by tab, row and column, in plain words.",
+    "Fix the file and upload again. The refusal is recorded in the import history."
+   ]
+  },
+  {
+   "type": "feature",
+   "section": "D. Import data (Owners and admins only)",
+   "id": "F-53",
+   "title": "A file that passes is loaded in one click",
+   "shot": "import_passed",
+   "what": "When every row passes, the panel shows what will be loaded and any notes (e.g. service accounts skipped).",
+   "clicks": [
+    "Import: the data is saved; every reader sees the new figures on their next refresh.",
+    "Cancel: nothing changes.",
+    "Import history: who loaded which file, and when."
+   ]
+  },
+  {
+   "type": "divider",
+   "title": "E. Data behind the figures, and your decisions",
+   "text": "Where each figure comes from, what RAC still needs to provide, and the decision register."
+  },
+  {
+   "type": "custom",
+   "key": "sources",
+   "section": "E. Data behind the figures, and your decisions"
+  },
+  {
+   "type": "custom",
+   "key": "asks",
+   "section": "E. Data behind the figures, and your decisions"
+  },
+  {
+   "type": "custom",
+   "key": "register",
+   "section": "E. Data behind the figures, and your decisions"
+  },
+  {
+   "type": "custom",
+   "key": "close",
+   "section": "E. Data behind the figures, and your decisions"
+  }
+ ],
+ "register": [
+  {
+   "id": "F-01",
+   "title": "Dashboard menu",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-02",
+   "title": "Collapse and expand the menu",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-03",
+   "title": "Information icons (i)",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-04",
+   "title": "Data as of",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-05",
+   "title": "Export the dashboard (PDF or PowerPoint)",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-06",
+   "title": "Search in a table",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-07",
+   "title": "Filter Department / Office / RM / RO",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-08",
+   "title": "Sort a table",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-09",
+   "title": "Page through a table",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-10",
+   "title": "Export a table to Excel",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-11",
+   "title": "Click a department code to open Department Insights",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-12",
+   "title": "The four summary cards",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-13",
+   "title": "Active EDRMS sites breakdown",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-14",
+   "title": "EDRMS users breakdown",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-15",
+   "title": "Documents in EDRMS breakdown",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-16",
+   "title": "Documents: by month, new documents, filtered",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-17",
+   "title": "Records declared breakdown",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-18",
+   "title": "Physical counterparts",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-19",
+   "title": "Comparison: headcount against documents",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-20",
+   "title": "Comparison: headcount against records declared",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-21",
+   "title": "Records declaration trend",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-22",
+   "title": "Trend: drill from years into months",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-23",
+   "title": "Trend: custom date range",
+   "area": "B. Bank-wide Oversight"
+  },
+  {
+   "id": "F-24",
+   "title": "Web part settings (page editors)",
+   "area": "A. Navigation and common tools"
+  },
+  {
+   "id": "F-30",
+   "title": "Department Profile and the four filter boxes",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-31",
+   "title": "Category and Sub-category boxes",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-32",
+   "title": "Site box with search",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-33",
+   "title": "Go-Live date and site convention",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-34",
+   "title": "The five cards",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-35",
+   "title": "EDRMS sites breakdown",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-36",
+   "title": "Site visitors breakdown",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-37",
+   "title": "Site visitors: external only",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-38",
+   "title": "Documents breakdown",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-39",
+   "title": "Records declared breakdown",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-40",
+   "title": "Physical counterparts breakdown",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-41",
+   "title": "Library usage",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-42",
+   "title": "Library usage: most used libraries",
+   "area": "C. Department Insights"
+  },
+  {
+   "id": "F-50",
+   "title": "Import data button and panel",
+   "area": "D. Import data (Owners and admins only)"
+  },
+  {
+   "id": "F-51",
+   "title": "The manual data template",
+   "area": "D. Import data (Owners and admins only)"
+  },
+  {
+   "id": "F-52",
+   "title": "A file with problems is refused",
+   "area": "D. Import data (Owners and admins only)"
+  },
+  {
+   "id": "F-53",
+   "title": "A file that passes is loaded in one click",
+   "area": "D. Import data (Owners and admins only)"
+  }
+ ]
+}
