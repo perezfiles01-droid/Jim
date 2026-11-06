@@ -69,6 +69,22 @@ function shot(slide, name, box, alt) {
     fill: { color: 'F4F7FB' }, line: { color: 'D6E1EC', width: 0.75 }, objectName: 'Screenshot frame' });
   slide.addImage({ path: f, ...p, altText: alt || name });
 }
+/** The RAC decision box: three small boxes to click and type X in, and a comments box to type in. */
+function decisionBox(s, id, X, Y, W, H, example) {
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: X, y: Y, w: W, h: H, rectRadius: 0.1, fill: { color: 'FFF7E8' }, line: { color: 'F2C786', width: 1 }, objectName: 'RAC decision box' });
+  s.addText('RAC decision for ' + id, { x: X + 0.2, y: Y + 0.08, w: W - 0.4, h: 0.3, fontSize: 12, bold: true, color: '8A4B00', margin: 0, isTextBox: true });
+  s.addText('click a box, type X', { x: X + W - 2.0, y: Y + 0.1, w: 1.8, h: 0.26, fontSize: 10, italic: true, color: '8A6A3A', align: 'right', margin: 0, isTextBox: true });
+  ['Keep', 'Change', 'Remove'].forEach((o, i) => {
+    const bx = X + 0.2 + i * 1.3, by = Y + 0.45;
+    s.addText(example && example.mark === i ? 'X' : '', { shape: pres.shapes.RECTANGLE, x: bx, y: by, w: 0.3, h: 0.3, fill: { color: 'FFFFFF' }, line: { color: '8A4B00', width: 1 },
+      fontSize: 14, bold: true, color: '8A1C12', align: 'center', valign: 'middle', margin: 0, objectName: 'Type X here: ' + o + ' (' + id + ')' });
+    s.addText(o, { x: bx + 0.38, y: by, w: 0.85, h: 0.3, fontSize: 12, color: C.text1, valign: 'middle', margin: 0, isTextBox: true });
+  });
+  s.addText('Comments:', { x: X + 0.2, y: Y + 0.85, w: 2, h: 0.22, fontSize: 11, color: '52657A', margin: 0, isTextBox: true });
+  s.addText(example ? example.comment : '', { shape: pres.shapes.RECTANGLE, x: X + 0.2, y: Y + 1.08, w: W - 0.4, h: H - 1.2, fill: { color: 'FFFFFF' }, line: { color: 'E0B36A', width: 0.75 },
+    fontSize: 11, italic: !!example, color: C.text1, valign: 'top', margin: 0.05, objectName: 'Type comments here (' + id + ')' });
+}
+
 let section = '';
 const REGISTER = [];
 
@@ -113,11 +129,7 @@ function feature(f) {
       { x: X, y: 5.12 - 0.58, w: W, h: 0.55, fontSize: 11, color: '52657A', margin: 0, valign: 'top', isTextBox: true });
   }
   // Decision box
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: X, y: 5.25, w: W, h: 1.6, rectRadius: 0.1, fill: { color: 'FFF7E8' }, line: { color: 'F2C786', width: 1 }, objectName: 'RAC decision box' });
-  s.addText('RAC decision for ' + f.id, { x: X + 0.2, y: 5.33, w: W - 0.4, h: 0.3, fontSize: 12, bold: true, color: '8A4B00', margin: 0, isTextBox: true });
-  s.addText('☐ Keep      ☐ Change      ☐ Remove', { x: X + 0.2, y: 5.68, w: W - 0.4, h: 0.3, fontSize: 12, color: C.text1, margin: 0, isTextBox: true });
-  s.addText('Comments:', { x: X + 0.2, y: 6.05, w: W - 0.4, h: 0.25, fontSize: 11, color: '52657A', margin: 0, isTextBox: true });
-  s.addShape(pres.shapes.LINE, { x: X + 0.2, y: 6.65, w: W - 0.4, h: 0, line: { color: 'E0B36A', width: 0.75, dashType: 'dash' } });
+  decisionBox(s, f.id, X, 5.25, W, 1.6);
   s.addNotes(f.notes || (f.what + ' Click steps: ' + f.clicks.join(' ')));
 }
 
@@ -134,7 +146,7 @@ cover();
   const steps = [
     ['1', 'One function per slide', 'Each slide shows one part of the report as it looks in SharePoint, what it shows, and exactly what happens when you click.'],
     ['2', 'Every function has an ID', 'F-01, F-02 and so on. Use the ID when you comment, so there is no doubt which part you mean.'],
-    ['3', 'Tick one box per function', 'Keep as shown, Keep with changes (write the change), or Remove. The last slides collect all decisions in one table.'],
+    ['3', 'Type X in one box per function', 'Click the small box beside Keep, Change or Remove and type X. Click the Comments box to type a change. The last slides repeat all decisions in one table.'],
     ['4', 'Figures are sample data', 'Numbers on screen are sample figures for review. Real figures replace them when the reporting database is connected.']
   ];
   steps.forEach((st, i) => {
@@ -145,10 +157,7 @@ cover();
     s.addText(st[2], { x: 1.6, y: y + 0.42, w: 5.8, h: 0.75, fontSize: 14, color: C.text1, margin: 0, valign: 'top', isTextBox: true });
   });
   // sample decision box
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.2, y: 2.3, w: 4.5, h: 2.2, rectRadius: 0.1, fill: { color: 'FFF7E8' }, line: { color: 'F2C786', width: 1 }, objectName: 'Example decision box' });
-  s.addText('RAC decision for F-00', { x: 8.45, y: 2.45, w: 4, h: 0.35, fontSize: 14, bold: true, color: '8A4B00', margin: 0, isTextBox: true });
-  s.addText('☑ Keep with changes', { x: 8.45, y: 2.9, w: 4, h: 0.35, fontSize: 14, color: C.text1, margin: 0, isTextBox: true });
-  s.addText('Comments: show the top 15 instead of the top 10.', { x: 8.45, y: 3.35, w: 4, h: 0.8, fontSize: 13, italic: true, color: '52657A', margin: 0, isTextBox: true });
+  decisionBox(s, 'F-00', 8.2, 2.3, 4.5, 2.0, { mark: 1, comment: 'Show the top 15 instead of the top 10.' });
   s.addText('Example of a filled-in decision box', { x: 8.2, y: 4.6, w: 4.5, h: 0.3, fontSize: 11, color: '6B7B8C', align: 'center', margin: 0, isTextBox: true });
 }
 
@@ -248,11 +257,7 @@ feature({ id: 'F-11', title: 'Click a department code to open Department Insight
     s.addText(c[2], { x: x + 0.3, y: 3.5, w: 3.3, h: 1.4, fontSize: 14, color: C.text1, margin: 0, valign: 'top', isTextBox: true });
   });
   const X = 0.5, W = 12.3;
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: X, y: 5.3, w: W, h: 1.5, rectRadius: 0.1, fill: { color: 'FFF7E8' }, line: { color: 'F2C786', width: 1 }, objectName: 'RAC decision box' });
-  s.addText('RAC decision for F-24', { x: X + 0.25, y: 5.4, w: 5, h: 0.3, fontSize: 12, bold: true, color: '8A4B00', margin: 0, isTextBox: true });
-  s.addText('\u2610 Keep      \u2610 Change      \u2610 Remove', { x: X + 0.25, y: 5.78, w: 5, h: 0.3, fontSize: 12, color: C.text1, margin: 0, isTextBox: true });
-  s.addText('Comments:', { x: X + 0.25, y: 6.15, w: 2, h: 0.25, fontSize: 11, color: '52657A', margin: 0, isTextBox: true });
-  s.addShape(pres.shapes.LINE, { x: X + 1.3, y: 6.4, w: W - 1.6, h: 0, line: { color: 'E0B36A', width: 0.75, dashType: 'dash' } });
+  decisionBox(s, 'F-24', X, 5.3, W, 1.5);
   s.addNotes('Page settings are for whoever edits the SharePoint page, not for readers.');
 }
 
@@ -371,11 +376,7 @@ feature({ id: 'F-50', title: 'Import data button and panel', shot: '51_owner_hea
   s.addText('Rules every file must pass', { x: X, y: 1.2, w: W, h: 0.3, fontSize: 14, bold: true, color: C.accent1, margin: 0, isTextBox: true });
   const rules = ['Tab names and headings as in the template', 'Valid codes, Yes/No, dates up to today, sharepoint.com links', 'Training no more than the headcount; per person or as a count, not both', 'Service accounts and repeated rows skipped and reported', 'If any rule is broken, nothing is loaded'];
   s.addText(rules.map((t, i) => ({ text: t, options: { bullet: true, breakLine: i < rules.length - 1, paraSpaceAfter: 4 } })), { x: X, y: 1.5, w: W, h: 3.5, fontSize: 12, color: C.text1, margin: 0, valign: 'top', isTextBox: true });
-  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: X, y: 5.25, w: W, h: 1.6, rectRadius: 0.1, fill: { color: 'FFF7E8' }, line: { color: 'F2C786', width: 1 }, objectName: 'RAC decision box' });
-  s.addText('RAC decision for F-51', { x: X + 0.2, y: 5.33, w: W - 0.4, h: 0.3, fontSize: 12, bold: true, color: '8A4B00', margin: 0, isTextBox: true });
-  s.addText('☐ Keep      ☐ Change      ☐ Remove', { x: X + 0.2, y: 5.68, w: W - 0.4, h: 0.3, fontSize: 12, color: C.text1, margin: 0, isTextBox: true });
-  s.addText('Comments:', { x: X + 0.2, y: 6.05, w: W - 0.4, h: 0.25, fontSize: 11, color: '52657A', margin: 0, isTextBox: true });
-  s.addShape(pres.shapes.LINE, { x: X + 0.2, y: 6.65, w: W - 0.4, h: 0, line: { color: 'E0B36A', width: 0.75, dashType: 'dash' } });
+  decisionBox(s, 'F-51', X, 5.25, W, 1.6);
 }
 feature({ id: 'F-52', title: 'A file with problems is refused', shot: 'import_refused',
   what: 'Uploading a file checks every row first. Any problem means nothing is loaded, and every problem is listed.',
@@ -425,8 +426,8 @@ divider('E. Data behind the figures, and your decisions', 'Where each figure com
 }
 { // Decision register (auto-paged table)
   const H = (t) => ({ text: t, options: { bold: true, color: 'FFFFFF', fill: { color: THEME.colors.dk2 } } });
-  const rows = [[H('ID'), H('Function'), H('Area'), H('Keep'), H('Change'), H('Remove'), H('Comments')]]
-    .concat(REGISTER.slice().sort((a, b) => a.id.localeCompare(b.id)).map(r => [r.id, r.title, r.area.replace(/^[A-E]\. /, ''), '☐', '☐', '☐', ''].map(c => ({ text: c }))));
+  const rows = [[H('ID'), H('Function'), H('Area'), H('Keep (X)'), H('Change (X)'), H('Remove (X)'), H('Comments')]]
+    .concat(REGISTER.slice().sort((a, b) => a.id.localeCompare(b.id)).map(r => [r.id, r.title, r.area.replace(/^[A-E]\. /, ''), '', '', '', ''].map(c => ({ text: c }))));
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
   s.addText('Decision register', { placeholder: 'title' });
   s.addTable(rows, { x: 0.5, y: 1.25, w: 12.3, colW: [0.8, 4.0, 2.6, 0.7, 0.8, 0.8, 2.6], fontSize: 11, color: '172B4D',
