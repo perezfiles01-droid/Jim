@@ -63,7 +63,7 @@ let counter = 0;
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium' });
   const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1920 / 2560, acceptDownloads: true });
-  const page = await ctx.newPage();
+  const mk = page => {
 
   const load = async cfg => {
     const c = CONFIGS[cfg];
@@ -99,6 +99,10 @@ let counter = 0;
     return { id, fresh: true };
   };
 
+    return { page, load, scroll, act, capture };
+  };
+  const main = mk(await ctx.newPage());
+  var { page, load, scroll, capture } = main;
   // 1) every view, every scroll position
   const frames = {};
   for (const cfg of Object.keys(CONFIGS)) {
@@ -131,7 +135,8 @@ let counter = 0;
   }
 
   // 2) one click from each screen; inside pop-ups, up to three clicks
-  const explore = async (baseId, pathKeys, depth) => {
+  const explore = async (wk, baseId, pathKeys, depth) => {
+    const { page, load, scroll, act, capture } = wk;
     const st = states[baseId];
     let popCount = 0;
     for (const it of st.items) {
@@ -157,12 +162,16 @@ let counter = 0;
         it.target = r.id;
         if (r.fresh && states[r.id].popOpen && depth < 3) {
           states[r.id].back = st.base ? baseId : (st.back || baseId);
-          await explore(r.id, pathKeys.concat([[it.key, depth > 0]]), depth + 1);
+          await explore(wk, r.id, pathKeys.concat([[it.key, depth > 0]]), depth + 1);
         }
       } catch (e) { it.target = null; console.log('  skip', it.text, e.message.split('\n')[0]); }
     }
   };
-  for (const cfg of Object.keys(CONFIGS)) for (const id of frames[cfg]) { await explore(id, [], 0); console.log('explored', id, Object.keys(states).length, 'states'); }
+  const queue = Object.values(frames).flat();
+  const workers = await Promise.all([...Array(6)].map(async () => mk(await ctx.newPage())));
+  await Promise.all(workers.map(async wk => {
+    while (queue.length) { const id = queue.shift(); await explore(wk, id, [], 0); console.log('explored', id, Object.keys(states).length, 'states'); }
+  }));
 
   // 3) controls on derived screens: same control as on the screen they came from leads to the same place,
   //    and the control that made the screen toggles back.
