@@ -19,6 +19,17 @@ from pptx.util import Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SHOTS = os.path.join(HERE, 'prototype2')
+SMALL = os.path.join(HERE, 'prototype2_small')
+os.makedirs(SMALL, exist_ok=True)
+
+
+def small(name):
+    # compress each screen (1600 x 900, JPEG 72) so a deck of ~1,000 screens stays a usable size
+    out = os.path.join(SMALL, name)
+    if not os.path.exists(out):
+        from PIL import Image
+        Image.open(os.path.join(SHOTS, name)).convert('RGB').resize((1600, 900), Image.LANCZOS).save(out, 'JPEG', quality=72, optimize=True)
+    return out
 OUT = os.path.join(HERE, 'EDRMS_Utilization_Report_Clickable_Prototype.pptx')
 P = '{http://schemas.openxmlformats.org/presentationml/2006/main}'
 ORANGE = RGBColor(0xE8, 0x6A, 0x10)
@@ -114,7 +125,7 @@ slides = {}
 for k in ORDER:
     s = prs.slides.add_slide(BLANK)
     strip(s)
-    pic = s.shapes.add_picture(os.path.join(SHOTS, states[k]['file']), 0, 0, SW, SH)
+    pic = s.shapes.add_picture(small(states[k]['file']), 0, 0, SW, SH)
     pic.name = 'Screen ' + k
     slides[k] = s
 
