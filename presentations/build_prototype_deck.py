@@ -30,13 +30,18 @@ def small(name):
         from PIL import Image
         Image.open(os.path.join(SHOTS, name)).convert('RGB').resize((1600, 900), Image.LANCZOS).save(out, 'JPEG', quality=72, optimize=True)
     return out
-OUT = os.path.join(HERE, 'EDRMS_Utilization_Report_Clickable_Prototype.pptx')
+OUT = os.path.join(HERE, 'EDRMS_Utilization_Report_Clickable_Prototype' + ('_Key_Screens' if '--key' in __import__('sys').argv else '') + '.pptx')
 P = '{http://schemas.openxmlformats.org/presentationml/2006/main}'
 ORANGE = RGBColor(0xE8, 0x6A, 0x10)
 
 graph = json.load(open(os.path.join(SHOTS, 'graph.json')))
 states = graph['states']
 START = graph['start']
+import sys
+KEYONLY = '--key' in sys.argv  # key screens only (select_key_states.py), at most 100 slides
+if KEYONLY:
+    ks = json.load(open(os.path.join(SHOTS, 'key_states.json')))
+    states = {k: states[k] for k in ks}
 ORDER = [START] + [k for k in states if k != START]
 
 prs = Presentation(os.path.join(HERE, 'templates', 'ADB_EDRMS_template.pptx'))
@@ -173,5 +178,5 @@ no_click_advance(cover, fade=False)
 button(cover, Inches(9.6), Inches(5.6), Inches(2.6), Inches(0.5), 'Open the report ▶', slides[START])
 
 prs.save(OUT)
-links = sum(len(states[k]['hot']) for k in ORDER)
+links = sum(1 for k in ORDER for h in states[k]['hot'] if h['target'] in slides)
 print('wrote', OUT, len(prs.slides), 'slides,', links, 'links')
