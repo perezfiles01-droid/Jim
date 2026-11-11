@@ -61,6 +61,10 @@ def no_click_advance(s, fade=True):
     el = s._element
     for t in el.findall(P + 'transition'):
         el.remove(t)
+    # a transition may also sit inside mc:AlternateContent (e.g. Morph); two transitions make the file unreadable
+    for ac in el.findall('{http://schemas.openxmlformats.org/markup-compatibility/2006}AlternateContent'):
+        if ac.find('.//' + P + 'transition') is not None:
+            el.remove(ac)
     tr = etree.Element(P + 'transition')
     tr.set('spd', 'fast')
     tr.set('advClick', '0')
