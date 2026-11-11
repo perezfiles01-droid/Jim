@@ -18,13 +18,15 @@ from pptx.oxml.ns import qn
 from pptx.util import Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SHOTS = os.path.join(HERE, 'prototype')
+SHOTS = os.path.join(HERE, 'prototype2')
 OUT = os.path.join(HERE, 'EDRMS_Utilization_Report_Clickable_Prototype.pptx')
 P = '{http://schemas.openxmlformats.org/presentationml/2006/main}'
 ORANGE = RGBColor(0xE8, 0x6A, 0x10)
 
-states = json.load(open(os.path.join(SHOTS, 'states.json')))
-ORDER = ['bw_sites'] + [k for k in states if k != 'bw_sites']
+graph = json.load(open(os.path.join(SHOTS, 'graph.json')))
+states = graph['states']
+START = graph['start']
+ORDER = [START] + [k for k in states if k != START]
 
 prs = Presentation(os.path.join(HERE, 'templates', 'ADB_EDRMS_template.pptx'))
 lst = prs.slides._sldIdLst
@@ -112,7 +114,7 @@ slides = {}
 for k in ORDER:
     s = prs.slides.add_slide(BLANK)
     strip(s)
-    pic = s.shapes.add_picture(os.path.join(SHOTS, k + '.png'), 0, 0, SW, SH)
+    pic = s.shapes.add_picture(os.path.join(SHOTS, states[k]['file']), 0, 0, SW, SH)
     pic.name = 'Screen ' + k
     slides[k] = s
 
@@ -154,10 +156,10 @@ tb(ins, 0.45, 1.3, 7.0, 3.6, [
     '4. Long pages have an orange Scroll down button at the bottom, and Scroll up at the top.',
     '5. Clicking anywhere that is not a button does nothing, as in the report. Use the mouse rather than the arrow keys.',
     '6. Figures are sample data. Layout and wording may still change slightly in the final system.'], 15)
-button(ins, Inches(0.45), Inches(5.1), Inches(2.6), Inches(0.5), 'Open the report ▶', slides['bw_sites'])
+button(ins, Inches(0.45), Inches(5.1), Inches(2.6), Inches(0.5), 'Open the report ▶', slides[START])
 no_click_advance(ins, fade=False)
 no_click_advance(cover, fade=False)
-button(cover, Inches(9.6), Inches(5.6), Inches(2.6), Inches(0.5), 'Open the report ▶', slides['bw_sites'])
+button(cover, Inches(9.6), Inches(5.6), Inches(2.6), Inches(0.5), 'Open the report ▶', slides[START])
 
 prs.save(OUT)
 links = sum(len(states[k]['hot']) for k in ORDER)
