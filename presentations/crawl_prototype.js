@@ -133,7 +133,9 @@ let counter = 0;
   // 2) one click from each screen; inside pop-ups, up to three clicks
   const explore = async (baseId, pathKeys, depth) => {
     const st = states[baseId];
+    let popCount = 0;
     for (const it of st.items) {
+      if (depth > 0 && it.inPop && ++popCount > 8) continue;   // first 8 options in a pop-up list
       if (it.target !== undefined) continue;
       if (depth > 0 && !it.inPop) continue;          // inside a pop-up only its own controls are explored
       if (it.card) {
