@@ -1,0 +1,23 @@
+[
+ {
+  "file": "F-20_01.png",
+  "x": 0.263212890625,
+  "y": 0.19916666666666666,
+  "w": 0.290302734375,
+  "h": 0.04722222222222222,
+  "text": "Click Approximate headcount against documents "
+ },
+ {
+  "file": "F-20_02.png",
+  "x": 0.263212890625,
+  "y": 0.2863888888888889,
+  "w": 0.2325,
+  "h": 0.04,
+  "text": "Click Approximate headcount against records de"
+ },
+ {
+  "file": "F-20_03.png",
+  "final": true,
+  "text": "Result"
+ }
+]

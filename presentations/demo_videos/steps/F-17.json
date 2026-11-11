@@ -1,0 +1,31 @@
+[
+ {
+  "file": "F-17_01.png",
+  "x": 0.795703125,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click Records declared in EDRMS 21,646 View br"
+ },
+ {
+  "file": "F-17_02.png",
+  "x": 0.515263671875,
+  "y": 0.3925,
+  "w": 0.124404296875,
+  "h": 0.028333333333333332,
+  "text": "Click RECORDS DECLARED"
+ },
+ {
+  "file": "F-17_03.png",
+  "x": 0.213125,
+  "y": 0.3258333333333333,
+  "w": 0.591923828125,
+  "h": 0.05,
+  "text": "Click Search by department / office / RM / RO"
+ },
+ {
+  "file": "F-17_04.png",
+  "final": true,
+  "text": "Result"
+ }
+]

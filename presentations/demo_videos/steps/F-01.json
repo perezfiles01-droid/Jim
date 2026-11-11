@@ -1,0 +1,31 @@
+[
+ {
+  "file": "F-01_01.png",
+  "x": 0,
+  "y": 0.28760416666666666,
+  "w": 0.184375,
+  "h": 0.04638888888888889,
+  "text": "Point at Project Insights"
+ },
+ {
+  "file": "F-01_02.png",
+  "x": 0,
+  "y": 0.1934375,
+  "w": 0.184375,
+  "h": 0.04805555555555555,
+  "text": "Click Department Insights"
+ },
+ {
+  "file": "F-01_03.png",
+  "x": 0,
+  "y": 0.14538194444444444,
+  "w": 0.184375,
+  "h": 0.04805555555555555,
+  "text": "Click Bank-wide Oversight"
+ },
+ {
+  "file": "F-01_04.png",
+  "final": true,
+  "text": "Result"
+ }
+]

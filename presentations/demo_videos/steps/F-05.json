@@ -1,0 +1,31 @@
+[
+ {
+  "file": "F-05_01.png",
+  "x": 0.897119140625,
+  "y": 0.0275,
+  "w": 0.078818359375,
+  "h": 0.044444444444444446,
+  "text": "Click Export ▾"
+ },
+ {
+  "file": "F-05_02.png",
+  "x": 0.746875,
+  "y": 0.08972222222222222,
+  "w": 0.22375,
+  "h": 0.07111111111111111,
+  "text": "Point at PDF PDF The dashboard as on screen"
+ },
+ {
+  "file": "F-05_03.png",
+  "x": 0.746875,
+  "y": 0.16083333333333333,
+  "w": 0.22375,
+  "h": 0.09361111111111112,
+  "text": "Point at PPT PowerPoint One slide per breakdown a"
+ },
+ {
+  "file": "F-05_04.png",
+  "final": true,
+  "text": "Result"
+ }
+]

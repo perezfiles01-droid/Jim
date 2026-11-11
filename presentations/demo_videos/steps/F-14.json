@@ -1,0 +1,23 @@
+[
+ {
+  "file": "F-14_01.png",
+  "x": 0.396484375,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click EDRMS users 11,800 View breakdown ›"
+ },
+ {
+  "file": "F-14_02.png",
+  "x": 0.213125,
+  "y": 0.3825,
+  "w": 0.591923828125,
+  "h": 0.05,
+  "text": "Click Search by department / office / RM / RO"
+ },
+ {
+  "file": "F-14_03.png",
+  "final": true,
+  "text": "Result"
+ }
+]

@@ -1,0 +1,39 @@
+[
+ {
+  "file": "F-12_01.png",
+  "x": 0.396484375,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click EDRMS users 11,800 View breakdown ›"
+ },
+ {
+  "file": "F-12_02.png",
+  "x": 0.59609375,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click Documents in EDRMS 3.47M View breakdown "
+ },
+ {
+  "file": "F-12_03.png",
+  "x": 0.795703125,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click Records declared in EDRMS 21,646 View br"
+ },
+ {
+  "file": "F-12_04.png",
+  "x": 0.196875,
+  "y": 0.12611111111111112,
+  "w": 0.191796875,
+  "h": 0.08666666666666667,
+  "text": "Click Active EDRMS sites 1,032 View breakdown "
+ },
+ {
+  "file": "F-12_05.png",
+  "final": true,
+  "text": "Result"
+ }
+]
