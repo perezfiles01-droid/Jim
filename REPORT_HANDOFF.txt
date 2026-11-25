@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.23.
+Last updated: 25 Nov 2026. Current version: 1.0.0.24.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.23 ->
-      1.0.0.24 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.24 ->
+      1.0.0.25 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.23), so nothing is undone
+B7. What the report looks like now (1.0.0.24), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -161,4 +161,10 @@ B7. What the report looks like now (1.0.0.23), so nothing is undone
      Storage (GB), File Formats Identified); Records (Declaration Rate,
      Records Declared, Documents); Physical (Share of Physical Records,
      Physical Records, Records Declared).
+   - Breakdown Date Range "Previous month" (as the prototype): each measure
+     splits into two month columns under a grouped header (e.g. Oct 2026 |
+     Nov 2026); result boxes stay on the current month; export headers
+     carry the month. The months follow the last data refresh date
+     (BREAKDOWN_DATA_REFRESHED in the mock data file), not today: a
+     December 2026 refresh shows Nov 2026 and Dec 2026.
    - Colours and fonts follow BRANDING.md (ADB Blue #002569, Arial).
