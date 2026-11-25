@@ -175,3 +175,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.22 (25 Nov 2026): compact table rows so more departments show at once; no sort arrow in the header (as the prototype).
 - 1.0.0.23 (25 Nov 2026): Documents, Records and Physical breakdowns use the prototype boxes and columns; sample storage and file formats added to the mock data file.
 - 1.0.0.24 (25 Nov 2026): breakdown "Previous month" splits each measure into the previous and current month (grouped header, as the prototype); months follow the last data refresh date; export headers carry the month; result boxes stay on the current month.
+- 1.0.0.25 (25 Nov 2026): breakdown filters kept per card (Date Range and Department); opening another card no longer carries the last card's filters or resets to the overview after a department choice; returning to a card restores its filters.
