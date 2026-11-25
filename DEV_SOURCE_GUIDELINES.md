@@ -34,7 +34,10 @@ current design into it is **`PORT_PLAN.md`**.
 5. **Keep all mock data in one file.** The entire report draws every sample figure
    from a single mock data file. Do not scatter sample values across components.
 6. **Keep the ADB branding.** Follow `BRANDING.md` for colours, fonts and icons.
-7. **Ask before changing anything,** per the requester's standing instruction, and
+7. **Leave no trace of AI.** Comments, file notes, commit text and hand-over
+   notes in the developers' code read as the developers' own work. They contain
+   no mention of AI or of any assistant, and no generated-by footers.
+8. **Ask before changing anything,** per the requester's standing instruction, and
    show a mockup or before/after when the change is visual.
 
 ## Features to carry over from the current design (Bank-wide Oversight)

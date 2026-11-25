@@ -1,7 +1,19 @@
 # Plan: Bank-wide Oversight in the developers' source code
 
-Status: **waiting for the requester's approval.** Nothing has been changed in the
-developers' code yet. Written 25 Nov 2026.
+Status: **approved 25 Nov 2026, phase 1 in progress.**
+
+Decisions (the recommendations, accepted by the requester):
+1. The Physical counterparts section is removed from the overview, to match the
+   current design.
+2. The tree tables extend the developers' own `Table`.
+3. The mock data is kept in full, in the one file.
+4. Their SPFx 1.24 and React 18 are kept.
+5. Hand-over is a zip and the `.sppkg`, with a list of the changes.
+
+**Authorship rule (the requester's):** the result must read as the developers' own
+work. Comments, file notes, commit text, change lists and generated files carry
+no mention of AI or of any assistant, and no generated-by footers. Code comments
+follow the developers' existing style.
 
 Read `DEV_SOURCE_GUIDELINES.md` (the rules) and `BRANDING.md` (colours, fonts and
 icons) alongside this.
