@@ -52,3 +52,43 @@ current design into it is **`PORT_PLAN.md`**.
 - the address that carries the view and filters (shareable links)
 - the segmented Import data panel
 - the smooth sidebar, the one-screen layout and proportional scaling
+
+
+## Picking up the work in a new session
+
+The working copy lives only in a session's scratch space, so a new session starts
+from the latest delivered zip.
+
+1. **Latest version:** 1.0.0.5. It is in the requester's Google Drive as
+   `UtilizationReport-src.zip` (Drive file id `1b_piiIjPl8pz4hHirLhfT-Ta8yqjd76z`).
+   The built package is `edrms-utilization-report.sppkg` (id `1pxnVtHcsM9e3a7IJvPheOMmcqkXAHuD3`).
+   Older copies are titled "(old)".
+2. **Fetch it:** download it with the Drive connector. If that is too large, ask the
+   requester for a read-only Drive token through the secure credential form (OAuth
+   Playground, scope `drive.readonly`) and download with the Drive API (`alt=media`).
+3. **Install:** the lock file points at AvePoint's private registry, which is not
+   reachable from here. Install with
+   `npm install --package-lock=false --registry=https://registry.npmjs.org/`.
+   Do not edit their lock file.
+4. **Build:** `npm run build` must give 0 errors and no more than 316 lint warnings
+   (all 316 are in the developers' original code).
+5. **Formatting:** match the developers' formatting exactly.
+   - All files use Windows (CRLF) line endings.
+   - Components and SCSS: Prettier with `--single-quote --end-of-line crlf`.
+   - Hooks and the web part file: `--end-of-line crlf --trailing-comma es5`.
+   - Never rewrite a file through a tool that turns CRLF into LF.
+6. **Browser check:** render it in a browser before delivering. Bundle `lib/` with
+   esbuild, with these settings:
+   - Point `*.module.scss` imports at their compiled `.css` and load them as local CSS.
+   - Alias `@fluentui/react-charting` to its `lib-commonjs` build.
+   - Use `mainFields` browser, module, main.
+
+   Render `EdrmsUtilizationReport` with `MockReportService`, and check every card,
+   every breakdown, shareable links and the sidebar.
+7. **Deliver:**
+   - Raise the solution version in `config/package-solution.json`.
+   - Update `CHANGES.md`.
+   - Zip without `node_modules`, the build folders or `.git`.
+   - Upload both files to Drive, rename the previous ones "(old)", and send them to
+     the requester.
+8. **No trace of AI,** and ask before changing anything.
