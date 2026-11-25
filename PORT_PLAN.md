@@ -170,3 +170,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.17 (25 Nov 2026): open card yellow without the dark blue outline.
 - 1.0.0.18 (25 Nov 2026): breakdown view matches the prototype (white filter panel, labels beside controls, Export table to Excel, larger list rows, (i) on results, tighter breadcrumb).
 - 1.0.0.19 (25 Nov 2026): department list in the breakdown opens inside the report under the box, as wide as the box, scaling with the report (as the prototype).
+- 1.0.0.20 (25 Nov 2026): breakdown result boxes of equal width and height (as the prototype).
