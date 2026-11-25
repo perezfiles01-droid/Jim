@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.22.
+Last updated: 25 Nov 2026. Current version: 1.0.0.23.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.22 ->
-      1.0.0.23 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.23 ->
+      1.0.0.24 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.22), so nothing is undone
+B7. What the report looks like now (1.0.0.23), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -157,4 +157,8 @@ B7. What the report looks like now (1.0.0.22), so nothing is undone
      width, scaling with the report; equal result boxes with (i); table
      with blue header row, column lines, compact banded rows, sorted by the first
      figure, no search box, one Export table button (in the filter bar).
+   - Breakdown boxes and columns as the prototype: Documents (Documents,
+     Storage (GB), File Formats Identified); Records (Declaration Rate,
+     Records Declared, Documents); Physical (Share of Physical Records,
+     Physical Records, Records Declared).
    - Colours and fonts follow BRANDING.md (ADB Blue #002569, Arial).

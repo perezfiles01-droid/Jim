@@ -173,3 +173,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.20 (25 Nov 2026): breakdown result boxes of equal width and height (as the prototype).
 - 1.0.0.21 (25 Nov 2026): breakdown table matches the prototype (blue header row, column lines, banded rows, sorted largest first, no search box, single Export table in the filter bar).
 - 1.0.0.22 (25 Nov 2026): compact table rows so more departments show at once; no sort arrow in the header (as the prototype).
+- 1.0.0.23 (25 Nov 2026): Documents, Records and Physical breakdowns use the prototype boxes and columns; sample storage and file formats added to the mock data file.
