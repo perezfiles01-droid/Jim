@@ -72,6 +72,7 @@ verified, and where each colour is used in the code.
 Before porting the report into the developers' code, or changing it there, read
 **`DEV_SOURCE_GUIDELINES.md`**. It covers their exact structure and formatting,
 Fluent UI for charts and tables, reusable components, and one mock data file.
+The plan for that port, and its open questions, is **`PORT_PLAN.md`**.
 
 ## Data sources
 

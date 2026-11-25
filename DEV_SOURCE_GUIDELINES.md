@@ -4,9 +4,17 @@ Set by the requester, 25 Nov 2026. Read this before porting the report into the
 developers' source code, or changing it once it is there.
 
 The developers' source code (the version uploaded to the sandpit environment and
-shown to the client) goes in `sources/dev-src/` once received. Treat it as the
-reference for structure and style. If that folder is empty, the code has not been
-received yet: ask for it rather than guessing its structure.
+shown to the client) was received on 25 Nov 2026. It is kept in the requester's
+Google Drive (perezfiles01@gmail.com), as `UtilizationReport 1.zip`, Drive file id
+`1nl_cqrO09NCSSFDz79nOyDpwXWTQOkQ5`.
+
+- **Never commit it to this repository.** The repository is public.
+- To fetch it, use the Drive connector. For a large file, ask the requester for a
+  read-only Drive token through the secure credential form, then download it with
+  the Drive API (`alt=media`) and unpack it without `node_modules`.
+
+Treat it as the reference for structure and style. The plan for porting the
+current design into it is **`PORT_PLAN.md`**.
 
 ## Rules
 
