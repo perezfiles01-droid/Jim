@@ -163,3 +163,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.10 (25 Nov 2026): Bank-wide cards match the prototype (bold title, figure, View breakdown on its own line); (i) descriptions open below the icon via new shared InfoTip.
 - 1.0.0.11 (25 Nov 2026): Bank-wide filter bar matches the prototype (labels beside controls, yellow selection, Report type as multi-select buttons).
 - 1.0.0.12 (25 Nov 2026): filter bar keeps its layout when the department list opens; Report type multi-select only when Show # Months is 1; filter text not selectable.
+- 1.0.0.13 (25 Nov 2026): at 1 month only Documents, Records and Physical combine; Sites and Users alone; longer periods one type.
