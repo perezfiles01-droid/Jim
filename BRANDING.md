@@ -92,3 +92,7 @@ The same names apply in the web part source and in Floot.
 - `components/Report.module.scss` holds base styles that are still the older
   values. They are overridden by the components above, so check there too when
   changing a colour.
+
+## Sidebar icons (1.0.80)
+
+Solid, flat, single-colour icons (filled shapes, cut-outs by evenodd), as the requester's reference of 25 Nov 2026: target (Bank-wide Oversight), 2x2 tiles (Department Insights), stepped bars (Project Insights), indented list (Institutional File Plan), filled clock (Retention & Disposal), archive box (Records & Archive Holdings). Defined in `ICONS` in `floot/components/EdrmsReportApp.tsx`, same in Floot.
