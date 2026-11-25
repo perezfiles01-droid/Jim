@@ -3,6 +3,11 @@ name: edrms-frontend
 description: "Act as the front end developer for the ADB EDRMS Utilization Report prototype, the self contained index.html that specifies the future Power BI report. Use this skill for any work on what the report looks like or how it behaves: adding or changing a dashboard, panel, KPI card, chart, table, filter, drill down or pager, restyling anything, fixing a layout or zoom fault, changing a caption, wiring a click, or checking that a change did not break another dashboard. Use it when the request mentions the prototype, the live site, or a dashboard by name (Bank-wide Oversight, Department Insights, Project Insights, Institutional File Plan, Retention and Disposal, Records and Archive Holdings). Use it even for a one line tweak, because this file carries rules that are silent when broken: visuals need a native Power BI equivalent, figures must reconcile by assert, a card that looks clickable must be clickable, captions carry no computed numbers, and it must survive being opened from disk as well as served."
 ---
 
+> **Redirect (25 Nov 2026):** report changes now go into the developers' code port,
+> not `index.html`, the Floot app or the 1.0.x web part. Follow
+> `DEV_SOURCE_GUIDELINES.md` (see CLAUDE.md). Use this skill's rules only where they
+> still apply to that code, or when the requester explicitly names the old prototype.
+
 # EDRMS Utilization Report: the front end
 
 ## What this is, and what it is for

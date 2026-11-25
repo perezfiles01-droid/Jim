@@ -1,5 +1,29 @@
 # Project context
 
+## WHERE REPORT CHANGES GO NOW: the developers' code port (read before anything else)
+
+Standing instruction from the requester, 25 Nov 2026. **Every future change to
+the EDRMS Utilization Report goes into the developers' code port**, in whichever
+chat it is asked. That means any change to a dashboard, card, filter, table,
+chart, colour, layout or import. The current version is 1.0.0.5. Ship it as their
+`edrms-utilization-report.sppkg`, together with `UtilizationReport-src.zip`.
+
+- Follow **`DEV_SOURCE_GUIDELINES.md`** for every such change. Its section
+  "Picking up the work in a new session" covers:
+  - where the latest zip is (Google Drive) and how to fetch it
+  - how to install and build it
+  - the formatting rules and the browser check
+  - how to deliver: bump the version, update `CHANGES.md`, upload to Drive and
+    send both files
+- Also apply `BRANDING.md`, and leave no trace of AI.
+- Ask the requester before making any change.
+- **Do not make report changes in the old targets** unless the requester names one
+  explicitly. The old targets are:
+  - `index.html`, the GitHub Pages prototype
+  - the Floot app
+  - the 1.0.x web part, `EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg`
+- Record each delivered version in `PORT_PLAN.md`.
+
 ## Read `STATUS.md` first. Before anything else, every time.
 
 It is the complete record of the EDRMS Utilization Report: what is built, what is
