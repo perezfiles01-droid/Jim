@@ -167,3 +167,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.14 (25 Nov 2026): Filtered results match the prototype (title above, five even boxes, (i) descriptions).
 - 1.0.0.15 (25 Nov 2026): chart matches the prototype (legend by title, description, axis titles, round steps, no bar figures); department labels kept straight at the requester's request.
 - 1.0.0.16 (25 Nov 2026): cards in the breakdown view match the prototype (title left, figure and (i) right, open card yellow). Drive keeps only the current pair plus the previous version as "(old)"; older ones go to the bin (requester, 25 Nov 2026).
+- 1.0.0.17 (25 Nov 2026): open card yellow without the dark blue outline.
