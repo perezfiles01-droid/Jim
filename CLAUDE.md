@@ -61,6 +61,12 @@ For any work on the EDRMS knowledge transfer videos, read
 **`video/KT_SERIES_SESSION_HANDOFF.txt`** first and follow it exactly. Part 1
 (`video/EDRMS_KT_Part1_Introduction.mp4`) is the approved reference for every part.
 
+## Branding (colours and fonts)
+
+Before any change to colours, fonts or styling of the report (web part or Floot),
+read **`BRANDING.md`**. It holds the ADB palette, the font rules, which values are
+verified, and where each colour is used in the code.
+
 ## Data sources
 
 Every utilization data source, held or still missing, is registered in
