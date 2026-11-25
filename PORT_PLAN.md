@@ -156,3 +156,5 @@ exact layout and information they want. It stays as the developers have it.
    their code), rather than our 1.23 and React 17.
 5. **Hand-over:** do the developers want the result as a zip, or as a patch
    against their code, so they can see each change?
+
+- 1.0.0.7 (25 Nov 2026): no blank strip below the Bank-wide chart and tables when fitted to the screen.
