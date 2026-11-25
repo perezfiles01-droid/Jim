@@ -67,6 +67,12 @@ Before any change to colours, fonts or styling of the report (web part or Floot)
 read **`BRANDING.md`**. It holds the ADB palette, the font rules, which values are
 verified, and where each colour is used in the code.
 
+## Developers' source code
+
+Before porting the report into the developers' code, or changing it there, read
+**`DEV_SOURCE_GUIDELINES.md`**. It covers their exact structure and formatting,
+Fluent UI for charts and tables, reusable components, and one mock data file.
+
 ## Data sources
 
 Every utilization data source, held or still missing, is registered in
