@@ -1,6 +1,6 @@
 # Plan: Bank-wide Oversight in the developers' source code
 
-Status: **approved 25 Nov 2026, phase 1 in progress.**
+Status: **approved 25 Nov 2026. Phase 1 done (their code builds, 0 errors, 316 existing lint warnings, no tests). Phase 2 done (colour tokens and Arial; SectionBand compact; Breadcrumb; DepartmentTreeFilter; useLinkedState; Table tree mode, fixed body height and hidden footer; DropdownField tickAll). Work copy and a harness live in the session scratchpad only.**
 
 Decisions (the recommendations, accepted by the requester):
 1. The Physical counterparts section is removed from the overview, to match the
