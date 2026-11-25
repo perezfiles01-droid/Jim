@@ -158,3 +158,4 @@ exact layout and information they want. It stays as the developers have it.
    against their code, so they can see each change?
 
 - 1.0.0.7 (25 Nov 2026): no blank strip below the Bank-wide chart and tables when fitted to the screen.
+- 1.0.0.8 (25 Nov 2026): report fits with the space SharePoint shows below it, so the page does not scroll; chart keeps room for its legend so department names are not cut off.
