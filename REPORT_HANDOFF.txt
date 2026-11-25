@@ -1,0 +1,155 @@
+EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
+=======================================================
+Last updated: 25 Nov 2026. Current version: 1.0.0.17.
+
+
+PART A. FOR YOU (THE REQUESTER)
+-------------------------------
+
+Yes, you can continue in any new chat. Do this:
+
+1. Start a new Claude Code chat with the repository "perezfiles01-droid/Jim"
+   attached (the same one used here).
+
+2. Make sure Google Drive is connected for the chat (same Google account as
+   now). The developers' source is kept in Drive only, never in GitHub,
+   because the repository is public.
+
+3. Paste this as your first message, then add your change request:
+
+   ------------------------------------------------------------------
+   Continue the EDRMS Utilization Report work in the developers' code
+   port. First read REPORT_HANDOFF.txt, CLAUDE.md, DEV_SOURCE_GUIDELINES.md,
+   BRANDING.md and PORT_PLAN.md in the Jim repository, and follow them
+   exactly. Fetch the latest UtilizationReport-src.zip from my Google
+   Drive, install and build it, and confirm the version before changing
+   anything. My change: <describe it, with a screenshot>
+   ------------------------------------------------------------------
+
+4. The chat should then:
+   - ask you before making any change, with recommended options
+   - deliver both files (.sppkg and source zip) in the chat
+   - put both in Drive under the usual names
+   - keep the previous version as "(old)" and send older ones to the Drive bin
+
+5. To install each new version:
+   - Upload edrms-utilization-report.sppkg at
+     https://7rkd12.sharepoint.com/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx/manageApps
+     and choose Replace.
+   - Open the page and press Ctrl+Shift+R (Cmd+Shift+R on a Mac).
+
+6. If the chat cannot download the zip from Drive, it will show you a
+   secure form to give it a read-only Drive token. Never paste tokens or
+   passwords into the chat itself.
+
+
+PART B. FOR THE ASSISTANT IN THE NEW CHAT (EXACT STEPS)
+-------------------------------------------------------
+
+Standing rules (from the requester, all still in force):
+- Every report change goes into the developers' code port. Do not change
+  index.html, the Floot app or the old 1.0.x web part unless named.
+- Ask before making any change. Use the question tool with clickable
+  options and mark one "(Recommended)".
+- Leave no trace of AI: no mention of AI, Claude or tools in code,
+  comments, CHANGES.md or file names. Comments should read like a
+  developer's notes.
+- Keep exactly the developers' structure and formatting (see B5).
+- Use Fluent UI for charts and tables. Reuse or create shared components
+  under components/shared/<Name>/ with an index.ts. All demo data stays
+  in the one file services/mock/reportMockData.ts.
+- Match the web part prototype's look when asked to "align with the
+  prototype". The prototype's source is the 1.0.x web part
+  (EDRMS_Utilization_Report_SharePoint_2026-10-07.sppkg; its React
+  source is under floot/components in that project). Read it for exact
+  sizes, colours and wording.
+- Never commit the developers' source to GitHub (the repository is
+  public). It lives in Drive and in the session scratchpad only.
+- Keep answers short and plain. If something stalls, find another way
+  rather than stopping.
+
+B1. Fetch the latest source
+   - Use the Google Drive connector: search for the title
+     "UtilizationReport-src.zip" (not "(old)"). Download it into a new
+     empty folder in the scratchpad and unzip. It contains the folder
+     UtilizationReport/.
+   - If the connector cannot download it (size), ask for a read-only
+     Drive token with the secure credential form (host
+     www.googleapis.com; the requester makes it at the OAuth Playground
+     with scope drive.readonly), then download with
+     https://www.googleapis.com/drive/v3/files/<id>?alt=media
+   - Inside the folder: git init, commit everything as the baseline
+     (use a neutral author name), so every change can be diffed.
+
+B2. Install
+   - Their package-lock.json points at a private registry that is not
+     reachable. Do NOT edit the lock file. Install with:
+       npm install --package-lock=false --no-audit --no-fund --registry=https://registry.npmjs.org/
+
+B3. Build
+   - npm run build
+   - Must end with 0 errors and "Encountered 316 warnings" (all 316 are in
+     the developers' original code; never add more).
+   - The package is written to sharepoint/solution/edrms-utilization-report.sppkg.
+
+B4. Browser check (before every delivery)
+   - The scripts are in the Jim repository under tools/report-harness/.
+     Copy them into a scratchpad folder.
+   - esbuild is needed: npm install esbuild in that folder (public
+     registry), then run from that folder:
+       node build.js ./node_modules/esbuild <path-to>/UtilizationReport
+     (it bundles the compiled lib/ folder, so run npm run build first).
+   - sp.html is a page laid out like SharePoint (top bar, scrolling page,
+     header, report, space below). sp.js checks the report fits the screen
+     with no page scroll. final.js is the general check (cards, breakdowns,
+     sidebar, links); it must print "errors 0".
+   - Take screenshots (Playwright, chromium.launch()) of anything changed
+     and compare with the prototype screenshot the requester sent.
+
+B5. Formatting (exactly the developers' style)
+   - Every file keeps Windows (CRLF) line endings. Never rewrite a file in
+     a way that turns CRLF into LF (in Python, read and write in binary).
+   - Format each changed file with Prettier, matching the files around it:
+     most files use  --single-quote --end-of-line crlf
+     some use        --end-of-line crlf --trailing-comma es5
+     Check which one the original file already passes and keep that.
+   - Several original files did not pass Prettier to begin with; do not
+     reformat them wholesale, only edit the lines needed.
+
+B6. Deliver (every change)
+   1. Raise the version in config/package-solution.json (1.0.0.17 ->
+      1.0.0.18 and so on) and rebuild.
+   2. Update CHANGES.md at the zip root: the version line, a summary
+      bullet and the new/changed/removed file lists.
+   3. Commit in the local git.
+   4. Zip the same file list as the previous zip, without node_modules,
+      lib, temp, dist, release, sharepoint/solution or .git (the list can
+      be taken from the previous zip with: unzip -Z1 <old zip>).
+   5. Send both files to the requester in the chat.
+   6. Google Drive: move the current "(old)" pair to the bin, rename the
+      current pair to "... <version> (old)", upload the new pair under
+      the plain names "edrms-utilization-report.sppkg" and
+      "UtilizationReport-src.zip" (upload as binary, no conversion).
+   7. In the Jim repository: update the version and Drive ids in
+      CLAUDE.md, DEV_SOURCE_GUIDELINES.md and README_REPORT_CHANGES.md,
+      add a line to PORT_PLAN.md, commit and push to main.
+   8. Reply with: what changed, what was checked (say it was checked in a
+      test copy, not in SharePoint), the App Catalog link with Replace,
+      and Ctrl+Shift+R.
+
+B7. What the report looks like now (1.0.0.17), so nothing is undone
+   - Fits the screen in view mode; hides SharePoint's space below the web
+     part (on any page, by the requester's choice); full length while
+     editing.
+   - Bank-wide overview: five cards (bold title, figure, "View breakdown"
+     on its own line, (i) below-right); filter bar like the prototype
+     (labels beside controls, yellow selection, Report type as buttons:
+     at 1 month Documents, Records and Physical can combine, Sites and
+     Users alone, longer periods one type); filter text not selectable;
+     Filtered results with title above and (i) per box; chart with legend
+     beside the title, a description line, axis titles Count and
+     Department, round steps, straight department labels, no figures on
+     bars.
+   - Breakdown view: cards in one row, title left, figure and (i) right,
+     open card plain yellow (no dark outline).
+   - Colours and fonts follow BRANDING.md (ADB Blue #002569, Arial).

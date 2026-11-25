@@ -1,0 +1,10 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1600,height:900}});
+const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file://'+__dirname+'/sp.html');await p.waitForTimeout(3500);
+const st=()=>p.evaluate(()=>[...document.querySelectorAll('[role=checkbox]')].filter(b=>b.getAttribute('aria-checked')==='true').map(b=>b.textContent).join(','));
+const c=async t=>{await p.click('[role=checkbox]:has-text("'+t+'")');console.log('click',t,'->',await st());};
+console.log('start',await st());
+await c('Physical');await c('Sites');await c('Users');await c('Records');await c('Documents');await c('Records');await c('Records');
+await p.click('[role=radio]:has-text("3")');await p.waitForTimeout(200);console.log('3 months ->',await st());
+await c('Physical');
+console.log(errs);await b.close();})();

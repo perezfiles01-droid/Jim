@@ -75,9 +75,11 @@ from the latest delivered zip.
 5. **Formatting:** match the developers' formatting exactly.
    - All files use Windows (CRLF) line endings.
    - Components and SCSS: Prettier with `--single-quote --end-of-line crlf`.
-   - Hooks and the web part file: `--end-of-line crlf --trailing-comma es5`.
+   - Some files use `--end-of-line crlf --trailing-comma es5` instead. Check which
+     style the original file already passes and keep it.
    - Never rewrite a file through a tool that turns CRLF into LF.
-6. **Browser check:** render it in a browser before delivering. Bundle `lib/` with
+6. **Browser check:** render it in a browser before delivering. The scripts are in
+   `tools/report-harness/` (see `REPORT_HANDOFF.txt`, B4). Bundle `lib/` with
    esbuild, with these settings:
    - Point `*.module.scss` imports at their compiled `.css` and load them as local CSS.
    - Alias `@fluentui/react-charting` to its `lib-commonjs` build.

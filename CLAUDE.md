@@ -8,6 +8,7 @@ chat it is asked. That means any change to a dashboard, card, filter, table,
 chart, colour, layout or import. The current version is 1.0.0.17. Ship it as their
 `edrms-utilization-report.sppkg`, together with `UtilizationReport-src.zip`.
 
+- Start with **`REPORT_HANDOFF.txt`**: the exact steps to continue in a new chat.
 - Follow **`DEV_SOURCE_GUIDELINES.md`** for every such change. Its section
   "Picking up the work in a new session" covers:
   - where the latest zip is (Google Drive) and how to fetch it
