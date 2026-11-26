@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.35.
+Last updated: 25 Nov 2026. Current version: 1.0.0.36.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.35 ->
-      1.0.0.36 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.36 ->
+      1.0.0.37 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.35), so nothing is undone
+B7. What the report looks like now (1.0.0.36), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -210,6 +210,13 @@ B7. What the report looks like now (1.0.0.35), so nothing is undone
      chips, else e.g. "15 of 16 (1 in part)".
    - Overview Department list is as wide as its box (sized on screen).
    - Department names in the breakdown table are not underlined.
+   - Fit rule (requester, 26 Nov 2026): the report ALWAYS fits the visible
+     area with NO scrollbar on any screen (laptop or monitor). After the
+     normal fit, useReportCanvas shrinks up to 15% more if #main still
+     overflows; Department Insights (a long page) keeps scrolling inside.
+     Check with tools/report-harness/sp2.html (tall SharePoint header)
+     and inner3.js at 1225x703, 1366x768 and 1920x1080.
+   - Sidebar: no green bar on the open page (lighter background only).
    - Title band: "Data as of" dot is ADB light blue #5B8CC1 (as the
      prototype, not green); the button reads "Import", not "Import data".
    - Tooltips (every (i)): ADB Blue box, white 14px Arial, max 320px wide,
