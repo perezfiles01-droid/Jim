@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1366,height:768}});
+await p.goto('file://'+__dirname+'/sp2.html');await p.waitForTimeout(4000);
+await p.locator('[class*=SegmentedControl_module_scss_field]:has(> span:text-is("Show # Months")) button:text-is("12")').first().click();await p.waitForTimeout(900);
+const vis=()=>p.evaluate(()=>{const l=document.querySelector('ul[class*=legend]');const lr=l.getBoundingClientRect();return [...l.querySelectorAll('li')].filter(x=>{const r=x.getBoundingClientRect();return r.left>=lr.left-1&&r.right<=lr.right+1}).map(x=>x.innerText.trim())});
+await p.evaluate(()=>{document.querySelector('ul[class*=legend]').style.maxWidth='300px'});await p.waitForTimeout(300);
+const a=await vis();
+await p.evaluate(()=>{const s=document.querySelector('[class*=chartScroll]');s.scrollLeft=(s.scrollWidth-s.clientWidth)*0.5;s.dispatchEvent(new Event('scroll'))});await p.waitForTimeout(200);const m=await vis();
+await p.evaluate(()=>{const s=document.querySelector('[class*=chartScroll]');s.scrollLeft=s.scrollWidth;s.dispatchEvent(new Event('scroll'))});await p.waitForTimeout(200);const z=await vis();
+console.log('start:',a.join(','),'\nmiddle:',m.join(','),'\nend:',z.join(','));
+console.log(/Dec/.test(a[0])&&/Nov/.test(z[z.length-1])?'PASS legend follows the department scroll':'FAIL');
+console.log(JSON.stringify(await p.evaluate(()=>{const l=document.querySelector('ul[class*=legend]');const lr=l.getBoundingClientRect();const last=l.lastElementChild.getBoundingClientRect();return {sl:l.scrollLeft,sw:l.scrollWidth,cw:l.clientWidth,lr:[Math.round(lr.left),Math.round(lr.right)],lastLi:[Math.round(last.left),Math.round(last.right)],cs:getComputedStyle(l).overflow}})));console.log('buttons while chart scrolls:',await p.locator('[aria-label$="periods in the legend"]').count());await b.close();})();

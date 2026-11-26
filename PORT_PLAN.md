@@ -196,3 +196,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.43 (26 Nov 2026): permanent guard against the report bouncing between two sizes; chart axis and Department title fixed while scrolling; third click on a heading returns to default order; exports show all departments.
 - 1.0.0.44 (26 Nov 2026): table controls taken off the screen and kept as an enhancement for later (components remain; wiring saved in Drive, folder "EDRMS report - saved enhancements").
 - 1.0.0.45 (26 Nov 2026): Department list exactly as wide as its box.
+- 1.0.0.46 (26 Nov 2026): chart legend kept on one row beside the title (shorter labels), following the department scroll when it does not fit.
