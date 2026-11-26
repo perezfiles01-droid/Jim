@@ -5,7 +5,7 @@
 Standing instruction from the requester, 25 Nov 2026. **Every future change to
 the EDRMS Utilization Report goes into the developers' code port**, in whichever
 chat it is asked. That means any change to a dashboard, card, filter, table,
-chart, colour, layout or import. The current version is 1.0.0.32. Ship it as their
+chart, colour, layout or import. The current version is 1.0.0.33. Ship it as their
 `edrms-utilization-report.sppkg`, together with `UtilizationReport-src.zip`.
 
 - Start with **`REPORT_HANDOFF.txt`**: the exact steps to continue in a new chat.
