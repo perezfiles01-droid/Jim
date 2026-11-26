@@ -189,3 +189,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.36 (26 Nov 2026): report fits laptop screens with no inner scrollbar (shrinks up to 15% if content overflows); green sidebar bar removed.
 - 1.0.0.37 (26 Nov 2026): Department list scrolls inside itself within the report (page never grows); footer removed.
 - 1.0.0.38 (26 Nov 2026): Export to PDF and PowerPoint works (was console only); PowerPoint uses the ADB IT Department template and palette.
+- 1.0.0.39 (26 Nov 2026): overview chart shows one column per month or year when Show # Months/Years is above 1; tables cannot be copied.
