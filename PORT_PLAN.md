@@ -177,3 +177,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.24 (25 Nov 2026): breakdown "Previous month" splits each measure into the previous and current month (grouped header, as the prototype); months follow the last data refresh date; export headers carry the month; result boxes stay on the current month.
 - 1.0.0.25 (25 Nov 2026): breakdown filters kept per card (Date Range and Department); opening another card no longer carries the last card's filters or resets to the overview after a department choice; returning to a card restores its filters.
 - 1.0.0.26 (26 Nov 2026): "Data as of" dot ADB light blue as the prototype; "Import data" button renamed "Import"; all tooltips larger and high contrast (ADB Blue, white 14px).
+- 1.0.0.27 (26 Nov 2026): the page address keeps every filter (overview and each card) after leaving that view; a link copied from anywhere reopens them all.
