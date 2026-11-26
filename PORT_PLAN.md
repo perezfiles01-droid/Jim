@@ -187,3 +187,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.34 (26 Nov 2026): table controls moved into the filter bar as icon buttons (option A); adds Expand all / Collapse all; Fit all works in one click; no empty row above the table.
 - 1.0.0.35 (26 Nov 2026): breakdown Department list redesigned (option A, blue style, white ticks, no counts); overview Department list as wide as its box; department names not underlined.
 - 1.0.0.36 (26 Nov 2026): report fits laptop screens with no inner scrollbar (shrinks up to 15% if content overflows); green sidebar bar removed.
+- 1.0.0.37 (26 Nov 2026): Department list scrolls inside itself within the report (page never grows); footer removed.
