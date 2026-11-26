@@ -1,0 +1,9 @@
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="out/entry.css"><style>body{margin:0;overflow:hidden}#bar{height:48px;background:#eee}#sc{position:absolute;top:48px;bottom:0;left:0;right:0;overflow-y:auto}</style></head><body><div id="bar"></div><div id="sc"><div style="height:200px;background:#0b5cad"></div><div style="padding-bottom:40px"><div id="r"></div><div style="height:60px">footer</div></div><div id="below" style="height:110px;background:#fff"></div></div><script src="out/entry.js"></script><script>
+// A host page that reacts to the report: when the report is drawn at its
+// larger size, the page's header grows; at the smaller size it shrinks again.
+setTimeout(function(){var head=document.querySelector("#sc > div");var big=0;
+setInterval(function(){var c=document.querySelector("[data-sizing]");if(!c)return;var m=/scale\(([\d.]+)/.exec(c.style.transform);if(!m)return;var s=+m[1];
+if(!big)big=s;if(s>=big-0.0005){head.style.height="240px";}else{head.style.height="200px";}},120);
+// and something inside the report redraws now and then (as the chart does)
+setInterval(function(){var c=document.querySelector("[data-sizing]");if(c&&c.firstElementChild)c.firstElementChild.classList.toggle("redraw-tick");},150);},1500);
+</script></body></html>

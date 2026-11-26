@@ -1,0 +1,15 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1600,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+const ok=(n,c)=>console.log((c?'PASS ':'FAIL ')+n);
+await p.goto('file://'+__dirname+'/index.html');await p.waitForTimeout(3500);
+await p.locator('[aria-label="EDRMS Sites"]').first().click();await p.waitForTimeout(800);
+const first=async()=>(await p.locator('tbody tr').first().innerText()).split('\t')[0].trim();
+const arrows=()=>p.locator('thead th[aria-sort]').count();
+ok('default: A to Z ('+await first()+'), no arrow',(await first())==='BRM'&&(await arrows())===0);
+const h=p.locator('thead button:has-text("EDRMS Sites")');
+await h.click();await p.waitForTimeout(200);ok('1st click: ascending arrow, first '+await first(),(await p.locator('thead th[aria-sort="ascending"]').count())===1);
+await h.click();await p.waitForTimeout(200);ok('2nd click: descending arrow, first '+await first(),(await p.locator('thead th[aria-sort="descending"]').count())===1&&(await first())==='ITD');
+await h.click();await p.waitForTimeout(200);ok('3rd click: back to A to Z, arrow gone ('+await first()+')',(await arrows())===0&&(await first())==='BRM');
+await p.locator('thead button:has-text("Sites")').first().click();await p.waitForTimeout(200);ok('Sites 1st click: A to Z with arrow',(await arrows())===1&&(await first())==='BRM');
+await p.locator('thead button:has-text("Sites")').first().click();await p.waitForTimeout(200);ok('Sites 2nd click: Z to A ('+await first()+')',(await first())==='SPD');
+await p.locator('thead button:has-text("Sites")').first().click();await p.waitForTimeout(200);ok('Sites 3rd click: default, no arrow',(await arrows())===0&&(await first())==='BRM');
+console.log('errors',errs);await b.close();})();

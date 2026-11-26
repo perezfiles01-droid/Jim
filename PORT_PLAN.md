@@ -193,3 +193,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.40 (26 Nov 2026): PowerPoint export without the Key points box; open card highlighted in yellow; each breakdown on one slide.
 - 1.0.0.41 (26 Nov 2026): fixed the report jumping between two sizes after choosing 6 or 12 months on laptop screens.
 - 1.0.0.42 (26 Nov 2026): overview chart scrolls sideways past 10 departments; all tables sorted A to Z by default with visible sort arrows.
+- 1.0.0.43 (26 Nov 2026): permanent guard against the report bouncing between two sizes; chart axis and Department title fixed while scrolling; third click on a heading returns to default order; exports show all departments.

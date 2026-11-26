@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.42.
+Last updated: 25 Nov 2026. Current version: 1.0.0.43.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.42 ->
-      1.0.0.43 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.43 ->
+      1.0.0.44 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.42), so nothing is undone
+B7. What the report looks like now (1.0.0.43), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -219,6 +219,10 @@ B7. What the report looks like now (1.0.0.42), so nothing is undone
      The shrunk size is kept until a click in the report or a window
      resize (else a wrapping legend made it jump between two sizes;
      check with tools/report-harness/osc.js).
+     PERMANENT GUARD (1.0.0.43): if the size ever goes back to one it just
+     left (A-B-A), it holds the smaller one until a click or a window
+     resize. Proven with sp4.html + fb.js (a host page that reacts to the
+     report and keeps redrawing): 1.0.0.42 bounces, 1.0.0.43 is steady.
      Check with tools/report-harness/sp2.html (tall SharePoint header)
      and inner3.js at 1225x703, 1366x768 and 1920x1080.
    - Sidebar: no green bar on the open page (lighter background only).
@@ -240,10 +244,12 @@ B7. What the report looks like now (1.0.0.42), so nothing is undone
      Cumulative = total at period end, MTD/YTD = added in the period.
      Sample periods come from each department's monthly document history.
    - No text selection anywhere in tables (rule in _00-shell-shared.scss).
-   - Overview chart shows at most 10 departments; more scroll sideways
-     (the count axis scrolls with it).
-   - ALL tables open sorted A to Z by name; every column heading sorts,
-     with the arrow visible (also in the blue-header grid tables).
+   - Overview chart shows at most 10 departments; more scroll sideways.
+     The count axis (labels + "Count") is a fixed copy on the left and the
+     "Department" title is fixed and centred below. PDF/PowerPoint export
+     shows all departments (export mode event), then scrolling returns.
+   - ALL tables open sorted A to Z by name, with no arrow. Heading click:
+     1st ascending, 2nd descending, 3rd back to default (arrow removed).
    - Title band: "Data as of" dot is ADB light blue #5B8CC1 (as the
      prototype, not green); the button reads "Import", not "Import data".
    - Tooltips (every (i)): ADB Blue box, white 14px Arial, max 320px wide,

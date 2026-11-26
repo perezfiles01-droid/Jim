@@ -1,0 +1,14 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1600,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+const ok=(n,c)=>console.log((c?'PASS ':'FAIL ')+n);
+await p.goto('file://'+__dirname+'/index.html');await p.waitForTimeout(3500);
+const st=()=>p.evaluate(()=>{const o=document.querySelector('[class*=axisOverlay]');const t=document.querySelector('[class*=xTitle]');const s=document.querySelector('[class*=chartScroll]');const a=s.closest('[class*=chartArea]').getBoundingClientRect();
+ return {overlay:!!o&&o.querySelectorAll('text').length,ox:o&&Math.round(o.getBoundingClientRect().x),labels:o?[...o.querySelectorAll('text')].map(x=>x.textContent).join(','):'',title:t&&t.textContent,tc:t?Math.round(t.getBoundingClientRect().x+t.getBoundingClientRect().width/2-(a.x+a.width/2)):null}});
+const s1=await st();console.log(JSON.stringify(s1));ok('axis overlay shows labels + Count',/800k/.test(s1.labels)&&/Count/.test(s1.labels));ok('Department title centred',s1.title==='Department'&&Math.abs(s1.tc)<3);
+await p.screenshot({path:'pin1.png',clip:{x:250,y:520,width:1350,height:480}});
+await p.evaluate(()=>{const s=document.querySelector('[class*=chartScroll]');s.scrollLeft=s.scrollWidth});await p.waitForTimeout(400);
+const s2=await st();ok('axis and title stay put when scrolled',s2.ox===s1.ox&&s2.tc===s1.tc&&s2.overlay);await p.screenshot({path:'pin2.png',clip:{x:250,y:520,width:1350,height:480}});
+await p.locator('[class*=SegmentedControl_module_scss_field]:has(> span:text-is("Show # Months")) button:text-is("12")').first().click();await p.waitForTimeout(900);
+const s3=await st();ok('overlay follows chart redraw (12 months)',/800k/.test(s3.labels));
+await p.locator('[class*=SegmentedControl_module_scss_field]:has(> span:text-is("View")) button:text-is("Summary")').first().click();await p.waitForTimeout(700);
+ok('no overlay when not scrolling',(await p.locator('[class*=axisOverlay]').count())===0);
+console.log('errors',errs);await b.close();})();
