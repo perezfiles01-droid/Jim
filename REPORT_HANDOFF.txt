@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.34.
+Last updated: 25 Nov 2026. Current version: 1.0.0.35.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.34 ->
-      1.0.0.35 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.35 ->
+      1.0.0.36 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.34), so nothing is undone
+B7. What the report looks like now (1.0.0.35), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -200,6 +200,16 @@ B7. What the report looks like now (1.0.0.34), so nothing is undone
      no separate control row above the table. Shared components
      components/shared/TableZoom and TableExpand. Size and open rows are
      not remembered between tiles or in links.
+   - Breakdown Department list (option A of the mockups, 26 Nov 2026, in
+     the OLD BLUE STYLE by request): wide (>=420px), one line per name,
+     departments closed with arrows, search box at top, footer with
+     "N of 16 departments selected" + Clear. Dark-blue department/office
+     bars, light-blue site rows, WHITE tick boxes (the requester rejected
+     yellow ones) and NO counts in the list (rejected too; the demo site
+     list does not match the demo table figures anyway). Box: up to two
+     chips, else e.g. "15 of 16 (1 in part)".
+   - Overview Department list is as wide as its box (sized on screen).
+   - Department names in the breakdown table are not underlined.
    - Title band: "Data as of" dot is ADB light blue #5B8CC1 (as the
      prototype, not green); the button reads "Import", not "Import data".
    - Tooltips (every (i)): ADB Blue box, white 14px Arial, max 320px wide,
