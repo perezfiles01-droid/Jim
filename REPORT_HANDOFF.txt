@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.39.
+Last updated: 25 Nov 2026. Current version: 1.0.0.40.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.39 ->
-      1.0.0.40 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.40 ->
+      1.0.0.41 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.39), so nothing is undone
+B7. What the report looks like now (1.0.0.40), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -225,7 +225,9 @@ B7. What the report looks like now (1.0.0.39), so nothing is undone
      (EDRMS_Util_Reports_Database_Design_4.pptx, 26 Nov 2026): title and
      content slide backgrounds rendered from it (assets/slideBackgrounds.ts),
      title slide + one slide per view (overview and each breakdown), each
-     with editable title, cards and Key points. Palette per Mary Modesto's
+     with editable title and cards. NO Key points box (removed at the
+     requester's request); the open card is the report's yellow #FFC000,
+     not blue; the picture spans the slide (one slide per breakdown). Palette per Mary Modesto's
      branding note: #002569 titles, #004990 accents, #5B8CC1, #D9E6F5 fills,
      #4D4D4D text, Arial; no green; orange only to highlight. Adds
      pptxgenjs 3.12.0 (package.json).
