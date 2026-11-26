@@ -96,3 +96,12 @@ The same names apply in the web part source and in Floot.
 ## Sidebar icons (1.0.80)
 
 Solid, flat, single-colour icons (filled shapes, cut-outs by evenodd), as the requester's reference of 25 Nov 2026: target (Bank-wide Oversight), 2x2 tiles (Department Insights), stepped bars (Project Insights), indented list (Institutional File Plan), filled clock (Retention & Disposal), archive box (Records & Archive Holdings). Defined in `ICONS` in `floot/components/EdrmsReportApp.tsx`, same in Floot.
+
+
+## Slides and exports (from Mary Modesto, ADB Branding tool kit, 25 Nov 2026)
+
+- Fonts: Trade Gothic LT Std (titles), ITC Garamond Std (long-form print); in digital and Office use, Arial or Calibri.
+- Palette: Primary Blue #002569, Dark Blue #001B4D, Medium Blue #004990, Light Blue #5B8CC1, Pale Blue #D9E6F5, White, Dark Gray #4D4D4D, Light Gray #E6E6E6.
+- PowerPoint: titles ADB Blue bold; section dividers full ADB Blue with white text; body Arial or Calibri; accent Medium Blue; positive callouts in blues only (no bright greens unless a chart needs them); white backgrounds with space; flat blue icons.
+- Orange is not in the palette but may highlight items outside blue/white/black (Mary's comment: "not too strict").
+- The requester's sample deck in this style: EDRMS_Util_Reports_Database_Design_4.pptx (ADB IT Department template: wave title slide, footer "Information Technology Department / Innovate. Transform. Deliver.", ADB logo, INTERNAL note).
