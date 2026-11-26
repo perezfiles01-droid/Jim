@@ -182,3 +182,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.29 (26 Nov 2026): requester preferred option C: heading row removed; "Back to overview" button now opens the white filter bar.
 - 1.0.0.30 (26 Nov 2026): sidebar shows the full report name and page names, wrapping to two lines instead of "...".
 - 1.0.0.31 (26 Nov 2026): card text and both Filtered results areas cannot be selected or copied, like the filter bars.
+- 1.0.0.32 (26 Nov 2026): breakdown Excel export follows the table (same columns incl. months, table order, indented offices/sites, total row), ADB-styled with header filters; adds xlsx-js-style and utils/styledExcel.ts.

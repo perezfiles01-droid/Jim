@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.31.
+Last updated: 25 Nov 2026. Current version: 1.0.0.32.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,12 +117,12 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.31 ->
-      1.0.0.32 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.32 ->
+      1.0.0.33 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
-   4. Zip the same file list as the previous zip, without node_modules,
+   4. Zip the same file list as the previous zip (plus any new files), without node_modules,
       lib, temp, dist, release, sharepoint/solution or .git (the list can
       be taken from the previous zip with: unzip -Z1 <old zip>).
    5. Send both files to the requester in the chat.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.31), so nothing is undone
+B7. What the report looks like now (1.0.0.32), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -182,6 +182,14 @@ B7. What the report looks like now (1.0.0.31), so nothing is undone
      lines (no "..."), at a fixed width so they do not reflow on opening.
    - No text selection/copying in the cards, the filter bars or either
      Filtered results area (requester, 26 Nov 2026).
+   - Breakdown "Export table": same columns as the table (month columns
+     under their measure when Previous month is on), departments in the
+     table's sort order with offices and sites indented, "All departments"
+     total; ADB style (blue header, white bold Arial, banded rows, bold
+     departments, number/% formats) and filters on the header row. Written
+     by utils/styledExcel.ts with xlsx-js-style (added to package.json in
+     1.0.0.32; the public registry install in B2 picks it up). The library
+     cannot freeze panes, so the header row is not frozen.
    - Title band: "Data as of" dot is ADB light blue #5B8CC1 (as the
      prototype, not green); the button reads "Import", not "Import data".
    - Tooltips (every (i)): ADB Blue box, white 14px Arial, max 320px wide,
