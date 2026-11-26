@@ -195,3 +195,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.42 (26 Nov 2026): overview chart scrolls sideways past 10 departments; all tables sorted A to Z by default with visible sort arrows.
 - 1.0.0.43 (26 Nov 2026): permanent guard against the report bouncing between two sizes; chart axis and Department title fixed while scrolling; third click on a heading returns to default order; exports show all departments.
 - 1.0.0.44 (26 Nov 2026): table controls taken off the screen and kept as an enhancement for later (components remain; wiring saved in Drive, folder "EDRMS report - saved enhancements").
+- 1.0.0.45 (26 Nov 2026): Department list exactly as wide as its box.

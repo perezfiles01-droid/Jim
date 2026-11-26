@@ -1,7 +1,7 @@
 # Report changes: where they go
 
 From 25 Nov 2026, every change to the EDRMS Utilization Report is made in the
-**developers' code port**. The latest is version 1.0.0.44, delivered as
+**developers' code port**. The latest is version 1.0.0.45, delivered as
 `edrms-utilization-report.sppkg` and `UtilizationReport-src.zip` in the
 requester's Google Drive.
 

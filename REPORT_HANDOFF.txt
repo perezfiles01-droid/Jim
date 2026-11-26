@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.44.
+Last updated: 25 Nov 2026. Current version: 1.0.0.45.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.44 ->
-      1.0.0.45 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.45 ->
+      1.0.0.46 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.44), so nothing is undone
+B7. What the report looks like now (1.0.0.45), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -200,7 +200,8 @@ B7. What the report looks like now (1.0.0.44), so nothing is undone
      controls back unless the requester asks. The filter bar must still
      have no empty rows or white space around it.
    - Breakdown Department list (option A of the mockups, 26 Nov 2026, in
-     the OLD BLUE STYLE by request): wide (>=420px), one line per name,
+     the OLD BLUE STYLE by request): exactly as wide as the Department box
+     (>=420px when the box is narrow; check with wid.js), one line per name,
      departments closed with arrows, search box at top. NO footer (the
      requester removed "All departments" + Clear). The list scrolls inside
      itself and stops at the bottom of the report; it must never make the
