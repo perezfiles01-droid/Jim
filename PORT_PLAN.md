@@ -191,3 +191,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.38 (26 Nov 2026): Export to PDF and PowerPoint works (was console only); PowerPoint uses the ADB IT Department template and palette.
 - 1.0.0.39 (26 Nov 2026): overview chart shows one column per month or year when Show # Months/Years is above 1; tables cannot be copied.
 - 1.0.0.40 (26 Nov 2026): PowerPoint export without the Key points box; open card highlighted in yellow; each breakdown on one slide.
+- 1.0.0.41 (26 Nov 2026): fixed the report jumping between two sizes after choosing 6 or 12 months on laptop screens.

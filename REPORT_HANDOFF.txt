@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.40.
+Last updated: 25 Nov 2026. Current version: 1.0.0.41.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.40 ->
-      1.0.0.41 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.41 ->
+      1.0.0.42 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.40), so nothing is undone
+B7. What the report looks like now (1.0.0.41), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -216,6 +216,9 @@ B7. What the report looks like now (1.0.0.40), so nothing is undone
      area with NO scrollbar on any screen (laptop or monitor). After the
      normal fit, useReportCanvas shrinks up to 15% more if #main still
      overflows; Department Insights (a long page) keeps scrolling inside.
+     The shrunk size is kept until a click in the report or a window
+     resize (else a wrapping legend made it jump between two sizes;
+     check with tools/report-harness/osc.js).
      Check with tools/report-harness/sp2.html (tall SharePoint header)
      and inner3.js at 1225x703, 1366x768 and 1920x1080.
    - Sidebar: no green bar on the open page (lighter background only).
