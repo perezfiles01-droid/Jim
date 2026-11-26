@@ -59,9 +59,9 @@ current design into it is **`PORT_PLAN.md`**.
 The working copy lives only in a session's scratch space, so a new session starts
 from the latest delivered zip.
 
-1. **Latest version:** 1.0.0.25. It is in the requester's Google Drive as
-   `UtilizationReport-src.zip` (Drive file id `1SEDusBseOgoi3F-ZXZ_uZNIeTnVyMkzn`).
-   The built package is `edrms-utilization-report.sppkg` (id `1U4YKBxP2TbRG3KEJaWBhN3jzGeGQ5M_t`).
+1. **Latest version:** 1.0.0.26. It is in the requester's Google Drive as
+   `UtilizationReport-src.zip` (Drive file id `1e6uqWWKpuVtD3lNR73iiXTKafHIjVfJE`).
+   The built package is `edrms-utilization-report.sppkg` (id `1R1h9uvfbv0YawSSwmHj0xUzgCfAqVnT2`).
    Older copies are titled "(old)".
 2. **Fetch it:** download it with the Drive connector. If that is too large, ask the
    requester for a read-only Drive token through the secure credential form (OAuth
