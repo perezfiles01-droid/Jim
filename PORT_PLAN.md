@@ -184,3 +184,4 @@ exact layout and information they want. It stays as the developers have it.
 - 1.0.0.31 (26 Nov 2026): card text and both Filtered results areas cannot be selected or copied, like the filter bars.
 - 1.0.0.32 (26 Nov 2026): breakdown Excel export follows the table (same columns incl. months, table order, indented offices/sites, total row), ADB-styled with header filters; adds xlsx-js-style and utils/styledExcel.ts.
 - 1.0.0.33 (26 Nov 2026): "Table size" control above the breakdown table (smaller/larger, Fit all, Reset); new shared TableZoom component.
+- 1.0.0.34 (26 Nov 2026): table controls moved into the filter bar as icon buttons (option A); adds Expand all / Collapse all; Fit all works in one click; no empty row above the table.

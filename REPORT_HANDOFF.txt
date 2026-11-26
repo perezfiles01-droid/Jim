@@ -1,6 +1,6 @@
 EDRMS UTILIZATION REPORT: HOW TO CONTINUE IN A NEW CHAT
 =======================================================
-Last updated: 25 Nov 2026. Current version: 1.0.0.33.
+Last updated: 25 Nov 2026. Current version: 1.0.0.34.
 
 
 PART A. FOR YOU (THE REQUESTER)
@@ -117,8 +117,8 @@ B5. Formatting (exactly the developers' style)
      reformat them wholesale, only edit the lines needed.
 
 B6. Deliver (every change)
-   1. Raise the version in config/package-solution.json (1.0.0.33 ->
-      1.0.0.34 and so on) and rebuild.
+   1. Raise the version in config/package-solution.json (1.0.0.34 ->
+      1.0.0.35 and so on) and rebuild.
    2. Update CHANGES.md at the zip root: the version line, a summary
       bullet and the new/changed/removed file lists.
    3. Commit in the local git.
@@ -137,7 +137,7 @@ B6. Deliver (every change)
       test copy, not in SharePoint), the App Catalog link with Replace,
       and Ctrl+Shift+R.
 
-B7. What the report looks like now (1.0.0.33), so nothing is undone
+B7. What the report looks like now (1.0.0.34), so nothing is undone
    - Fits the screen in view mode; hides SharePoint's space below the web
      part (on any page, by the requester's choice); full length while
      editing.
@@ -190,11 +190,16 @@ B7. What the report looks like now (1.0.0.33), so nothing is undone
      by utils/styledExcel.ts with xlsx-js-style (added to package.json in
      1.0.0.32; the public registry install in B2 picks it up). The library
      cannot freeze panes, so the header row is not frozen.
-   - Breakdown "Table size" bar above the table's top-right corner:
-     [-] 100% [+] (50-150%, steps of 10%), "Fit all" (largest size up to
-     100% where every department fits), "Reset". Shared component
-     components/shared/TableZoom; Table has scale and scrollRef props.
-     Not remembered between tiles or in links (requester's choice).
+   - Breakdown table controls live IN the white filter bar (option A of
+     the placement mockups, 26 Nov 2026), between Department and Export
+     table, as joined icon buttons with tooltips: Expand all / Collapse
+     all, zoom out / % / zoom in (50-150%), Fit all (one click: estimate,
+     then step down 1% per redraw until nothing scrolls), Reset. Controls
+     + Export table are one block that wraps under the filters together.
+     The requester wants NO empty rows or white space around the filters:
+     no separate control row above the table. Shared components
+     components/shared/TableZoom and TableExpand. Size and open rows are
+     not remembered between tiles or in links.
    - Title band: "Data as of" dot is ADB light blue #5B8CC1 (as the
      prototype, not green); the button reads "Import", not "Import data".
    - Tooltips (every (i)): ADB Blue box, white 14px Arial, max 320px wide,
